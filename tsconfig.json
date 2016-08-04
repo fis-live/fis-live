@@ -1,4 +1,5 @@
 {
+  "compileOnSave": false,
   "compilerOptions": {
     "target": "es5",
     "module": "commonjs",
@@ -8,11 +9,5 @@
     "experimentalDecorators": true,
     "removeComments": false,
     "noImplicitAny": false
-  },
-  "exclude": [
-    "gulpfile.ts",
-    "node_modules",
-    "dist",
-    "src/app/environment.ts"
-  ]
+  }
 }
