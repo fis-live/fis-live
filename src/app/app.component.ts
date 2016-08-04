@@ -23,4 +23,8 @@ export class AppComponent implements OnInit {
     constructor(private connection: FisConnectionService) {
 
     }
+
+    public onChange(value: any): void {
+        console.log(value);
+    }
 }

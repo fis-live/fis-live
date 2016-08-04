@@ -3,10 +3,6 @@ import {
 } from '@angular/core';
 import { NgFor } from '@angular/common';
 
-
-
-
-
 @Component({
     selector: 'app-dropdown',
     template: `
@@ -45,16 +41,16 @@ export class DropdownComponent implements AfterViewInit, OnDestroy {
         this.$el = jQuery('#' + this.id);
         console.log(this.$el);
 
-        // this.$el.dropdown({
-        //     onChange: (value) => this.selected.emit(value)
-        // });
-        //
-        // this.$el.dropdown('refresh');
-        // this.$el.dropdown('set selected', '0');
+        this.$el.dropdown({
+            onChange: (value) => this.selected.emit(value)
+        });
+
+        this.$el.dropdown('refresh');
+        this.$el.dropdown('set selected', '0');
     }
 
     ngOnDestroy() {
         console.log('Destroy' + this.id);
-        // this.$el.dropdown('destroy');
+        this.$el.dropdown('destroy');
     }
 }
