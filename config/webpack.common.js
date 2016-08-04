@@ -4,6 +4,9 @@ var ExtractTextPlugin = require('extract-text-webpack-plugin');
 var ProvidePlugin = require('webpack/lib/ProvidePlugin');
 var helpers = require('./helpers');
 
+// Use our jQuery
+var _jquery = helpers.root('node_modules', 'jquery');
+
 module.exports = {
     entry: {
         'polyfills': './src/polyfills.ts',
@@ -52,9 +55,9 @@ module.exports = {
         }),
 
         new ProvidePlugin({
-            jQuery: 'jquery',
-            $: 'jquery',
-            jquery: 'jquery'
+            jQuery: _jquery,
+            $: _jquery,
+            jquery: _jquery
         })
     ]
 };

@@ -5,6 +5,9 @@ import '@angular/common';
 import '@angular/http';
 import '@angular/router';
 
+import './app/rxjs-operators';
+
 import 'jquery';
+import 'semantic-ui/dist/components/dropdown.js';
 
 import 'semantic-ui/dist/semantic.css'
