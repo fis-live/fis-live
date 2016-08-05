@@ -1,2 +1,22 @@
-<h1>{{ title }}</h1>
-<app-dropdown [id]="id" [items]="items" (selected)="onChange($event)"></app-dropdown>
+<div class="ui inverted menu fixed">
+    <div class="item">
+        <div class="ui action input">
+            <input [(ngModel)]="codex" placeholder="Input race codex..." type="text">
+
+            <div class="ui button" (click)="startServer()">Go</div>
+        </div>
+    </div>
+    <div class="header borderless item">{{ raceModel.raceInfo?.eventName}}</div>
+    <div class="borderless fitted small item">{{ raceModel.raceInfo?.raceName}}</div>
+    <div class="right menu">
+        <div class="borderless item">{{ raceModel.message }}</div>
+        <div class="item icon"><i (click)="removeTab()" class="inverted minus icon"></i>&nbsp;&nbsp;&nbsp;<i (click)="addTab()" class="inverted add icon"></i></div>
+    </div>
+</div>
+
+
+<div id="container" class="ui stackable equal width grid">
+    <div *ngFor="let i of rows" class="column">
+        <app-tab [id]="'res' + i" [raceModel]="raceModel"></app-tab>
+    </div>
+</div>
