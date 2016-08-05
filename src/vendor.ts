@@ -11,4 +11,4 @@ import 'jquery';
 import 'semantic-ui/dist/components/transition.js';
 import 'semantic-ui/dist/components/dropdown.js';
 
-import 'semantic-ui/dist/semantic.css'
+import 'semantic-ui/dist/semantic.css';

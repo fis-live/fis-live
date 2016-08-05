@@ -1,0 +1,151 @@
+@import "~bootstrap/less/variables.less";
+@import "~bootstrap/less/glyphicons.less";
+
+.ui.table td {
+    padding: 0;
+}
+.ui.table td > div {
+    box-sizing: border-box;
+    overflow: hidden;
+    max-height: 100px;
+    padding: .71428571em;
+}
+
+.ui.equal.width.grid {
+    margin: 0;
+    height: 100%;
+    line-height: 1.25em;
+}
+
+.ui.fixed.menu + .ui.grid {
+    padding-top: 48px;
+}
+
+.ui.attached.dropdown {
+    text-align: center;
+}
+
+app-dropdown + .ui.attached.segment {
+    height: calc(100% - 36px);
+    padding: 0;
+    border-radius: 0 0 0.285714rem 0.285714rem;
+    overflow: auto;
+}
+
+.ui.grid > .row {
+    padding: 0;
+}
+
+.ui.grid > .row > .column, .ui.grid > .column:not(.row) {
+    padding: 0;
+    margin: 5px;
+}
+
+@media only screen and (min-width: 767px) {
+    .ui.grid > .row:first-child:nth-last-child(1) {
+        height: 100%;
+    }
+
+    .ui.grid > .row:first-child:nth-last-child(2),
+    .ui.grid > .row:first-child:nth-last-child(2) ~ .row {
+        height: 50%;
+    }
+
+    .ui.grid > .row:first-child:nth-last-child(3),
+    .ui.grid > .row:first-child:nth-last-child(3) ~ .row {
+        height: 33.3333%;
+    }
+
+    .ui.grid > .row:first-child:nth-last-child(4),
+    .ui.grid > .row:first-child:nth-last-child(4) ~ .row {
+        height: 25%;
+    }
+}
+
+.ui.attached.segment table {
+    border: none;
+    margin: 0;
+}
+
+.ui.compact.table td {
+    padding: 0.3em 0.7em;
+}
+
+.ui.compact.table th {
+    padding: 0.5em 2.1em 0.5em 0.7em;
+    border-bottom-width: 2px;
+}
+
+.ui.table > tr.last_finish > td {
+    background-color: #FFE5BC;
+}
+
+.ui.table > tr.favorite > td {
+    background: #D8E1FF !important;
+}
+
+.ui.inverted.menu > .small.item {
+    color: rgba(255, 255, 255, 0.5);
+    font-size: 0.8em;
+}
+
+.menu > .item.icon > .icon {
+    color: rgba(255, 255, 255, 0.5);
+    transition: color 0.6s ease 0s, transform 0.2s ease 0s;
+}
+
+.menu > .item.icon > .icon:hover {
+    color: #ffffff;
+    cursor: pointer;
+    transform: scale(1.5);
+}
+
+table.ui.table thead > tr > th.sorting_asc,
+table.ui.table thead > tr > th.sorting_desc,
+table.ui.table thead > tr > th.sorting,
+table.ui.table thead > tr > td.sorting_asc,
+table.ui.table thead > tr > td.sorting_desc,
+table.ui.table thead > tr > td.sorting {
+    padding-right: 30px;
+}
+table.ui.table thead > tr > th:active,
+table.ui.table thead > tr > td:active {
+    outline: none;
+}
+table.ui.table thead .sorting,
+table.ui.table thead .sorting_asc,
+table.ui.table thead .sorting_desc,
+table.ui.table thead .sorting_asc_disabled,
+table.ui.table thead .sorting_desc_disabled {
+    cursor: pointer;
+    position: relative;
+}
+table.ui.table thead .sorting:after,
+table.ui.table thead .sorting_asc:after,
+table.ui.table thead .sorting_desc:after,
+table.ui.table thead .sorting_asc_disabled:after,
+table.ui.table thead .sorting_desc_disabled:after {
+    position: absolute;
+    bottom: 0.4em;
+    right: 0.7em;
+    display: block;
+    font-family: 'Glyphicons Halflings';
+    opacity: 0.5;
+}
+table.ui.table thead .sorting:after {
+    opacity: 0.2;
+    content: "\e150";
+    /* sort */
+}
+table.ui.table thead .sorting_asc:after {
+    content: "\e155";
+    /* sort-by-attributes */
+}
+table.ui.table thead .sorting_desc:after {
+    content: "\e156";
+    /* sort-by-attributes-alt */
+}
+table.ui.table thead .sorting_asc_disabled:after,
+table.ui.table thead .sorting_desc_disabled:after {
+    color: #eee;
+}
