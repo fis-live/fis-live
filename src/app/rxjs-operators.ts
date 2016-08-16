@@ -15,4 +15,5 @@ import 'rxjs/add/operator/toPromise';
 
 import './Connection/operator/add/timeoutInterval';
 
-import { Observable, TimeInterval } from 'rxjs/Rx';
+import { Observable } from 'rxjs/Rx';
+import { TimeInterval } from "rxjs/src/operator/timeInterval"

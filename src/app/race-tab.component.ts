@@ -7,7 +7,7 @@ import { TableComponent } from './Table/table.component';
     selector: 'app-tab',
     template: `<app-dropdown [id]="id" [items]="raceModel.getIntermediates(0)" (selected)="onChange($event)"></app-dropdown>
         <div class="ui attached segment">
-        <app-table [startList]="raceModel.getStartList()"></app-table>
+        <app-table></app-table>
             </div>`,
     directives: [TableComponent, DropdownComponent]
 })

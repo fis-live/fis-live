@@ -4,7 +4,9 @@ import { Http, Response } from "@angular/http";
 import { unserialize, json } from './unserialize';
 import { ErrorTimeInterval } from "./operator/timeoutInterval";
 
-import { Observable, TimeInterval } from "rxjs/Rx";
+import { Observable } from "rxjs/Rx";
+import { TimeInterval } from "rxjs/src/operator/timeInterval"
+
 import { FisServer } from "./fis-server";
 
 @Injectable()

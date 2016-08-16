@@ -7,7 +7,7 @@ import {CORE_DIRECTIVES, NgClass} from '@angular/common';
     <table class="ui unstackable striped compact table" role="grid">
       <thead>
       <tr role="row">
-        <th *ngFor="let column of columns" [ngTableSorting]="config" [column]="column" (sortChanged)="onChangeTable($event)">
+        <th *ngFor="let column of columns">
           {{column.title}}
           <i *ngIf="config && column.sort" class="pull-right fa"
             [ngClass]="{'fa-chevron-down': column.sort === 'desc', 'fa-chevron-up': column.sort === 'asc'}"></i>
