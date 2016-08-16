@@ -1,15 +1,12 @@
 import { Component, Input, OnDestroy } from '@angular/core';
 import { RaceModel } from './Model/race-model';
-import { DropdownComponent } from './Dropdown/dropdown.component';
-import { TableComponent } from './Table/table.component';
 
 @Component({
     selector: 'app-tab',
     template: `<app-dropdown [id]="id" [items]="raceModel.getIntermediates(0)" (selected)="onChange($event)"></app-dropdown>
         <div class="ui attached segment">
         <app-table></app-table>
-            </div>`,
-    directives: [TableComponent, DropdownComponent]
+            </div>`
 })
 export class RaceTabComponent implements OnDestroy {
     ngOnDestroy() {

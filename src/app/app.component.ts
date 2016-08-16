@@ -5,12 +5,10 @@ import './rxjs-operators';
 import { FisConnectionService } from "./Connection/fis-connection.service";
 import { RaceModel } from "./Model/race-model";
 import { Subscription } from "rxjs/Rx";
-import {RaceTabComponent} from "./race-tab.component";
 
 @Component({
     selector: 'app-root',
     templateUrl: './app.component.html',
-    directives: [RaceTabComponent],
     providers: [FisConnectionService]
 })
 export class AppComponent implements OnInit {
@@ -18,7 +16,7 @@ export class AppComponent implements OnInit {
     public raceModel: RaceModel;
 
     private observer: Subscription;
-    private rows: number[];
+    private rows: number[] = [];
 
     ngOnInit() {
         this.connection.getServerList();

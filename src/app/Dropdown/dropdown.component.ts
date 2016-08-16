@@ -1,7 +1,6 @@
 import {
     Component, EventEmitter, Input, Output, AfterViewInit, OnDestroy
 } from '@angular/core';
-import { NgFor } from '@angular/common';
 
 @Component({
     selector: 'app-dropdown',
@@ -14,8 +13,7 @@ import { NgFor } from '@angular/common';
         <div class="item" data-value="0">Start list</div>
         <div *ngFor="let item of items" class="item" [attr.data-value]="item.id" [attr.data-text]="item.distance + ' KM'">{{ item.name }}  {{ item.distance }} KM</div>
     </div>
-</div>`,
-    directives: [NgFor]
+</div>`
 })
 export class DropdownComponent implements AfterViewInit, OnDestroy {
     @Input()

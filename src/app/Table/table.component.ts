@@ -1,5 +1,4 @@
 import {Component, EventEmitter, Input, Output, trigger, state, style, transition, animate} from '@angular/core';
-import {CORE_DIRECTIVES, NgClass} from '@angular/common';
 
 @Component({
     selector: 'app-table',
@@ -21,7 +20,6 @@ import {CORE_DIRECTIVES, NgClass} from '@angular/common';
       </tbody>
     </table>
 `,
-    directives: [NgClass, CORE_DIRECTIVES],
     animations: [
         trigger('newRow', [
             transition('void => new', [
