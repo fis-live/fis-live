@@ -5,7 +5,7 @@ import {
 @Component({
     selector: 'app-dropdown',
     template: `
-<div [attr.id]="id" class="ui top attached primary dropdown button" tabindex="0">
+<div [attr.id]="id" class="ui top attached primary dropdown button">
     <div class="default text">Select intermediate</div>
     <i class="dropdown icon"></i>
     
@@ -40,7 +40,8 @@ export class DropdownComponent implements AfterViewInit, OnDestroy {
         console.log(this.$el);
 
         this.$el.dropdown({
-            onChange: (value) => this.selected.emit(value)
+            onChange: (value) => this.selected.emit(value),
+            allowTab: false
         });
 
         this.$el.dropdown('refresh');

@@ -26,10 +26,14 @@
 }
 
 app-dropdown + .ui.attached.segment {
-    height: calc(100% - 36px);
+    height: ~"calc(100% - 36px)";
     padding: 0;
     border-radius: 0 0 0.285714rem 0.285714rem;
     overflow: auto;
+}
+
+.ui.button.dropdown > .icon:not(.button) {
+    margin: 0em 0em 0em 1em;
 }
 
 .ui.grid > .row {
