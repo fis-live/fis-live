@@ -36,6 +36,7 @@ export class AppComponent implements OnInit {
 
 
     public startServer(): void {
+        console.log(this.codex);
         if (this.observer) {
             this.stopServer();
         }
@@ -50,6 +51,7 @@ export class AppComponent implements OnInit {
 
     public stopServer() {
         this.observer.unsubscribe();
+        this.observer = undefined;
         console.log('Unsubscribed');
     }
 

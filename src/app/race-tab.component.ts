@@ -1,12 +1,12 @@
 import { Component, Input, OnDestroy } from '@angular/core';
 import { RaceModel } from './Model/race-model';
-import {TableConfig, Column} from './Table/table.component';
+import {TableConfig, Sort} from './Table/table.component';
 
 @Component({
     selector: 'app-tab',
     template: `<app-dropdown [id]="id" [items]="raceModel.getIntermediates(0)" (selected)="onChange($event)"></app-dropdown>
         <div class="ui attached segment">
-        <app-table [config]="config" [rows]="rows" (tableChanged)="sort($event)"></app-table>
+        <app-table [config]="config" [rows]="rows" (sortChanged)="sort($event)"></app-table>
             </div>`
 })
 export class RaceTabComponent implements OnDestroy {
@@ -63,14 +63,15 @@ export class RaceTabComponent implements OnDestroy {
         }
     }
 
-    public sort($event: Column): void {
-        switch ($event.sort) {
+    public sort($event: Sort): void {
+        switch ($event.sortOrder) {
             case 'asc':
-                this.rows.sort((a, b) => a[$event.name] > b[$event.name]);
+                this.rows.sort((a, b) => a[$event.sortBy] > b[$event.sortBy]);
                 break;
             case 'desc':
-                this.rows.sort((a, b) => a[$event.name] < b[$event.name]);
+                this.rows.sort((a, b) => a[$event.sortBy] < b[$event.sortBy]);
                 break;
         }
+        // this.rows.push({order: 14, bib: 114, name: 'joow', status: 'Finish', nationality: 'SWE'});
     }
 }

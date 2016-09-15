@@ -3,7 +3,7 @@ import { Observable } from 'rxjs/Observable';
 import { Subscriber } from 'rxjs/Subscriber';
 import { Scheduler } from 'rxjs/Scheduler';
 import { async } from 'rxjs/scheduler/async';
-import { TimeInterval } from "rxjs/src/operator/timeInterval";
+import { TimeInterval } from "rxjs/Rx";
 
 /**
  * @param due

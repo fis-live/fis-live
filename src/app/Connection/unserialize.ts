@@ -1,5 +1,3 @@
-import { isJsObject, isString, Json } from "@angular/core/src/facade/lang";
-
 export function unserialize(data: any) {
     //  discuss at: http://locutus.io/php/unserialize/
     // original by: Arpad Ray (mailto:arpad@php.net)
@@ -229,10 +227,10 @@ export function unserialize(data: any) {
 
 export function json(body: string | Object): any {
     var jsonResponse: string | Object;
-    if (isJsObject(body)) {
+    if (body !== null && (typeof body === 'function' || typeof body === 'object')) {
         jsonResponse = body;
-    } else if (isString(body)) {
-        jsonResponse = Json.parse(<string> body);
+    } else if (typeof body === 'string') {
+        jsonResponse = JSON.parse(<string> body);
     }
 
     return jsonResponse;
