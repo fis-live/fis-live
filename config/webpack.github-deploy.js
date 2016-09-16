@@ -1,4 +1,5 @@
 var helpers = require('./helpers');
+var webpack = require('webpack');
 const webpackMerge = require('webpack-merge');
 const ghpages = require('gh-pages');
 const execSync = require('child_process').execSync;
@@ -23,13 +24,14 @@ function getRepoName(remoteName) {
 const GIT_REMOTE_NAME = 'origin';
 const COMMIT_MESSAGE = 'Publish v' + process.env.npm_package_version;
 const GH_REPO_NAME = getRepoName(GIT_REMOTE_NAME);
+const ENV = process.env.NODE_ENV = process.env.ENV = 'production';
 
 module.exports = webpackMerge(webpackConfig, {
 
 
     output: {
         path: helpers.root('dist'),
-        chunkFilename: '[id].[hash].chunk.js'
+        chunkFilename: '[id].[hash].chunk.js',
         filename: '[name].js',
         publicPath: '/' + GH_REPO_NAME + '/'
     },
@@ -80,7 +82,7 @@ module.exports = webpackMerge(webpackConfig, {
                     message: COMMIT_MESSAGE
                 };
 
-                ghpages.publish(webpackConfig.output.path, options, function(err) {
+                ghpages.publish(helpers.root('dist'), options, function(err) {
                     if (err) {
                         console.log('GitHub deployment done. STATUS: ERROR.');
                         throw err;
