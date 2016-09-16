@@ -14,4 +14,4 @@ import 'semantic-ui/dist/components/dropdown.js';
 
 import 'semantic-ui/dist/semantic.css';
 
-import './assets/js/web-animations.min.js';
+//import './assets/js/web-animations.min.js';

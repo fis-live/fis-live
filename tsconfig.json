@@ -2,7 +2,7 @@
   "compileOnSave": false,
   "compilerOptions": {
     "target": "es5",
-    "module": "commonjs",
+    "module": "es6",
     "moduleResolution": "node",
     "sourceMap": true,
     "emitDecoratorMetadata": true,
