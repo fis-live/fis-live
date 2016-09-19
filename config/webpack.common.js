@@ -36,7 +36,7 @@ module.exports = {
             },
             {
                 test: /\.html$/,
-                loader: 'html-loader'
+                loader: 'raw-loader'
             },
             {
                 test: /\.(png|jpe?g|gif|svg|woff|woff2|ttf|eot|ico)$/,
@@ -85,7 +85,8 @@ module.exports = {
         }),
 
         new HtmlWebpackPlugin({
-            template: 'src/index.html'
+            template: 'src/index.html',
+            baseHref: '<base href="/">'
         }),
 
         new ProvidePlugin({

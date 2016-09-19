@@ -26,7 +26,7 @@ const COMMIT_MESSAGE = 'Publish v' + process.env.npm_package_version;
 const GH_REPO_NAME = getRepoName(GIT_REMOTE_NAME);
 const ENV = process.env.NODE_ENV = process.env.ENV = 'production';
 
-module.exports = webpackMerge(webpackConfig, {
+module.exports = webpackMerge.smart(webpackConfig, {
 
 
     output: {
