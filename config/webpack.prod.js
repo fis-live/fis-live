@@ -22,6 +22,7 @@ module.exports = webpackMerge(commonConfig, {
 
     plugins: [
         new webpack.NoErrorsPlugin(),
+        new webpack.optimize.OccurrenceOrderPlugin(),
         //new webpack.optimize.DedupePlugin(),
         new webpack.optimize.UglifyJsPlugin({
             beautify: false, //prod
