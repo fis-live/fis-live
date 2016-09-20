@@ -1,0 +1,2 @@
+export const REGISTER_RESULT = 'REGISTER_RESULT';
+export const ADD_RACER = 'ADD_RACER';
