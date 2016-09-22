@@ -6,7 +6,7 @@ var atl = require('awesome-typescript-loader');
 var helpers = require('./helpers');
 
 // Use our jQuery
-var _jquery = helpers.root('node_modules', 'jquery');
+const _jquery = helpers.root('node_modules', 'jquery');
 
 module.exports = {
     entry: {
@@ -16,11 +16,11 @@ module.exports = {
     },
 
     resolve: {
-        extensions: ['', '.js', '.ts']
+        extensions: ['.js', '.ts']
     },
 
     module: {
-        loaders: [
+        rules: [
             {
                 test: /\.ts$/,
                 loaders: [
