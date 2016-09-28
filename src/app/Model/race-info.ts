@@ -1,4 +1,4 @@
-export class RaceInfo {
-    public eventName: string;
-    public raceName: string;
+export interface RaceInfo {
+    eventName: string;
+    raceName: string;
 }

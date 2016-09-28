@@ -1,7 +1,9 @@
+import '@ngrx/core/add/operator/select';
 import { Action } from '@ngrx/store';
 
 import { ADD_RACER } from "../actions";
 import { Racer } from "../Model/racer";
+import { Observable } from "rxjs/Observable";
 
 export interface State {
     ids: number[];
@@ -34,4 +36,8 @@ export function reducer(state: State = initialState, action: Action): State {
         default:
             return state;
     }
+}
+
+export function getRacer(id: number) {
+    return (state$: Observable<State>) => state$.select(state => state.entities[id]);
 }
