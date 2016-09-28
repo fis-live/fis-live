@@ -93,6 +93,11 @@ module.exports = {
             jQuery: _jquery,
             $: _jquery,
             jquery: _jquery
-        })
+        }),
+
+        new webpack.ContextReplacementPlugin(
+            /angular(\\|\/)core(\\|\/)(esm(\\|\/)src|src)(\\|\/)linker/,
+            helpers.root('src')
+        )
     ]
 };
