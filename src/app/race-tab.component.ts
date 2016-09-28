@@ -1,10 +1,12 @@
 import { Component, Input, OnDestroy } from '@angular/core';
 import { RaceModel } from './Model/race-model';
 import {TableConfig, Sort} from './Table/table.component';
+import {AppState, getIntermediates} from "./reducers/index";
+import {Store} from "@ngrx/store";
 
 @Component({
     selector: 'app-tab',
-    template: `<app-dropdown [id]="id" [items]="raceModel.getIntermediates(0)" (selected)="onChange($event)"></app-dropdown>
+    template: `<app-dropdown [id]="id" [items]="intermediates | async" (selected)="onChange($event)"></app-dropdown>
         <div class="ui attached segment">
         <app-table [config]="config" [rows]="rows" (sortChanged)="sort($event)"></app-table>
             </div>`
@@ -16,6 +18,13 @@ export class RaceTabComponent implements OnDestroy {
     public codex;
     public run: number;
     public intermediate: number;
+
+    public intermediates: any;
+
+    constructor (private _state: Store<AppState>) {
+        this.intermediates = _state.let(getIntermediates);
+    }
+
 
 
     private _start_list_columns = [{sort: '', name:'order', title:'Order', sortable: true},

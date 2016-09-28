@@ -28,8 +28,6 @@ export class DropdownComponent implements AfterViewInit, OnDestroy {
     private $el: any;
 
     ngAfterViewInit() {
-        // viewChild is set after the view has been initialized
-        console.log(this.id);
 
         if (typeof jQuery === "undefined") {
             console.log("jQuery is not loaded");
@@ -37,7 +35,6 @@ export class DropdownComponent implements AfterViewInit, OnDestroy {
         }
 
         this.$el = jQuery('#' + this.id);
-        console.log(this.$el);
 
         this.$el.dropdown({
             onChange: (value) => this.selected.emit(value),
@@ -49,7 +46,6 @@ export class DropdownComponent implements AfterViewInit, OnDestroy {
     }
 
     ngOnDestroy() {
-        console.log('Destroy' + this.id);
         this.$el.dropdown('destroy');
     }
 }
