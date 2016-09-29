@@ -1,7 +1,7 @@
 import '@ngrx/core/add/operator/select';
 import { Action } from '@ngrx/store';
 
-import { UPDATE_RACE_INFO, SET_RACE_MESSAGE } from "../actions";
+import { RaceActions} from "../actions";
 import { Observable } from "rxjs/Observable";
 import { RaceInfo } from "../Model/race-info";
 
@@ -18,7 +18,7 @@ const initialState: State = {
 
 export function reducer(state: State = initialState, action: Action): State {
     switch (action.type) {
-        case UPDATE_RACE_INFO:
+        case RaceActions.UPDATE_RACE_INFO:
             const info = action.payload;
 
             return {
@@ -26,7 +26,7 @@ export function reducer(state: State = initialState, action: Action): State {
                 message: state.message
             };
 
-        case SET_RACE_MESSAGE:
+        case RaceActions.SET_RACE_MESSAGE:
             const message: string = action.payload;
 
             return {

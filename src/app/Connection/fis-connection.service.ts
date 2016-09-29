@@ -45,13 +45,16 @@ export class FisConnectionService {
         return `${this.interval}-${this.errorCount}-${this.signature}-${this.updateCount}-` + d.getMilliseconds().toString();
     }
 
-    public getServerList(): Promise<any>{
+    public getServerList(): Observable<FisServer[]>{
         return this.http.get(FisConnectionService.SERVER_LIST_URL, {search: 'i=' + this.getQueryString()})
-            .toPromise()
-            .then(res => this.parseServerList(res));
+            .map(res => this.parseServerList(res));
     }
 
-    public poll(): Observable<any> {
+    public poll(payload: number | null = null): Observable<any> {
+        if (payload) {
+            this.initialize(payload);
+        }
+
         return Observable.timer(this.delay).switchMap(() => this.getHttpRequest())
             .map(result => this.parse(result))
             .catch(error => this.handleError(error));
@@ -84,15 +87,14 @@ export class FisConnectionService {
         return data;
     }
 
-    private parseServerList(result: any){
+    private parseServerList(result: any): FisServer[] {
         let data = json(unserialize(result.text().slice(4, -5)));
         var servers: any[] = data.servers;
         for (let i = 0; i < servers.length; i++) {
             this.server_list.push(new FisServer(servers[i][0], servers[i][1], servers[i][2]));
         }
 
-        console.log(this.server_list);
-        this.selectServer();
+        return this.server_list;
     }
 
     private handleError(error: any) {
@@ -113,7 +115,7 @@ export class FisConnectionService {
         return Observable.throw(errMsg);
     }
 
-    private selectServer(): void {
+    public selectServer(): void {
         var sum: number = 0;
 
         for (var i = 0; i < this.server_list.length; i++) {

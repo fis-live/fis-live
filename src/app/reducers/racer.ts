@@ -1,7 +1,7 @@
 import '@ngrx/core/add/operator/select';
 import { Action } from '@ngrx/store';
 
-import { ADD_RACER } from "../actions";
+import { RaceActions } from "../actions";
 import { Racer } from "../Model/racer";
 import { Observable } from "rxjs/Observable";
 
@@ -18,7 +18,7 @@ const initialState: State = {
 
 export function reducer(state: State = initialState, action: Action): State {
     switch (action.type) {
-        case ADD_RACER:
+        case RaceActions.ADD_RACER:
             const racer: Racer = action.payload;
 
             if (state.ids.includes(racer.bib)) {

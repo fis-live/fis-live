@@ -1,7 +1,7 @@
 import '@ngrx/core/add/operator/select';
 import { Action } from '@ngrx/store';
 
-import { ADD_INTERMEDIATE } from "../actions";
+import { RaceActions } from "../actions";
 import { Observable } from "rxjs/Observable";
 import { Intermediate } from "../Model/intermediate";
 import { combineLatest } from "rxjs/observable/combineLatest";
@@ -19,7 +19,7 @@ const initialState: State = {
 
 export function reducer(state: State = initialState, action: Action): State {
     switch (action.type) {
-        case ADD_INTERMEDIATE:
+        case RaceActions.ADD_INTERMEDIATE:
             const inter: Intermediate = action.payload;
 
             if (state.ids.includes(inter.id)) {

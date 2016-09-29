@@ -1,6 +1,6 @@
 import { Action } from '@ngrx/store';
 
-import { REGISTER_RESULT } from "../actions";
+import { RaceActions } from "../actions";
 
 interface Item {
     racer: string;
@@ -12,7 +12,7 @@ export interface State extends Array<Item>{ }
 
 export function reducer(state: State = [], action: Action): State {
     switch (action.type) {
-        case REGISTER_RESULT:
+        case RaceActions.REGISTER_RESULT:
             return [ ...state, Object.assign({}, {racer: action.payload.racer, time: action.payload.time, intermediate: action.payload.intermediate})];
 
 
