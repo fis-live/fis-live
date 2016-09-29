@@ -45,10 +45,6 @@ module.exports = webpackMerge.smart(webpackConfig, {
         ]
     },
 
-    htmlLoader: {
-        minimize: false // workaround for ng2
-    },
-
     plugins: [
         new webpack.NoErrorsPlugin(),
         //new webpack.optimize.DedupePlugin(),
@@ -66,7 +62,10 @@ module.exports = webpackMerge.smart(webpackConfig, {
         }),
         new webpack.LoaderOptionsPlugin({
             minimize: true,
-            debug: false
+            debug: false,
+            htmlLoader: {
+                minimize: false // workaround for ng2
+            }
         }),
         function() {
             this.plugin('done', function(stats) {

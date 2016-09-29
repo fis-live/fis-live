@@ -85,8 +85,7 @@ module.exports = {
         }),
 
         new HtmlWebpackPlugin({
-            template: 'src/index.html',
-            baseHref: '<base href="/">'
+            template: 'src/index.html'
         }),
 
         new ProvidePlugin({

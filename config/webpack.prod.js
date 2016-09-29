@@ -16,10 +16,6 @@ module.exports = webpackMerge(commonConfig, {
         chunkFilename: '[id].[hash].chunk.js'
     },
 
-    htmlLoader: {
-        minimize: false // workaround for ng2
-    },
-
     plugins: [
         new webpack.NoErrorsPlugin(),
         new webpack.optimize.OccurrenceOrderPlugin(),
@@ -38,7 +34,10 @@ module.exports = webpackMerge(commonConfig, {
         }),
         new webpack.LoaderOptionsPlugin({
             minimize: true,
-            debug: false
+            debug: false,
+            htmlLoader: {
+                minimize: false // workaround for ng2
+            }
         })
     ]
 });
