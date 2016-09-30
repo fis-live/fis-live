@@ -2,7 +2,7 @@ import '@ngrx/core/add/operator/select';
 import { Action } from '@ngrx/store';
 
 import { RaceActions } from "../actions";
-import { Racer } from "../Model/racer";
+import { Racer } from "../models/racer";
 import { Observable } from "rxjs/Observable";
 import {combineLatest} from "rxjs/observable/combineLatest";
 

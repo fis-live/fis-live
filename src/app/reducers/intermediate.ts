@@ -3,7 +3,7 @@ import { Action } from '@ngrx/store';
 
 import { RaceActions } from "../actions";
 import { Observable } from "rxjs/Observable";
-import { Intermediate } from "../Model/intermediate";
+import { Intermediate } from "../models/intermediate";
 import { combineLatest } from "rxjs/observable/combineLatest";
 
 export interface State {

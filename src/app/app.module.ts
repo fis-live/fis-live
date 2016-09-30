@@ -9,12 +9,12 @@ import { StoreDevtoolsModule } from '@ngrx/store-devtools';
 import { StoreLogMonitorModule, useLogMonitor } from '@ngrx/store-log-monitor';
 
 import { AppComponent } from './app.component';
-import { DropdownComponent } from "./Dropdown/dropdown.component";
+import { DropdownComponent } from "./components/dropdown/dropdown.component";
 import { RaceTabComponent } from "./race-tab.component";
-import { TableComponent } from "./Table/table.component";
+import { TableComponent } from "./components/table/table.component";
 import { reducer } from "./reducers";
 import {ConnectionEffects} from "./effects/connection";
-import { FisConnectionService } from "./Connection/fis-connection.service";
+import { FisConnectionService } from "./services/fis-connection.service";
 
 @NgModule({
     imports: [

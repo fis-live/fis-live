@@ -1,6 +1,6 @@
 import { Action } from '@ngrx/store';
 
-import { Racer } from "../Model/racer";
+import { Racer } from "../models/racer";
 
 export class RaceActions {
     static REGISTER_RESULT = 'REGISTER_RESULT';

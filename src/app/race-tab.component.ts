@@ -1,10 +1,10 @@
 import { Component, Input, OnDestroy } from '@angular/core';
 import { Store } from "@ngrx/store";
 
-import { TableConfig, Sort } from './Table/table.component';
+import { TableConfig, Sort } from './components/table/table.component';
 import {AppState, getIntermediates, getResultState, getRacers} from "./reducers";
 import {Observable, Subject, Subscription} from "rxjs";
-import {Racer} from "./Model/racer";
+import {Racer} from "./models/racer";
 
 @Component({
     selector: 'app-tab',

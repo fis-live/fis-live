@@ -2,10 +2,10 @@ import { Injectable } from '@angular/core';
 import { Effect, Actions } from '@ngrx/effects';
 import { Observable } from 'rxjs/Observable';
 
-import { FisConnectionService } from "../Connection/fis-connection.service";
-import { FisServer } from "../Connection/fis-server";
+import { FisConnectionService } from "../services/fis-connection.service";
+import { FisServer } from "../services/fis-server";
 import { RaceActions, ConnectionActions } from "../actions";
-import { Racer } from "../Model/racer";
+import { Racer } from "../models/racer";
 
 @Injectable()
 export class ConnectionEffects {

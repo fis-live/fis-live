@@ -3,7 +3,7 @@ import { Action } from '@ngrx/store';
 
 import { RaceActions} from "../actions";
 import { Observable } from "rxjs/Observable";
-import { RaceInfo } from "../Model/race-info";
+import { RaceInfo } from "../models/race-info";
 
 export interface State {
     info: RaceInfo;
