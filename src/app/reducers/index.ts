@@ -4,6 +4,8 @@ import * as Racer from "./racer";
 import * as Result from "./result";
 import * as Info from "./race-info";
 import * as Inter from "./intermediate";
+import * as Error from './error';
+import * as Loading from './loading';
 import { Observable } from "rxjs/Observable";
 import { compose } from "@ngrx/core";
 
@@ -12,7 +14,9 @@ const reducers: { [key: string]: ActionReducer<any> } = {
     result: Result.reducer,
     racer: Racer.reducer,
     info: Info.reducer,
-    intermediate: Inter.reducer
+    intermediate: Inter.reducer,
+    error: Error.reducer,
+    loading: Loading.reducer
 };
 
 export function reducer(state: any, action: any): any {
@@ -24,10 +28,12 @@ export interface AppState {
     racer: Racer.State;
     info: Info.State;
     intermediate: Inter.State;
+    error: Error.State;
+    loading: Loading.State;
 }
 
-export function getRacerState() {
-    return (state$: Observable<AppState>) => state$.select(state => state.racer);
+export function getRacerState(state$: Observable<AppState>) {
+    return state$.select(state => state.racer);
 }
 
 export function getRaceInfoState(state$: Observable<AppState>) {
@@ -38,10 +44,20 @@ export function getIntermediateState(state$: Observable<AppState>) {
     return state$.select(state => state.intermediate);
 }
 
-
-export function getRacer(id: number) {
-    return compose(Racer.getRacer(id), getRacerState());
+export function getErrorState(state$: Observable<AppState>) {
+    return state$.select(state => state.error);
 }
+
+export function getLoadingState(state$: Observable<AppState>) {
+    return state$.select(state => state.loading);
+}
+
+export function getResultState(state$: Observable<AppState>) {
+    return state$.select(state => state.result);
+}
+
+
+export const getRacers = compose(Racer.getRacerEntities, getRacerState);
 
 export const getRaceInfo = compose(Info.getRaceInfo, getRaceInfoState);
 

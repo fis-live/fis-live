@@ -54,7 +54,7 @@ export class ConnectionEffects {
                     actions.push(RaceActions.addIntermediateAction({key: index, id: def[1], distance: def[2], name: def[0]}));
                 });
 
-                return Observable.of(...actions, ConnectionActions.loadUpdateAction());
+                return Observable.of(...actions);
             })
             .catch((error) => {
                 console.log(error);

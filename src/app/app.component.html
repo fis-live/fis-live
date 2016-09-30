@@ -3,7 +3,7 @@
         <div class="ui action input">
             <input [(ngModel)]="codex" placeholder="Input race codex..." type="text">
 
-            <div class="ui button" (click)="startServer()">Go</div>
+            <div class="ui button" [ngClass]="{loading: loading$ | async}" (click)="startServer()">Go</div>
         </div>
     </div>
     <div class="header borderless item">{{ (raceInfo$ | async).info.eventName }}</div>
@@ -17,7 +17,23 @@
 
 <div id="container" class="ui stackable equal width grid">
     <div *ngFor="let i of rows" class="column">
-        <app-tab [id]="'res' + i" [raceModel]="raceModel"></app-tab>
+        <app-tab [id]="'res' + i"></app-tab>
+    </div>
+</div>
+
+
+<div class="ui small modal">
+    <i class="close icon"></i>
+    <div class="header">
+        {{ (error$ | async).title }}
+    </div>
+    <div class="content">
+        {{ (error$ | async).message }}
+    </div>
+    <div class="actions">
+        <div class="ui black ok button">
+            OK
+        </div>
     </div>
 </div>
 

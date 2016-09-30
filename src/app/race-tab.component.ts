@@ -1,8 +1,10 @@
 import { Component, Input, OnDestroy } from '@angular/core';
-import { RaceModel } from './Model/race-model';
-import {TableConfig, Sort} from './Table/table.component';
-import {AppState, getIntermediates} from "./reducers/index";
-import {Store} from "@ngrx/store";
+import { Store } from "@ngrx/store";
+
+import { TableConfig, Sort } from './Table/table.component';
+import {AppState, getIntermediates, getResultState, getRacers} from "./reducers";
+import {Observable, Subject, Subscription} from "rxjs";
+import {Racer} from "./Model/racer";
 
 @Component({
     selector: 'app-tab',
@@ -20,9 +22,23 @@ export class RaceTabComponent implements OnDestroy {
     public intermediate: number;
 
     public intermediates: any;
+    public results$: Subscription;
+
+    private filter: Subject<any> = new Subject<any>();
 
     constructor (private _state: Store<AppState>) {
         this.intermediates = _state.let(getIntermediates);
+        this.results$ = Observable.combineLatest(_state.let(getResultState), _state.let(getRacers), this.filter)
+            .map(([results, racers, filter]) => {
+                return {racers: racers, results: results.filter(r => r.intermediate == filter)};
+            }).subscribe(val => this.handle(val));
+    }
+
+    private handle(val) {
+        val.results.forEach(res => this.rows.push({rank: 0, bib: val.racers[res.racer].bib,
+            name: val.racers[res.racer].fullName,
+            time: res.time,
+            nationality: val.racers[res.racer].nationality}));
     }
 
 
@@ -49,12 +65,10 @@ export class RaceTabComponent implements OnDestroy {
     private rows: any = [];
 
     @Input()
-    public raceModel: RaceModel;
-
-    @Input()
     public id: string;
 
     public onChange($event: any) {
+        this.filter.next($event);
         if (this.intermediate != $event) {
             if (this.intermediate != 0 && $event == 0) {
                 this.config.columns = this._start_list_columns;
@@ -63,12 +77,8 @@ export class RaceTabComponent implements OnDestroy {
             if (this.intermediate == 0) {
                 this.config.columns = this._intermediate_columns;
             }
-            this.intermediate = $event;
 
-            if (this.intermediate == 0) {
-                let list = this.raceModel.getStartList();
-                list.forEach((entry) => this.rows.push({order: entry.order, bib: entry.racer.bib, name: entry.racer.fullName, status: entry.status, nationality: entry.racer.nationality}));
-            }
+            this.intermediate = $event;
         }
     }
 

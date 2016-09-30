@@ -11,6 +11,8 @@ import './app/rxjs-operators';
 import 'jquery';
 import 'semantic-ui/dist/components/transition.js';
 import 'semantic-ui/dist/components/dropdown.js';
+import 'semantic-ui/dist/components/modal.js';
+import 'semantic-ui/dist/components/dimmer.js';
 
 import 'semantic-ui/dist/semantic.css';
 

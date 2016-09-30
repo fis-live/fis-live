@@ -4,6 +4,7 @@ import { Action } from '@ngrx/store';
 import { RaceActions } from "../actions";
 import { Racer } from "../Model/racer";
 import { Observable } from "rxjs/Observable";
+import {combineLatest} from "rxjs/observable/combineLatest";
 
 export interface State {
     ids: number[];
@@ -38,6 +39,18 @@ export function reducer(state: State = initialState, action: Action): State {
     }
 }
 
-export function getRacer(id: number) {
-    return (state$: Observable<State>) => state$.select(state => state.entities[id]);
+export function getRacerIds(state$: Observable<State>) {
+    return state$.select(state => state.ids);
+}
+
+export function getRacerEntities(state$: Observable<State>) {
+    return state$.select(state => state.entities);
+}
+
+export function getAllRacers(state$: Observable<State>) {
+    return combineLatest<{ [id: number]: Racer }, number[]>(
+        state$.let(getRacerEntities),
+        state$.let(getRacerIds)
+    )
+        .map(([ entities, ids ]) => ids.map(id => entities[id]));
 }

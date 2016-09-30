@@ -4,9 +4,11 @@ import './rxjs-operators';
 
 import { Observable } from "rxjs/Rx";
 
-import { AppState, getRaceInfo } from "./reducers";
+import { AppState, getRaceInfo, getErrorState, getLoadingState } from "./reducers";
 import { State } from "./reducers/race-info";
+import { State as ErrorState } from './reducers/error';
 import { ConnectionActions } from "./actions/connection";
+import { State as LoadingState } from "./reducers/loading";
 
 @Component({
     selector: 'app-root',
@@ -15,6 +17,8 @@ import { ConnectionActions } from "./actions/connection";
 export class AppComponent implements OnInit {
     public codex: number;
     public raceInfo$: Observable<State>;
+    public error$: Observable<ErrorState>;
+    public loading$: Observable<LoadingState>;
 
     private rows: number[] = [];
 
@@ -24,6 +28,13 @@ export class AppComponent implements OnInit {
 
     constructor(private _store: Store<AppState>) {
         this.raceInfo$ = _store.let(getRaceInfo);
+        this.loading$ = _store.let(getLoadingState);
+        this.error$ = _store.let(getErrorState).do(state => {
+            if (state.error) {
+                let el: any = jQuery('.ui.modal');
+                el.modal('show');
+            }
+        });
     }
 
     public removeTab(): void {
