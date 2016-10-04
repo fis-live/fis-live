@@ -35,34 +35,35 @@ export class RaceTabComponent implements OnDestroy {
     }
 
     private handle(val) {
-        val.results.forEach(res => this.rows.push({rank: 0, bib: val.racers[res.racer].bib,
-            name: val.racers[res.racer].fullName,
+        val.results.forEach(res => this.rows.push({
+            racer: val.racers[res.racer],
             time: res.time,
-            nationality: val.racers[res.racer].nationality}));
+            order: 0
+        }));
     }
 
 
 
     private _start_list_columns = [{sort: '', name:'order', title:'Order', sortable: true},
-        {sort: '', name:'bib', title:'Bib', sortable: true},
-        {sort: '', name:'name', title:'Name', sortable: true},
+        {sort: '', name:'racer.bib', title:'Bib', sortable: true},
+        {sort: '', name:'racer.fullName', title:'Name', sortable: true},
         {sort: '', name:'status', title:'Status', sortable: true},
         {sort: '', name:'nationality', title:'Nationality', sortable: true}
     ];
 
     private _intermediate_columns = [{sort: '', name:'rank', title:'Rank', sortable: false},
-        {sort: '', name:'bib', title:'Bib', sortable: true},
-        {sort: '', name:'name', title:'Name', sortable: true},
+        {sort: '', name:'racer.bib', title:'Bib', sortable: true},
+        {sort: '', name:'racer.fullName', title:'Name', sortable: true},
         {sort: '', name:'time', title:'Time', sortable: true},
         {sort: '', name:'nationality', title:'Nationality', sortable: true}
     ];
 
-    private config: TableConfig = {
+    public config: TableConfig = {
         sortable: true,
         columns: this._start_list_columns,
     };
 
-    private rows: any = [];
+    public rows: any = [];
 
     @Input()
     public id: string;

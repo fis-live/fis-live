@@ -1,35 +1,47 @@
 import { Action } from '@ngrx/store';
 
-export class ConnectionActions {
-    static LOAD_SERVERS = '[Connection] Load servers';
-    static LOAD_SERVERS_SUCCESS = '[Connection] Servers loaded succesfully';
-    static LOAD_SERVERS_ERROR = '[Connection] Error on loading servers';
-    static LOAD_MAIN = '[Connection] Load main';
-    static LOAD_UPDATE = '[Connection] Load update';
+export const ConnectionActions = {
+    LOAD_SERVERS: '[Connection] Load servers',
+    LOAD_SERVERS_SUCCESS: '[Connection] Servers loaded succesfully',
+    LOAD_SERVERS_ERROR: '[Connection] Error on loading servers',
+    LOAD_MAIN: '[Connection] Load main',
+    LOAD_UPDATE: '[Connection] Load update',
+    STOP_UPDATE: '[Connection] Stop updating'
+};
 
-    static STOP_UPDATE = '[Connection] Stop updating';
 
-    static loadServerAction(): Action {
-        return {type: ConnectionActions.LOAD_SERVERS};
-    }
+export class LoadServerAction implements Action {
+    type = ConnectionActions.LOAD_SERVERS;
 
-    static loadServerSuccessAction(): Action {
-        return {type: ConnectionActions.LOAD_SERVERS_SUCCESS}
-    }
+    constructor() { }
+}
 
-    static loadServerErrorAction(): Action {
-        return {type: ConnectionActions.LOAD_SERVERS_ERROR}
-    }
+export class LoadServerSuccessAction implements Action {
+    type = ConnectionActions.LOAD_SERVERS_SUCCESS;
 
-    static loadMainAction(payload): Action {
-        return {type: ConnectionActions.LOAD_MAIN, payload: payload}
-    }
+    constructor() { }
+}
 
-    static loadUpdateAction(): Action {
-        return {type: ConnectionActions.LOAD_UPDATE}
-    }
+export class LoadServerErrorAction implements Action {
+    type = ConnectionActions.LOAD_SERVERS_ERROR;
 
-    static stopUpdateAction(): Action {
-        return {type: ConnectionActions.STOP_UPDATE}
-    }
+    constructor() { }
+}
+
+export class LoadMainAction implements Action {
+    type = ConnectionActions.LOAD_MAIN;
+
+    constructor(public payload: number) { }
+}
+
+export class LoadUpdateAction implements Action {
+    type = ConnectionActions.LOAD_UPDATE;
+
+    constructor() { }
+}
+
+export class StopUpdateAction implements Action {
+    type = ConnectionActions.STOP_UPDATE;
+
+    constructor() { }
 }

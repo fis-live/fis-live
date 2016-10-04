@@ -24,8 +24,8 @@ export class FisConnectionService {
     private server_list: FisServer[] = [];
 
 
-    static SERVER_LIST_URL: string = 'http://live.fis-ski.com/general/serverList.xml';
-    static TIMEOUT: number = 10000;
+    private SERVER_LIST_URL: string = 'http://live.fis-ski.com/general/serverList.xml';
+    private TIMEOUT: number = 10000;
 
     constructor(private http: Http) {
         let d = new Date();
@@ -46,7 +46,7 @@ export class FisConnectionService {
     }
 
     public getServerList(): Observable<FisServer[]>{
-        return this.http.get(FisConnectionService.SERVER_LIST_URL, {search: 'i=' + this.getQueryString()})
+        return this.http.get(this.SERVER_LIST_URL, {search: 'i=' + this.getQueryString()})
             .map(res => this.parseServerList(res));
     }
 
@@ -69,7 +69,7 @@ export class FisConnectionService {
             url = `${this.baseURL}${this.codex}/updt${this.version}.xml`;
         }
         return this.http.get(url, {search: 'i=' + this.getQueryString()})
-            .timeoutInterval(FisConnectionService.TIMEOUT);
+            .timeoutInterval(this.TIMEOUT);
     }
 
     private parse(result: TimeInterval<Response>): any {

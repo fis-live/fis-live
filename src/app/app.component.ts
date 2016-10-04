@@ -4,10 +4,10 @@ import './rxjs-operators';
 
 import { Observable } from "rxjs/Rx";
 
-import { AppState, getRaceInfo, getErrorState, getLoadingState } from "./reducers";
+import { AppState, getRaceInfoState, getErrorState, getLoadingState } from "./reducers";
 import { State } from "./reducers/race-info";
 import { State as ErrorState } from './reducers/error';
-import { ConnectionActions } from "./actions/connection";
+import {LoadServerAction, LoadMainAction, StopUpdateAction} from "./actions/connection";
 import { State as LoadingState } from "./reducers/loading";
 
 @Component({
@@ -20,21 +20,16 @@ export class AppComponent implements OnInit {
     public error$: Observable<ErrorState>;
     public loading$: Observable<LoadingState>;
 
-    private rows: number[] = [];
+    public rows: number[] = [];
 
     ngOnInit() {
-        this._store.dispatch(ConnectionActions.loadServerAction());
+        this._store.dispatch(new LoadServerAction());
     }
 
     constructor(private _store: Store<AppState>) {
-        this.raceInfo$ = _store.let(getRaceInfo);
+        this.raceInfo$ = _store.let(getRaceInfoState);
         this.loading$ = _store.let(getLoadingState);
-        this.error$ = _store.let(getErrorState).do(state => {
-            if (state.error) {
-                let el: any = jQuery('.ui.modal');
-                el.modal('show');
-            }
-        });
+        this.error$ = _store.let(getErrorState);
     }
 
     public removeTab(): void {
@@ -49,10 +44,10 @@ export class AppComponent implements OnInit {
     public startServer(): void {
         this.stopServer();
 
-        this._store.dispatch(ConnectionActions.loadMainAction(2019));
+        this._store.dispatch(new LoadMainAction(2019));
     }
 
     public stopServer() {
-        this._store.dispatch(ConnectionActions.stopUpdateAction());
+        this._store.dispatch(new StopUpdateAction());
     }
 }

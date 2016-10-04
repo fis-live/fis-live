@@ -4,8 +4,11 @@ import { Observable } from 'rxjs/Observable';
 
 import { FisConnectionService } from "../services/fis-connection.service";
 import { FisServer } from "../services/fis-server";
-import { RaceActions, ConnectionActions } from "../actions";
-import { Racer } from "../models/racer";
+import {
+    ConnectionActions, LoadServerErrorAction, LoadServerSuccessAction, LoadUpdateAction,
+    UpdateRaceInfoAction, SetRaceMessageAction, RegisterResultAction, AddIntermediateAction,
+    AddRacerAction
+} from "../actions";
 
 @Injectable()
 export class ConnectionEffects {
@@ -14,10 +17,10 @@ export class ConnectionEffects {
     @Effect() loadServers$ = this.actions$
         .ofType(ConnectionActions.LOAD_SERVERS)
         .switchMap(() => this._connection.getServerList()
-            .map((servers: FisServer[]) => ConnectionActions.loadServerSuccessAction())
+            .map((servers: FisServer[]) => new LoadServerSuccessAction())
             .catch((error) => {
                 console.log(error);
-                return Observable.of(ConnectionActions.loadServerErrorAction())
+                return Observable.of(new LoadServerErrorAction())
             })
         );
 
@@ -30,13 +33,19 @@ export class ConnectionEffects {
         .switchMap(action => this._connection.poll(action.payload)
             .mergeMap(data => {
                 let actions = [];
-                actions.push(RaceActions.updateRaceInfoAction({eventName: data.raceinfo[0], raceName: data.raceinfo[1]}));
-                actions.push(RaceActions.setRaceMessageAction(data.message));
+                actions.push(new UpdateRaceInfoAction({eventName: data.raceinfo[0], raceName: data.raceinfo[1]}));
+                actions.push(new SetRaceMessageAction(data.message));
 
                 for ( let i = 0; i < data.racers.length; i++ ) {
                     if (data.racers[i] !== null) {
-                        actions.push(RaceActions.addRacerAction(new Racer(data.racers[i][0],
-                            data.racers[i][1], data.racers[i][3], data.racers[i][2], data.racers[i][4])));
+                        actions.push(new AddRacerAction({
+                                id: data.racers[i][0],
+                                bib: data.racers[i][1],
+                                firstName: data.racers[i][3],
+                                lastName: data.racers[i][2].split(' ').map(char=> char[0] + char.substr(1).toLowerCase()).join(' '),
+                                nationality: data.racers[i][4]
+                            })
+                        );
                     }
                 }
 
@@ -44,21 +53,21 @@ export class ConnectionEffects {
                     if (data.result[i]) {
                         for ( let j = 0; j < data.result[i].length; j++) {
                             actions.push(
-                                RaceActions.registerResultAction({intermediate: j, racer: i, time: data.result[i][j]})
+                                new RegisterResultAction({intermediate: j, racer: i, time: data.result[i][j]})
                             );
                         }
                     }
                 }
 
                 data.racedef.forEach((def, index) => {
-                    actions.push(RaceActions.addIntermediateAction({key: index, id: def[1], distance: def[2], name: def[0]}));
+                    actions.push(new AddIntermediateAction({key: index, id: def[1], distance: def[2], name: def[0]}));
                 });
 
                 return Observable.of(...actions);
             })
             .catch((error) => {
                 console.log(error);
-                return Observable.of(ConnectionActions.loadServerErrorAction())
+                return Observable.of(new LoadServerErrorAction())
             })
         );
 
@@ -74,11 +83,11 @@ export class ConnectionEffects {
                     let actions = [];
                     console.log(data);
 
-                    return Observable.of(...actions, ConnectionActions.loadUpdateAction());
+                    return Observable.of(...actions, new LoadUpdateAction());
                 })
                 .catch((error) => {
                     console.log(error);
-                    return Observable.of(ConnectionActions.loadServerErrorAction())
+                    return Observable.of(new LoadServerErrorAction())
                 })
             }
         );

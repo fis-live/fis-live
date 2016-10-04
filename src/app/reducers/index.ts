@@ -1,6 +1,6 @@
 import { ActionReducer, combineReducers } from '@ngrx/store';
 
-import * as Racer from "./racer";
+import * as fromRacer from "./racer";
 import * as Result from "./result";
 import * as Info from "./race-info";
 import * as Inter from "./intermediate";
@@ -12,7 +12,7 @@ import { compose } from "@ngrx/core";
 
 const reducers: { [key: string]: ActionReducer<any> } = {
     result: Result.reducer,
-    racer: Racer.reducer,
+    racer: fromRacer.reducer,
     info: Info.reducer,
     intermediate: Inter.reducer,
     error: Error.reducer,
@@ -25,7 +25,7 @@ export function reducer(state: any, action: any): any {
 
 export interface AppState {
     result: Result.State;
-    racer: Racer.State;
+    racer: fromRacer.State;
     info: Info.State;
     intermediate: Inter.State;
     error: Error.State;
@@ -36,7 +36,7 @@ export function getRacerState(state$: Observable<AppState>) {
     return state$.select(state => state.racer);
 }
 
-export function getRaceInfoState(state$: Observable<AppState>) {
+export function getRaceInfoState(state$: Observable<AppState>): Observable<Info.State> {
     return state$.select(state => state.info);
 }
 
@@ -44,7 +44,7 @@ export function getIntermediateState(state$: Observable<AppState>) {
     return state$.select(state => state.intermediate);
 }
 
-export function getErrorState(state$: Observable<AppState>) {
+export function getErrorState(state$: Observable<AppState>): Observable<Error.State> {
     return state$.select(state => state.error);
 }
 
@@ -57,8 +57,7 @@ export function getResultState(state$: Observable<AppState>) {
 }
 
 
-export const getRacers = compose(Racer.getRacerEntities, getRacerState);
+export const getRacers = compose(fromRacer.getRacerEntities, getRacerState);
 
-export const getRaceInfo = compose(Info.getRaceInfo, getRaceInfoState);
 
 export const getIntermediates = compose(Inter.getAllIntermediates, getIntermediateState);

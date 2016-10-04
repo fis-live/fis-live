@@ -13,6 +13,6 @@ import 'rxjs/add/operator/map';
 import 'rxjs/add/operator/switchMap';
 import 'rxjs/add/operator/toPromise';
 
-import './Connection/operator/add/timeoutInterval';
+import './services/operator/add/timeoutInterval';
 
 import { Observable, TimeInterval } from 'rxjs/Rx';

@@ -1,33 +1,41 @@
-import { Action } from '@ngrx/store';
+import {Action} from '@ngrx/store';
 
-import { Racer } from "../models/racer";
+import {Racer} from "../models/racer";
 
-export class RaceActions {
-    static REGISTER_RESULT = 'REGISTER_RESULT';
-    static ADD_RACER = 'ADD_RACER';
+export const RaceActions = {
+    REGISTER_RESULT: '[Result] Register result',
+    ADD_RACER: '[Racer] Add racer',
+    UPDATE_RACE_INFO: '[Info] Update race info',
+    SET_RACE_MESSAGE: '[Info] Set message',
+    ADD_INTERMEDIATE: '[Intermediate] Add intermediate'
+};
 
-    static UPDATE_RACE_INFO = '[Info] Update race info';
-    static SET_RACE_MESSAGE= '[Info] Set message';
+export class RegisterResultAction implements Action {
+    type = RaceActions.REGISTER_RESULT;
 
-    static ADD_INTERMEDIATE = '[Intermediate] Add intermediate';
+    constructor(public payload: any) { }
+}
 
-    static registerResultAction(payload: any): Action {
-        return {type: RaceActions.REGISTER_RESULT, payload: payload};
-    }
+export class AddRacerAction implements Action {
+    type = RaceActions.ADD_RACER;
 
-    static addRacerAction(payload: Racer): Action {
-        return {type: RaceActions.ADD_RACER, payload: payload};
-    }
+    constructor(public payload: Racer) { }
+}
 
-    static updateRaceInfoAction(payload: any): Action {
-        return {type: RaceActions.UPDATE_RACE_INFO, payload: payload};
-    }
+export class UpdateRaceInfoAction implements Action {
+    type = RaceActions.UPDATE_RACE_INFO;
 
-    static setRaceMessageAction(payload: any): Action {
-        return {type: RaceActions.SET_RACE_MESSAGE, payload: payload};
-    }
+    constructor(public payload: any) { }
+}
 
-    static addIntermediateAction(payload: any): Action {
-        return {type: RaceActions.ADD_INTERMEDIATE, payload: payload};
-    }
+export class SetRaceMessageAction implements Action {
+    type = RaceActions.SET_RACE_MESSAGE;
+
+    constructor(public payload: any) { }
+}
+
+export class AddIntermediateAction implements Action {
+    type = RaceActions.ADD_INTERMEDIATE;
+
+    constructor(public payload: any) { }
 }

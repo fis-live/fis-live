@@ -1,8 +1,5 @@
-import '@ngrx/core/add/operator/select';
 import { Action } from '@ngrx/store';
-
 import { RaceActions} from "../actions";
-import { Observable } from "rxjs/Observable";
 import { RaceInfo } from "../models/race-info";
 
 export interface State {
@@ -38,8 +35,4 @@ export function reducer(state: State = initialState, action: Action): State {
         default:
             return state;
     }
-}
-
-export function getRaceInfo(state$: Observable<State>) {
-    return state$.select(state => state);
 }

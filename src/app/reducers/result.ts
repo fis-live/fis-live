@@ -2,7 +2,7 @@ import { Action } from '@ngrx/store';
 
 import { RaceActions } from "../actions";
 
-interface Item {
+export interface Item {
     racer: string;
     time: number;
     intermediate: number;

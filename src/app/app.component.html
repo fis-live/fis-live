@@ -3,7 +3,7 @@
         <div class="ui action input">
             <input [(ngModel)]="codex" placeholder="Input race codex..." type="text">
 
-            <div class="ui button" [ngClass]="{loading: loading$ | async}" (click)="startServer()">Go</div>
+            <div class="ui button" (click)="startServer()">Go</div>
         </div>
     </div>
     <div class="header borderless item">{{ (raceInfo$ | async).info.eventName }}</div>

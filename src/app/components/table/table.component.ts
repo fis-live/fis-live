@@ -34,23 +34,23 @@ export interface Sort {
       </thead>
       <tbody>
       <tr *ngFor="let row of rows" role="row">
-        <td *ngFor="let column of config.columns"><div>{{ getData(row, column.name) }}</div></td>
+        <td *ngFor="let column of config.columns">{{ getData(row, column.name) }}</td>
       </tr>
       </tbody>
     </table>
-`,
-    animations: [
-        trigger('newRow', [
-            transition('void => *', [
-                style({maxHeight: '0px', padding: '0 .71428571em'}),
-                animate('600ms ease', style({maxHeight: '100px', padding: '.71428571em'}))
-            ])
-        ])
-    ]
+`
+    // animations: [
+    //     trigger('newRow', [
+    //         transition('void => *', [
+    //             style({maxHeight: '0px', padding: '0 .71428571em'}),
+    //             animate('600ms ease', style({maxHeight: '100px', padding: '.71428571em'}))
+    //         ])
+    //     ])
+    // ]
 })
-export class TableComponent<T> {
+export class TableComponent {
     // Table values
-    @Input() public rows: Array<T> = [];
+    @Input() public rows = [];
     @Input() public config: TableConfig = {columns: [], sortable: false};
 
     private sorting: Sort = {sortBy: '', sortOrder: ''};

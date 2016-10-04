@@ -35,7 +35,7 @@ export class RaceModel {
     buildRacerList(racers: any) {
         for (let i = 0; i < racers.length; i++) {
             if (racers[i] !== null) {
-                this.racerList.push(new Racer(racers[i][0], racers[i][1], racers[i][3], racers[i][2], racers[i][4]));
+                //this.racerList.push(new Racer(racers[i][0], racers[i][1], racers[i][3], racers[i][2], racers[i][4]));
             }
         }
     }
