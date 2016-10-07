@@ -29,7 +29,12 @@ export class AppComponent implements OnInit {
     constructor(private _store: Store<AppState>) {
         this.raceInfo$ = _store.let(getRaceInfoState);
         this.loading$ = _store.let(getLoadingState);
-        this.error$ = _store.let(getErrorState);
+        this.error$ = _store.let(getErrorState).do(state => {
+            if (state.error) {
+                let el: any = jQuery('.ui.modal');
+                el.modal('show');
+            }
+        });
     }
 
     public removeTab(): void {
@@ -44,7 +49,7 @@ export class AppComponent implements OnInit {
     public startServer(): void {
         this.stopServer();
 
-        this._store.dispatch(new LoadMainAction(2019));
+        this._store.dispatch(new LoadMainAction(this.codex));
     }
 
     public stopServer() {

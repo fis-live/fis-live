@@ -15,6 +15,7 @@ import { TableComponent } from "./components/table/table.component";
 import { reducer } from "./reducers";
 import {ConnectionEffects} from "./effects/connection";
 import { FisConnectionService } from "./services/fis-connection.service";
+import { TimePipe } from "./pipes/time.pipe";
 
 @NgModule({
     imports: [
@@ -31,7 +32,7 @@ import { FisConnectionService } from "./services/fis-connection.service";
         StoreLogMonitorModule,
         EffectsModule.runAfterBootstrap(ConnectionEffects)
     ],
-    declarations: [ AppComponent, DropdownComponent, TableComponent, RaceTabComponent ],
+    declarations: [ AppComponent, DropdownComponent, TableComponent, RaceTabComponent, TimePipe ],
     bootstrap: [ AppComponent ],
     providers: [ FisConnectionService ]
 })

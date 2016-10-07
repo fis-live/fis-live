@@ -32,6 +32,7 @@ export class ConnectionEffects {
         .ofType(ConnectionActions.LOAD_MAIN)
         .switchMap(action => this._connection.poll(action.payload)
             .mergeMap(data => {
+                console.log(data);
                 let actions = [];
                 actions.push(new UpdateRaceInfoAction({eventName: data.raceinfo[0], raceName: data.raceinfo[1]}));
                 actions.push(new SetRaceMessageAction(data.message));
@@ -60,7 +61,12 @@ export class ConnectionEffects {
                 }
 
                 data.racedef.forEach((def, index) => {
-                    actions.push(new AddIntermediateAction({key: index, id: def[1], distance: def[2], name: def[0]}));
+                    let name: string = 'Finish';
+                    if (def[0] === 'inter') {
+                        name = 'Intermediate ' + def[1];
+                    }
+
+                    actions.push(new AddIntermediateAction({key: index, id: def[1], distance: def[2], name: name}));
                 });
 
                 return Observable.of(...actions);

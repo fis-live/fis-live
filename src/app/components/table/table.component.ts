@@ -1,89 +1,115 @@
 import {Component, EventEmitter, Input, Output, trigger, state, style, transition, animate} from '@angular/core';
+import {ResultItem} from "../../race-tab.component";
 
 export interface TableConfig {
-    columns: Array<Column>;
-    sortable: boolean;
-}
-
-export interface Column {
-    name: string;
-    title: string;
-    sortable: boolean;
-    sort: string;
-}
-
-export interface Sort {
-    sortBy: string;
-    sortOrder: string;
+    isStartList: boolean;
 }
 
 @Component({
     selector: 'app-table',
     template: `
     <table class="ui unstackable striped compact table" role="grid">
-      <thead>
-      <tr role="row">
-        <th *ngFor="let column of config.columns"
-        [ngClass]="{'sorting': column.sortable && sorting.sortBy !== column.name,
-        'sorting_desc': sorting.sortBy === column.name && sorting.sortOrder === 'desc',
-        'sorting_asc': sorting.sortBy === column.name && sorting.sortOrder === 'asc'}"
-        (click)="setSorting(column)">
-          {{ column.title }}
-        </th>
-      </tr>
-      </thead>
-      <tbody>
-      <tr *ngFor="let row of rows" role="row">
-        <td *ngFor="let column of config.columns">{{ getData(row, column.name) }}</td>
-      </tr>
-      </tbody>
+        <thead>
+            <tr role="row">
+                <th>{{ config.isStartList ? 'Order' : 'Rank' }}</th>
+                <th [ngClass]="getSortingClass('racer.bib')" (click)="setSorting('racer.bib')">Bib</th>
+                <th [ngClass]="getSortingClass('racer.lastName')" (click)="setSorting('racer.lastName')">Name</th>
+                <th [ngClass]="getSortingClass('time')" (click)="setSorting('time')">{{ config.isStartList ? 'Status' : 'Time' }}</th>
+                <th [ngClass]="getSortingClass('racer.nationality')" (click)="setSorting('racer.nationality')">Nationality</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr *ngFor="let row of rows" [attr.class]="row.status" role="row">
+                <td>{{ config.isStartList ? row.order : row.rank }}</td>
+                <td>{{ row.racer.bib }}</td>
+                <td>{{ row.racer.firstName }} {{ row.racer.lastName }}</td>
+                <td>{{ row.rank === 1 ? '' : '+' }}{{ config.isStartList ? row.status : '' }}{{ !config.isStartList && row.rank === 1 ? (row.time | time) : (row.time - row.fastest) | time }}</td>
+                <td>{{ row.racer.nationality }}</td>
+            </tr>
+        </tbody>
     </table>
-`
-    // animations: [
-    //     trigger('newRow', [
-    //         transition('void => *', [
-    //             style({maxHeight: '0px', padding: '0 .71428571em'}),
-    //             animate('600ms ease', style({maxHeight: '100px', padding: '.71428571em'}))
-    //         ])
-    //     ])
-    // ]
+`,
+    animations: [
+        trigger('newRow', [
+            state('active', style({
+                maxHeight: '100px',
+                padding: '0.3em .7em'
+            })),
+            transition('void => *', [
+                animate('6000ms ease')
+            ])
+        ])
+    ]
 })
 export class TableComponent {
     // Table values
-    @Input() public rows = [];
-    @Input() public config: TableConfig = {columns: [], sortable: false};
+    //@Input()
+    public _rows: Array<ResultItem> = [];
+    @Input() public config: TableConfig = {isStartList: true};
 
-    private sorting: Sort = {sortBy: '', sortOrder: ''};
+    public state = 'active';
 
-    // Outputs (Events)
-    @Output()
-    public sortChanged: EventEmitter<Sort> = new EventEmitter<Sort>();
+    private sortBy: string = 'time';
+    private sortOrder: string = 'asc';
 
-    public setSorting(column: Column): void {
-        if (this.sorting.sortBy === column.name) {
-            switch (this.sorting.sortOrder) {
-                case '':
-                    this.sorting.sortOrder = 'asc';
-                    break;
-                case 'asc':
-                    this.sorting.sortOrder = 'desc';
-                    break;
-                case 'desc':
-                    this.sorting.sortOrder = 'asc';
-                    break;
-                default:
-                    this.sorting.sortOrder = '';
-            }
-        } else {
-            this.sorting.sortOrder = 'asc';
+    public sort(a: ResultItem, b: ResultItem): number {
+
+        if (this.getData(a, this.sortBy) > this.getData(b, this.sortBy)) {
+            return (this.sortOrder === 'asc') ? 1 : -1;
+        } else if (this.getData(a, this.sortBy) < this.getData(b, this.sortBy)) {
+            return (this.sortOrder === 'asc') ? -1 : 1;
         }
 
-        this.sorting.sortBy = column.name;
-
-        this.sortChanged.emit(this.sorting);
+        return 0;
     }
 
-    public getData(row: any, propertyName: string): string {
+    @Input() public set rows(rows: Array<ResultItem>) {
+
+        if (rows !== null) {
+            rows.sort((a, b) => this.sort(a, b));
+        }
+
+        this._rows = rows;
+    }
+
+    public get rows() {
+        return this._rows;
+    }
+
+    public getSortingClass(column: string) {
+        let sortable = (column === 'rank' && !this.config.isStartList) ? false : true;
+        return {
+            'sorting': sortable && this.sortBy !== column,
+            'sorting_desc': this.sortBy === column && this.sortOrder === 'desc',
+            'sorting_asc': this.sortBy === column && this.sortOrder === 'asc'
+        };
+    }
+
+    public setSorting(column: string): void {
+        if (this.sortBy === column) {
+            switch (this.sortOrder) {
+                case '':
+                    this.sortOrder = 'asc';
+                    break;
+                case 'asc':
+                    this.sortOrder = 'desc';
+                    break;
+                case 'desc':
+                    this.sortOrder = 'asc';
+                    break;
+                default:
+                    this.sortOrder = '';
+            }
+        } else {
+            this.sortOrder = 'asc';
+        }
+
+        this.sortBy = column;
+
+        this._rows.sort((a, b) => this.sort(a, b));
+    }
+
+    public getData(row: ResultItem, propertyName: string): string {
         return propertyName.split('.').reduce((prev:any, curr:string) => prev[curr], row);
     }
 }

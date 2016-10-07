@@ -9,6 +9,8 @@ import * as Loading from './loading';
 import { Observable } from "rxjs/Observable";
 import { compose } from "@ngrx/core";
 
+import { storeFreeze } from 'ngrx-store-freeze';
+
 
 const reducers: { [key: string]: ActionReducer<any> } = {
     result: Result.reducer,
@@ -20,7 +22,7 @@ const reducers: { [key: string]: ActionReducer<any> } = {
 };
 
 export function reducer(state: any, action: any): any {
-    return combineReducers(reducers)(state, action);
+    return compose(storeFreeze, combineReducers)(reducers)(state, action);
 }
 
 export interface AppState {
