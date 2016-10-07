@@ -21,8 +21,15 @@ const reducers: { [key: string]: ActionReducer<any> } = {
     loading: Loading.reducer
 };
 
+let metaReducer;
+if (process.env.ENV === 'production') {
+    metaReducer = combineReducers;
+} else {
+    metaReducer = compose(storeFreeze, combineReducers);
+}
+
 export function reducer(state: any, action: any): any {
-    return compose(storeFreeze, combineReducers)(reducers)(state, action);
+    return metaReducer(reducers)(state, action);
 }
 
 export interface AppState {
