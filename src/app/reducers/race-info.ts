@@ -1,14 +1,37 @@
 import { Action } from '@ngrx/store';
 import { RaceActions} from "../actions";
 import { RaceInfo } from "../models/race-info";
+import { Meteo } from "../models/meteo";
 
 export interface State {
     info: RaceInfo;
+    meteo: Meteo;
     message: string;
 }
 
 const initialState: State = {
-    info: {eventName: '', raceName: ''},
+    info: {
+        eventName: '',
+        raceName: '',
+        slopeName: '',
+        discipline: '',
+        gender: '',
+        category: '',
+        place: '',
+        temperatureUnit: '',
+        lengthUnit: '',
+        speedUnit: '',
+        team: '',
+        tds: ''
+    },
+    meteo: {
+        air_temperature: null,
+        wind: '',
+        weather: '',
+        snow_condition: '',
+        snow_temperature: null,
+        humidity: null
+    },
     message: ''
 };
 
@@ -20,6 +43,7 @@ export function reducer(state: State = initialState, action: Action): State {
 
             return {
                 info: Object.assign({}, state.info, info),
+                meteo: state.meteo,
                 message: state.message
             };
 
@@ -28,7 +52,17 @@ export function reducer(state: State = initialState, action: Action): State {
 
             return {
                 info: state.info,
+                meteo: state.meteo,
                 message: message
+            };
+
+        case RaceActions.UPDATE_METEO:
+            const meteo = action.payload;
+
+            return {
+                info: state.info,
+                meteo: Object.assign({}, state.meteo, meteo),
+                message: state.message
             };
 
 

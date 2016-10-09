@@ -9,15 +9,18 @@ export interface Item {
 }
 
 export interface State {
+    startList: Array<{order: number, racer: number, status: string}>;
     [intermediate: number]: {
         fastest: number,
-        latest: Array<number>,
         entities: Array<Item>
     };
 }
 
-export function reducer(state: State = {}, action: Action): State {
+export function reducer(state: State = {startList: []}, action: Action): State {
     switch (action.type) {
+        case RaceActions.ADD_START_LIST:
+            return Object.assign({}, state, {startList: state.startList.concat(action.payload)});
+
         case RaceActions.REGISTER_RESULT:
             let item = action.payload;
             let rank = 1;
@@ -25,7 +28,6 @@ export function reducer(state: State = {}, action: Action): State {
             if (state[item.intermediate] == null) {
                 return Object.assign({}, state, {[item.intermediate]: {
                     fastest: item.time,
-                    latest: [item.racer.id],
                     entities: [{racer: item.racer, time: item.time, rank: rank}]}}
                 );
             }
@@ -40,13 +42,11 @@ export function reducer(state: State = {}, action: Action): State {
                     return Object.assign({}, row, {rank: row.rank + 1})
                 }
             );
-            //let rank = state.reduce((prev, cur) => (item.time < cur.time) ? prev : prev + 1, 1);
 
             return Object.assign({}, state, {
                 [item.intermediate]: {
                     entities: _state.concat({racer: item.racer, time: item.time, rank: rank}),
-                    fastest: item.time < state[item.intermediate].fastest ? item.time : state[item.intermediate].fastest,
-                    latest: []
+                    fastest: item.time < state[item.intermediate].fastest ? item.time : state[item.intermediate].fastest
                 }
             });
 
