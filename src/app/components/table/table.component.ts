@@ -23,7 +23,7 @@ export interface TableConfig {
                 <td>{{ config.isStartList ? row.order : row.rank }}</td>
                 <td>{{ row.racer.bib }}</td>
                 <td>{{ row.racer.firstName }} {{ row.racer.lastName }}</td>
-                <td>{{ row.rank === 1 ? '' : '+' }}{{ config.isStartList ? row.status : '' }}{{ !config.isStartList && row.rank === 1 ? (row.time | time) : (row.time - row.fastest) | time }}</td>
+                <td>{{ getStatus(row) }}</td>
                 <td>{{ row.racer.nationality }}</td>
             </tr>
         </tbody>
@@ -51,6 +51,7 @@ export class TableComponent {
 
     private sortBy: string = 'time';
     private sortOrder: string = 'asc';
+    private maxVal = 1000000000;
 
     public sort(a: ResultItem, b: ResultItem): number {
 
@@ -74,6 +75,42 @@ export class TableComponent {
 
     public get rows() {
         return this._rows;
+    }
+
+    private transform(time: number): string {
+        let timeStr = '',
+            hours = Math.floor(time / (1000 * 60 * 60));
+
+        let minutes = Math.floor((time - hours * 1000 * 60 * 60) / (1000 * 60));
+        let seconds = Math.floor((time - hours * 1000 * 60 * 60 - minutes * 1000 * 60) / 1000);
+        let tenths = Math.floor((time - hours * 1000 * 60 * 60 - minutes * 1000 * 60 - seconds * 1000) / 100);
+
+        if (hours > 0 || minutes > 0) {
+            if (hours > 0){
+                timeStr = hours + ':';
+                if (minutes < 10) {
+                    timeStr += '0';
+                }
+            }
+            timeStr += minutes + ':';
+            if (seconds < 10) {
+                timeStr += '0';
+            }
+        }
+
+        timeStr += seconds + '.' + tenths;
+
+        return timeStr;
+    }
+
+    public getStatus(row: ResultItem) {
+        if (this.config.isStartList || row.time > this.maxVal) {
+            return row.status.toUpperCase();
+        } else if (row.rank > 1) {
+            return '+' + this.transform(row.time - row.fastest);
+        }
+
+        return this.transform(row.time);
     }
 
     public getSortingClass(column: string) {

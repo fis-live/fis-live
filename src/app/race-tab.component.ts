@@ -29,12 +29,14 @@ export class RaceTabComponent implements OnDestroy {
     }
 
     @Input() public id: string;
-    public intermediate: number = 0;
+    public intermediate: number | string = 'start_list';
 
     public intermediates: Observable<any>;
     public rows$: Observable<Array<ResultItem>>;
 
     private filter: Subject<any> = new Subject<any>();
+    
+    private maxVal: number = 1000000000;
 
     public config: TableConfig = {
         isStartList: true
@@ -45,22 +47,62 @@ export class RaceTabComponent implements OnDestroy {
 
         this.rows$ = Observable.combineLatest(_state.let(getResultState), _state.let(getRacers), this.filter.distinctUntilChanged())
             .map<Array<ResultItem>>(([results, racers, filter]) => {
+                if (filter == 'start_list') {
+                    return results.startList.map(res => ({racer: racers[res.racer], fastest: 0, time: 0, order: res.order, status: res.status, rank: 0}));
+                }
+
+                let count = results.startList.length;
+                let rows = new Array<ResultItem>();
+                for (let i = 0; i < count; i++) {
+                    let status = results.startList[i].status.toLowerCase();
+                    let key: number;
+                    switch (status) {
+                        case "":
+                        case "finish":
+                        case "start":
+                        case "ff":
+                        case "q":
+                        case "lucky":
+                            break;
+                        case "ral":
+                            key = this.maxVal + 1;
+                            break;
+                        case "lapped":
+                            key = this.maxVal * 2;
+                            break;
+                        case "dnf":
+                            key = this.maxVal * 3;
+                            break;
+                        case "dq":
+                            key = this.maxVal * 4;
+                            break;
+                        case "dns":
+                            key = this.maxVal * 5;
+                            break;
+                        default:
+                            key = this.maxVal * 6;
+                    }
+
+                    if (key > 0) {
+                        rows.push({racer: racers[results.startList[i].racer], fastest: 0, time: key, order: 0, status: results.startList[i].status, rank: null})
+                    }
+                }
                 if (results[filter] == null) {
-                    return [];
+                    return rows;
                 }
 
                 let fastest = results[filter].fastest;
-                return results[filter].entities.map(res => ({racer: racers[res.racer], fastest: fastest, time: res.time, order: 0, status: '', rank: res.rank}));
+                return rows.concat(results[filter].entities.map(res => ({racer: racers[res.racer], fastest: fastest, time: res.time, order: 0, status: '', rank: res.rank})));
             });
     }
 
     public onChange($event: any) {
         if (this.intermediate != $event) {
-            if (this.intermediate != 0 && $event == 0) {
+            if (this.intermediate != 'start_list' && $event == 'start_list') {
                 this.config.isStartList = true;
             }
 
-            if (this.intermediate == 0) {
+            if (this.intermediate == 'start_list') {
                 this.config.isStartList = false;
             }
 
