@@ -1,7 +1,6 @@
 import { Component, Input, OnDestroy } from '@angular/core';
 import { Store } from "@ngrx/store";
 
-import { TableConfig } from './components/table/table.component';
 import { AppState, getIntermediates, getResultState, getRacers } from "./reducers";
 import {Observable, Subject, BehaviorSubject} from "rxjs";
 import { Racer } from "./models/racer";
@@ -20,7 +19,7 @@ export interface ResultItem {
     selector: 'app-tab',
     template: `<app-dropdown [id]="id" [items]="intermediates | async" (selected)="onChange($event)"></app-dropdown>
         <div class="ui attached segment">
-        <app-table [config]="config" [rows]="rows$ | async"></app-table>
+        <app-table [isStartList]="config" [rows]="rows$ | async"></app-table>
             </div>`
 })
 export class RaceTabComponent implements OnDestroy {
@@ -39,9 +38,7 @@ export class RaceTabComponent implements OnDestroy {
     
     private maxVal: number = 1000000000;
 
-    public config: TableConfig = {
-        isStartList: true
-    };
+    public config: boolean = true;
 
     constructor (private _state: Store<AppState>) {
         this.intermediates = _state.let(getIntermediates);
@@ -112,11 +109,11 @@ export class RaceTabComponent implements OnDestroy {
     public onChange($event: any) {
         if (this.intermediate != $event) {
             if (this.intermediate != 'start_list' && $event == 'start_list') {
-                this.config.isStartList = true;
+                this.config = true;
             }
 
             if (this.intermediate == 'start_list') {
-                this.config.isStartList = false;
+                this.config = false;
             }
 
             this.intermediate = $event;

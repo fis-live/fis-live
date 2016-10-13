@@ -4,9 +4,6 @@ import {
 } from '@angular/core';
 import {ResultItem} from "../../race-tab.component";
 
-export interface TableConfig {
-    isStartList: boolean;
-}
 
 @Component({
     selector: 'app-table',
@@ -14,16 +11,16 @@ export interface TableConfig {
     <table class="ui unstackable striped compact table" role="grid">
         <thead>
             <tr role="row">
-                <th>{{ config.isStartList ? 'Order' : 'Rank' }}</th>
+                <th [ngClass]="getSortingClass('order')" (click)="setSorting('order')">{{ isStartList ? 'Order' : 'Rank' }}</th>
                 <th [ngClass]="getSortingClass('racer.bib')" (click)="setSorting('racer.bib')">Bib</th>
                 <th [ngClass]="getSortingClass('racer.lastName')" (click)="setSorting('racer.lastName')">Name</th>
-                <th [ngClass]="getSortingClass('time')" (click)="setSorting('time')">{{ config.isStartList ? 'Status' : 'Time' }}</th>
+                <th [ngClass]="getSortingClass('time')" (click)="setSorting('time')">{{ isStartList ? 'Status' : 'Time' }}</th>
                 <th [ngClass]="getSortingClass('racer.nationality')" (click)="setSorting('racer.nationality')">Nationality</th>
             </tr>
         </thead>
         <tbody>
             <tr *ngFor="let row of rows; trackBy: track" [@color]="row.state" role="row">
-                <td><div [@newRow]>{{ config.isStartList ? row.order : row.rank }}</div></td>
+                <td><div [@newRow]>{{ isStartList ? row.order : row.rank }}</div></td>
                 <td><div [@newRow]>{{ row.racer.bib }}</div></td>
                 <td><div [@newRow]>{{ row.racer.firstName }} {{ row.racer.lastName }}</div></td>
                 <td><div [@newRow]>{{ getStatus(row) }}</div></td>
@@ -35,7 +32,7 @@ export interface TableConfig {
     animations: [
         trigger('color', [
             state('new', style({
-                backgroundColor: '#66afe9'
+                backgroundColor: '#FFE5BC'
             })),
             transition('void => new', [
                 animate('600ms ease')
@@ -59,11 +56,11 @@ export class TableComponent {
     // Table values
     //@Input()
     public _rows: Array<ResultItem> = [];
-    @Input() public config: TableConfig = {isStartList: true};
+    @Input() public isStartList: boolean = true;
 
     public state = 'active';
 
-    private sortBy: string = 'time';
+    private sortBy: string = 'order';
     private sortOrder: string = 'asc';
     private maxVal = 1000000000;
 
@@ -83,6 +80,13 @@ export class TableComponent {
     }
 
     @Input() public set rows(rows: Array<ResultItem>) {
+        if (!this.isStartList && (this.sortBy === 'order' || this.sortBy === 'status')) {
+            this.sortBy = 'time';
+            this.sortOrder = 'asc';
+        } else if (this.isStartList && this.sortBy === 'time') {
+            this.sortBy = 'order';
+            this.sortOrder = 'asc';
+        }
 
         if (rows !== null) {
             rows.sort((a, b) => this.sort(a, b));
@@ -122,7 +126,7 @@ export class TableComponent {
     }
 
     public getStatus(row: ResultItem) {
-        if (this.config.isStartList || row.time > this.maxVal) {
+        if (this.isStartList || row.time > this.maxVal) {
             return row.status.toUpperCase();
         } else if (row.rank > 1) {
             return '+' + this.transform(row.time - row.fastest);
@@ -132,7 +136,11 @@ export class TableComponent {
     }
 
     public getSortingClass(column: string) {
-        let sortable = (column === 'rank' && !this.config.isStartList) ? false : true;
+        let sortable = (column === 'order' && !this.isStartList) ? false : true;
+        if (column === 'time' && this.isStartList) {
+            column = 'status';
+        }
+
         return {
             'sorting': sortable && this.sortBy !== column,
             'sorting_desc': this.sortBy === column && this.sortOrder === 'desc',
@@ -141,6 +149,14 @@ export class TableComponent {
     }
 
     public setSorting(column: string): void {
+        if (column === 'order' && !this.isStartList) {
+            return;
+        }
+
+        if (column === 'time' && this.isStartList) {
+            column = 'status';
+        }
+
         if (this.sortBy === column) {
             switch (this.sortOrder) {
                 case '':
