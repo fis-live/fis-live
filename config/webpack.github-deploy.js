@@ -37,7 +37,7 @@ module.exports = webpackMerge.smart(webpackConfig, {
     },
 
     module: {
-        rules: [
+        loaders: [
             {
                 test: /\.(png|jpe?g|gif|svg|woff|woff2|ttf|eot|ico)$/,
                 loader: 'file-loader?name=assets/[name].[ext]'
@@ -84,6 +84,7 @@ module.exports = webpackMerge.smart(webpackConfig, {
                 ghpages.publish(helpers.root('dist'), options, function(err) {
                     if (err) {
                         console.log('GitHub deployment done. STATUS: ERROR.');
+                        con
                         throw err;
                     } else {
                         console.log('GitHub deployment done. STATUS: SUCCESS.');
