@@ -1,4 +1,7 @@
-import {Component, EventEmitter, Input, Output, trigger, state, style, transition, animate} from '@angular/core';
+import {
+    Component, EventEmitter, Input, Output, trigger, state, style, transition, animate,
+    AfterViewChecked, OnChanges, SimpleChanges, SimpleChange
+} from '@angular/core';
 import {ResultItem} from "../../race-tab.component";
 
 export interface TableConfig {
@@ -19,24 +22,35 @@ export interface TableConfig {
             </tr>
         </thead>
         <tbody>
-            <tr *ngFor="let row of rows" [attr.class]="row.status" role="row">
-                <td>{{ config.isStartList ? row.order : row.rank }}</td>
-                <td>{{ row.racer.bib }}</td>
-                <td>{{ row.racer.firstName }} {{ row.racer.lastName }}</td>
-                <td>{{ getStatus(row) }}</td>
-                <td>{{ row.racer.nationality }}</td>
+            <tr *ngFor="let row of rows; trackBy: track" [@color]="row.state" role="row">
+                <td><div [@newRow]>{{ config.isStartList ? row.order : row.rank }}</div></td>
+                <td><div [@newRow]>{{ row.racer.bib }}</div></td>
+                <td><div [@newRow]>{{ row.racer.firstName }} {{ row.racer.lastName }}</div></td>
+                <td><div [@newRow]>{{ getStatus(row) }}</div></td>
+                <td><div [@newRow]>{{ row.racer.nationality }}</div></td>
             </tr>
         </tbody>
     </table>
 `,
     animations: [
-        trigger('newRow', [
-            state('active', style({
-                maxHeight: '100px',
-                padding: '0.3em .7em'
+        trigger('color', [
+            state('new', style({
+                backgroundColor: '#66afe9'
             })),
+            transition('void => new', [
+                animate('600ms ease')
+            ]),
+            transition('new => *', [
+                animate('600ms ease')
+            ])
+        ]),
+        trigger('newRow', [
             transition('void => *', [
-                animate('6000ms ease')
+                style({maxHeight: '0px', padding: '0 .7em'}),
+                animate('600ms ease', style({
+                    maxHeight: '100px',
+                    padding: '0.3em .7em'
+                }))
             ])
         ])
     ]
@@ -52,6 +66,10 @@ export class TableComponent {
     private sortBy: string = 'time';
     private sortOrder: string = 'asc';
     private maxVal = 1000000000;
+
+    public track(index: number, item: ResultItem): number {
+        return item.racer.bib;
+    }
 
     public sort(a: ResultItem, b: ResultItem): number {
 

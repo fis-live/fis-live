@@ -5,14 +5,8 @@
 .ui.table td > div {
     box-sizing: border-box;
     overflow: hidden;
-    max-height: 0;
-    padding: 0em .7em;
-}
-
-.ui.table tr.active td > div {
     max-height: 100px;
     padding: 0.3em .7em;
-    transition: max-height 6s, padding 6s;
 }
 
 .ui.table tr.new > td {
@@ -76,12 +70,7 @@ app-dropdown + .ui.attached.segment {
 }
 
 .ui.compact.table td {
-    padding: 0.3em 0.7em;
-    -webkit-transition: background-color 1000ms linear;
-    -moz-transition: background-color 1000ms linear;
-    -o-transition: background-color 1000ms linear;
-    -ms-transition: background-color 1000ms linear;
-    transition: background-color 1000ms ease-in-out;
+    padding: 0;
 }
 
 .ui.compact.table th {

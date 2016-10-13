@@ -41,8 +41,8 @@ export class DropdownComponent implements AfterViewInit, OnDestroy {
             allowTab: false
         });
 
-        //this.$el.dropdown('refresh');
-        //this.$el.dropdown('set selected', '0');
+        this.$el.dropdown('refresh');
+        this.$el.dropdown('set selected', 'start_list');
     }
 
     ngOnDestroy() {

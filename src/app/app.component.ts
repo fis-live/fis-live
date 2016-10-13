@@ -9,6 +9,7 @@ import { State } from "./reducers/race-info";
 import { State as ErrorState } from './reducers/error';
 import {LoadServerAction, LoadMainAction, StopUpdateAction} from "./actions/connection";
 import { State as LoadingState } from "./reducers/loading";
+import {RegisterResultAction} from "./actions/race";
 
 @Component({
     selector: 'app-root',
@@ -29,7 +30,7 @@ export class AppComponent implements OnInit {
     constructor(private _store: Store<AppState>) {
         this.raceInfo$ = _store.let(getRaceInfoState);
         this.loading$ = _store.let(getLoadingState);
-        this.error$ = _store.let(getErrorState).do(state => {
+        this.error$ = _store.let(getErrorState).do((state: ErrorState) => {
             if (state.error) {
                 let el: any = jQuery('.ui.modal');
                 el.modal('show');
