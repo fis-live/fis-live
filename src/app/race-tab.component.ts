@@ -1,4 +1,4 @@
-import { Component, Input, OnDestroy } from '@angular/core';
+import { Component } from '@angular/core';
 import { Store } from "@ngrx/store";
 
 import { AppState, getIntermediates, getResultState, getRacers } from "./reducers";
@@ -17,18 +17,13 @@ export interface ResultItem {
 
 @Component({
     selector: 'app-tab',
-    template: `<app-dropdown [id]="id" [items]="intermediates | async" (selected)="onChange($event)"></app-dropdown>
+    template: `<app-dropdown [items]="intermediates | async" (selected)="onChange($event)"></app-dropdown>
         <div class="ui attached segment">
         <app-table [isStartList]="config" [rows]="rows$ | async"></app-table>
             </div>`
 })
-export class RaceTabComponent implements OnDestroy {
+export class RaceTabComponent {
 
-    ngOnDestroy() {
-        console.log('Destroy' + this.id);
-    }
-
-    @Input() public id: string;
     public intermediate: number | string = 'start_list';
 
     public intermediates: Observable<any>;

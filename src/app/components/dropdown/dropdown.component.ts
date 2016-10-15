@@ -1,11 +1,11 @@
 import {
-    Component, EventEmitter, Input, Output, AfterViewInit, OnDestroy
+    Component, EventEmitter, Input, Output, AfterViewInit, OnDestroy, ElementRef, ViewChild
 } from '@angular/core';
 
 @Component({
     selector: 'app-dropdown',
     template: `
-<div [attr.id]="id" class="ui top attached primary dropdown button">
+<div #dropdown class="ui top attached primary dropdown button">
     <div class="default text">Select intermediate</div>
     <i class="dropdown icon"></i>
     
@@ -19,22 +19,16 @@ export class DropdownComponent implements AfterViewInit, OnDestroy {
     @Input()
     public items: any = [];
 
-    @Input()
-    public id: string;
-
     @Output()
     public selected:EventEmitter<any> = new EventEmitter();
+
+    @ViewChild('dropdown')
+    private element: ElementRef;
 
     private $el: any;
 
     ngAfterViewInit() {
-
-        if (typeof jQuery === "undefined") {
-            console.log("jQuery is not loaded");
-            return;
-        }
-
-        this.$el = jQuery('#' + this.id);
+        this.$el = jQuery(this.element.nativeElement);
 
         this.$el.dropdown({
             onChange: (value) => this.selected.emit(value),
