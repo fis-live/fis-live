@@ -9,7 +9,6 @@ import { State } from "./reducers/race-info";
 import { State as ErrorState } from './reducers/error';
 import {LoadServerAction, LoadMainAction, StopUpdateAction} from "./actions/connection";
 import { State as LoadingState } from "./reducers/loading";
-import {RegisterResultAction} from "./actions/race";
 
 @Component({
     selector: 'app-root',
@@ -21,7 +20,7 @@ export class AppComponent implements OnInit {
     public error$: Observable<ErrorState>;
     public loading$: Observable<LoadingState>;
 
-    public rows: number[] = [];
+    public rows: Array<number[]> = [[]];
 
     ngOnInit() {
         this._store.dispatch(new LoadServerAction());
@@ -39,11 +38,38 @@ export class AppComponent implements OnInit {
     }
 
     public removeTab(): void {
-        this.rows.pop();
+        let count = 0;
+        for (let i= 0; i < this.rows.length; i++) {
+            count += this.rows[i].length;
+        }
+
+        if (count <= 2) {
+            this.rows[0].pop();
+        } else if (count == 3) {
+            this.rows[1].pop();
+            this.rows.pop();
+        } else if (count % 2 == 0) {
+            this.rows[1].pop();
+        } else {
+            this.rows[0].pop();
+        }
     }
 
     public addTab(): void {
-        this.rows.push(this.rows.length);
+        let count = 0;
+        for (let i= 0; i < this.rows.length; i++) {
+            count += this.rows[i].length;
+        }
+
+        if (count <= 1) {
+            this.rows[0].push(this.rows[0].length);
+        } else if (count == 2) {
+            this.rows.push([0]);
+        } else if (count % 2 == 0) {
+            this.rows[0].push(this.rows[0].length);
+        } else {
+            this.rows[1].push(this.rows[1].length);
+        }
     }
 
 
