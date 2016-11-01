@@ -9,6 +9,9 @@ import * as Loading from './loading';
 import { Observable } from "rxjs/Observable";
 import { compose } from "@ngrx/core";
 
+import { Racer } from '../models/racer';
+import { Intermediate } from '../models/intermediate';
+
 import { storeFreeze } from 'ngrx-store-freeze';
 
 

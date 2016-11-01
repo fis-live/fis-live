@@ -5,8 +5,9 @@ var commonConfig = require('./webpack.common.js');
 var helpers = require('./helpers');
 
 const ENV = process.env.NODE_ENV = process.env.ENV = 'production';
+const AotPlugin = require('@ngtools/webpack').AotPlugin;
 
-module.exports = webpackMerge(commonConfig, {
+module.exports = webpackMerge.smart(commonConfig, {
     //devtool: 'source-map',
 
     output: {
@@ -16,7 +17,20 @@ module.exports = webpackMerge(commonConfig, {
         chunkFilename: '[id].[hash].chunk.js'
     },
 
+    module: {
+        loaders: [
+            {
+                test: /\.ts$/,
+                loader: '@ngtools/webpack'
+            }
+        ]
+    },
+
     plugins: [
+        new AotPlugin({
+            tsConfigPath: './tsconfig.json',
+            entryModule: 'src/app/app.module#AppModule'
+        }),
         new webpack.NoErrorsPlugin(),
         new webpack.optimize.OccurrenceOrderPlugin(),
         //new webpack.optimize.DedupePlugin(),

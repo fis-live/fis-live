@@ -11,7 +11,6 @@ const _jquery = helpers.root('node_modules', 'jquery');
 module.exports = {
     entry: {
         'polyfills': './src/polyfills.ts',
-        'vendor': './src/vendor.ts',
         'app': './src/main.ts'
     },
 
@@ -81,7 +80,7 @@ module.exports = {
         new atl.ForkCheckerPlugin(),
 
         new webpack.optimize.CommonsChunkPlugin({
-            name: ['app', 'vendor', 'polyfills']
+            name: ['app', 'polyfills']
         }),
 
         new HtmlWebpackPlugin({

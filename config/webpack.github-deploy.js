@@ -1,10 +1,12 @@
 var helpers = require('./helpers');
 var webpack = require('webpack');
 const webpackMerge = require('webpack-merge');
-const ghpages = require('gh-pages');
 const execSync = require('child_process').execSync;
 var ExtractTextPlugin = require('extract-text-webpack-plugin');
 const webpackConfig = require('./webpack.common.js');
+
+const ENV = process.env.NODE_ENV = process.env.ENV = 'production';
+const AotPlugin = require('@ngtools/webpack').AotPlugin;
 
 const REPO_NAME_RE = /Push {2}URL: https:\/\/github\.com\/.*\/(.*)\.git/;
 
@@ -22,22 +24,23 @@ function getRepoName(remoteName) {
 }
 
 const GIT_REMOTE_NAME = 'origin';
-const COMMIT_MESSAGE = 'Publish v' + process.env.npm_package_version;
 const GH_REPO_NAME = getRepoName(GIT_REMOTE_NAME);
-const ENV = process.env.NODE_ENV = process.env.ENV = 'production';
 
 module.exports = webpackMerge.smart(webpackConfig, {
 
-
     output: {
-        path: helpers.root('dist'),
-        chunkFilename: '[id].[hash].chunk.js',
         filename: '[name].js',
-        publicPath: '/' + GH_REPO_NAME + '/'
+        publicPath: '/' + GH_REPO_NAME + '/',
+        path: helpers.root('dist'),
+        chunkFilename: '[id].[hash].chunk.js'
     },
 
     module: {
         loaders: [
+            {
+                test: /\.ts$/,
+                loader: '@ngtools/webpack'
+            },
             {
                 test: /\.(png|jpe?g|gif|svg|woff|woff2|ttf|eot|ico)$/,
                 loader: 'file-loader?name=assets/[name].[ext]'
@@ -46,7 +49,12 @@ module.exports = webpackMerge.smart(webpackConfig, {
     },
 
     plugins: [
+        new AotPlugin({
+            tsConfigPath: './tsconfig.json',
+            entryModule: 'src/app/app.module#AppModule'
+        }),
         new webpack.NoErrorsPlugin(),
+        new webpack.optimize.OccurrenceOrderPlugin(),
         //new webpack.optimize.DedupePlugin(),
         new webpack.optimize.UglifyJsPlugin({
             beautify: false, //prod
@@ -66,31 +74,6 @@ module.exports = webpackMerge.smart(webpackConfig, {
             htmlLoader: {
                 minimize: false // workaround for ng2
             }
-        }),
-        function() {
-            this.plugin('done', function(stats) {
-                console.log('Starting deployment to GitHub.');
-
-                const logger = function (msg) {
-                    console.log(msg);
-                };
-
-                const options = {
-                    logger: logger,
-                    remote: GIT_REMOTE_NAME,
-                    message: COMMIT_MESSAGE
-                };
-
-                ghpages.publish(helpers.root('dist'), options, function(err) {
-                    if (err) {
-                        console.log('GitHub deployment done. STATUS: ERROR.');
-                        con
-                        throw err;
-                    } else {
-                        console.log('GitHub deployment done. STATUS: SUCCESS.');
-                    }
-                });
-            });
-        }
+        })
     ]
 });

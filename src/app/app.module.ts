@@ -5,6 +5,8 @@ import { FormsModule }   from '@angular/forms';
 
 import { StoreModule } from '@ngrx/store';
 import { EffectsModule } from '@ngrx/effects';
+import { StoreDevtoolsModule } from '@ngrx/store-devtools';
+
 
 import { AppComponent } from './app.component';
 import { DropdownComponent } from "./components/dropdown/dropdown.component";
@@ -15,7 +17,7 @@ import {ConnectionEffects} from "./effects/connection";
 import { FisConnectionService } from "./services/fis-connection.service";
 import { TimePipe } from "./pipes/time.pipe";
 
-import { DEV_TOOLS } from './ngrx.dev';
+//import { DEV_TOOLS } from './ngrx.dev';
 
 @NgModule({
     imports: [
@@ -24,7 +26,7 @@ import { DEV_TOOLS } from './ngrx.dev';
         FormsModule,
         StoreModule.provideStore(reducer),
         EffectsModule.runAfterBootstrap(ConnectionEffects),
-        ...DEV_TOOLS
+        StoreDevtoolsModule.instrumentOnlyWithExtension()
     ],
     declarations: [ AppComponent, DropdownComponent, TableComponent, RaceTabComponent, TimePipe ],
     bootstrap: [ AppComponent ],
