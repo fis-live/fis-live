@@ -127,7 +127,7 @@ export class TableComponent {
 
     public getStatus(row: ResultItem) {
         if (this.isStartList || row.time > this.maxVal) {
-            return row.status.toUpperCase();
+            return (row.status !== null) ? row.status.toUpperCase() : '';
         } else if (row.rank > 1) {
             return '+' + this.transform(row.time - row.fastest);
         }

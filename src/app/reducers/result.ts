@@ -21,6 +21,22 @@ export function reducer(state: State = {startList: []}, action: Action): State {
         case RaceActions.ADD_START_LIST:
             return Object.assign({}, state, {startList: state.startList.concat(action.payload)});
 
+        case RaceActions.SET_STATUS:
+            const id: number = action.payload.id;
+            let status: string = action.payload.status;
+
+            let startlist = state.startList.map((row) => {
+                let newRow = Object.assign({}, row);
+                if (row.racer == id) {
+                    newRow.status = status;
+                }
+
+                return newRow;
+            });
+
+
+            return Object.assign({}, state, {startList: startlist});
+
         case RaceActions.REGISTER_RESULT:
             let item = action.payload;
             let rank = 1;

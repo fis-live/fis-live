@@ -137,8 +137,8 @@ export function unserialize(data: any) {
                     return parseInt(x, 10);
                 };
                 readData = readUntil(data, dataoffset, ';');
-                chrs = readData[0];
-                readdata = readData[1];
+                chrs = readData.length;
+                readdata = readData.buffer;
                 dataoffset += chrs + 1;
                 break;
             case 'b':
@@ -146,8 +146,8 @@ export function unserialize(data: any) {
                     return parseInt(x, 10) !== 0;
                 };
                 readData = readUntil(data, dataoffset, ';');
-                chrs = readData[0];
-                readdata = readData[1];
+                chrs = readData.length;
+                readdata = readData.buffer;
                 dataoffset += chrs + 1;
                 break;
             case 'd':
@@ -155,8 +155,8 @@ export function unserialize(data: any) {
                     return parseFloat(x);
                 };
                 readData = readUntil(data, dataoffset, ';');
-                chrs = readData[0];
-                readdata = readData[1];
+                chrs = readData.length;
+                readdata = readData.buffer;
                 dataoffset += chrs + 1;
                 break;
             case 'n':
@@ -164,13 +164,13 @@ export function unserialize(data: any) {
                 break;
             case 's':
                 ccount = readUntil(data, dataoffset, ':');
-                chrs = ccount[0];
-                stringlength = ccount[1];
+                chrs = ccount.length
+                stringlength = ccount.buffer;
                 dataoffset += chrs + 2;
 
                 readData = readChrs(data, dataoffset + 1, parseInt(stringlength, 10));
-                chrs = readData[0];
-                readdata = readData[1];
+                chrs = readData.length;
+                readdata = readData.buffer;
                 dataoffset += chrs + 2;
                 if (chrs !== parseInt(stringlength, 10) && chrs !== readdata.length) {
                     error('SyntaxError', 'String length mismatch');
@@ -180,8 +180,8 @@ export function unserialize(data: any) {
                 readdata = {};
 
                 keyandchrs = readUntil(data, dataoffset, ':');
-                chrs = keyandchrs[0];
-                keys = keyandchrs[1];
+                chrs = keyandchrs.length;
+                keys = keyandchrs.buffer;
                 dataoffset += chrs + 2;
 
                 length = parseInt(keys, 10);

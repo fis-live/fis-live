@@ -9,7 +9,7 @@ import {
     UpdateRaceInfoAction, SetRaceMessageAction, RegisterResultAction, AddIntermediateAction,
     AddRacerAction
 } from "../actions";
-import {AddStartListAction, UpdateMeteoAction} from "../actions/race";
+import {AddStartListAction, UpdateMeteoAction, SetStatusAction} from "../actions/race";
 import {LoadMainAction} from "../actions/connection";
 import {RaceInfo} from "../models/race-info";
 import {Meteo} from "../models/meteo";
@@ -85,7 +85,7 @@ export class ConnectionEffects {
                     snow_temperature: null,
                     humidity: null
                 };
-                idx= 0;
+                idx = 0;
 
                 meteo.air_temperature = data.meteo[idx++];
                 meteo.wind = data.meteo[idx++];
@@ -130,13 +130,13 @@ export class ConnectionEffects {
                     if (data.result[i]) {
                         for ( let j = 0; j < data.result[i].length; j++) {
                             actions.push(
-                                new RegisterResultAction({intermediate: j, racer: i, time: data.result[i][j]})
+                                new RegisterResultAction({intermediate: data.racedef[j][1], racer: i, time: data.result[i][j]})
                             );
                         }
                     }
                 }
 
-                return Observable.of(...actions);
+                return Observable.of(...actions, new LoadUpdateAction());
             })
             .catch((error) => {
                 console.log(error);
@@ -154,63 +154,62 @@ export class ConnectionEffects {
             return this._connection.poll()
                 .mergeMap(data => {
                     let actions = [];
-                    // data.events.forEach((event) => {
-                    //     switch (event[0]) {
-                    //         case "start":
-                    //             if (this.noRunActif == event[1]) {
-                    //                 this.runCourant.registerStatus(event[2], event[0]);
-                    //             }
-                    //             break;
-                    //         case "inter":
-                    //             if (this.noRunActif == event[1]) {
-                    //                 this.runCourant.registerResult(event[3] - 1, event[2], event[4], false);
-                    //             }
-                    //             break;
-                    //         case "finish":
-                    //             if (this.noRunActif == event[1]) {
-                    //                 this.runCourant.registerResult(event[3], event[2], event[4], false);
-                    //                 this.runCourant.registerStatus(event[2], event[0]);
-                    //             }
-                    //             break;
-                    //         case "falsestart":
-                    //             break;
-                    //         case "dnf":
-                    //         case "dns":
-                    //         case "dq":
-                    //         case "q":
-                    //         case "nq":
-                    //         case "lucky":
-                    //         case "lapped":
-                    //         case "ff":
-                    //         case "ral":
-                    //             if (this.noRunActif == event[1]) {
-                    //                 this.runCourant.registerStatus(event[2], event[0]);
-                    //             }
-                    //             break;
-                    //         case "nextstart":
-                    //             if (this.noRunActif == event[1]) {
-                    //                 this.runCourant.registerStatus(event[2], event[0]);
-                    //             }
-                    //             break;
-                    //         case "tds":
-                    //             break;
-                    //         case "activeheat":
-                    //             break;
-                    //         case "meteo":
-                    //             meteoInfo = new Array();
-                    //             meteoInfo.push(event[1], event[2], event[3], event[4], event[5], event[6]);
-                    //             this.meteo.update(meteoInfo);
-                    //             break;
-                    //         case "palmier":
-                    //             break;
-                    //         case "message":
-                    //             actions.push(new SetRaceMessageAction(event[1]));
-                    //             break;
-                    //         case "reloadmain":
-                    //             return Observable.of(new LoadMainAction({}));
-                    //     }
-                    // });
-                    console.log(data);
+                    if (data.events) {
+                        data.events.forEach((event) => {
+                            switch (event[0]) {
+                                case "start":
+                                    actions.push(new SetStatusAction({id: event[2], status: event[0]}));
+                                    break;
+                                case "inter":
+                                    actions.push(new RegisterResultAction({intermediate: event[3], racer: event[2], time: event[4]}));
+                                    break;
+                                case "finish":
+                                    actions.push(new RegisterResultAction({intermediate: event[3], racer: event[2], time: event[4]}));
+                                    actions.push(new SetStatusAction({id: event[2], status: event[0]}));
+                                    break;
+                                case "falsestart":
+                                    break;
+                                case "dnf":
+                                case "dns":
+                                case "dq":
+                                case "q":
+                                case "nq":
+                                case "lucky":
+                                case "lapped":
+                                case "ff":
+                                case "ral":
+                                    actions.push(new SetStatusAction({id: event[2], status: event[0]}));
+                                    break;
+                                case "nextstart":
+                                    actions.push(new SetStatusAction({id: event[2], status: event[0]}));
+                                    break;
+                                case "tds":
+                                    break;
+                                case "activeheat":
+                                    break;
+                                case "meteo":
+                                    let meteoInfo: Meteo = {
+                                        air_temperature: event[1],
+                                        wind: event[2],
+                                        weather: event[3],
+                                        snow_condition: event[4],
+                                        snow_temperature: event[5],
+                                        humidity: event[6]
+                                    };
+                                    actions.push(new UpdateMeteoAction(meteoInfo));
+                                    break;
+                                case "palmier":
+                                    break;
+                                case "message":
+                                    actions.push(new SetRaceMessageAction(event[1]));
+                                    break;
+                                case "reloadmain":
+                                //return Observable.of(new LoadMainAction({}));
+                            }
+                        });
+                    }
+
+                    console.debug(data);
 
                     return Observable.of(...actions, new LoadUpdateAction());
                 })

@@ -11,7 +11,7 @@ import {
     
     <div class="menu">
         <div class="item" data-value="start_list">Start list</div>
-        <div *ngFor="let item of items" class="item" [attr.data-value]="item.key" [attr.data-text]="item.distance + ' KM'">{{ item.name }}  {{ item.distance }} KM</div>
+        <div *ngFor="let item of items" class="item" [attr.data-value]="item.id" [attr.data-text]="item.distance + ' KM'">{{ item.name }}  {{ item.distance }} KM</div>
     </div>
 </div>`
 })
