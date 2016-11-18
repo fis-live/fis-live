@@ -59,7 +59,7 @@ export function unserialize(data: any) {
         
         return 2;
     };
-    
+
     var error = function (type: string, msg: string) {
         if (type === 'Error') {
             throw new Error(msg);
@@ -84,7 +84,7 @@ export function unserialize(data: any) {
             i += 1;
         }
         
-        return [buf.length, buf.join('')];
+        return {length: buf.length, buffer: buf.join('')};
     };
     
     var readChrs = function (data, offset, length) {
@@ -97,7 +97,7 @@ export function unserialize(data: any) {
             length -= utf8Overhead(chr);
         }
         
-        return [buf.length, buf.join('')];
+        return {length: buf.length, buffer: buf.join('')};
     };
     
     var _unserialize = function (data, offset) {
