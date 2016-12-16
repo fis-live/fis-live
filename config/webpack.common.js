@@ -1,9 +1,9 @@
-var webpack = require('webpack');
-var HtmlWebpackPlugin = require('html-webpack-plugin');
-var ExtractTextPlugin = require('extract-text-webpack-plugin');
-var ProvidePlugin = require('webpack/lib/ProvidePlugin');
-var atl = require('awesome-typescript-loader');
-var helpers = require('./helpers');
+const webpack = require('webpack');
+const HtmlWebpackPlugin = require('html-webpack-plugin');
+const ExtractTextPlugin = require('extract-text-webpack-plugin');
+const ProvidePlugin = require('webpack/lib/ProvidePlugin');
+const { CheckerPlugin } = require('awesome-typescript-loader');
+const helpers = require('./helpers');
 
 // Use our jQuery
 const _jquery = helpers.root('node_modules', 'jquery');
@@ -19,7 +19,7 @@ module.exports = {
     },
 
     module: {
-        loaders: [
+        rules: [
             {
                 test: /\.ts$/,
                 loaders: [
@@ -77,8 +77,6 @@ module.exports = {
     },
 
     plugins: [
-        new atl.ForkCheckerPlugin(),
-
         new webpack.optimize.CommonsChunkPlugin({
             name: ['app', 'polyfills']
         }),

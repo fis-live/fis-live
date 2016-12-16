@@ -1,7 +1,8 @@
-var webpackMerge = require('webpack-merge');
-var ExtractTextPlugin = require('extract-text-webpack-plugin');
-var commonConfig = require('./webpack.common.js');
-var helpers = require('./helpers');
+const webpackMerge = require('webpack-merge');
+const ExtractTextPlugin = require('extract-text-webpack-plugin');
+const commonConfig = require('./webpack.common.js');
+const helpers = require('./helpers');
+const { CheckerPlugin } = require('awesome-typescript-loader');
 
 module.exports = webpackMerge(commonConfig, {
     devtool: 'cheap-module-eval-source-map',
@@ -14,6 +15,7 @@ module.exports = webpackMerge(commonConfig, {
     },
 
     plugins: [
+        new CheckerPlugin(),
         new ExtractTextPlugin('css/[name].css')
     ],
 
