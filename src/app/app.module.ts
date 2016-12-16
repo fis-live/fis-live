@@ -13,11 +13,8 @@ import { DropdownComponent } from "./components/dropdown/dropdown.component";
 import { RaceTabComponent } from "./race-tab.component";
 import { TableComponent } from "./components/table/table.component";
 import { reducer } from "./reducers";
-import {ConnectionEffects} from "./effects/connection";
+import { ConnectionEffects } from "./effects/connection";
 import { FisConnectionService } from "./services/fis-connection.service";
-import { TimePipe } from "./pipes/time.pipe";
-
-//import { DEV_TOOLS } from './ngrx.dev';
 
 @NgModule({
     imports: [
@@ -28,7 +25,7 @@ import { TimePipe } from "./pipes/time.pipe";
         EffectsModule.runAfterBootstrap(ConnectionEffects),
         StoreDevtoolsModule.instrumentOnlyWithExtension()
     ],
-    declarations: [ AppComponent, DropdownComponent, TableComponent, RaceTabComponent, TimePipe ],
+    declarations: [ AppComponent, DropdownComponent, TableComponent, RaceTabComponent ],
     bootstrap: [ AppComponent ],
     providers: [ FisConnectionService ]
 })
