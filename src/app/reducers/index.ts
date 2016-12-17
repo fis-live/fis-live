@@ -13,6 +13,7 @@ import { Racer } from '../models/racer';
 import { Intermediate } from '../models/intermediate';
 
 import { storeFreeze } from 'ngrx-store-freeze';
+import { ConnectionActions } from "../actions/connection";
 
 
 const reducers: { [key: string]: ActionReducer<any> } = {
@@ -25,10 +26,30 @@ const reducers: { [key: string]: ActionReducer<any> } = {
 };
 
 let metaReducer;
+
 if (process.env.ENV === 'production') {
-    metaReducer = combineReducers;
+    metaReducer = compose(
+        (reducer: Function) => {
+            return function(state, action) {
+                if (action.type === ConnectionActions.RESET) {
+                    state = undefined;
+                }
+
+                return reducer(state, action);
+            };
+        },
+        combineReducers);
 } else {
-    metaReducer = compose(storeFreeze, combineReducers);
+    metaReducer = compose(storeFreeze,
+        (reducer: Function) => {
+            return function(state, action) {
+                if (action.type === ConnectionActions.RESET) {
+                    state = undefined;
+                }
+
+                return reducer(state, action);
+            };
+        }, combineReducers);
 }
 
 export function reducer(state: any, action: any): any {

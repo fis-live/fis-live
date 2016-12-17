@@ -10,7 +10,7 @@ import {
     AddRacerAction
 } from "../actions";
 import {AddStartListAction, UpdateMeteoAction, SetStatusAction} from "../actions/race";
-import {LoadMainAction} from "../actions/connection";
+import {LoadMainAction, ResetAction} from "../actions/connection";
 import {RaceInfo} from "../models/race-info";
 import {Meteo} from "../models/meteo";
 
@@ -204,7 +204,7 @@ export class ConnectionEffects {
                                     actions.push(new SetRaceMessageAction(event[1]));
                                     break;
                                 case "reloadmain":
-                                //return Observable.of(new LoadMainAction({}));
+                                    return Observable.of(new ResetAction(), new LoadMainAction(null));
                             }
                         });
                     }

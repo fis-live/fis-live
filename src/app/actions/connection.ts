@@ -6,7 +6,8 @@ export const ConnectionActions = {
     LOAD_SERVERS_ERROR: '[Connection] Error on loading servers',
     LOAD_MAIN: '[Connection] Load main',
     LOAD_UPDATE: '[Connection] Load update',
-    STOP_UPDATE: '[Connection] Stop updating'
+    STOP_UPDATE: '[Connection] Stop updating',
+    RESET: '[Connection] Reset state'
 };
 
 
@@ -24,6 +25,12 @@ export class LoadServerSuccessAction implements Action {
 
 export class LoadServerErrorAction implements Action {
     type = ConnectionActions.LOAD_SERVERS_ERROR;
+
+    constructor() { }
+}
+
+export class ResetAction implements Action {
+    type = ConnectionActions.RESET;
 
     constructor() { }
 }

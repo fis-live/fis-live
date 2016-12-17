@@ -7,7 +7,7 @@ import { Observable } from "rxjs/Rx";
 import { AppState, getRaceInfoState, getErrorState, getLoadingState } from "./reducers";
 import { State } from "./reducers/race-info";
 import { State as ErrorState } from './reducers/error';
-import {LoadServerAction, LoadMainAction, StopUpdateAction} from "./actions/connection";
+import { LoadServerAction, LoadMainAction, StopUpdateAction, ResetAction } from "./actions/connection";
 import { State as LoadingState } from "./reducers/loading";
 
 @Component({
@@ -76,6 +76,7 @@ export class AppComponent implements OnInit {
     public startServer(): void {
         this.stopServer();
 
+        this._store.dispatch(new ResetAction());
         this._store.dispatch(new LoadMainAction(this.codex));
     }
 

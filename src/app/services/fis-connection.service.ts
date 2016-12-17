@@ -33,7 +33,7 @@ export class FisConnectionService {
     }
 
     public initialize(codex: number): void {
-        this.codex = codex;
+        this.codex = codex || this.codex;
         this.version = 0;
         this.delay = 0;
         this.updateCount = 0;
