@@ -16,6 +16,7 @@ import {ResultItem} from "../../race-tab.component";
                 <th [ngClass]="getSortingClass('racer.lastName')" (click)="setSorting('racer.lastName')">Name</th>
                 <th [ngClass]="getSortingClass('time')" (click)="setSorting('time')">{{ isStartList ? 'Status' : 'Time' }}</th>
                 <th [ngClass]="getSortingClass('racer.nationality')" (click)="setSorting('racer.nationality')">Nationality</th>
+                <th [ngClass]="getSortingClass('diff')" (click)="setSorting('diff')">Diff.</th>
             </tr>
         </thead>
         <tbody>
@@ -25,6 +26,7 @@ import {ResultItem} from "../../race-tab.component";
                 <td><div [@newRow]>{{ row.racer.firstName }} {{ row.racer.lastName }}</div></td>
                 <td><div [@newRow]>{{ getStatus(row) }}</div></td>
                 <td><div [@newRow]>{{ row.racer.nationality }}</div></td>
+                <td><div [@newRow]>{{ transform(row.diff) }}</div></td>
             </tr>
         </tbody>
     </table>

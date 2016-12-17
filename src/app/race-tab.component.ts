@@ -13,6 +13,7 @@ export interface ResultItem {
     rank: number;
     fastest: number;
     state: string;
+    diff: number;
 }
 
 @Component({
@@ -29,7 +30,7 @@ export class RaceTabComponent {
     public intermediates: Observable<any>;
     public rows$: Observable<Array<ResultItem>>;
 
-    private filter: Subject<any> = new BehaviorSubject<any>('start_list');
+    private filter: Subject<any> = new BehaviorSubject<any>(['start_list', 0]);
     
     private maxVal: number = 1000000000;
 
@@ -39,9 +40,10 @@ export class RaceTabComponent {
         this.intermediates = _state.let(getIntermediates);
 
         this.rows$ = Observable.combineLatest(_state.let(getResultState), _state.let(getRacers), this.filter.distinctUntilChanged())
-            .map(([results, racers, filter]) => {
+            .map(([results, racers, inter]) => {
+                let filter = inter[0];
+
                 if (filter == 'start_list') {
-                    let count = results.startList.length;
                     return results.startList.map((res, index) => ({
                             racer: racers[res.racer],
                             fastest: 0,
@@ -49,7 +51,8 @@ export class RaceTabComponent {
                             order: res.order,
                             status: res.status,
                             rank: 0,
-                            state: (count - index < 4) ? 'new' : ''
+                            diff: 0,
+                            state: ''
                         })
                     );
                 }
@@ -96,14 +99,28 @@ export class RaceTabComponent {
 
                 let fastest = results[filter].fastest;
                 count = results[filter].entities.length;
+                let comp = [];
+                if (inter[1] != null) {
+                    results[inter[1]].entities.forEach((item) => comp[item.racer] = item.time);
+                }
 
-                return rows.concat(results[filter].entities.map((res, index) => ({state: (count - index < 4) ? 'new' : '', racer: racers[res.racer], fastest: fastest, time: res.time, order: 0, status: '', rank: res.rank})));
+                return rows.concat(results[filter].entities.map((res, index) => ({
+                    state: (count - index < 4) ? 'new' : '',
+                    racer: racers[res.racer],
+                    fastest: fastest,
+                    time: res.time,
+                    order: 0,
+                    status: '',
+                    rank: res.rank,
+                    diff: (comp) ? res.time - comp[res.racer] : 0,
+                })
+                ));
             });
     }
 
     public onChange($event: any) {
-        if (this.intermediate != $event) {
-            if (this.intermediate != 'start_list' && $event == 'start_list') {
+        if (this.intermediate != $event[0]) {
+            if (this.intermediate != 'start_list' && $event[0] == 'start_list') {
                 this.config = true;
             }
 
@@ -111,9 +128,9 @@ export class RaceTabComponent {
                 this.config = false;
             }
 
-            this.intermediate = $event;
-
-            this.filter.next($event);
+            this.intermediate = $event[0];
         }
+
+        this.filter.next($event);
     }
 }
