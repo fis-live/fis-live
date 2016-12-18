@@ -3,7 +3,7 @@ const helpers = require('./helpers');
 
 
 const GIT_REMOTE_NAME = 'origin';
-const COMMIT_MESSAGE = 'Publish v' + process.env.npm_package_version;
+const COMMIT_MESSAGE = 'Publish v ' + process.env.npm_package_version;
 
 console.log('Starting deployment to GitHub.');
 
