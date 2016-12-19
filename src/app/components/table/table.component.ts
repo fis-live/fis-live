@@ -25,7 +25,7 @@ import {ResultItem} from "../../race-tab.component";
                 <td><div [@newRow]>{{ row.racer.bib }}</div></td>
                 <td><div [@newRow]>{{ row.racer.firstName }} {{ row.racer.lastName }}</div></td>
                 <td><div [@newRow]>{{ getStatus(row) }}</div></td>
-                <td><div [@newRow]>{{ row.racer.nationality }}</div></td>
+                <td><div [@newRow]><i class="{{ row.racer.nationality | lowercase }} flag"></i>{{ row.racer.nationality }}</div></td>
                 <td><div [@newRow]>{{ transform(row.diff) }}</div></td>
             </tr>
         </tbody>
@@ -65,6 +65,13 @@ export class TableComponent {
     private sortBy: string = 'order';
     private sortOrder: string = 'asc';
     private maxVal = 1000000000;
+
+    private statusMap = {
+        'start': 'Started',
+        'finish': 'Finished',
+        'lapped': 'Lapped',
+        'nextstart': 'Next to start'
+    };
 
     public track(index: number, item: ResultItem): number {
         return item.racer.bib;
@@ -129,7 +136,7 @@ export class TableComponent {
 
     public getStatus(row: ResultItem) {
         if (this.isStartList || row.time > this.maxVal) {
-            return (row.status !== null) ? row.status.toUpperCase() : '';
+            return (row.status !== null) ? this.statusMap[row.status] || row.status.toUpperCase() : '';
         } else if (row.rank > 1) {
             return '+' + this.transform(row.time - row.fastest);
         }

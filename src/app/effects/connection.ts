@@ -107,6 +107,38 @@ export class ConnectionEffects {
                     actions.push(new AddIntermediateAction({key: index, id: def[1], distance: def[2], name: name}));
                 });
 
+                const nationalities: { [short: string]: string } = {
+                    'SWE': 'Sweden',
+                    'NOR': 'Norway',
+                    'FIN': 'Finland',
+                    'GER': 'Germany',
+                    'FRA': 'France',
+                    'AUT': 'Austria',
+                    'USA': 'United States',
+                    'RUS': 'Russia',
+                    'KAZ': 'Kazakhstan',
+                    'ITA': 'Italy',
+                    'CZE': 'Czech Republic',
+                    'SUI': 'Switzerland',
+                    'POL': 'Poland',
+                    'JPN': 'Japan',
+                    'CAN': 'Canada',
+                    'SLO': 'Slovenia',
+                    'SVK': 'Slovakia',
+                    'GBR': 'United Kingdom',
+                    'EST': 'Estonia',
+                    'LAT': 'Latvia',
+                    'DEN': 'Denmark',
+                    'ROU': 'Romania',
+                    'KOR': 'South Korea',
+                    'BUL': 'Bulgaria',
+                    'IRL': 'Ireland',
+                    'ARM': 'Armenia',
+                    'BLR': 'Belarus',
+                    'ISL': 'Iceland',
+                    'SPA': 'Spain'
+                };
+
                 for ( let i = 0; i < data.racers.length; i++ ) {
                     if (data.racers[i] !== null) {
                         actions.push(new AddRacerAction({
@@ -114,7 +146,7 @@ export class ConnectionEffects {
                                 bib: data.racers[i][1],
                                 firstName: data.racers[i][3],
                                 lastName: data.racers[i][2].split(' ').map(char=> char[0] + char.substr(1).toLowerCase()).join(' '),
-                                nationality: data.racers[i][4]
+                                nationality: nationalities[data.racers[i][4]] || data.racers[i][4]
                             })
                         );
                     }
@@ -155,6 +187,7 @@ export class ConnectionEffects {
                 .mergeMap(data => {
                     let actions = [];
                     if (data.events) {
+                        console.debug(data);
                         data.events.forEach((event) => {
                             switch (event[0]) {
                                 case "start":
@@ -208,8 +241,6 @@ export class ConnectionEffects {
                             }
                         });
                     }
-
-                    console.debug(data);
 
                     return Observable.of(...actions, new LoadUpdateAction());
                 })
