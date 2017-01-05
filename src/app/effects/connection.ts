@@ -32,6 +32,86 @@ export class ConnectionEffects {
         .ofType(ConnectionActions.LOAD_SERVERS_SUCCESS)
         .do(action => this._connection.selectServer());
 
+    @Effect() loadPdf$ = this.actions$
+        .ofType('LOAD_PDF')
+        .switchMap(() => this._connection.loadPdf()
+            .map(result => {
+                const months = ['JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN', 'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC'];
+                const pattern = /\d+:\d+/;
+                let currentBib = 1;
+                let racers = [];
+                let pages = result.length;
+                let racer = {bib: null, time: null, isWave: null, shirt: null};
+
+                for (let j = 0; j < pages; j++) {
+                    let count = result[j].length;
+                    let start = false;
+
+                    for (let i = 0; i < count; i++) {
+                        let str = result[j][i];
+
+                        if (!start) {
+                            if (str.endsWith('REMARKS')) {
+                                start = true;
+                            } else {
+                                continue;
+                            }
+                        }
+                        if (str == 'shirt') {
+                            if (racer.bib) {
+                                racers[racer.bib] = racer;
+
+                                racer = {bib: null, time: null, isWave: null, shirt: null};
+                                racer.bib = currentBib + 1;
+                                currentBib += 1;
+                            } else {
+                                racer.bib = currentBib;
+                            }
+
+                            racer.shirt = result[j][i - 1];
+                        }
+
+                        if (str == 'Wave:') {
+                            racer.bib = currentBib;
+                            racers[racer.bib] = racer;
+
+                            racer = {bib: null, time: null, isWave: null, shirt: null};
+                            currentBib += 1;
+
+                            racer.bib = currentBib;
+                            racer.isWave = true;
+                        }
+
+                        if (pattern.test(str)) {
+                            let timeArray = str.split(':');
+                            console.log(timeArray);
+
+                            racer.time = (timeArray.length === 3) ? (Number(timeArray[0])*3600 + Number(timeArray[1])*60 + Number(timeArray[2]))*1000 : (Number(timeArray[0])*60 + Number(timeArray[1]))*1000;
+                        }
+
+                        if (str == currentBib + 1 && months.indexOf(result[j][i + 1]) == -1) {
+                            racer.bib = currentBib;
+                            racers[racer.bib] = racer;
+
+                            racer = {bib: null, time: null, isWave: null, shirt: null};
+                            racer.bib = currentBib + 1;
+                            currentBib += 1;
+                        }
+                    }
+                }
+
+                racers[racer.bib] = racer;
+
+                console.log(racers);
+
+                return {type: 'UPDATE_START_LIST', payload: racers};
+            })
+            .catch((error) => {
+                console.log(error);
+                return Observable.of(new LoadServerErrorAction())
+            })
+        );
+
     @Effect() loadMain$ = this.actions$
         .ofType(ConnectionActions.LOAD_MAIN)
         .switchMap(action => this._connection.poll(action.payload)
@@ -136,7 +216,10 @@ export class ConnectionEffects {
                     'ARM': 'Armenia',
                     'BLR': 'Belarus',
                     'ISL': 'Iceland',
-                    'SPA': 'Spain'
+                    'SPA': 'Spain',
+                    'AUS': 'Australia',
+                    'CRO': 'Croatia',
+                    'LIE': 'Liechtenstein'
                 };
 
                 for ( let i = 0; i < data.racers.length; i++ ) {
@@ -154,7 +237,7 @@ export class ConnectionEffects {
 
                 for (let i = 0; i < data.startlist.length; i++) {
                     actions.push(
-                        new AddStartListAction({racer: data.startlist[i][0], status: data.startlist[i][1], order: i + 1})
+                        new AddStartListAction({racer: data.startlist[i][0], status: data.startlist[i][1], order: i + 1, time: null, color: null})
                     );
                 }
 

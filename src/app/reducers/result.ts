@@ -9,7 +9,7 @@ export interface Item {
 }
 
 export interface State {
-    startList: Array<{order: number, racer: number, status: string}>;
+    startList: Array<{order: number, racer: number, status: string, time: number | null, color: string}>;
     [intermediate: number]: {
         fastest: number,
         entities: Array<Item>
@@ -36,6 +36,27 @@ export function reducer(state: State = {startList: []}, action: Action): State {
 
 
             return Object.assign({}, state, {startList: startlist});
+
+        case 'UPDATE_START_LIST':
+            let fastest = 999999999999;
+            action.payload.forEach(row => {
+                if (row.time !== null && row.time < fastest) {
+                    fastest = row.time;
+                }
+            });
+
+
+            let updatedstartlist = state.startList.map((row) => {
+                let newRow = Object.assign({}, row);
+                if (action.payload[row.racer]) {
+                    newRow.time = (action.payload[row.racer].time !== null) ? action.payload[row.racer].time - fastest : null;
+                    newRow.color = action.payload[row.racer].shirt;
+                }
+
+                return newRow;
+            });
+
+            return Object.assign({}, state, {startList: updatedstartlist});
 
         case RaceActions.REGISTER_RESULT:
             let item = action.payload;

@@ -7,6 +7,7 @@ import { ErrorTimeInterval } from "./operator/timeoutInterval";
 import { Observable, TimeInterval } from "rxjs/Rx";
 
 import { FisServer } from "./fis-server";
+import { PdfReader } from "./PdfReader";
 
 @Injectable()
 export class FisConnectionService {
@@ -61,7 +62,7 @@ export class FisConnectionService {
     }
 
     private getHttpRequest(): Observable<TimeInterval<Response>> {
-        var url: string;
+        let url: string;
         
         if (this.version === 0) {
             url = `${this.baseURL}${this.codex}/main.xml`;
@@ -89,7 +90,7 @@ export class FisConnectionService {
 
     private parseServerList(result: any): FisServer[] {
         let data = json(unserialize(result.text().slice(4, -5)));
-        var servers: any[] = data.servers;
+        let servers: any[] = data.servers;
         for (let i = 0; i < servers.length; i++) {
             this.server_list.push(new FisServer(servers[i][0], servers[i][1], servers[i][2]));
         }
@@ -116,17 +117,17 @@ export class FisConnectionService {
     }
 
     public selectServer(): void {
-        var sum: number = 0;
+        let sum: number = 0;
 
-        for (var i = 0; i < this.server_list.length; i++) {
+        for (let i = 0; i < this.server_list.length; i++) {
             sum += this.server_list[i].weight;
         }
 
-        var urlServer: string = null;
+        let urlServer: string = null;
 
-        var r = Math.random() * sum;
-        var partialSum = 0;
-        var i = 0;
+        let r = Math.random() * sum;
+        let partialSum = 0;
+        let i = 0;
         while (urlServer == null && partialSum <= r) {
             partialSum += this.server_list[i].weight;
 
@@ -138,5 +139,12 @@ export class FisConnectionService {
         }
 
         this.baseURL = `http://${urlServer}/`;
+    }
+
+    public loadPdf(): Observable<any> {
+        let pdfreader = new PdfReader();
+        let url = 'http://data.fis-ski.com/pdf/2017/CC/' + this.codex  + '/2017CC' + this.codex  + 'SL.pdf';
+
+        return pdfreader.read(url);
     }
 }

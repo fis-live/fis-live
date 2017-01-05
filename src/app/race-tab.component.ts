@@ -2,7 +2,7 @@ import { Component } from '@angular/core';
 import { Store } from "@ngrx/store";
 
 import { AppState, getIntermediates, getResultState, getRacers } from "./reducers";
-import {Observable, Subject, BehaviorSubject} from "rxjs";
+import { Observable, Subject, BehaviorSubject } from "rxjs";
 import { Racer } from "./models/racer";
 
 export interface ResultItem {
@@ -10,6 +10,7 @@ export interface ResultItem {
     time: number;
     order: number;
     status: string;
+    color: string;
     rank: number;
     fastest: number;
     state: string;
@@ -47,8 +48,9 @@ export class RaceTabComponent {
                     return results.startList.map((res, index) => ({
                             racer: racers[res.racer],
                             fastest: 0,
-                            time: 0,
+                            time: res.time,
                             order: res.order,
+                            color: res.color,
                             status: res.status,
                             rank: 0,
                             diff: 0,
@@ -102,12 +104,18 @@ export class RaceTabComponent {
                 let comp = [];
                 if (inter[1] != null) {
                     results[inter[1]].entities.forEach((item) => comp[item.racer] = item.time);
+                } else {
+                    let c = results.startList.length;
+                    for (let i = 0; i < c; i++) {
+                        comp[results.startList[i].racer] = results.startList[i].time;
+                    }
                 }
 
                 return rows.concat(results[filter].entities.map((res, index) => ({
                     state: (count - index < 4) ? 'new' : '',
                     racer: racers[res.racer],
                     fastest: fastest,
+                    color: null,
                     time: res.time,
                     order: 0,
                     status: '',

@@ -22,7 +22,7 @@ import {ResultItem} from "../../race-tab.component";
         <tbody>
             <tr *ngFor="let row of rows; trackBy: track" [@color]="row.state" role="row">
                 <td><div [@newRow]>{{ isStartList ? row.order : row.rank }}</div></td>
-                <td><div [@newRow]>{{ row.racer.bib }}</div></td>
+                <td><div [@newRow] [ngClass]="getBibClass(row.color)">{{ row.racer.bib }}</div></td>
                 <td><div [@newRow]>{{ row.racer.firstName }} {{ row.racer.lastName }}</div></td>
                 <td><div [@newRow]>{{ getStatus(row) }}</div></td>
                 <td><div [@newRow]><i class="{{ row.racer.nationality | lowercase }} flag"></i>{{ row.racer.nationality }}</div></td>
@@ -75,6 +75,14 @@ export class TableComponent {
 
     public track(index: number, item: ResultItem): number {
         return item.racer.bib;
+    }
+
+    public getBibClass(color: string) {
+        if (color) {
+            return 'ui label ' + color;
+        }
+
+        return '';
     }
 
     public sort(a: ResultItem, b: ResultItem): number {
