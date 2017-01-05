@@ -1,5 +1,4 @@
-@import "~bootstrap/less/variables.less";
-@import "~bootstrap/less/glyphicons.less";
+
 
 
 .ui.table td > div {
@@ -70,12 +69,26 @@ app-dropdown + .ui.attached.segment {
 }
 
 .ui.compact.table td {
+    border: none;
     padding: 0;
 }
 
 .ui.compact.table th {
-    padding: 0.5em 2.1em 0.5em 0.7em;
+    padding: 0.4em 2.1em 0.4em 0.7em;
     border-bottom-width: 2px;
+    color: #565656;
+    font-size: 0.9em;
+}
+
+.ui.compact.table th:not(:last-child)::before {
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    width: 1px;
+    margin: 6px 0;
+    background-color: #ddd;
+    content: "";
 }
 
 .ui.table > tr.last_finish > td {
@@ -131,20 +144,25 @@ table.ui.table thead .sorting_desc_disabled:after {
     bottom: 0.4em;
     right: 0.7em;
     display: block;
-    font-family: 'Glyphicons Halflings';
+    font-family: 'Icons';
+    color: #007CBB;
     opacity: 0.5;
 }
 table.ui.table thead .sorting:after {
     opacity: 0.2;
-    content: "\e150";
+    content: "\F0DC";
     /* sort */
 }
 table.ui.table thead .sorting_asc:after {
-    content: "\e155";
+    content: "\f0dd";
+    color: #007CBB;
+    opacity: 1;
     /* sort-by-attributes */
 }
 table.ui.table thead .sorting_desc:after {
-    content: "\e156";
+    content: "\f0de";
+    color: #007CBB;
+    opacity: 1;
     /* sort-by-attributes-alt */
 }
 table.ui.table thead .sorting_asc_disabled:after,
