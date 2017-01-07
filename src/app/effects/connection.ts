@@ -41,6 +41,7 @@ export class ConnectionEffects {
                 let currentBib = 1;
                 let racers = [];
                 let pages = result.length;
+                let isPursuit = false;
                 let racer = {bib: null, time: null, isWave: null, shirt: null};
 
                 for (let j = 0; j < pages; j++) {
@@ -49,6 +50,10 @@ export class ConnectionEffects {
 
                     for (let i = 0; i < count; i++) {
                         let str = result[j][i];
+
+                        if (str.startsWith('LANE')) {
+                            isPursuit = true;
+                        }
 
                         if (!start) {
                             if (str.endsWith('REMARKS')) {
@@ -82,9 +87,8 @@ export class ConnectionEffects {
                             racer.isWave = true;
                         }
 
-                        if (pattern.test(str)) {
+                        if (pattern.test(str) && isPursuit) {
                             let timeArray = str.split(':');
-                            console.log(timeArray);
 
                             racer.time = (timeArray.length === 3) ? (Number(timeArray[0])*3600 + Number(timeArray[1])*60 + Number(timeArray[2]))*1000 : (Number(timeArray[0])*60 + Number(timeArray[1]))*1000;
                         }
@@ -251,7 +255,7 @@ export class ConnectionEffects {
                     }
                 }
 
-                return Observable.of(...actions, new LoadUpdateAction());
+                return Observable.of(...actions, {type: 'LOAD_PDF'}, new LoadUpdateAction());
             })
             .catch((error) => {
                 console.log(error);

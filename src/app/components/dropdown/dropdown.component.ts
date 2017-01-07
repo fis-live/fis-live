@@ -11,7 +11,7 @@ import {
         <i class="dropdown icon"></i>
         
         <div class="menu">
-            <div class="item" data-value="start_list">Start list</div>
+            <div class="item" data-value="0">Start list</div>
             <div *ngFor="let item of items" class="item" [attr.data-value]="item.id" [attr.data-text]="item.distance + ' KM'">{{ item.name }}  {{ item.distance }} KM</div>
         </div>
     </div>
@@ -21,6 +21,7 @@ import {
         <i class="dropdown icon"></i>
         
         <div class="menu">
+            <div class="item" data-value="0">From start</div>
             <div *ngFor="let item of compareItems" class="item" [attr.data-value]="item.id" [attr.data-text]="item.distance + ' KM'">{{ item.name }}  {{ item.distance }} KM</div>
         </div>
     </div>
@@ -42,10 +43,10 @@ export class DropdownComponent implements AfterViewInit, OnDestroy {
     public compareItems: any = [];
 
     private inter: number;
-    private comparison: number;
+    private comparison: number = null;
 
     @Output()
-    public selected:EventEmitter<any> = new EventEmitter();
+    public selected: EventEmitter<{inter: number, compare: number}> = new EventEmitter();
 
     @ViewChild('dropdown')
     private element: ElementRef;
@@ -62,6 +63,7 @@ export class DropdownComponent implements AfterViewInit, OnDestroy {
 
         this.$el.dropdown({
             onChange: (value) => {
+                value = Number(value);
                 if (this.comparison >= value) {
                     this.comparison = null;
                     this.$comp.dropdown('restore placeholder text');
@@ -70,24 +72,30 @@ export class DropdownComponent implements AfterViewInit, OnDestroy {
                 this.inter = value;
                 this.$comp.dropdown('refresh');
 
-                this.selected.emit([value, this.comparison]);
+                console.log({inter: value, compare: this.comparison});
+
+                this.selected.emit({inter: value, compare: this.comparison});
             },
             allowTab: false
         });
 
         this.$comp.dropdown({
             onChange: (value) => {
+                value = Number(value);
                 this.comparison = value;
-                this.selected.emit([this.inter, value]);
+
+                console.log({inter: this.inter, compare: value});
+                this.selected.emit({inter: this.inter, compare: value});
             },
             allowTab: false
         });
 
         this.$el.dropdown('refresh');
-        this.$el.dropdown('set selected', 'start_list');
+        this.$el.dropdown('set selected', '0');
     }
 
     ngOnDestroy() {
         this.$el.dropdown('destroy');
+        this.$comp.dropdown('destroy');
     }
 }

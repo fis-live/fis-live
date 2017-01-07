@@ -26,7 +26,7 @@ import {ResultItem} from "../../race-tab.component";
                 <td><div [@newRow]>{{ row.racer.firstName }} {{ row.racer.lastName }}</div></td>
                 <td><div [@newRow]>{{ getStatus(row) }}</div></td>
                 <td><div [@newRow]><i class="{{ row.racer.nationality | lowercase }} flag"></i>{{ row.racer.nationality }}</div></td>
-                <td><div [@newRow]>{{ transform(row.diff) }}</div></td>
+                <td><div [@newRow]>{{ (row.time < maxVal) ? transform(row.diff) : '' }}</div></td>
             </tr>
         </tbody>
     </table>
@@ -117,6 +117,9 @@ export class TableComponent {
     }
 
     private transform(time: number): string {
+        if (time === null) {
+            return '';
+        }
         let timeStr = '',
             hours = Math.floor(time / (1000 * 60 * 60));
 

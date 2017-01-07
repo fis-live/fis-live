@@ -26,12 +26,12 @@ export interface ResultItem {
 })
 export class RaceTabComponent {
 
-    public intermediate: number | string = 'start_list';
+    public intermediate: number = 0;
 
     public intermediates: Observable<any>;
     public rows$: Observable<Array<ResultItem>>;
 
-    private filter: Subject<any> = new BehaviorSubject<any>(['start_list', 0]);
+    private filter: Subject<{inter: number, compare: number}> = new BehaviorSubject<{inter: number, compare: number}>({inter: 0, compare: null});
     
     private maxVal: number = 1000000000;
 
@@ -42,101 +42,127 @@ export class RaceTabComponent {
 
         this.rows$ = Observable.combineLatest(_state.let(getResultState), _state.let(getRacers), this.filter.distinctUntilChanged())
             .map(([results, racers, inter]) => {
-                let filter = inter[0];
+                let filter = inter.inter;
 
-                if (filter == 'start_list') {
+                if (filter === 0) {
                     return results.startList.map((res, index) => ({
                             racer: racers[res.racer],
                             fastest: 0,
-                            time: res.time,
+                            time: 0,
                             order: res.order,
                             color: res.color,
                             status: res.status,
                             rank: 0,
-                            diff: 0,
+                            diff: res.time,
                             state: ''
                         })
                     );
                 }
 
                 let count = results.startList.length;
-                let rows = new Array<ResultItem>();
-                // for (let i = 0; i < count; i++) {
-                //     let status = results.startList[i].status.toLowerCase();
-                //     let key: number;
-                //     switch (status) {
-                //         case "":
-                //         case "finish":
-                //         case "start":
-                //         case "ff":
-                //         case "q":
-                //         case "lucky":
-                //             break;
-                //         case "ral":
-                //             key = this.maxVal + 1;
-                //             break;
-                //         case "lapped":
-                //             key = this.maxVal * 2;
-                //             break;
-                //         case "dnf":
-                //             key = this.maxVal * 3;
-                //             break;
-                //         case "dq":
-                //             key = this.maxVal * 4;
-                //             break;
-                //         case "dns":
-                //             key = this.maxVal * 5;
-                //             break;
-                //         default:
-                //             key = this.maxVal * 6;
-                //     }
-                //
-                //     if (key > 0) {
-                //         rows.push({racer: racers[results.startList[i].racer], fastest: 0, time: key, order: 0, status: results.startList[i].status, rank: null})
-                //     }
-                // }
+                let fromStartList = [];
+                for (let i = 0; i < count; i++) {
+                    let status = results.startList[i].status.toLowerCase();
+                    let key = 0;
+                    switch (status) {
+                        case "":
+                        case "finish":
+                        case "start":
+                        case "ff":
+                        case "q":
+                        case "lucky":
+                        case "nextstart":
+                            break;
+                        case "ral":
+                            key = this.maxVal + 1;
+                            break;
+                        case "lapped":
+                            key = this.maxVal * 2;
+                            break;
+                        case "dnf":
+                            key = this.maxVal * 3;
+                            break;
+                        case "dq":
+                            key = this.maxVal * 4;
+                            break;
+                        case "dns":
+                            key = this.maxVal * 5;
+                            break;
+                        default:
+                            key = this.maxVal * 6;
+                    }
+
+                    if (key > 0 || results.startList[i].color !== null || results.startList[i].time !== null) {
+                        fromStartList[results.startList[i].racer] = {
+                            racer: racers[results.startList[i].racer],
+                            fastest: 0,
+                            time: key,
+                            order: 0,
+                            status: results.startList[i].status,
+                            rank: null,
+                            color: results.startList[i].color,
+                            diff: results.startList[i].time,
+                            state: ''
+                        };
+                    }
+                }
+
                 if (results[filter] == null) {
-                    return rows;
+                    return fromStartList.filter(row => row && row.time > 0);
                 }
 
                 let fastest = results[filter].fastest;
                 count = results[filter].entities.length;
                 let comp = [];
-                if (inter[1] != null) {
-                    results[inter[1]].entities.forEach((item) => comp[item.racer] = item.time);
-                } else {
-                    let c = results.startList.length;
-                    for (let i = 0; i < c; i++) {
-                        comp[results.startList[i].racer] = results.startList[i].time;
-                    }
+                if (inter.compare > 0) {
+                    results[inter.compare].entities.forEach((item) => comp[item.racer] = item.time);
                 }
 
-                return rows.concat(results[filter].entities.map((res, index) => ({
-                    state: (count - index < 4) ? 'new' : '',
-                    racer: racers[res.racer],
-                    fastest: fastest,
-                    color: null,
-                    time: res.time,
-                    order: 0,
-                    status: '',
-                    rank: res.rank,
-                    diff: (comp) ? res.time - comp[res.racer] : 0,
-                })
-                ));
+                let rows = [];
+                results[filter].entities.forEach((row, index) => {
+                    let color = null;
+                    let compareTime = null;
+                    if (fromStartList[row.racer]) {
+                        color = fromStartList[row.racer].color;
+                        if (inter.compare === 0) {
+                            compareTime = fromStartList[row.racer].diff;
+                        }
+
+                        fromStartList[row.racer] = undefined;
+                    }
+
+                    if (comp[row.racer]) {
+                        compareTime = comp[row.racer];
+                    }
+
+                    rows.push({
+                        state: (count - index < 4) ? 'new' : '',
+                        racer: racers[row.racer],
+                        fastest: fastest,
+                        color: color,
+                        time: row.time,
+                        order: 0,
+                        status: '',
+                        rank: row.rank,
+                        diff: compareTime !== null ? row.time - compareTime : null
+                    })
+                });
+
+                return rows.concat(fromStartList.filter(row => row && row.time > 0));
             });
     }
 
-    public onChange($event: any) {
-        if (this.intermediate != $event[0]) {
-            if (this.intermediate != 'start_list' && $event[0] == 'start_list') {
+    public onChange($event: {inter: number, compare: number}) {
+        if (this.intermediate !== $event.inter) {
+            if (this.intermediate !== 0 && $event.inter === 0) {
                 this.config = true;
             }
 
-            if (this.intermediate == 'start_list') {
+            if (this.intermediate === 0) {
                 this.config = false;
             }
 
-            this.intermediate = $event[0];
+            this.intermediate = $event.inter;
         }
 
         this.filter.next($event);
