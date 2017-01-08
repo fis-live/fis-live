@@ -34,7 +34,7 @@ module.exports = webpackMerge.smart(webpackConfig, {
         filename: '[name].js',
         publicPath: '/' + GH_REPO_NAME + '/',
         path: helpers.root('dist'),
-        chunkFilename: '[id].[hash].chunk.js'
+        chunkFilename: '[id].chunk.js'
     },
 
     module: {
