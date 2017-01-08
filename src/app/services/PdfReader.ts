@@ -1,5 +1,7 @@
 import 'pdfjs-dist';
-import {Observable} from "rxjs/Rx";
+import { Observable } from "rxjs/Rx";
+
+declare const PDFJS: any;
 
 export class PdfReader {
     public read(data: string | Uint8Array): Observable<any> {
