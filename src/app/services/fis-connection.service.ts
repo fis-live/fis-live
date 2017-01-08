@@ -21,6 +21,7 @@ export class FisConnectionService {
     private version: number;
 
     private baseURL: string = 'http://live.fis-ski.com/';
+    private proxy: string = 'https://fislive-cors.herokuapp.com/';
     
     private server_list: FisServer[] = [];
 
@@ -39,7 +40,10 @@ export class FisConnectionService {
         this.delay = 0;
         this.updateCount = 0;
     }
-    
+
+    public setProxy(proxy: string) {
+        this.proxy = proxy;
+    }
 
     private getQueryString(): string {
         let d = new Date();
@@ -47,7 +51,7 @@ export class FisConnectionService {
     }
 
     public getServerList(): Observable<FisServer[]>{
-        return this.http.get(this.SERVER_LIST_URL, {search: 'i=' + this.getQueryString()})
+        return this.http.get(this.proxy + this.SERVER_LIST_URL, {search: 'i=' + this.getQueryString()})
             .map(res => this.parseServerList(res));
     }
 
@@ -69,7 +73,7 @@ export class FisConnectionService {
         } else {
             url = `${this.baseURL}${this.codex}/updt${this.version}.xml`;
         }
-        return this.http.get(url, {search: 'i=' + this.getQueryString()})
+        return this.http.get(this.proxy + url, {search: 'i=' + this.getQueryString()})
             .timeoutInterval(this.TIMEOUT);
     }
 
@@ -143,7 +147,7 @@ export class FisConnectionService {
 
     public loadPdf(): Observable<any> {
         let pdfreader = new PdfReader();
-        let url = 'http://data.fis-ski.com/pdf/2017/CC/' + this.codex  + '/2017CC' + this.codex  + 'SL.pdf';
+        let url = this.proxy + 'http://data.fis-ski.com/pdf/2017/CC/' + this.codex  + '/2017CC' + this.codex  + 'SL.pdf';
 
         return pdfreader.read(url);
     }

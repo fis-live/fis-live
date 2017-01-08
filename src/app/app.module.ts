@@ -26,7 +26,7 @@ const appRoutes: Routes = [
         BrowserModule,
         HttpModule,
         FormsModule,
-        RouterModule.forRoot(appRoutes),
+        RouterModule.forRoot(appRoutes, { useHash: true }),
         StoreModule.provideStore(reducer),
         EffectsModule.runAfterBootstrap(ConnectionEffects),
         StoreDevtoolsModule.instrumentOnlyWithExtension()
