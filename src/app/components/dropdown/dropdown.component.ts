@@ -72,8 +72,6 @@ export class DropdownComponent implements AfterViewInit, OnDestroy {
                 this.inter = value;
                 this.$comp.dropdown('refresh');
 
-                console.log({inter: value, compare: this.comparison});
-
                 this.selected.emit({inter: value, compare: this.comparison});
             },
             allowTab: false
@@ -84,7 +82,6 @@ export class DropdownComponent implements AfterViewInit, OnDestroy {
                 value = Number(value);
                 this.comparison = value;
 
-                console.log({inter: this.inter, compare: value});
                 this.selected.emit({inter: this.inter, compare: value});
             },
             allowTab: false

@@ -4,6 +4,7 @@ const ExtractTextPlugin = require('extract-text-webpack-plugin');
 const commonConfig = require('./webpack.common.js');
 const helpers = require('./helpers');
 const { CheckerPlugin } = require('awesome-typescript-loader');
+const { BaseHrefWebpackPlugin } = require('@angular-cli/base-href-webpack');
 
 const ENV = process.env.NODE_ENV = process.env.ENV = 'production';
 
@@ -19,12 +20,15 @@ module.exports = webpackMerge.smart(commonConfig, {
 
     plugins: [
         new CheckerPlugin(),
+        new BaseHrefWebpackPlugin({
+            baseHref: '/FisLiveApp/dist/'
+        }),
         new webpack.NoErrorsPlugin(),
         new webpack.optimize.OccurrenceOrderPlugin(),
         new webpack.optimize.UglifyJsPlugin({
             beautify: false, //prod
             mangle: { screw_ie8 : true, keep_fnames: true }, //prod
-            compress: { screw_ie8: true }, //prod
+            compress: { screw_ie8: true, warnings: false }, //prod
             comments: false //prod
         }),
         new ExtractTextPlugin('css/[name].[hash].css'),

@@ -1,9 +1,9 @@
 import { Component } from '@angular/core';
 import { Store } from "@ngrx/store";
 
-import { AppState, getIntermediates, getResultState, getRacers } from "./reducers";
+import { AppState, getIntermediates, getResultState, getRacers } from "../reducers";
 import { Observable, Subject, BehaviorSubject } from "rxjs";
-import { Racer } from "./models/racer";
+import { Racer } from "../models/racer";
 
 export interface ResultItem {
     racer: Racer;

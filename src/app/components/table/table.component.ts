@@ -2,8 +2,8 @@ import {
     Component, EventEmitter, Input, Output, trigger, state, style, transition, animate,
     AfterViewChecked, OnChanges, SimpleChanges, SimpleChange
 } from '@angular/core';
-import {ResultItem} from "../../race-tab.component";
 
+import { ResultItem } from "../race-tab.component";
 
 @Component({
     selector: 'app-table',

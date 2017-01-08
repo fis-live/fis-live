@@ -3,7 +3,7 @@ import {Observable} from "rxjs/Rx";
 
 export class PdfReader {
     public read(data: string | Uint8Array): Observable<any> {
-        PDFJS.workerSrc = 'http://localhost/FisLiveApp/dist/pdf.worker.js';
+        PDFJS.workerSrc = require("file-loader!pdfjs-dist/build/pdf.worker.min.js");
 
         return Observable.fromPromise(PDFJS.getDocument(data).then(pdf => {
             let pages = [];

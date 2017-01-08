@@ -5,6 +5,8 @@ const execSync = require('child_process').execSync;
 const ExtractTextPlugin = require('extract-text-webpack-plugin');
 const webpackConfig = require('./webpack.common.js');
 const { CheckerPlugin } = require('awesome-typescript-loader');
+const { BaseHrefWebpackPlugin } = require('@angular-cli/base-href-webpack');
+
 
 const ENV = process.env.NODE_ENV = process.env.ENV = 'production';
 
@@ -46,12 +48,15 @@ module.exports = webpackMerge.smart(webpackConfig, {
 
     plugins: [
         new CheckerPlugin(),
+        new BaseHrefWebpackPlugin({
+            baseHref: '/' + GH_REPO_NAME + '/'
+        }),
         new webpack.NoErrorsPlugin(),
         new webpack.optimize.OccurrenceOrderPlugin(),
         new webpack.optimize.UglifyJsPlugin({
             beautify: false, //prod
             mangle: { screw_ie8 : true, keep_fnames: true }, //prod
-            compress: { screw_ie8: true }, //prod
+            compress: { screw_ie8: true, warnings: false }, //prod
             comments: false //prod
         }),
         new ExtractTextPlugin('css/[name].css'),

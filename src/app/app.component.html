@@ -1,28 +1,4 @@
-<div class="ui top menu fixed">
-    <div class="item">
-        <div class="ui action input">
-            <input [(ngModel)]="codex" placeholder="Input race codex..." type="text">
-
-            <div class="ui button" (click)="startServer()">Go</div>
-        </div>
-    </div>
-    <div class="header borderless item">{{ (raceInfo$ | async).info.eventName }}</div>
-    <div class="borderless fitted small item">{{ (raceInfo$ | async).info.raceName}}</div>
-    <div class="right menu">
-        <div class="borderless item">{{ (raceInfo$ | async).message }}</div>
-        <div class="item icon"><i (click)="removeTab()" class="inverted minus icon"></i>&nbsp;&nbsp;&nbsp;<i (click)="addTab()" class="inverted add icon"></i></div>
-    </div>
-</div>
-
-
-<div id="container" class="ui stackable equal width grid">
-    <div *ngFor="let columns of rows" class="row">
-        <div *ngFor="let i of columns" class="column">
-            <app-tab></app-tab>
-        </div>
-    </div>
-</div>
-
+<router-outlet></router-outlet>
 
 <div class="ui small modal">
     <i class="close icon"></i>
