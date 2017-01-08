@@ -2,13 +2,15 @@ const ghpages = require('gh-pages');
 const helpers = require('./helpers');
 
 
-const GIT_REMOTE_NAME = 'origin';
-const COMMIT_MESSAGE = 'Publish v ' + process.env.npm_package_version;
+const GIT_REMOTE_NAME = 'pages';
+const COMMIT_MESSAGE = 'Update';
 
 console.log('Starting deployment to GitHub.');
 
 const options = {
     remote: GIT_REMOTE_NAME,
+    repo: 'https://github.com/fis-live/fis-live.github.io.git',
+    branch: 'master',
     message: COMMIT_MESSAGE
 };
 
