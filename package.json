@@ -8,7 +8,8 @@
   "scripts": {
     "start": "webpack-dev-server --inline --progress --port 8080",
     "build": "rimraf dist && webpack --config config/webpack.prod.js --progress --profile --bail",
-    "deploy": "rimraf dist && webpack --config config/webpack.github-deploy.js --progress --profile --bail && node config/publish.js",
+    "deploy": "rimraf dist && webpack --config config/webpack.github-deploy.js --progress --profile --bail && publish",
+    "publish": "gh-pages -d dist -b master -o pages",
     "tsc": "tsc",
     "tsc:w": "tsc -w",
     "ngc": "ngc"

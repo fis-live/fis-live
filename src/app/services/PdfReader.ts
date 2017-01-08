@@ -5,7 +5,7 @@ declare const PDFJS: any;
 
 export class PdfReader {
     public read(data: string | Uint8Array): Observable<any> {
-        PDFJS.workerSrc = require("file-loader!pdfjs-dist/build/pdf.worker.min.js");
+        PDFJS.workerSrc = require("file-loader?name=[name].[ext]!pdfjs-dist/build/pdf.worker.min.js");
 
         return Observable.fromPromise(PDFJS.getDocument(data).then(pdf => {
             let pages = [];

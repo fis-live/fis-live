@@ -25,14 +25,14 @@ function getRepoName(remoteName) {
     }
 }
 
-const GIT_REMOTE_NAME = 'origin';
+const GIT_REMOTE_NAME = 'pages';
 const GH_REPO_NAME = getRepoName(GIT_REMOTE_NAME);
 
 module.exports = webpackMerge.smart(webpackConfig, {
 
     output: {
         filename: '[name].js',
-        publicPath: '/' + GH_REPO_NAME + '/',
+        publicPath: '/',
         path: helpers.root('dist'),
         chunkFilename: '[id].chunk.js'
     },
@@ -49,7 +49,7 @@ module.exports = webpackMerge.smart(webpackConfig, {
     plugins: [
         new CheckerPlugin(),
         new BaseHrefWebpackPlugin({
-            baseHref: '/' + GH_REPO_NAME + '/'
+            baseHref: '/'
         }),
         new webpack.NoErrorsPlugin(),
         new webpack.optimize.OccurrenceOrderPlugin(),
