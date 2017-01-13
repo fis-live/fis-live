@@ -62,6 +62,20 @@ export function reducer(state: State = {startList: []}, action: Action): State {
             let item = action.payload;
             let rank = 1;
 
+            if (item.time == null) {
+                if (state[item.intermediate] == null) {
+                    return Object.assign({}, state, {[item.intermediate]: {
+                        fastest: 999999999999,
+                        entities: [{racer: item.racer, time: item.time, rank: null}]}}
+                    );
+                }
+
+                return Object.assign({}, state, {[item.intermediate]: {
+                    fastest: state[item.intermediate].fastest,
+                    entities: state[item.intermediate].entities.concat({racer: item.racer, time: item.time, rank: null})}
+                });
+            }
+
             if (state[item.intermediate] == null) {
                 return Object.assign({}, state, {[item.intermediate]: {
                     fastest: item.time,
@@ -76,6 +90,9 @@ export function reducer(state: State = {startList: []}, action: Action): State {
                         duplicate = true;
 
                         return Object.assign({}, row, {time: item.time})
+                    }
+                    if (row.time == null) {
+                        return row;
                     }
 
                     if (row.time < item.time) {

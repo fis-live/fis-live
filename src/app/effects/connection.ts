@@ -112,7 +112,7 @@ export class ConnectionEffects {
             })
             .catch((error) => {
                 console.log(error);
-                return Observable.of(new LoadServerErrorAction())
+                return Observable.empty();
             })
         );
 

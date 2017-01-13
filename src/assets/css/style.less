@@ -1,3 +1,8 @@
+@media only screen and (max-width:767px) {
+    .ui.grid > .stackable.stackable.row > .column, .ui.stackable.grid > .column.grid > .column, .ui.stackable.grid > .column.row > .column, .ui.stackable.grid > .column:not(.row), .ui.stackable.grid > .row > .column, .ui.stackable.grid > .row > .wide.column, .ui.stackable.grid > .wide.column {
+        padding: 0 !important;
+    }
+}
 
 .ui.table {
     font-size: 0.9em;
@@ -20,8 +25,8 @@
     line-height: 1.25em;
 }
 
-.ui.fixed.menu + .ui.grid {
-    padding-top: 48px;
+.hide {
+    display: none;
 }
 
 .ui.attached.dropdown {
@@ -33,6 +38,7 @@ app-dropdown + .ui.attached.segment {
     padding: 0;
     border-radius: 0 0 0.285714rem 0.285714rem;
     overflow: auto;
+    -webkit-overflow-scrolling: touch;
 }
 
 .ui.grid > .row {
@@ -76,10 +82,11 @@ app-dropdown + .ui.attached.segment {
 }
 
 .ui.compact.table th {
-    padding: 0.4em 2.1em 0.4em 0.7em;
+    padding: 0.4em 0.7em 0.4em 0.7em;
     border-bottom-width: 2px;
     color: #565656;
     font-size: 0.9em;
+    position: relative;
 }
 
 .ui.compact.table th:not(:last-child)::before {

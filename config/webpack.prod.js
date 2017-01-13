@@ -13,7 +13,7 @@ module.exports = webpackMerge.smart(commonConfig, {
 
     output: {
         path: helpers.root('dist'),
-        publicPath: '/FisLiveApp/dist/',
+        publicPath: '/fis-live/dist/',
         filename: '[name].[hash].js',
         chunkFilename: '[id].[hash].chunk.js'
     },
@@ -21,7 +21,7 @@ module.exports = webpackMerge.smart(commonConfig, {
     plugins: [
         new CheckerPlugin(),
         new BaseHrefWebpackPlugin({
-            baseHref: '/FisLiveApp/dist/'
+            baseHref: '/fis-live/dist/'
         }),
         new webpack.NoErrorsPlugin(),
         new webpack.optimize.OccurrenceOrderPlugin(),

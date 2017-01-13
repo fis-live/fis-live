@@ -66,12 +66,14 @@ export class RaceTabComponent {
                     let key = 0;
                     switch (status) {
                         case "":
-                        case "finish":
                         case "start":
                         case "ff":
                         case "q":
                         case "lucky":
                         case "nextstart":
+                            break;
+                        case "finish":
+                            key = this.maxVal * 6;
                             break;
                         case "ral":
                             key = this.maxVal + 1;
@@ -89,19 +91,19 @@ export class RaceTabComponent {
                             key = this.maxVal * 5;
                             break;
                         default:
-                            key = this.maxVal * 6;
+                            key = 0;
                     }
 
-                    if (key > 0 || results.startList[i].color !== null || results.startList[i].time !== null) {
+                    if (key > 0 || results.startList[i].color !== null || inter.compare === 0) {
                         fromStartList[results.startList[i].racer] = {
                             racer: racers[results.startList[i].racer],
                             fastest: 0,
                             time: key,
                             order: 0,
-                            status: results.startList[i].status,
+                            status: results.startList[i].status.toLowerCase() == "finish" ? 'N/A' : results.startList[i].status,
                             rank: null,
                             color: results.startList[i].color,
-                            diff: results.startList[i].time,
+                            diff: results.startList[i].status.toLowerCase() == "finish" ? results.startList[i].time || 0 : this.maxVal + 1,
                             state: ''
                         };
                     }
@@ -140,11 +142,11 @@ export class RaceTabComponent {
                         racer: racers[row.racer],
                         fastest: fastest,
                         color: color,
-                        time: row.time,
+                        time: row.time || this.maxVal * 6,
                         order: 0,
-                        status: '',
+                        status: row.time !== null ? '' : 'N/A',
                         rank: row.rank,
-                        diff: compareTime !== null ? row.time - compareTime : null
+                        diff: (row.time !== null && compareTime !== null) ? row.time - compareTime : this.maxVal + 1
                     })
                 });
 

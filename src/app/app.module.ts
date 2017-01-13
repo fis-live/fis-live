@@ -16,6 +16,7 @@ import { reducer } from "./reducers";
 import { ConnectionEffects } from "./effects/connection";
 import { FisConnectionService } from "./services/fis-connection.service";
 import { ContainerComponent } from "./components/container.component";
+import { DimensionsDirective } from "./components/DimensionsDirective";
 
 const appRoutes: Routes = [
     { path: ':codex', component: ContainerComponent },
@@ -31,7 +32,7 @@ const appRoutes: Routes = [
         EffectsModule.runAfterBootstrap(ConnectionEffects),
         StoreDevtoolsModule.instrumentOnlyWithExtension()
     ],
-    declarations: [ AppComponent, DropdownComponent, TableComponent, RaceTabComponent, ContainerComponent ],
+    declarations: [ AppComponent, DropdownComponent, TableComponent, RaceTabComponent, ContainerComponent, DimensionsDirective ],
     bootstrap: [ AppComponent ],
     providers: [ FisConnectionService ]
 })

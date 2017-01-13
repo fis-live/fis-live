@@ -1,11 +1,4 @@
 <div class="ui top menu fixed">
-    <div class="item">
-        <div class="ui action input">
-            <input [(ngModel)]="codex" placeholder="Input race codex..." type="text">
-
-            <div class="ui button" (click)="go()">Go</div>
-        </div>
-    </div>
     <div class="header borderless item">{{ (raceInfo$ | async).info.eventName }}</div>
     <div class="borderless fitted small item">{{ (raceInfo$ | async).info.raceName}}</div>
     <div class="right menu">

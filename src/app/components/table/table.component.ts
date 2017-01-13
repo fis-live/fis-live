@@ -1,32 +1,33 @@
 import {
-    Component, EventEmitter, Input, Output, trigger, state, style, transition, animate,
-    AfterViewChecked, OnChanges, SimpleChanges, SimpleChange
+    Component, Input, trigger, state, style, transition, animate, ChangeDetectionStrategy
 } from '@angular/core';
 
 import { ResultItem } from "../race-tab.component";
+import { Dimensions } from "../DimensionsDirective";
 
 @Component({
     selector: 'app-table',
     template: `
-    <table class="ui unstackable striped compact table" role="grid">
+    <table class="ui unstackable striped compact table" role="grid" dimensions (onDimensionsChange)="onChange($event)">
         <thead>
             <tr role="row">
                 <th [ngClass]="getSortingClass('order')" (click)="setSorting('order')">{{ isStartList ? 'Order' : 'Rank' }}</th>
-                <th [ngClass]="getSortingClass('racer.bib')" (click)="setSorting('racer.bib')">Bib</th>
+                <th [class.hide]="responsive" [ngClass]="getSortingClass('racer.bib')" (click)="setSorting('racer.bib')">Bib</th>
                 <th [ngClass]="getSortingClass('racer.lastName')" (click)="setSorting('racer.lastName')">Name</th>
                 <th [ngClass]="getSortingClass('time')" (click)="setSorting('time')">{{ isStartList ? 'Status' : 'Time' }}</th>
-                <th [ngClass]="getSortingClass('racer.nationality')" (click)="setSorting('racer.nationality')">Nationality</th>
+                <th [class.hide]="responsive" [ngClass]="getSortingClass('racer.nationality')" (click)="setSorting('racer.nationality')">Nationality</th>
                 <th [ngClass]="getSortingClass('diff')" (click)="setSorting('diff')">Diff.</th>
             </tr>
         </thead>
         <tbody>
-            <tr *ngFor="let row of rows; trackBy: track" [@color]="row.state" role="row">
-                <td><div [@newRow]>{{ isStartList ? row.order : row.rank }}</div></td>
-                <td><div [@newRow] [ngClass]="getBibClass(row.color)">{{ row.racer.bib }}</div></td>
-                <td><div [@newRow]>{{ row.racer.firstName }} {{ row.racer.lastName }}</div></td>
-                <td><div [@newRow]>{{ getStatus(row) }}</div></td>
-                <td><div [@newRow]><i class="{{ row.racer.nationality | lowercase }} flag"></i>{{ row.racer.nationality }}</div></td>
-                <td><div [@newRow]>{{ (row.time < maxVal) ? transform(row.diff) : '' }}</div></td>
+            <tr [ngClass]="{'favorite': row.racer.isFavorite}" *ngFor="let row of rows; trackBy: track" [@color]="row.state" role="row">
+                <td><div [@newRow]="row.state">{{ isStartList ? row.order : row.rank }}</div></td>
+                <td [ngClass]="{hide: responsive}"><div [@newRow]="row.state" [ngClass]="getBibClass(row.color)">{{ row.racer.bib }}</div></td>
+                <td [ngClass]="{hide: responsive}"><div [@newRow]="row.state">{{ row.racer.firstName }} {{ row.racer.lastName }}</div></td>
+                <td [ngClass]="{hide: !responsive}"><div [@newRow]="row.state"><i class="{{ row.racer.nationality | lowercase }} flag"></i><b>{{ row.racer.lastName }}</b>, {{ row.racer.firstName }} </div></td>
+                <td><div [@newRow]="row.state"><span [style.font-weight]="row.rank == 1 ? 700: 'normal'">{{ getStatus(row) }}</span></div></td>
+                <td [ngClass]="{hide: responsive}"><div [@newRow]="row.state"><i class="{{ row.racer.nationality | lowercase }} flag"></i>{{ row.racer.nationality }}</div></td>
+                <td><div [@newRow]="row.state">{{ (row.time < maxVal && row.diff < maxVal) ? transform(row.diff) : '' }}</div></td>
             </tr>
         </tbody>
     </table>
@@ -44,7 +45,7 @@ import { ResultItem } from "../race-tab.component";
             ])
         ]),
         trigger('newRow', [
-            transition('void => *', [
+            transition('void => new', [
                 style({maxHeight: '0px', padding: '0 .7em'}),
                 animate('600ms ease', style({
                     maxHeight: '100px',
@@ -52,7 +53,8 @@ import { ResultItem } from "../race-tab.component";
                 }))
             ])
         ])
-    ]
+    ],
+    changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class TableComponent {
     // Table values
@@ -73,8 +75,18 @@ export class TableComponent {
         'nextstart': 'Next to start'
     };
 
+    public responsive: boolean = false;
+
     public track(index: number, item: ResultItem): number {
         return item.racer.bib;
+    }
+
+    public onChange($event: Dimensions) {
+        if ($event.width < 767 && !this.responsive) {
+            this.responsive = true;
+        } else if ($event.width >= 767 && this.responsive) {
+            this.responsive = false;
+        }
     }
 
     public getBibClass(color: string) {
