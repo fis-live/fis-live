@@ -46,7 +46,7 @@ import { Dimensions } from "../DimensionsDirective";
         ]),
         trigger('newRow', [
             transition('void => new', [
-                style({maxHeight: '0px', padding: '0 .7em'}),
+                style({maxHeight: '0px', padding: '0 .7em', overflow: 'hidden'}),
                 animate('600ms ease', style({
                     maxHeight: '100px',
                     padding: '0.3em .7em'
@@ -138,6 +138,7 @@ export class TableComponent {
         let minutes = Math.floor((time - hours * 1000 * 60 * 60) / (1000 * 60));
         let seconds = Math.floor((time - hours * 1000 * 60 * 60 - minutes * 1000 * 60) / 1000);
         let tenths = Math.floor((time - hours * 1000 * 60 * 60 - minutes * 1000 * 60 - seconds * 1000) / 100);
+        let hundreds = Math.floor((time - hours * 1000 * 60 * 60 - minutes * 1000 * 60 - seconds * 1000 - tenths * 100) / 10);
 
         if (hours > 0 || minutes > 0) {
             if (hours > 0){
@@ -153,6 +154,7 @@ export class TableComponent {
         }
 
         timeStr += seconds + '.' + tenths;
+        timeStr += (hundreds > 0) ? hundreds : '';
 
         return timeStr;
     }

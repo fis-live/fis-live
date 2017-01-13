@@ -145,9 +145,10 @@ export class FisConnectionService {
         this.baseURL = `http://${urlServer}/`;
     }
 
-    public loadPdf(): Observable<any> {
+    public loadPdf(suffix: string): Observable<any> {
         let pdfreader = new PdfReader();
-        let url = this.proxy + 'http://data.fis-ski.com/pdf/2017/CC/' + this.codex  + '/2017CC' + this.codex  + 'SL.pdf';
+        suffix = suffix || 'SL';
+        let url = this.proxy + 'http://data.fis-ski.com/pdf/2017/CC/' + this.codex  + '/2017CC' + this.codex  + suffix +'.pdf';
 
         return pdfreader.read(url);
     }

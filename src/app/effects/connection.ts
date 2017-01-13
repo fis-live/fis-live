@@ -34,7 +34,7 @@ export class ConnectionEffects {
 
     @Effect() loadPdf$ = this.actions$
         .ofType('LOAD_PDF')
-        .switchMap(() => this._connection.loadPdf()
+        .switchMap(action => this._connection.loadPdf(action.payload)
             .map(result => {
                 const months = ['JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN', 'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC'];
                 const pattern = /\d+:\d+/;
@@ -223,7 +223,8 @@ export class ConnectionEffects {
                     'SPA': 'Spain',
                     'AUS': 'Australia',
                     'CRO': 'Croatia',
-                    'LIE': 'Liechtenstein'
+                    'LIE': 'Liechtenstein',
+                    'THA': 'Thailand'
                 };
 
                 for ( let i = 0; i < data.racers.length; i++ ) {
@@ -255,7 +256,9 @@ export class ConnectionEffects {
                     }
                 }
 
-                return Observable.of(...actions, {type: 'LOAD_PDF'}, new LoadUpdateAction());
+                let suffix = data.runinfo[1] == 'Q' ? 'QUA' : 'SL';
+
+                return Observable.of(...actions, {type: 'LOAD_PDF', payload: suffix}, new LoadUpdateAction());
             })
             .catch((error) => {
                 console.log(error);

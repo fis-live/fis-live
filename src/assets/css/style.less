@@ -10,7 +10,7 @@
 
 .ui.table td > div {
     box-sizing: border-box;
-    overflow: hidden;
+    //overflow: hidden;
     max-height: 100px;
     padding: 0.3em .7em;
 }
@@ -31,6 +31,11 @@
 
 .ui.attached.dropdown {
     text-align: center;
+}
+
+.ui.label.turquoise {
+    background-color: darkturquoise !important;
+    border-color: darkturquoise !important;
 }
 
 app-dropdown + .ui.attached.segment {
@@ -100,11 +105,11 @@ app-dropdown + .ui.attached.segment {
     content: "";
 }
 
-.ui.table > tr.last_finish > td {
+.ui.table  tr.last_finish > td {
     background-color: #FFE5BC;
 }
 
-.ui.table > tr.favorite > td {
+.ui.table  tr.favorite > td {
     background: #D8E1FF !important;
 }
 

@@ -84,10 +84,12 @@ export function reducer(state: State = {startList: []}, action: Action): State {
             }
 
             let duplicate = false;
+            let prevTime = 0;
 
             let _state = state[item.intermediate].entities.map(row => {
                     if (row.racer == item.racer) {
                         duplicate = true;
+                        prevTime = row.time;
 
                         return Object.assign({}, row, {time: item.time})
                     }
@@ -110,20 +112,29 @@ export function reducer(state: State = {startList: []}, action: Action): State {
             if (duplicate) {
                 let count = _state.length;
                 let fastest = 999999999999;
-                for (let i = 0; i < count; i++) {
-                    let rank = 1;
-                    if (_state[i].time < fastest) {
-                        fastest = _state[i].time;
+
+                _state = _state.map(row => {
+                    if (row.time < fastest) {
+                        fastest = row.time;
                     }
 
-                    for (let j = 0; j < count; i++) {
-                        if (_state[i].time > _state[j].time) {
-                            rank += 1;
-                        }
+                    if (row.racer == item.racer) {
+                        return Object.assign({}, row, {rank: rank})
                     }
 
-                    _state[i].rank = rank;
-                }
+                    if (row.time == null) {
+                        return row;
+                    }
+
+                    if (row.time < prevTime) {
+                        return row;
+                    } else if (row.time == prevTime) {
+                        return row;
+                    }
+
+                    return Object.assign({}, row, {rank: row.rank - 1})
+
+                });
 
                 return Object.assign({}, state, {
                     [item.intermediate]: {
