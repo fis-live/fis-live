@@ -23,7 +23,7 @@ module.exports = webpackMerge.smart(commonConfig, {
         new BaseHrefWebpackPlugin({
             baseHref: '/fis-live/dist/'
         }),
-        new webpack.NoErrorsPlugin(),
+        new webpack.NoEmitOnErrorsPlugin(),
         new webpack.optimize.OccurrenceOrderPlugin(),
         new webpack.optimize.UglifyJsPlugin({
             beautify: false, //prod

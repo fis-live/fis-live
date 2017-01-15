@@ -51,7 +51,7 @@ module.exports = webpackMerge.smart(webpackConfig, {
         new BaseHrefWebpackPlugin({
             baseHref: '/'
         }),
-        new webpack.NoErrorsPlugin(),
+        new webpack.NoEmitOnErrorsPlugin(),
         new webpack.optimize.OccurrenceOrderPlugin(),
         new webpack.optimize.UglifyJsPlugin({
             beautify: false, //prod

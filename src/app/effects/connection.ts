@@ -224,7 +224,8 @@ export class ConnectionEffects {
                     'AUS': 'Australia',
                     'CRO': 'Croatia',
                     'LIE': 'Liechtenstein',
-                    'THA': 'Thailand'
+                    'THA': 'Thailand',
+                    'LTU': 'Lithuania'
                 };
 
                 for ( let i = 0; i < data.racers.length; i++ ) {
