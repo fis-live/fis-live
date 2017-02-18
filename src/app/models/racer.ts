@@ -4,4 +4,6 @@ export interface Racer {
     lastName: string;
     firstName: string;
     nationality: string;
+    color: string;
+    isFavorite: boolean;
 }

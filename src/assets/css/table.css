@@ -1,0 +1,112 @@
+.ui.table {
+    font-size: 0.9em;
+}
+
+.ui.table td > div {
+    box-sizing: border-box;
+    overflow: hidden;
+    max-height: 100px;
+    padding: 0.3em .7em;
+}
+
+.ui.table th > div {
+    box-sizing: border-box;
+    padding: 0.4em 0.3em 0.4em 0.7em;
+}
+
+.ui.table th.filterable > div {
+    width: calc(100% - 1.7em);
+}
+
+.ui.attached.segment table {
+    border: none;
+    margin: 0;
+}
+
+.ui.compact.table td {
+    border: none;
+    padding: 0;
+}
+
+.ui.compact.table th {
+    padding: 0;
+    border-bottom-width: 2px;
+    color: #565656;
+    font-size: 0.9em;
+    position: relative;
+    white-space: nowrap;
+}
+
+.ui.compact.table th:not(:last-child)::before {
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    width: 1px;
+    margin: 6px 0;
+    background-color: #DDDDDD;
+    content: "";
+}
+
+
+.ui.table tr.last_finish > td {
+    background-color: #FFE5BC;
+}
+
+.ui.table tr.favorite > td {
+    background: #D8E1FF !important;
+}
+
+.ui.table tr.new > td {
+    background-color: #66afe9;
+}
+
+
+.ui.label.turquoise {
+    background-color: darkturquoise !important;
+    border-color: darkturquoise !important;
+}
+
+.ui.table > tr > th:active,
+.ui.table > tr > td:active {
+    outline: none;
+}
+.ui.table th.sorting > div {
+    cursor: pointer;
+}
+
+.ui.table th.sorting > div:hover {
+    color:#101f28
+}
+
+.ui.table th.sorting:active ,
+.ui.table th.sorting_asc:active ,
+.ui.table th.sorting_desc:active {
+    background-color:#f8fafa !important;
+}
+
+.ui.table th.sorting > div.asc,
+.ui.table th.sorting > div.desc {
+    color: #22a6f5;
+    border-color: #22a6f5;
+}
+
+.ui.table th.sorting > div:after {
+    margin: 0 0 0 0.5em;
+    font-style: normal;
+    font-weight: 400;
+    text-decoration: inherit;
+    content: '';
+    height: 0.9em;
+    width: 0.9em;
+    font-family: 'Icons';
+    display: inline-block;
+}
+
+.ui.table th.sorting > div.asc:after {
+    content: "\f107";
+}
+
+.ui.table th.sorting > div.desc:after {
+    content: "\f106";
+}

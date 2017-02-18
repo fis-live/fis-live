@@ -1,18 +1,14 @@
-<div class="ui top menu fixed">
-    <div class="header borderless item">{{ (raceInfo$ | async).info.eventName }}</div>
-    <div class="borderless fitted small item">{{ (raceInfo$ | async).info.raceName}}</div>
-    <div class="right menu">
-        <div class="borderless item">{{ (raceInfo$ | async).message | uppercase }}</div>
-        <div class="item icon"><i (click)="startServer()" class="refresh icon"></i></div>
-        <div class="item icon"><i (click)="removeTab()" class="minus icon"></i>&nbsp;&nbsp;&nbsp;<i (click)="addTab()" class="add icon"></i></div>
+<app-sidebar [(isOpen)]="sidebarOpen" (navigate)="go($event)" [favoriteRacers]="favoriteRacers$ | async"></app-sidebar>
+
+<app-menu [raceInfo]="raceInfo$ | async" (openSidebar)="showSidebar()" (refresh)="onRefresh()" (tab)="configureTabs($event)"></app-menu>
+
+<div class="ui stackable equal width grid">
+    <div class="datagrid-spinner" *ngIf="loading$ | async">
+        <div class="spinner">Loading...</div>
+    </div>
+    <div *ngFor="let columns of rows; let row = index" class="row">
+        <app-tab *ngFor="let i of columns" class="column" [breakpoint]="breakpoints[row]"></app-tab>
     </div>
 </div>
 
-
-<div id="container" class="ui stackable equal width grid">
-    <div *ngFor="let columns of rows" class="row">
-        <div *ngFor="let i of columns" class="column">
-            <app-tab></app-tab>
-        </div>
-    </div>
-</div>
+<div (click)="sidebarOpen = false" class="backdrop" [class.open]="sidebarOpen"></div>

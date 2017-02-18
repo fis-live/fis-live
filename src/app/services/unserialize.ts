@@ -24,10 +24,10 @@ export function unserialize(data: any) {
     //   example 2: unserialize('a:2:{s:9:"firstName";s:5:"Kevin";s:7:"midName";s:3:"van";}')
     //   returns 2: {firstName: 'Kevin', midName: 'van'}
 
-    var utf8Overhead = function (chr) {
+    const utf8Overhead = function (chr) {
         // http://locutus.io/php/unserialize:571#comment_95906
-        var code = chr.charCodeAt(0);
-        var zeroCodes = [
+        const code = chr.charCodeAt(0);
+        const zeroCodes = [
             338,
             339,
             352,
@@ -56,11 +56,11 @@ export function unserialize(data: any) {
         if (code < 0x0800) {
             return 1;
         }
-        
+
         return 2;
     };
 
-    var error = function (type: string, msg: string) {
+    const error = function (type: string, msg: string) {
         if (type === 'Error') {
             throw new Error(msg);
         } else if (type === 'SyntaxError') {
@@ -69,65 +69,65 @@ export function unserialize(data: any) {
             throw new Error(type + ': ' + msg);
         }
     };
-    
-    var readUntil = function (data, offset, stopchr) {
-        var i = 2;
-        var buf = [];
-        var chr = data.slice(offset, offset + 1);
+
+    const readUntil = function (_data, offset, stopchr) {
+        let i = 2;
+        const buf = [];
+        let chr = _data.slice(offset, offset + 1);
 
         while (chr !== stopchr) {
-            if ((i + offset) > data.length) {
+            if ((i + offset) > _data.length) {
                 error('Error', 'Invalid');
             }
             buf.push(chr);
-            chr = data.slice(offset + (i - 1), offset + i);
+            chr = _data.slice(offset + (i - 1), offset + i);
             i += 1;
         }
-        
+
         return {length: buf.length, buffer: buf.join('')};
     };
-    
-    var readChrs = function (data, offset, length) {
-        var i, chr, buf;
+
+    const readChrs = function (_data, offset, length) {
+        let i, chr, buf;
 
         buf = [];
         for (i = 0; i < length; i++) {
-            chr = data.slice(offset + (i - 1), offset + i);
+            chr = _data.slice(offset + (i - 1), offset + i);
             buf.push(chr);
             length -= utf8Overhead(chr);
         }
-        
+
         return {length: buf.length, buffer: buf.join('')};
     };
-    
-    var _unserialize = function (data, offset) {
-        var dtype;
-        var dataoffset;
-        var keyandchrs;
-        var keys;
-        var contig;
-        var length;
-        var array;
-        var readdata;
-        var readData;
-        var ccount;
-        var stringlength;
-        var i;
-        var key;
-        var kprops;
-        var kchrs;
-        var vprops;
-        var vchrs;
-        var value;
-        var chrs = 0;
-        var typeconvert = function (x) {
+
+    const _unserialize = function (_data, offset) {
+        let dtype;
+        let dataoffset;
+        let keyandchrs;
+        let keys;
+        let contig;
+        let length;
+        let array;
+        let readdata;
+        let readData;
+        let ccount;
+        let stringlength;
+        let i;
+        let key;
+        let kprops;
+        let kchrs;
+        let vprops;
+        let vchrs;
+        let value;
+        let chrs = 0;
+        let typeconvert = function (x) {
             return x;
         };
 
         if (!offset) {
             offset = 0;
         }
-        dtype = (data.slice(offset, offset + 1)).toLowerCase();
+        dtype = (_data.slice(offset, offset + 1)).toLowerCase();
 
         dataoffset = offset + 2;
 
@@ -136,7 +136,7 @@ export function unserialize(data: any) {
                 typeconvert = function (x) {
                     return parseInt(x, 10);
                 };
-                readData = readUntil(data, dataoffset, ';');
+                readData = readUntil(_data, dataoffset, ';');
                 chrs = readData.length;
                 readdata = readData.buffer;
                 dataoffset += chrs + 1;
@@ -145,7 +145,7 @@ export function unserialize(data: any) {
                 typeconvert = function (x) {
                     return parseInt(x, 10) !== 0;
                 };
-                readData = readUntil(data, dataoffset, ';');
+                readData = readUntil(_data, dataoffset, ';');
                 chrs = readData.length;
                 readdata = readData.buffer;
                 dataoffset += chrs + 1;
@@ -154,7 +154,7 @@ export function unserialize(data: any) {
                 typeconvert = function (x) {
                     return parseFloat(x);
                 };
-                readData = readUntil(data, dataoffset, ';');
+                readData = readUntil(_data, dataoffset, ';');
                 chrs = readData.length;
                 readdata = readData.buffer;
                 dataoffset += chrs + 1;
@@ -163,12 +163,12 @@ export function unserialize(data: any) {
                 readdata = null;
                 break;
             case 's':
-                ccount = readUntil(data, dataoffset, ':');
-                chrs = ccount.length
+                ccount = readUntil(_data, dataoffset, ':');
+                chrs = ccount.length;
                 stringlength = ccount.buffer;
                 dataoffset += chrs + 2;
 
-                readData = readChrs(data, dataoffset + 1, parseInt(stringlength, 10));
+                readData = readChrs(_data, dataoffset + 1, parseInt(stringlength, 10));
                 chrs = readData.length;
                 readdata = readData.buffer;
                 dataoffset += chrs + 2;
@@ -179,7 +179,7 @@ export function unserialize(data: any) {
             case 'a':
                 readdata = {};
 
-                keyandchrs = readUntil(data, dataoffset, ':');
+                keyandchrs = readUntil(_data, dataoffset, ':');
                 chrs = keyandchrs.length;
                 keys = keyandchrs.buffer;
                 dataoffset += chrs + 2;
@@ -188,12 +188,12 @@ export function unserialize(data: any) {
                 contig = true;
 
                 for (i = 0; i < length; i++) {
-                    kprops = _unserialize(data, dataoffset);
+                    kprops = _unserialize(_data, dataoffset);
                     kchrs = kprops[1];
                     key = kprops[2];
                     dataoffset += kchrs;
 
-                    vprops = _unserialize(data, dataoffset);
+                    vprops = _unserialize(_data, dataoffset);
                     vchrs = vprops[1];
                     value = vprops[2];
                     dataoffset += vchrs;
@@ -226,7 +226,7 @@ export function unserialize(data: any) {
 }
 
 export function json(body: string | Object): any {
-    var jsonResponse: string | Object;
+    let jsonResponse: string | Object;
     if (body !== null && (typeof body === 'function' || typeof body === 'object')) {
         jsonResponse = body;
     } else if (typeof body === 'string') {

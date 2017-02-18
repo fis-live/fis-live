@@ -1,18 +1,11 @@
-import { enableProdMode } from '@angular/core';
+import './polyfills.ts';
 import { platformBrowserDynamic } from '@angular/platform-browser-dynamic';
+import { enableProdMode } from '@angular/core';
 
 import { AppModule } from './app/app.module';
-
 import './app/rxjs-operators';
 
-import 'jquery';
-import 'semantic-ui/dist/components/transition.js';
-import 'semantic-ui/dist/components/dropdown.js';
-import 'semantic-ui/dist/components/modal.js';
-import 'semantic-ui/dist/components/dimmer.js';
-
-import 'semantic-ui/dist/semantic.css';
-import './assets/css/style.less';
+import './assets/styles.scss';
 
 if (process.env.ENV === 'production') {
     enableProdMode();

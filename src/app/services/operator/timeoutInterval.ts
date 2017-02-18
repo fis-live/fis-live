@@ -3,7 +3,7 @@ import { Observable } from 'rxjs/Observable';
 import { Subscriber } from 'rxjs/Subscriber';
 import { Scheduler } from 'rxjs/Scheduler';
 import { async } from 'rxjs/scheduler/async';
-import { TimeInterval } from "rxjs/Rx";
+import { TimeInterval } from 'rxjs/Rx';
 
 /**
  * @param due
@@ -16,8 +16,8 @@ import { TimeInterval } from "rxjs/Rx";
 export function timeoutInterval<T>(due: number,
                                    errorToSend: any = null,
                                    scheduler: Scheduler = async): Observable<TimeInterval<T>> {
-    let absoluteTimeout = false;
-    let waitFor = absoluteTimeout ? (+due - scheduler.now()) : Math.abs(<number>due);
+    const absoluteTimeout = false;
+    const waitFor = absoluteTimeout ? (+due - scheduler.now()) : Math.abs(<number>due);
     return this.lift(new TimeoutIntervalOperator(waitFor, absoluteTimeout, errorToSend, scheduler));
 }
 
@@ -56,12 +56,22 @@ class TimeoutIntervalSubscriber<T> extends Subscriber<T> {
     private lastTime: number = 0;
     private index: number = 0;
     private _previousIndex: number = 0;
+    private _hasCompleted: boolean = false;
+
     get previousIndex(): number {
         return this._previousIndex;
     }
-    private _hasCompleted: boolean = false;
+
     get hasCompleted(): boolean {
         return this._hasCompleted;
+    }
+
+    private static dispatchTimeout(state: any): void {
+        const source = state.subscriber;
+        const currentIndex = state.index;
+        if (!source.hasCompleted && source.previousIndex === currentIndex) {
+            source.notifyTimeout();
+        }
     }
 
     constructor(destination: Subscriber<TimeInterval<T>>,
@@ -74,25 +84,16 @@ class TimeoutIntervalSubscriber<T> extends Subscriber<T> {
         this.lastTime = scheduler.now();
     }
 
-
-    private static dispatchTimeout(state: any): void {
-        const source = state.subscriber;
-        const currentIndex = state.index;
-        if (!source.hasCompleted && source.previousIndex === currentIndex) {
-            source.notifyTimeout();
-        }
-    }
-
     private scheduleTimeout(): void {
-        let currentIndex = this.index;
+        const currentIndex = this.index;
         this.scheduler.schedule(TimeoutIntervalSubscriber.dispatchTimeout, this.waitFor, { subscriber: this, index: currentIndex });
         this.index++;
         this._previousIndex = currentIndex;
     }
 
     protected _next(value: T) {
-        let now = this.scheduler.now();
-        let span = now - this.lastTime;
+        const now = this.scheduler.now();
+        const span = now - this.lastTime;
         this.lastTime = now;
 
         this.destination.next(new TimeInterval(value, span));
@@ -103,8 +104,8 @@ class TimeoutIntervalSubscriber<T> extends Subscriber<T> {
     }
 
     protected _error(err: any) {
-        let now = this.scheduler.now();
-        let span = now - this.lastTime;
+        const now = this.scheduler.now();
+        const span = now - this.lastTime;
         this.lastTime = now;
 
         this.destination.error(new ErrorTimeInterval(err, span));

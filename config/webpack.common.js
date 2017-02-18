@@ -2,11 +2,7 @@ const webpack = require('webpack');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const ExtractTextPlugin = require('extract-text-webpack-plugin');
 const ProvidePlugin = require('webpack/lib/ProvidePlugin');
-const { CheckerPlugin } = require('awesome-typescript-loader');
 const helpers = require('./helpers');
-
-// Use our jQuery
-const _jquery = helpers.root('node_modules', 'jquery');
 
 module.exports = {
     entry: {
@@ -61,20 +57,21 @@ module.exports = {
             {
                 test: /\.css$/,
                 exclude: helpers.root('src', 'app'),
-                loader: ExtractTextPlugin.extract({fallbackLoader:'style-loader', loader: 'css-loader?sourceMap'})
+                loader: ExtractTextPlugin.extract({fallback:'style-loader', use: 'css-loader?sourceMap'})
             },
             {
                 test: /\.less$/,
                 exclude: helpers.root('src', 'app'),
-                loader: ExtractTextPlugin.extract({fallbackLoader:'style-loader', loader: 'css-loader!less-loader'})
+                loader: ExtractTextPlugin.extract({fallback:'style-loader', use: 'css-loader!less-loader'})
             },
             {
                 test: /\.scss$|\.sass$/,
                 exclude: helpers.root('src', 'app'),
-                loader: ExtractTextPlugin.extract({fallbackLoader:'style-loader', loader: 'css-loader!sass-loader'})
+                loader: ExtractTextPlugin.extract({fallback:'style-loader', use: 'css-loader!sass-loader?includePaths=' + helpers.root('')})
             }
         ]
     },
+
 
     plugins: [
         new webpack.optimize.CommonsChunkPlugin({
@@ -83,12 +80,6 @@ module.exports = {
 
         new HtmlWebpackPlugin({
             template: 'src/index.html'
-        }),
-
-        new ProvidePlugin({
-            jQuery: _jquery,
-            $: _jquery,
-            jquery: _jquery
         }),
 
         new webpack.ContextReplacementPlugin(

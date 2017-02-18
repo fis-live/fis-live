@@ -1,16 +1,3 @@
 <router-outlet></router-outlet>
 
-<div class="ui small modal">
-    <i class="close icon"></i>
-    <div class="header">
-        {{ (error$ | async).title }}
-    </div>
-    <div class="content">
-        {{ (error$ | async).message }}
-    </div>
-    <div class="actions">
-        <div class="ui black ok button">
-            OK
-        </div>
-    </div>
-</div>
+<app-alert [alert]="alert$ | async" (close)="closeAlert()" (action)="alertAction($event)"></app-alert>

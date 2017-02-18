@@ -1,0 +1,70 @@
+<div [@animate]="isOpen ? 'visible' : 'hidden'" style="z-index: 1039; background-color: #FFFFFF"
+     class="ui visible wide sidebar vertical">
+
+    <div style="padding: 5px;">
+        <div class="ui mini action input">
+            <input (keyup.enter)="go(codex.value)" #codex placeholder="Enter codex..." type="text">
+            <button (click)="go(codex.value)" class="ui icon button">Go</button>
+        </div>
+        <button type="button" class="close" aria-label="Close" (click)="close()">
+            <clr-icon shape="times" size="32"></clr-icon>
+        </button>
+    </div>
+
+    <ul class="nav" role="tablist">
+        <li role="presentation" class="nav-item">
+            <button (click)="tab = 'live'" [class.active]="tab === 'live'" class="btn btn-link nav-link" type="button">
+                Live
+            </button>
+        </li>
+        <li role="presentation" class="nav-item">
+            <button (click)="tab = 'more'" [class.active]="tab === 'more'" class="btn btn-link nav-link" type="button">
+                More
+            </button>
+        </li>
+        <li role="presentation" class="nav-item">
+            <button (click)="tab = 'settings'" [class.active]="tab === 'settings'" class="btn btn-link nav-link"
+                    type="button">
+                <clr-icon shape="cog" [class.is-solid]="tab === 'settings'"></clr-icon>
+            </button>
+        </li>
+    </ul>
+
+
+        <ng-container *ngIf="tab === 'live'">
+            <nav class="sidenav" style="border:none; width: 100%; max-width: none;">
+                <section class="sidenav-content">
+                    <section *ngFor="let races of upcomingRaces$ | async" class="nav-group collapsible">
+                        <input [checked]="!races.date.startsWith('Today')" [attr.id]="'races' + races.date" type="checkbox">
+                        <label [attr.for]="'races' + races.date">{{ races.date }}<span *ngIf="races.liveCount > 0" class="badge badge-success" style="float: right; margin-top: 4.5px;">{{ races.liveCount }}</span></label>
+                        <ul class="nav-list">
+                            <li *ngFor="let race of races.races" >
+                                <a [routerLink]="['', race.codex]" routerLinkActive="active" class="nav-link">{{ race.discipline }}
+                                    <span class="nav-link-tag">{{ race.category }}&nbsp;{{ race.gender }}</span>
+                                    <span [class.label-info]="race.status == 'Results'" [class.label-success]="race.status == 'Live'" class="label" style="float: right; height: 16px;">{{ race.status ? race.status : race.time }}</span>
+                                </a>
+                            </li>
+                        </ul>
+                    </section>
+                </section>
+            </nav>
+        </ng-container>
+
+        <ng-container *ngIf="tab === 'settings'">
+            <div style="padding: 10px;">
+            <div class="ui divided list">
+                <div *ngFor="let racer of favoriteRacers" class="item">
+                    <div class="right floated content">
+                        <button type="button" class="close" aria-label="Close" (click)="close()">
+                            <clr-icon shape="trash" size="24"></clr-icon>
+                        </button>
+                    </div>
+                    <div class="header">{{ racer.firstName }} {{ racer.lastName }}</div>
+                    {{ FLAGS[racer.nationality] || racer.nationality }}
+                </div>
+            </div>
+            </div>
+        </ng-container>
+
+
+</div>

@@ -1,0 +1,274 @@
+@import "~semantic-ui-css/components/reset.min.css";
+@import "~semantic-ui-css/components/site.min.css";
+@import "~semantic-ui-css/components/container.min.css";
+@import "~semantic-ui-css/components/grid.min.css";
+@import "~semantic-ui-css/components/button.min.css";
+@import "~semantic-ui-css/components/menu.min.css";
+@import "~semantic-ui-css/components/icon.min.css";
+@import "~semantic-ui-css/components/dropdown.min.css";
+@import "~semantic-ui-css/components/table.min.css";
+@import "~semantic-ui-css/components/sidebar.min.css";
+@import "~semantic-ui-css/components/segment.min.css";
+@import "~semantic-ui-css/components/flag.min.css";
+@import "~semantic-ui-css/components/input.min.css";
+@import "~semantic-ui-css/components/label.min.css";
+@import "~semantic-ui-css/components/list.min.css";
+
+@import "~perfect-scrollbar/dist/css/perfect-scrollbar.min.css";
+@mixin icon-background-styles() {
+    background-repeat: no-repeat;
+    background-size: contain;
+    vertical-align: middle;
+}
+@import "~clarity-icons/clarity-icons.min.css";
+@import "~clarity-ui/src/nav/sidenav.clarity";
+@import "~clarity-ui/src/labels/labels.clarity";
+
+
+@import "css/alert.css";
+@import "css/dropdown.css";
+@import "css/grid.css";
+@import "css/table.css";
+
+
+$svg_data: "data:image/svg+xml;charset=utf8";
+
+@function generateFilterIcon($fillColor) {
+    $filter-off-icon: "%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2016%2016%22%3E%3Cdefs%3E%3Cstyle%3E.cls-1%7Bfill%3A%23"
+        + str-slice($fillColor + "",2)
+        + "%3Bfill-rule%3Aevenodd%3B%7D%3C%2Fstyle%3E%3C%2Fdefs%3E%3Cpolygon%20class%3D%22cls-1%22%20points%3D%227%209.32%203%205.38%203%205%2013%205%2013%205.38%209%209.32%209%2012.21%207%2013.29%207%209.32%22%2F%3E%3C%2Fsvg%3E";
+    @return url("#{$svg_data},#{$filter-off-icon}");
+}
+
+@function generateCircleIcon($fillColor) {
+    $filter-off-icon: "%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2016%2016%22%3E%3Cdefs%3E%3Cstyle%3E.cls-1%7Bfill%3Anone%3Bstroke%3A%23"
+        + str-slice($fillColor + "",2)
+        + "%3Bstroke-miterlimit%3A10%3B%7D%3C%2Fstyle%3E%3C%2Fdefs%3E%3Ccircle%20class%3D%22cls-1%22%20cx%3D%228%22%20cy%3D%228%22%20r%3D%227.5%22%2F%3E%3C%2Fsvg%3E";
+    @return url("#{$svg_data},#{$filter-off-icon}");
+}
+
+body {
+    background-color: #FAFAFA;
+}
+
+.nav-link-tag {
+    color: #313131;
+    display: inline-block;
+    padding-left: 8px;
+    font-size: 10px;
+    font-weight: 400;
+    vertical-align: top;
+    letter-spacing: .02em;
+}
+
+.backdrop.open {
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: rgba(0,0,0,.85);
+    cursor: pointer;
+    z-index: 1038;
+}
+
+.spinner {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    margin: auto;
+    display: inline-block;
+    min-height: 63px;
+    min-width: 63px;
+    height: 63px;
+    width: 63px;
+    -webkit-animation: spin 1s linear infinite;
+    animation: spin 1s linear infinite;
+    padding: 0;
+    background: url("data:image/svg+xml;charset=utf8,%3Csvg%20id%3D%22Layer_2%22%20data-name%3D%22Layer%202%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2072%2072%22%3E%0A%20%20%20%20%3Cdefs%3E%0A%20%20%20%20%20%20%20%20%3Cstyle%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20.cls-1%2C%0A%20%20%20%20%20%20%20%20%20%20%20%20.cls-2%20%7B%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20fill%3A%20none%3B%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20stroke-miterlimit%3A%2010%3B%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20stroke-width%3A%205px%3B%0A%20%20%20%20%20%20%20%20%20%20%20%20%7D%0A%20%20%20%20%20%20%20%20%20%20%20%20.cls-1%20%7B%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20stroke%3A%20%23000%3B%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20stroke-opacity%3A%20.15%3B%0A%20%20%20%20%20%20%20%20%20%20%20%20%7D%0A%20%20%20%20%20%20%20%20%20%20%20%20.cls-2%20%7B%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20stroke%3A%20%23007cbb%3B%0A%20%20%20%20%20%20%20%20%20%20%20%20%7D%0A%20%20%20%20%20%20%20%20%3C%2Fstyle%3E%0A%20%20%20%20%3C%2Fdefs%3E%0A%20%20%20%20%3Ctitle%3EPreloader_72x2%3C%2Ftitle%3E%0A%20%20%20%20%3Ccircle%20class%3D%22cls-1%22%20cx%3D%2236%22%20cy%3D%2236%22%20r%3D%2233%22%2F%3E%0A%20%20%20%20%3Cpath%20class%3D%22cls-2%22%20d%3D%22M14.3%2C60.9A33%2C33%2C0%2C0%2C1%2C36%2C3%22%3E%0A%20%20%20%20%3C%2Fpath%3E%0A%3C%2Fsvg%3E%0A");
+    text-indent: 100%;
+    overflow: hidden;
+}
+
+@keyframes spin {
+    0% {
+        transform: rotate(0deg);
+    }
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
+
+
+
+.ui.inverted.menu > .small.item {
+    color: rgba(255, 255, 255, 0.5);
+    font-size: 0.8em;
+}
+
+.menu > .item.icon > .icon {
+    //color: #007CBB;
+    color: #FAFAFA;
+    transition: color 0.6s ease 0s, transform 0.2s ease 0s;
+}
+
+.menu > .item.icon > .icon:hover {
+    cursor: pointer;
+    transform: scale(1.5);
+    color: #FFFFFF;
+}
+
+
+i.icon.app-filter {
+    position: absolute;
+    right: 0;
+    top: 0.35em;
+    width: 1em;
+    height: 1em;
+    font-size: 1.4em;
+    background-repeat: no-repeat;
+    background-size: contain;
+    background-image: generateFilterIcon("#9A9A9A");
+    cursor: pointer;
+
+    &:hover {
+        background-image: generateFilterIcon("#007cbb");
+    }
+
+    &.filter-open {
+        background-image: generateFilterIcon("#007cbb");
+    }
+
+    &.filtered {
+        background-image: generateFilterIcon("#007cbb"),
+        generateCircleIcon("#007cbb");
+    }
+}
+
+.datagrid-spinner {
+    background: #FFF;
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    opacity: 0.6;
+    z-index: 99;
+}
+
+.datagrid-filter {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    margin-top: 4.8px;
+    background: #fff;
+    padding: 18px;
+    border: 1px solid #ccc;
+    box-shadow: 0 1px 3px rgba(116, 116, 116, 0.25);
+    border-radius: 3px;
+    font-weight: normal;
+    z-index: 1000
+}
+
+.datagrid-filter .datagrid-filter-close-wrapper {
+    text-align: right
+}
+
+.datagrid-filter .datagrid-filter-close-wrapper .close {
+    float: none
+}
+
+th > app-filter > i.icon {
+    cursor: pointer;
+}
+
+
+.nav {
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    height: 36px;
+    list-style-type: none;
+    -webkit-box-align: center;
+    -ms-flex-align: center;
+    align-items: center;
+    box-shadow: 0 -1px 0 #ccc inset;
+    margin: 0;
+    width: 100%;
+    white-space: nowrap
+}
+
+.nav .nav-item {
+    display: inline-block;
+    margin-right: 24px
+}
+
+.nav .nav-item.active > .nav-link {
+    color: #000;
+    box-shadow: 0 -3px 0 #007cbb inset
+}
+
+.nav .nav-link {
+    font-size: 14px;
+    font-weight: 400;
+    letter-spacing: normal;
+    display: inline-block;
+    color: #747474;
+    padding: 0 3px;
+    box-shadow: none;
+    line-height: 36px
+}
+
+.nav .nav-link:hover, .nav .nav-link:focus, .nav .nav-link:active {
+    color: inherit
+}
+
+.nav .nav-link:hover, .nav .nav-link.active {
+    box-shadow: 0 -3px 0 #007cbb inset;
+    -webkit-transition: box-shadow 0.2s ease-in;
+    transition: box-shadow 0.2s ease-in;
+    outline: 0
+}
+
+.nav .nav-link:hover, .nav .nav-link:focus, .nav .nav-link:active, .nav .nav-link.active {
+    text-decoration: none
+}
+
+.nav .nav-link.active {
+    color: #000
+}
+
+.nav .nav-link.btn {
+    margin: 0 0 -1px 0
+}
+
+.btn.btn-link {
+    border-color: transparent;
+    background-color: transparent;
+    color: #007cbb;
+    margin: 6px 0
+}
+
+.btn.btn-link:visited {
+    color: #007cbb
+}
+
+.btn.btn-link:hover {
+    background-color: transparent;
+    color: #004a70
+}
+
+.btn.btn-link:active {
+    box-shadow: 0 0 0 0 transparent inset
+}
+
+.btn.btn-link.disabled, .btn.btn-link:disabled {
+    color: #565656;
+    cursor: not-allowed;
+    background-color: transparent;
+    border-color: transparent;
+    opacity: 0.4
+}

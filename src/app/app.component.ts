@@ -1,30 +1,29 @@
-import { Component, OnInit } from '@angular/core';
-import { Store } from "@ngrx/store";
-import './rxjs-operators';
+import { Component } from '@angular/core';
+import { Store, Action } from '@ngrx/store';
+import { Observable } from 'rxjs/Observable';
 
-import { Observable } from "rxjs/Rx";
-
-import { AppState, getErrorState } from "./reducers";
-import { State as ErrorState } from './reducers/error';
-import { LoadServerAction } from "./actions/connection";
+import { AppState, getAlertState } from './state/reducers/';
+import { State as AlertState } from './state/reducers/alert';
+import { CloseAlertAction } from './state/actions/connection';
 
 @Component({
     selector: 'app-root',
-    templateUrl: './app.component.html'
+    templateUrl: './app.component.html',
 })
-export class AppComponent implements OnInit {
-    public error$: Observable<ErrorState>;
+export class AppComponent {
 
-    ngOnInit() {
-        this._store.dispatch(new LoadServerAction());
-    }
+    public alert$: Observable<AlertState>;
 
     constructor(private _store: Store<AppState>) {
-        this.error$ = _store.let(getErrorState).do((state: ErrorState) => {
-            if (state.error) {
-                let el: any = jQuery('.ui.modal');
-                el.modal('show');
-            }
-        });
+        this.alert$ = _store.select(getAlertState);
+    }
+
+    public closeAlert(): void {
+        this._store.dispatch(new CloseAlertAction());
+    }
+
+    public alertAction(actions: Action[]): void {
+        actions.forEach((action) => this._store.dispatch(action));
+        this.closeAlert();
     }
 }

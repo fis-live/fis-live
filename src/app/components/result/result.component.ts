@@ -1,0 +1,243 @@
+import {
+    Component, Input, trigger, state, style, transition, animate, ChangeDetectionStrategy, EventEmitter, Output,
+    OnDestroy, AfterViewInit
+} from '@angular/core';
+
+import { ResultItem, TableConfiguration } from '../tab.component';
+import { Racer } from '../../models/racer';
+import { Sort } from './providers/sort';
+import { Subscription } from 'rxjs/Rx';
+import { Filters } from './providers/filter';
+
+@Component({
+    selector: 'app-table',
+    templateUrl: 'result.component.html',
+    providers: [ Sort, Filters ],
+    animations: [
+        trigger('color', [
+            state('new', style({
+                backgroundColor: '#FFE5BC'
+            })),
+            transition('void => new', [
+                animate('600ms ease')
+            ]),
+            transition('new => *', [
+                animate('600ms ease')
+            ])
+        ]),
+        trigger('newRow', [
+            transition('void => *', [
+                style({maxHeight: '0px', padding: '0 .7em', overflow: 'hidden'}),
+                animate('600ms ease', style({
+                    maxHeight: '100px',
+                    padding: '0.3em .7em'
+                }))
+            ])
+        ])
+    ],
+    changeDetection: ChangeDetectionStrategy.OnPush
+})
+export class ResultComponent implements AfterViewInit, OnDestroy {
+    public rows: ResultItem[];
+    private _config: TableConfiguration;
+    private _subscriptions: Subscription[] = [];
+
+    @Input() public breakpoint = 'large';
+    @Output() public toggleFavorite = new EventEmitter<Racer>();
+
+    public FLAGS: { [short: string]: string } = {
+    'SWE': 'Sweden',
+    'NOR': 'Norway',
+    'FIN': 'Finland',
+    'GER': 'Germany',
+    'FRA': 'France',
+    'AUT': 'Austria',
+    'USA': 'United States',
+    'RUS': 'Russia',
+    'KAZ': 'Kazakhstan',
+    'ITA': 'Italy',
+    'CZE': 'Czech Republic',
+    'SUI': 'Switzerland',
+    'POL': 'Poland',
+    'JPN': 'Japan',
+    'CAN': 'Canada',
+    'SLO': 'Slovenia',
+    'SVK': 'Slovakia',
+    'GBR': 'United Kingdom',
+    'EST': 'Estonia',
+    'LAT': 'Latvia',
+    'DEN': 'Denmark',
+    'ROU': 'Romania',
+    'KOR': 'South Korea',
+    'BUL': 'Bulgaria',
+    'IRL': 'Ireland',
+    'ARM': 'Armenia',
+    'BLR': 'Belarus',
+    'ISL': 'Iceland',
+    'SPA': 'Spain',
+    'AUS': 'Australia',
+    'CRO': 'Croatia',
+    'LIE': 'Liechtenstein',
+    'THA': 'Thailand',
+    'LTU': 'Lithuania'
+};
+    public state = 'active';
+    public maxVal = 1000000000;
+    public statusMap = {
+        'start': 'Started',
+        'finish': 'Finished',
+        'lapped': 'Lapped',
+        'nextstart': 'Next to start'
+    };
+
+    constructor(private sort: Sort, private filters: Filters) { }
+
+    @Input() public set config(config: TableConfiguration) {
+        if ((this.sort.comparator === 'time' || this.sort.comparator === 'status') &&
+            config.isStartList !== this._config.isStartList) {
+            this.sort.comparator = config.isStartList ? 'status' : 'time';
+        }
+
+        this._config = config;
+        this.triggerRefresh();
+    }
+
+    public get config() {
+        return this._config;
+    }
+
+    private triggerRefresh() {
+        let rows = this.config.rows;
+
+        if (this.filters.hasActiveFilters()) {
+            rows = rows.filter((row) => this.filters.accepts(row));
+        }
+
+        if (rows != null && this.sort.comparator) {
+            rows.sort((a, b) => this.sort.compare(a, b));
+        }
+
+        this.rows = rows;
+    }
+
+    public track(index: number, item: any): number {
+        return item.racer.bib;
+    }
+
+    public getDiff(diff) {
+        if (diff === this.config.fastestDiff) {
+            return this.transform(diff);
+        }
+
+        return '+' + this.transform(diff - this.config.fastestDiff);
+    }
+
+    public getStatus(row: ResultItem) {
+        if (this.config.isStartList || row.time > this.maxVal) {
+            return (row.status !== null) ? this.statusMap[row.status] || row.status.toUpperCase() : '';
+        } else if (row.rank > 1) {
+            return '+' + this.transform(row.time - this.config.fastestTime);
+        }
+
+        return this.transform(row.time);
+    }
+
+    public transform(time: number): string {
+        if (time === null) {
+            return '';
+        }
+        let timeStr = '';
+
+        const hours = Math.floor(time / (1000 * 60 * 60));
+        const minutes = Math.floor((time - hours * 1000 * 60 * 60) / (1000 * 60));
+        const seconds = Math.floor((time - hours * 1000 * 60 * 60 - minutes * 1000 * 60) / 1000);
+        const tenths = Math.floor((time - hours * 1000 * 60 * 60 - minutes * 1000 * 60 - seconds * 1000) / 100);
+        const hundreds = Math.floor((time - hours * 1000 * 60 * 60 - minutes * 1000 * 60 - seconds * 1000 - tenths * 100) / 10);
+
+        if (hours > 0 || minutes > 0) {
+            if (hours > 0) {
+                timeStr = hours + ':';
+                if (minutes < 10) {
+                    timeStr += '0';
+                }
+            }
+            timeStr += minutes + ':';
+            if (seconds < 10) {
+                timeStr += '0';
+            }
+        }
+
+        timeStr += seconds + '.' + tenths;
+        timeStr += (hundreds > 0) ? hundreds : '';
+
+        return timeStr;
+    }
+
+    // public sort(a: ResultItem, b: ResultItem): number {
+    //
+    //     if (this.getData(a, this.sortBy) > this.getData(b, this.sortBy)) {
+    //         return (this.sortOrder === 'asc') ? 1 : -1;
+    //     } else if (this.getData(a, this.sortBy) < this.getData(b, this.sortBy)) {
+    //         return (this.sortOrder === 'asc') ? -1 : 1;
+    //     }
+    //
+    //     return 0;
+    // }
+    // public getSortingClass(column: string) {
+    //     const sortable = !(column === 'rank' && !this.config.isStartList);
+    //     if (column === 'time' && this.config.isStartList) {
+    //         column = 'status';
+    //     }
+    //
+    //     return {
+    //         'sorting': sortable && this.sortBy !== column,
+    //         'sorting_desc': this.sortBy === column && this.sortOrder === 'desc',
+    //         'sorting_asc': this.sortBy === column && this.sortOrder === 'asc'
+    //     };
+    // }
+    //
+    // public setSorting(column: string): void {
+    //     if (column === 'rank' && !this.config.isStartList) {
+    //         return;
+    //     }
+    //
+    //     if (column === 'time' && this.config.isStartList) {
+    //         column = 'status';
+    //     }
+    //
+    //     if (this.sortBy === column) {
+    //         switch (this.sortOrder) {
+    //             case '':
+    //                 this.sortOrder = 'asc';
+    //                 break;
+    //             case 'asc':
+    //                 this.sortOrder = 'desc';
+    //                 break;
+    //             case 'desc':
+    //                 this.sortOrder = 'asc';
+    //                 break;
+    //             default:
+    //                 this.sortOrder = '';
+    //         }
+    //     } else {
+    //         this.sortOrder = 'asc';
+    //     }
+    //
+    //     this.sortBy = column;
+    //
+    //     this.rows.sort((a, b) => this.sort(a, b));
+    // }
+
+    public getData(row: ResultItem, propertyName: string): any {
+        return propertyName.split('.').reduce((prev: any, curr: string) => prev[curr], row);
+    }
+
+    ngAfterViewInit() {
+        this._subscriptions.push(this.sort.change.subscribe(() => this.triggerRefresh()));
+        this._subscriptions.push(this.filters.change.subscribe(() => this.triggerRefresh()));
+    }
+
+    ngOnDestroy() {
+        this._subscriptions.forEach((sub: Subscription) => sub.unsubscribe());
+    }
+}
