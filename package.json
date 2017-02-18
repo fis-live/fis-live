@@ -1,6 +1,6 @@
 {
   "name": "fis-live-test",
-  "version": "0.1.0",
+  "version": "1.0.0-beta.1",
   "author": "joow",
   "license": "MIT",
   "description": "Fis live app, built on Angular 2",
@@ -8,6 +8,8 @@
   "scripts": {
     "start": "webpack-dev-server --inline --progress --port 8080",
     "build": "rimraf dist && webpack --config config/webpack.prod.js --progress --profile --bail",
+    "deploy": "rimraf dist && webpack --config config/webpack.github-deploy.js --progress --profile --bail && npm run publish",
+    "publish": "gh-pages -d dist -b master -o pages",
     "tslint": "tslint"
   },
   "dependencies": {
@@ -22,11 +24,11 @@
     "@ngrx/core": "^1.2.0",
     "@ngrx/effects": "^2.0.0",
     "@ngrx/store": "^2.2.1",
-    "bootstrap": "^4.0.0-alpha.5",
+    "bootstrap": "4.0.0-alpha.5",
     "clarity-icons": "^0.8.4",
     "clarity-ui": "^0.8.2",
     "core-js": "^2.4.1",
-    "gemini-scrollbar": "^1.4.3",
+    "ngrx-store-localstorage": "^0.1.5",
     "perfect-scrollbar": "^0.6.16",
     "reselect": "^2.5.4",
     "rxjs": "^5.0.1",
@@ -47,6 +49,7 @@
     "css-loader": "^0.26.0",
     "extract-text-webpack-plugin": "^2.0.0-beta.4",
     "file-loader": "^0.10.0",
+    "gh-pages": "^0.12.0",
     "html-webpack-plugin": "^2.22.0",
     "less": "^2.7.1",
     "less-loader": "^2.2.3",
