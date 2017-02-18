@@ -38,12 +38,15 @@
                         <input [checked]="!races.date.startsWith('Today')" [attr.id]="'races' + races.date" type="checkbox">
                         <label [attr.for]="'races' + races.date">{{ races.date }}<span *ngIf="races.liveCount > 0" class="badge badge-success" style="float: right; margin-top: 4.5px;">{{ races.liveCount }}</span></label>
                         <ul class="nav-list">
-                            <li *ngFor="let race of races.races" >
-                                <a [routerLink]="['', race.codex]" routerLinkActive="active" class="nav-link">{{ race.discipline }}
-                                    <span class="nav-link-tag">{{ race.category }}&nbsp;{{ race.gender }}</span>
-                                    <span [class.label-info]="race.status == 'Results'" [class.label-success]="race.status == 'Live'" class="label" style="float: right; height: 16px;">{{ race.status ? race.status : race.time }}</span>
-                                </a>
-                            </li>
+                            <template ngFor let-place [ngForOf]="races.places">
+                                <li style="padding-left: 6px; background: #eee">{{ place.place }}</li>
+                                <li *ngFor="let race of place.races" >
+                                    <a (click)="close()" [routerLink]="['', race.codex]" routerLinkActive="active" class="nav-link">{{ race.discipline }}
+                                        <span class="nav-link-tag">{{ race.category }}&nbsp;{{ race.gender }}</span>
+                                        <span [class.label-info]="race.status == 'Results'" [class.label-success]="race.status == 'Live'" class="label" style="float: right; height: 16px;">{{ race.status ? race.status : race.time }}</span>
+                                    </a>
+                                </li>
+                            </template>
                         </ul>
                     </section>
                 </section>

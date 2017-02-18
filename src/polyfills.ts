@@ -16,7 +16,7 @@ import 'core-js/es7/reflect';
 
 import 'zone.js/dist/zone';
 
-//import './assets/web-animations.min.js';
+import 'web-animations-js';
 
 if (process.env.ENV === 'production') {
 

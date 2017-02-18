@@ -80,13 +80,18 @@ export class SidebarComponent {
 
                     const i = ret.findIndex((row) => row.date === race.date);
                     if (i === -1) {
-                        ret.push({liveCount: race.status == 'Live' ? 1 : 0, date: race.date, races: [race]});
+                        ret.push({liveCount: race.status == 'Live' ? 1 : 0, date: race.date, places: [{place: race.place, races: [race]}]});
                     } else {
-                        ret[i].races.push(race);
+                        const j = ret[i].places.findIndex((row) => row.place === race.place);
+                        if (j === -1) {
+                            ret[i].places.push({place: race.place, races: [race]});
+                        } else {
+                            ret[i].places[j].races.push(race);
+                        }
                         ret[i].liveCount += race.status == 'Live' ? 1 : 0;
                     }
                 });
-
+                console.log(ret);
                 return ret;
             })
             .catch((error) => {
