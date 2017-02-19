@@ -26,7 +26,10 @@ export class ResultService {
         const getResults = createSelector(getFavoriteRacers, getResultState, (racers, results) => {
             const ret = [];
             Object.keys(results).forEach((key) => {
-                ret[key] = results[key].entities.map((row) => Object.assign({}, row, {racer: racers[row.racer]}));
+                ret[key] = {
+                    fastest: results[key].fastest,
+                    entities: results[key].entities.map((row) => Object.assign({}, row, {racer: racers[row.racer]}))
+                };
             });
 
             return ret;

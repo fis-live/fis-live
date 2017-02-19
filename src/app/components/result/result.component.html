@@ -35,7 +35,7 @@
                 <td><div>{{ row.racer.bib }}</div></td>
                 <td><div>{{ row.racer.firstName }} {{ row.racer.lastName }}</div></td>
                 <td><div><span [style.font-weight]="!config.isStartList && row.rank == 1 ? 700: 'normal'">{{ getStatus(row) }}</span></div></td>
-                <td><div><i class="{{ FLAGS[row.racer.nationality] | lowercase }} flag"></i>{{ FLAGS[row.racer.nationality] }}</div></td>
+                <td><div><i class="{{ FLAGS[row.racer.nationality] | lowercase }} flag"></i>{{ FLAGS[row.racer.nationality] || row.racer.nationality }}</div></td>
                 <td><div>{{ (row.diff !== null && row.diff < maxVal) ? getDiff(row.diff) : '' }}</div></td>
             </tr>
         </ng-container>

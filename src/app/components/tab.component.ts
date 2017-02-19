@@ -53,8 +53,9 @@ export class TabComponent {
     public filter$: Subject<number> = new BehaviorSubject<number>(0);
     public diff$: Subject<number> = new BehaviorSubject<number>(null);
     @Input() breakpoint = 'large';
+    private maxVal = 1000000000;
 
-    constructor (private _store: Store<AppState>, private _results: ResultService) {
+    constructor(private _store: Store<AppState>, private _results: ResultService) {
         this.intermediates$ = _store.select(getDropdownItems);
 
         this.diffs$ = Observable.combineLatest(_store.select(getDropdownItems), this.filter$.distinctUntilChanged())
@@ -76,37 +77,112 @@ export class TabComponent {
     }
 
     public parseResults(results, inter, diff): TableConfiguration {
-        if (results[inter] == null) {
-            return {
-                rows: [],
-                fastestTime: 0,
-                fastestDiff: 0,
-                isStartList: inter === 0
-            };
-        }
-        let fastestTime = 1000000000, fastestDiff = 10000000;
-        const rows = results[inter].map((row) => {
-            if (row.rank === 1) {
-                fastestTime = row.time;
+        const getValidDiff = (time, zero) => {
+            if (time == null || zero == null) {
+                return this.maxVal;
+            } else if (time >= this.maxVal || zero >= this.maxVal) {
+                return this.maxVal;
             }
 
-            if (diff != null && row.diff[diff] < fastestDiff) {
-                fastestDiff = row.diff[diff];
-            }
+            return time - zero;
+        };
+
+        if (inter === 0) {
             return {
+                rows: results[0].entities.map((res, index) => ({
+                    racer: res.racer,
+                    rank: res.rank,
+                    status: res.status,
+                    diff: diff === 0 ? res.time : null,
+                    state: '',
+                    time: res.time
+                })),
+                isStartList: true,
+                fastestTime: 0,
+                fastestDiff: 0
+            };
+        }
+
+        let count = results[0].entities.length;
+        let fromStartList = [];
+        for (let i = 0; i < count; i++) {
+            let status = results[0].entities[i].status.toLowerCase();
+            let key = 0;
+            switch (status) {
+                case "finish":
+                    key = this.maxVal * 6;
+                    break;
+                case "ral":
+                    key = this.maxVal + 1;
+                    break;
+                case "lapped":
+                    key = this.maxVal * 2;
+                    break;
+                case "dnf":
+                    key = this.maxVal * 3;
+                    break;
+                case "dq":
+                    key = this.maxVal * 4;
+                    break;
+                case "dns":
+                    key = this.maxVal * 5;
+                    break;
+                default:
+                    key = 0;
+            }
+
+            if (key > 0) {
+                fromStartList[results[0].entities[i].racer.bib] = {
+                    racer: results[0].entities[i].racer,
+                    time: key,
+                    status: results[0].entities[i].status.toLowerCase() == "finish" ? 'N/A' : results[0].entities[i].status,
+                    rank: null,
+                    diff: this.maxVal,
+                    state: ''
+                };
+            }
+        }
+
+        if (results[inter] == null) {
+            return {
+                rows: fromStartList.filter(row => row != null),
+                fastestTime: 0,
+                fastestDiff: 0,
+                isStartList: false
+            }
+        }
+
+        count = results[inter].entities.length;
+        let comp = [];
+        if (diff !== null) {
+            results[diff].entities.forEach((item) => comp[item.racer.bib] = item.time);
+        }
+
+        let rows = [];
+        let fastestDiff = this.maxVal;
+        results[inter].entities.forEach((row, index) => {
+            if (fromStartList[row.racer.bib]) {
+                fromStartList[row.racer.bib] = undefined;
+            }
+            let d = getValidDiff(row.time, comp[row.racer.bib]);
+            fastestDiff = d < fastestDiff ? d : fastestDiff;
+            rows.push({
+                state: (count - index < 4) ? 'new' : '',
                 racer: row.racer,
                 time: row.time,
-                rank: row.rank,
                 status: row.status,
-                diff: diff != null ? row.diff[diff] : null
-            };
+                rank: row.rank,
+                diff: d
+            })
         });
+
+        rows = rows.concat(fromStartList.filter(row => row != null));
 
         return {
             rows: rows,
-            fastestTime: fastestTime,
+            fastestTime: results[inter].fastest,
             fastestDiff: fastestDiff,
-            isStartList: inter === 0
+            isStartList: false
         };
     }
 
