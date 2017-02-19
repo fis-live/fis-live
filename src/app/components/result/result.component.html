@@ -5,7 +5,7 @@
                 <div appSort="rank">{{ config.isStartList ? 'Order' : 'Rank' }}</div>
             </th>
 
-            <th class="sorting" *ngIf="breakpoint === 'large'">
+            <th class="sorting">
                 <div appSort="racer.bib">Bib</div>
             </th>
 
@@ -30,7 +30,7 @@
     <tbody>
 
         <ng-container *ngIf="breakpoint === 'large'">
-            <tr [ngClass]="{'disabled': row.rank == null, 'favorite': row.racer.isFavorite}" *ngFor="let row of rows; trackBy: track" role="row">
+            <tr [@color]="row.state" [ngClass]="{'disabled': row.rank == null, 'favorite': row.racer.isFavorite}" *ngFor="let row of rows; trackBy: track" role="row">
                 <td><div>{{ row.rank }}</div></td>
                 <td><div>{{ row.racer.bib }}</div></td>
                 <td><div>{{ row.racer.firstName }} {{ row.racer.lastName }}</div></td>
@@ -41,8 +41,9 @@
         </ng-container>
 
         <ng-container *ngIf="breakpoint === 'small'">
-            <tr [ngClass]="{'disabled': row.rank == null, 'favorite': row.racer.isFavorite}" *ngFor="let row of rows; trackBy: track" role="row">
+            <tr [@color]="row.state" [ngClass]="{'disabled': row.rank == null, 'favorite': row.racer.isFavorite}" *ngFor="let row of rows; trackBy: track" role="row">
                 <td><div>{{ row.rank }}</div></td>
+                <td><div>{{ row.racer.bib }}</div></td>
                 <td><div><i class="{{ FLAGS[row.racer.nationality] | lowercase }} flag"></i><b>{{ row.racer.lastName }}</b>, {{ row.racer.firstName }}</div></td>
                 <td><div><span [style.font-weight]="!config.isStartList && row.rank == 1 ? 700: 'normal'">{{ getStatus(row) }}</span></div></td>
                 <td><div>{{ (row.diff !== null && row.diff < maxVal) ? getDiff(row.diff) : '' }}</div></td>
@@ -50,10 +51,11 @@
         </ng-container>
 
         <ng-container *ngIf="breakpoint === 'mini'">
-            <tr [ngClass]="{'disabled': row.rank == null, 'favorite': row.racer.isFavorite}" *ngFor="let row of rows; trackBy: track" role="row">
+            <tr [@color]="row.state" [ngClass]="{'disabled': row.rank == null, 'favorite': row.racer.isFavorite}" *ngFor="let row of rows; trackBy: track" role="row">
                 <td><div>{{ row.rank }}</div></td>
+                <td><div>{{ row.racer.bib }}</div></td>
                 <td><div><b>{{ row.racer.lastName }}</b>, {{ row.racer.firstName[0] }}</div></td>
-                <td><div><span [style.font-weight]="!isStartList && row.rank == 1 ? 700: 'normal'">{{ getStatus(row) }}</span></div></td>
+                <td><div><span [style.font-weight]="!config.isStartList && row.rank == 1 ? 700: 'normal'">{{ getStatus(row) }}</span></div></td>
             </tr>
         </ng-container>
     </tbody>
