@@ -93,7 +93,7 @@ export class TabComponent {
                     racer: res.racer,
                     rank: res.rank,
                     status: res.status,
-                    diff: diff === 0 ? res.time : null,
+                    diff: diff === 0 ? res.time - results[0].fastest : null,
                     state: '',
                     time: res.time
                 })),
@@ -155,7 +155,11 @@ export class TabComponent {
         count = results[inter].entities.length;
         let comp = [];
         if (diff !== null) {
-            results[diff].entities.forEach((item) => comp[item.racer.bib] = item.time);
+            if (diff === 0) {
+                results[diff].entities.forEach((item) => comp[item.racer.bib] = item.time - results[0].fastest);
+            } else {
+                results[diff].entities.forEach((item) => comp[item.racer.bib] = item.time);
+            }
         }
 
         let rows = [];

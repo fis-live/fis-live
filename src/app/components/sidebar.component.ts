@@ -91,7 +91,7 @@ export class SidebarComponent {
                         ret[i].liveCount += race.status == 'Live' ? 1 : 0;
                     }
                 });
-                console.log(ret);
+
                 return ret;
             })
             .catch((error) => {

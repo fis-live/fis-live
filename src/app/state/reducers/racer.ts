@@ -31,6 +31,20 @@ export function reducer(state: State = initialState, action: Action): State {
                 })
             };
 
+        case RaceActions.SET_BIB_COLOR:
+            const id: number = action.payload.racer;
+            const color: string = action.payload.color;
+
+            if (state.ids.indexOf(id) >= 0) {
+                return {
+                    ids: state.ids,
+                    entities: Object.assign({}, state.entities, {
+                        [id]: Object.assign({}, state.entities[id], {color: color})
+                    })
+                };
+            }
+
+            return state;
 
         default:
             return state;

@@ -5,6 +5,7 @@ import { Observable, TimeInterval } from 'rxjs/Rx';
 import { unserialize, json } from './unserialize';
 import { ErrorTimeInterval } from './operator/timeoutInterval';
 import { FisServer } from '../models/fis-server';
+import { Action } from '@ngrx/store';
 
 @Injectable()
 export class FisConnectionService {
@@ -144,11 +145,10 @@ export class FisConnectionService {
         this.baseURL = `http://${urlServer}/`;
     }
 
-    // public loadPdf(suffix: string): Observable<any> {
-    //     let pdfreader = new PdfReader();
-    //     suffix = suffix || 'SL';
-    //     let url = this.proxy + 'http://data.fis-ski.com/pdf/2017/CC/' + this.codex  + '/2017CC' + this.codex  + suffix +'.pdf';
-    //
-    //     return pdfreader.read(url);
-    // }
+    loadPdf(doc: number): Observable<Action[]> {
+        return this._http.get(`${this.proxy}pdf.json?codex=${this.codex}&doc=${doc}`)
+            .map((response) => response.json())
+            .catch((error) => this.handleError(error))
+            .timeout(10000);
+    }
 }

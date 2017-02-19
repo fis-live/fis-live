@@ -31,6 +31,21 @@ export function reducer(state: State = {[0]: {fastest: null, entities: []}}, act
                 })
             }});
 
+        case RaceActions.SET_START_TIME:
+            const newStartList = state[0].entities.map((row) => {
+                const _row = Object.assign({}, row);
+                if (row.racer === action.payload.racer) {
+                    _row.time = action.payload.time;
+                }
+
+                return _row;
+            });
+
+            return Object.assign({}, state, {[0]: {
+                fastest: (state[0].fastest == null || action.payload.time < state[0].fastest) ? action.payload.time : state[0].fastest,
+                entities: newStartList
+            }});
+
         case RaceActions.SET_STATUS:
             const id: number = action.payload.id;
             const _status: string = action.payload.status;

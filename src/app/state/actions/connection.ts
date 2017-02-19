@@ -5,6 +5,7 @@ export const ConnectionActions = {
     SELECT_SERVER: '[Connection] Select server',
     SHOW_ALERT: '[Alert] Show alert',
     LOAD_MAIN: '[Connection] Load main',
+    LOAD_PDF: '[Connection] Load pdf',
     LOAD_UPDATE: '[Connection] Load update',
     STOP_UPDATE: '[Connection] Stop updating',
     RESET: '[Connection] Reset state',
@@ -42,6 +43,12 @@ export class LoadMainAction implements Action {
     type = ConnectionActions.LOAD_MAIN;
 
     constructor(public payload: number) { }
+}
+
+export class LoadPdfAction implements Action {
+    type = ConnectionActions.LOAD_PDF;
+
+    constructor(public payload: string) { }
 }
 
 export class LoadUpdateAction implements Action {

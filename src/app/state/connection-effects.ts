@@ -13,7 +13,7 @@ import {
     ResetAction
 } from './actions';
 import { FisServer } from '../models/fis-server';
-import { ShowLoadingAction, HideLoadingAction } from './actions/connection';
+import { ShowLoadingAction, HideLoadingAction, LoadPdfAction } from './actions/connection';
 import { parseMain, parseUpdate } from '../fis/fis-parser';
 
 @Injectable()
@@ -43,8 +43,9 @@ export class ConnectionEffects {
         .switchMap(action => this._connection.poll(action.payload)
             .mergeMap(data => {
                 const actions = parseMain(data);
+                const suffix = data.runinfo[1] == 'Q' ? 'QUA' : 'SL';
 
-                return Observable.of(...actions, new HideLoadingAction(), new LoadUpdateAction());
+                return Observable.of(...actions, new HideLoadingAction(), new LoadPdfAction(suffix));
             })
             .catch((error) => {
                 return Observable.of(new HideLoadingAction(), new ShowAlertAction({
@@ -53,6 +54,18 @@ export class ConnectionEffects {
                     action: 'Retry',
                     actions: [new ResetAction(), new LoadMainAction(null)]
                 }));
+            })
+        );
+
+    @Effect() loadPdf$ = this.actions$
+        .ofType(ConnectionActions.LOAD_PDF)
+        .switchMap(action => this._connection.loadPdf(action.payload)
+            .mergeMap(actions => {
+                return Observable.from(actions);
+            })
+            .catch((error) => {
+                console.log(error);
+                return Observable.empty();
             })
         );
 

@@ -9,7 +9,9 @@ export const RaceActions = {
     SET_RACE_MESSAGE: '[Info] Set message',
     ADD_INTERMEDIATE: '[Intermediate] Add intermediate',
     ADD_START_LIST: '[Start list] Add entry',
-    UPDATE_METEO: '[Info] Update meteo'
+    UPDATE_METEO: '[Info] Update meteo',
+    SET_START_TIME: '[Result] Register start time',
+    SET_BIB_COLOR: '[Racer] Set bib color'
 };
 
 export class RegisterResultAction implements Action {
@@ -28,6 +30,20 @@ export class AddRacerAction implements Action {
 
 export class SetStatusAction implements Action {
     type = RaceActions.SET_STATUS;
+
+    constructor(public payload: any) {
+    }
+}
+
+export class SetBibColorAction implements Action {
+    type = RaceActions.SET_BIB_COLOR;
+
+    constructor(public payload: any) {
+    }
+}
+
+export class SetStartTimeAction implements Action {
+    type = RaceActions.SET_START_TIME;
 
     constructor(public payload: any) {
     }
