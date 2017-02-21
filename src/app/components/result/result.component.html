@@ -1,28 +1,28 @@
 <table class="ui unstackable striped compact table" role="grid">
     <thead>
         <tr role="row">
-            <th class="sorting">
+            <th>
                 <div appSort="rank">{{ config.isStartList ? 'Order' : 'Rank' }}</div>
             </th>
 
-            <th class="sorting">
+            <th>
                 <div appSort="racer.bib">Bib</div>
             </th>
 
-            <th class="sorting filterable">
+            <th class="filterable">
                 <div appSort="racer.lastName">Name</div>
                 <app-filter></app-filter>
             </th>
 
-            <th class="sorting">
+            <th>
                 <div [appSort]="config.isStartList ? 'status' : 'time'">{{ config.isStartList ? 'Status' : 'Time' }}</div>
             </th>
 
-            <th class="sorting" *ngIf="breakpoint === 'large'">
+            <th *ngIf="breakpoint === 'large'">
                 <div appSort="racer.nationality">Nationality</div>
             </th>
 
-            <th class="sorting" *ngIf="breakpoint !== 'mini'">
+            <th *ngIf="breakpoint !== 'mini'">
                 <div appSort="diff">Diff.</div>
             </th>
         </tr>

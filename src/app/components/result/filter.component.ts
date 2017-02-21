@@ -13,7 +13,7 @@ import { Filters } from './providers/filter';
     {{ input }}
 <i (click)="reset()" class="icon delete"></i>
 </div-->
-<i class="icon app-filter" [ngClass]="{'filter-open': isOpen, 'filtered': isActive()}" (click)="open()"></i>
+<span class="filter-toggle" [ngClass]="{'filter-open': isOpen, 'filtered': isActive()}" (click)="open()"></span>
 
 <div class="datagrid-filter" *ngIf="isOpen">
     <div class="datagrid-filter-close-wrapper">

@@ -1,0 +1,170 @@
+.ui.table {
+    font-size: 0.9em;
+}
+
+.ui.attached.segment table {
+    border: none;
+    margin: 0;
+}
+
+.ui.compact.table td {
+    border: none;
+    padding: 0;
+}
+
+.ui.compact.table th {
+    padding: 0;
+    border: none;
+    color: #565656;
+    font-size: 0.9em;
+    position: relative;
+    white-space: nowrap;
+
+    &:not(:last-child)::before {
+        position: absolute;
+        top: 0;
+        right: 0;
+        bottom: 2px;
+        width: 1px;
+        margin: 6px 0;
+        background-color: #DDDDDD;
+        content: "";
+    }
+}
+
+
+.ui.table tr.last_finish > td {
+    background-color: #FFE5BC;
+}
+
+.ui.table tr.favorite > td {
+    background-color: #D8E1FF;
+}
+
+.ui.table tr.new > td {
+    background-color: #66afe9;
+}
+
+
+.ui.table td > div {
+    box-sizing: border-box;
+    overflow: hidden;
+    max-height: 100px;
+    padding: 0.3em .7em;
+}
+
+.ui.table th > div {
+    box-sizing: border-box;
+    border-bottom: 2px solid rgba(34,36,38,.1);
+    padding: 0.4em 0.3em 0.4em 0.7em;
+}
+
+
+.ui.table th.filterable {
+    display: flex;
+    > div {
+        flex: 1 0 auto;
+    }
+
+    > app-filter {
+        display: flex;
+        padding-right: 0.4em;
+        border-bottom: 2px solid rgba(34,36,38,.1);
+
+        .filter-toggle {
+            width: 16px;
+            height: 16px;
+            background-size: contain;
+            cursor: pointer;
+            vertical-align: middle;
+            margin: auto 0;
+            background: generateFilterIcon("#9A9A9A") no-repeat;
+
+            &:hover, &.filter-open {
+                background-image: generateFilterIcon("#007cbb");
+            }
+
+            &.filtered {
+                background-image: generateFilterIcon("#007cbb"),
+                generateCircleIcon("#007cbb");
+            }
+        }
+
+        .datagrid-filter {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            margin-top: $clr_baselineRem_0_2;
+            background: $clr-white;
+            padding: $clr_baselineRem_0_75;
+            border: 1px solid $gray-light-midtone;
+            box-shadow: 0 1px 3px rgba($gray-dark, 0.25);
+            border-radius: $clr-default-borderradius;
+            font-weight: normal;
+            z-index: map-get($clr-layers, dropdown-menu);
+
+            .datagrid-filter-close-wrapper {
+                text-align: right;
+
+                .close {
+                    float: none;
+                }
+            }
+        }
+    }
+}
+
+
+.ui.table th > div.sorting {
+    cursor: pointer;
+    &:hover {
+        color:#101f28;
+    }
+
+    &::after {
+        margin: 0 0 0 0.3em;
+        content: '';
+        height: 8px;
+        width: 8px;
+        vertical-align: middle;
+        display: inline-block;
+        background-repeat: no-repeat;
+        background-size: contain;
+    }
+
+    &.asc, &.desc {
+        color: #22a6f5;
+        border-color: #22a6f5;
+        + app-filter {
+            color: #22a6f5;
+            border-color: #22a6f5;
+        }
+
+        &::after {
+            background-image: generateCaretIcon("#22a6f5");
+        }
+    }
+
+    &.desc::after {
+        transform: rotate(180deg);
+    }
+}
+
+.datagrid-spinner {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: rgba($clr-white, 0.6);
+    z-index: 99;
+
+    .spinner {
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        margin: auto;
+    }
+}

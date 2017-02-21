@@ -45,8 +45,8 @@
     "@types/node": "^6.0.41",
     "@types/zone.js": "0.0.27",
     "angular2-template-loader": "^0.6.0",
-    "awesome-typescript-loader": "^3.0.0-beta.11",
-    "codelyzer": "^2.0.0-beta.4",
+    "awesome-typescript-loader": "^3.0.0",
+    "codelyzer": "^2.0.0",
     "css-loader": "^0.26.0",
     "extract-text-webpack-plugin": "^2.0.0-beta.4",
     "file-loader": "^0.10.0",
@@ -64,6 +64,6 @@
     "typescript": "~2.0.10",
     "webpack": "^2.2.0",
     "webpack-dev-server": "^2.2.0",
-    "webpack-merge": "^2.0.0"
+    "webpack-merge": "^3.0.0"
   }
 }

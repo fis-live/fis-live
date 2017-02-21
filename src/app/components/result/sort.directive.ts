@@ -18,6 +18,8 @@ export class SortDirective {
         this._sort.toggle(this.sortBy);
     }
 
+    @HostBinding('class.sorting') sorting = true;
+
     @HostBinding('class.asc')
     public get asc() {
         return this._sort.comparator === this.sortBy && !this._sort.reverse;
