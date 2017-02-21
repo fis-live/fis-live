@@ -45,7 +45,7 @@ export class ConnectionEffects {
                 const actions = parseMain(data);
                 const suffix = data.runinfo[1] == 'Q' ? 'QUA' : 'SL';
 
-                return Observable.of(...actions, new HideLoadingAction(), new LoadPdfAction(suffix));
+                return Observable.of(...actions, new HideLoadingAction(), new LoadPdfAction(suffix), new LoadUpdateAction());
             })
             .catch((error) => {
                 return Observable.of(new HideLoadingAction(), new ShowAlertAction({
