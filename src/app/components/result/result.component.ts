@@ -9,6 +9,8 @@ import { Sort } from './providers/sort';
 import { Subscription } from 'rxjs/Rx';
 import { Filters } from './providers/filter';
 
+import { nationalities, maxVal, statusMap } from '../../fis/fis-constants';
+
 @Component({
     selector: 'app-table',
     templateUrl: 'result.component.html',
@@ -45,50 +47,9 @@ export class ResultComponent implements AfterViewInit, OnDestroy {
     @Input() public breakpoint = 'large';
     @Output() public toggleFavorite = new EventEmitter<Racer>();
 
-    public FLAGS: { [short: string]: string } = {
-    'SWE': 'Sweden',
-    'NOR': 'Norway',
-    'FIN': 'Finland',
-    'GER': 'Germany',
-    'FRA': 'France',
-    'AUT': 'Austria',
-    'USA': 'United States',
-    'RUS': 'Russia',
-    'KAZ': 'Kazakhstan',
-    'ITA': 'Italy',
-    'CZE': 'Czech Republic',
-    'SUI': 'Switzerland',
-    'POL': 'Poland',
-    'JPN': 'Japan',
-    'CAN': 'Canada',
-    'SLO': 'Slovenia',
-    'SVK': 'Slovakia',
-    'GBR': 'United Kingdom',
-    'EST': 'Estonia',
-    'LAT': 'Latvia',
-    'DEN': 'Denmark',
-    'ROU': 'Romania',
-    'KOR': 'South Korea',
-    'BUL': 'Bulgaria',
-    'IRL': 'Ireland',
-    'ARM': 'Armenia',
-    'BLR': 'Belarus',
-    'ISL': 'Iceland',
-    'SPA': 'Spain',
-    'AUS': 'Australia',
-    'CRO': 'Croatia',
-    'LIE': 'Liechtenstein',
-    'THA': 'Thailand',
-    'LTU': 'Lithuania'
-};
-    public state = 'active';
-    public maxVal = 1000000000;
-    public statusMap = {
-        'start': 'Started',
-        'finish': 'Finished',
-        'lapped': 'Lapped',
-        'nextstart': 'Next to start'
-    };
+    public FLAGS = nationalities;
+    public maxVal = maxVal;
+    public statusMap = statusMap;
 
     constructor(private sort: Sort, private filters: Filters) { }
 

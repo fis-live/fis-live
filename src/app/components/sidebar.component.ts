@@ -6,6 +6,8 @@ import {Racer} from "../models/racer";
 import { Http, Response } from '@angular/http';
 import { Observable } from 'rxjs';
 
+import { nationalities } from '../fis/fis-constants';
+
 @Component({
     selector: 'app-sidebar',
     templateUrl: 'sidebar.html',
@@ -26,42 +28,7 @@ export class SidebarComponent {
 
     public tab = 'live';
     public upcomingRaces$: Observable<any>;
-    public FLAGS: { [short: string]: string } = {
-        'SWE': 'Sweden',
-        'NOR': 'Norway',
-        'FIN': 'Finland',
-        'GER': 'Germany',
-        'FRA': 'France',
-        'AUT': 'Austria',
-        'USA': 'United States',
-        'RUS': 'Russia',
-        'KAZ': 'Kazakhstan',
-        'ITA': 'Italy',
-        'CZE': 'Czech Republic',
-        'SUI': 'Switzerland',
-        'POL': 'Poland',
-        'JPN': 'Japan',
-        'CAN': 'Canada',
-        'SLO': 'Slovenia',
-        'SVK': 'Slovakia',
-        'GBR': 'United Kingdom',
-        'EST': 'Estonia',
-        'LAT': 'Latvia',
-        'DEN': 'Denmark',
-        'ROU': 'Romania',
-        'KOR': 'South Korea',
-        'BUL': 'Bulgaria',
-        'IRL': 'Ireland',
-        'ARM': 'Armenia',
-        'BLR': 'Belarus',
-        'ISL': 'Iceland',
-        'SPA': 'Spain',
-        'AUS': 'Australia',
-        'CRO': 'Croatia',
-        'LIE': 'Liechtenstein',
-        'THA': 'Thailand',
-        'LTU': 'Lithuania'
-    };
+    public FLAGS = nationalities;
 
 
     constructor(private http: Http) {
