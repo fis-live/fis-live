@@ -67,7 +67,7 @@ module.exports = {
             {
                 test: /\.scss$|\.sass$/,
                 exclude: helpers.root('src', 'app'),
-                loader: ExtractTextPlugin.extract({fallback:'style-loader', use: 'css-loader!sass-loader?includePaths=' + helpers.root('')})
+                loader: ExtractTextPlugin.extract({fallback:'style-loader', use: 'css-loader!sass-loader'})
             }
         ]
     },

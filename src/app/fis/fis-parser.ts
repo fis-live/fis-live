@@ -62,8 +62,8 @@ export function parseMain(data: any): Action[] {
             actions.push(new AddRacerAction({
                     id: data.racers[i][0],
                     bib: data.racers[i][1],
-                    firstName: data.racers[i][3],
-                    lastName: data.racers[i][2].split(' ').map(char => char[0] + char.substr(1).toLowerCase()).join(' '),
+                    firstName: data.racers[i][3].trim(),
+                    lastName: data.racers[i][2].trim().split(' ').map(char => char[0] + char.substr(1).toLowerCase()).join(' '),
                     nationality:  data.racers[i][4],
                     isFavorite: false,
                     color: ''
