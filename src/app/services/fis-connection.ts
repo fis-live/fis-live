@@ -53,14 +53,16 @@ export class FisConnectionService {
             .map(res => this.parseServerList(res));
     }
 
-    public poll(payload: number | null = null): Observable<any> {
-        if (payload) {
-            this.initialize(payload);
-        }
-
+    public poll(): Observable<any> {
         return Observable.timer(this.delay).switchMap(() => this.getHttpRequest())
             .map(result => this.parse(result))
             .catch(error => this.handleError(error));
+    }
+
+    public loadMain(codex: number | null): Observable<any> {
+        this.initialize(codex);
+
+        return this.poll();
     }
 
     private getHttpRequest(): Observable<TimeInterval<Response>> {
@@ -148,7 +150,12 @@ export class FisConnectionService {
     loadPdf(doc: number): Observable<Action[]> {
         return this._http.get(`${this.proxy}pdf.json?codex=${this.codex}&doc=${doc}`)
             .map((response) => response.json())
-            .catch((error) => this.handleError(error))
+            .catch((error) => {
+                const errMsg = (error instanceof Error) ? error :
+                    (error instanceof Response) ? new Error(`${error.status} - ${error.statusText}`) : new Error('Server error');
+
+                return Observable.throw(errMsg);
+            })
             .timeout(10000);
     }
 }

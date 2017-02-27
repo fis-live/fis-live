@@ -40,7 +40,7 @@ export class ConnectionEffects {
 
     @Effect() loadMain$ = this.actions$
         .ofType(ConnectionActions.LOAD_MAIN)
-        .switchMap(action => this._connection.poll(action.payload)
+        .switchMap(action => this._connection.loadMain(action.payload)
             .mergeMap(data => {
                 const actions = parseMain(data);
                 const suffix = data.runinfo[1] == 'Q' ? 'QUA' : 'SL';

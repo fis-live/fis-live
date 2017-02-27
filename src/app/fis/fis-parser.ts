@@ -73,51 +73,53 @@ export function parseMain(data: any): Action[] {
     }
 
     for (let i = 0; i < data.startlist.length; i++) {
-        actions.push(
-            new AddStartListAction({
-                racer: data.startlist[i][0],
-                status: data.startlist[i][1],
-                order: i + 1
-            })
-        );
-        let key = 0;
-        const maxVal = 1000000000;
-        switch (data.startlist[i][1]) {
-            case '':
-            case 'start':
-            case 'ff':
-            case 'q':
-            case 'lucky':
-            case 'nextstart':
-            case 'finish':
-                break;
-            case 'ral':
-                key = maxVal + 1;
-                break;
-            case 'lapped':
-                key = maxVal * 2;
-                break;
-            case 'dnf':
-                key = maxVal * 3;
-                break;
-            case 'dq':
-                key = maxVal * 4;
-                break;
-            case 'dns':
-                key = maxVal * 5;
-                break;
-            default:
-                key = 0;
-        }
-        if (key > maxVal) {
+        if (data.startlist[i] !== null) {
             actions.push(
-                new RegisterResultAction({
-                    status: data.startlist[i][1],
-                    intermediate: 99,
+                new AddStartListAction({
                     racer: data.startlist[i][0],
-                    time: key
+                    status: data.startlist[i][1],
+                    order: i + 1
                 })
             );
+            let key = 0;
+            const maxVal = 1000000000;
+            switch (data.startlist[i][1]) {
+                case '':
+                case 'start':
+                case 'ff':
+                case 'q':
+                case 'lucky':
+                case 'nextstart':
+                case 'finish':
+                    break;
+                case 'ral':
+                    key = maxVal + 1;
+                    break;
+                case 'lapped':
+                    key = maxVal * 2;
+                    break;
+                case 'dnf':
+                    key = maxVal * 3;
+                    break;
+                case 'dq':
+                    key = maxVal * 4;
+                    break;
+                case 'dns':
+                    key = maxVal * 5;
+                    break;
+                default:
+                    key = 0;
+            }
+            if (key > maxVal) {
+                actions.push(
+                    new RegisterResultAction({
+                        status: data.startlist[i][1],
+                        intermediate: 99,
+                        racer: data.startlist[i][0],
+                        time: key
+                    })
+                );
+            }
         }
     }
 
@@ -137,7 +139,9 @@ export function parseMain(data: any): Action[] {
 export function parseUpdate(data: any): Action[] {
     const actions = [];
     let reload = false;
+    let update = true;
     const maxVal = 1000000000;
+
     if (data.events) {
         data.events.forEach((event) => {
             let key = 0;
@@ -197,6 +201,9 @@ export function parseUpdate(data: any): Action[] {
                     break;
                 case 'reloadmain':
                     reload = true;
+                    break;
+                case 'official_result':
+                    update = false;
             }
 
             if (key > maxVal) {
@@ -213,6 +220,9 @@ export function parseUpdate(data: any): Action[] {
         });
     }
 
-    return reload ? [new ResetAction(), new LoadMainAction(null)] :
-        [...actions, new LoadUpdateAction()];
+    if (update) {
+        actions.push(new LoadUpdateAction());
+    }
+
+    return reload ? [new ResetAction(), new LoadMainAction(null)] : actions;
 }
