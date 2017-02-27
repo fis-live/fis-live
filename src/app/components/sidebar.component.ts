@@ -14,7 +14,7 @@ import { nationalities } from '../fis/fis-constants';
     changeDetection: ChangeDetectionStrategy.OnPush,
     animations: [
         trigger('animate', [
-            state('hidden', style({transform: 'translateX(-100%)'})),
+            state('hidden', style({transform: 'translateX(-100%)', display: 'none'})),
             state('visible', style({transform: 'translateX(0)'})),
             transition('hidden <=> visible', animate('200ms ease-out'))
         ])

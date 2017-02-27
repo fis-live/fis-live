@@ -28,6 +28,7 @@
 @import "css/dropdown.css";
 @import "css/grid.css";
 @import "css/table";
+@import "css/menu";
 
 
 .nav-link-tag {
@@ -51,11 +52,6 @@
     z-index: 1038;
 }
 
-.ui.inverted.menu > .small.item {
-    color: rgba(255, 255, 255, 0.5);
-    font-size: 0.8em;
-}
-
 .alert.alert-app-level {
     position: fixed;
     bottom: 0;
@@ -75,3 +71,15 @@ button.nav-link {
     min-width: 72px;
 }
 
+.ui.icon.input > i.search::before {
+    background-image: generateSearchIcon("#999999");
+    @include icon-background-styles();
+    left: 20%;
+    position: absolute;
+    text-align: center;
+    top: 20%;
+    width: 60%;
+    height: 60%;
+    content: '';
+    margin: 0;
+}

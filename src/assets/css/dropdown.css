@@ -23,7 +23,7 @@
     transform-origin: top center;
 }
 
-.visible {
+.ui.dropdown > .visible {
     display: block !important;
     visibility: visible !important;
 }
