@@ -1,5 +1,5 @@
 import { Action } from '@ngrx/store';
-import {Racer} from "../../models/racer";
+import { Racer } from '../../models/racer';
 
 export const SettingsActions = {
     TOGGLE_FAVORITE: '[Settings] Toggle favorite'

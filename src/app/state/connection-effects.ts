@@ -43,7 +43,7 @@ export class ConnectionEffects {
         .switchMap(action => this._connection.loadMain(action.payload)
             .mergeMap(data => {
                 const actions = parseMain(data);
-                const suffix = data.runinfo[1] == 'Q' ? 'QUA' : 'SL';
+                const suffix = data.runinfo[1] === 'Q' ? 'QUA' : 'SL';
 
                 return Observable.of(...actions, new HideLoadingAction(), new LoadPdfAction(suffix), new LoadUpdateAction());
             })

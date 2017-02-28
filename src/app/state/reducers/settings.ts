@@ -1,7 +1,7 @@
 import { Action } from '@ngrx/store';
 
 import { SettingsActions } from '../actions/';
-import {Racer} from "../../models/racer";
+import { Racer } from '../../models/racer';
 
 export interface State {
     favoriteRacers: Racer[];

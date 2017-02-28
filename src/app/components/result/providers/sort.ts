@@ -41,8 +41,8 @@ export class Sort {
     }
 
     public compare(a: any, b: any): number {
-        let propA = this.getData(a, this.comparator);
-        let propB = this.getData(b, this.comparator);
+        const propA = this.getData(a, this.comparator);
+        const propB = this.getData(b, this.comparator);
 
         if (typeof propA === 'undefined' || propA === null) {
             if (typeof propB === 'undefined' || propB === null) {

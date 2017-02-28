@@ -5,7 +5,6 @@ import { HttpModule } from '@angular/http';
 import { RouterModule } from '@angular/router';
 import { EffectsModule } from '@ngrx/effects';
 import { StoreModule } from '@ngrx/store';
-//import { StoreDevtoolsModule } from '@ngrx/store-devtools';
 
 import { AppComponent } from './app.component';
 import { AlertComponent } from './components/ui/alert.component';
@@ -49,8 +48,7 @@ import { SortDirective } from './components/result/sort.directive';
         HttpModule,
         RouterModule.forRoot(appRoutes, { useHash: true }),
         StoreModule.provideStore(reducer),
-        EffectsModule.run(ConnectionEffects),
-        //StoreDevtoolsModule.instrumentOnlyWithExtension()
+        EffectsModule.run(ConnectionEffects)
     ],
     providers: [ FisConnectionService, WindowSize, ResultService ],
     bootstrap: [ AppComponent ]

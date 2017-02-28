@@ -2,9 +2,9 @@ import {
     ChangeDetectionStrategy, Component, Input, state, transition, style, animate, trigger,
     EventEmitter, Output
 } from '@angular/core';
-import {Racer} from "../models/racer";
+import {Racer} from '../models/racer';
 import { Http, Response } from '@angular/http';
-import { Observable } from 'rxjs';
+import { Observable } from 'rxjs/rx';
 
 import { nationalities } from '../fis/fis-constants';
 
@@ -47,7 +47,11 @@ export class SidebarComponent {
 
                     const i = ret.findIndex((row) => row.date === race.date);
                     if (i === -1) {
-                        ret.push({liveCount: race.status == 'Live' ? 1 : 0, date: race.date, places: [{place: race.place, races: [race]}]});
+                        ret.push({
+                            liveCount: race.status === 'Live' ? 1 : 0,
+                            date: race.date,
+                            places: [{place: race.place, races: [race]}]
+                        });
                     } else {
                         const j = ret[i].places.findIndex((row) => row.place === race.place);
                         if (j === -1) {
@@ -55,7 +59,7 @@ export class SidebarComponent {
                         } else {
                             ret[i].places[j].races.push(race);
                         }
-                        ret[i].liveCount += race.status == 'Live' ? 1 : 0;
+                        ret[i].liveCount += race.status === 'Live' ? 1 : 0;
                     }
                 });
 

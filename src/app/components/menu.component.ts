@@ -11,9 +11,15 @@ import { RaceInfo } from '../models/race-info';
     <div class="borderless fitted small item">{{ raceInfo.info.raceName}}</div>
     <div class="right menu">
         <div class="borderless item">{{ raceInfo.message | uppercase }}</div>
-        <div (click)="refresh.emit(null)" style="padding-bottom: 0; padding-top: 0;" class="item header-hamburger-trigger"><clr-icon shape="refresh"></clr-icon></div>
-        <div (click)="tab.emit('remove')" style="padding-bottom: 0; padding-top: 0;" class="item header-hamburger-trigger"><clr-icon size="20" shape="minus"></clr-icon></div>
-        <div (click)="tab.emit('add')" style="padding-bottom: 0; padding-top: 0;" class="item header-hamburger-trigger"><clr-icon size="20" shape="plus"></clr-icon></div>
+        <div (click)="refresh.emit(null)" style="padding-bottom: 0; padding-top: 0;" class="item header-hamburger-trigger">
+            <clr-icon shape="refresh"></clr-icon>
+        </div>
+        <div (click)="tab.emit('remove')" style="padding-bottom: 0; padding-top: 0;" class="item header-hamburger-trigger">
+            <clr-icon size="20" shape="minus"></clr-icon>
+        </div>
+        <div (click)="tab.emit('add')" style="padding-bottom: 0; padding-top: 0;" class="item header-hamburger-trigger">
+            <clr-icon size="20" shape="plus"></clr-icon>
+        </div>
     </div>
 </div>
 `,

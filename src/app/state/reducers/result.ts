@@ -1,6 +1,6 @@
 import { Action } from '@ngrx/store';
 
-import { RaceActions } from "../actions";
+import { RaceActions } from '../actions';
 
 export interface Item {
     racer: number;

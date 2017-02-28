@@ -62,7 +62,7 @@ export class TabComponent {
             .map(([items, inter]) => {
                 return items.reduce((arr, item) => {
                     return (item.data_value > 0 && item.data_value < inter) ? arr.concat(item) : arr;
-                }, [{data_value: 0, selected_text: 'From start', default_text: 'From start'}])
+                }, [{data_value: 0, selected_text: 'From start', default_text: 'From start'}]);
             });
 
         this.tableConfig$ = Observable.combineLatest(
@@ -104,27 +104,27 @@ export class TabComponent {
         }
 
         let count = results[0].entities.length;
-        let fromStartList = [];
+        const fromStartList = [];
         for (let i = 0; i < count; i++) {
-            let status = results[0].entities[i].status.toLowerCase();
+            const status = results[0].entities[i].status.toLowerCase();
             let key = 0;
             switch (status) {
-                case "finish":
+                case 'finish':
                     key = this.maxVal * 6;
                     break;
-                case "ral":
+                case 'ral':
                     key = this.maxVal + 1;
                     break;
-                case "lapped":
+                case 'lapped':
                     key = this.maxVal * 2;
                     break;
-                case "dnf":
+                case 'dnf':
                     key = this.maxVal * 3;
                     break;
-                case "dq":
+                case 'dq':
                     key = this.maxVal * 4;
                     break;
-                case "dns":
+                case 'dns':
                     key = this.maxVal * 5;
                     break;
                 default:
@@ -135,7 +135,7 @@ export class TabComponent {
                 fromStartList[results[0].entities[i].racer.bib] = {
                     racer: results[0].entities[i].racer,
                     time: key,
-                    status: results[0].entities[i].status.toLowerCase() == "finish" ? 'N/A' : results[0].entities[i].status,
+                    status: results[0].entities[i].status.toLowerCase() === 'finish' ? 'N/A' : results[0].entities[i].status,
                     rank: null,
                     diff: this.maxVal,
                     state: ''
@@ -149,11 +149,11 @@ export class TabComponent {
                 fastestTime: 0,
                 fastestDiff: 0,
                 isStartList: false
-            }
+            };
         }
 
         count = results[inter].entities.length;
-        let comp = [];
+        const comp = [];
         if (diff !== null) {
             if (diff === 0) {
                 results[diff].entities.forEach((item) => comp[item.racer.bib] = item.time - results[0].fastest);
@@ -168,7 +168,7 @@ export class TabComponent {
             if (fromStartList[row.racer.bib]) {
                 fromStartList[row.racer.bib] = undefined;
             }
-            let d = getValidDiff(row.time, comp[row.racer.bib]);
+            const d = getValidDiff(row.time, comp[row.racer.bib]);
             fastestDiff = d < fastestDiff ? d : fastestDiff;
             rows.push({
                 state: (count - index < 4) ? 'new' : '',
@@ -177,7 +177,7 @@ export class TabComponent {
                 status: row.status,
                 rank: row.rank,
                 diff: d
-            })
+            });
         });
 
         rows = rows.concat(fromStartList.filter(row => row != null));

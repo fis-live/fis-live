@@ -8,16 +8,6 @@ export class SortDirective {
     @Input('appSort')
     public sortBy: string;
 
-    constructor(private _sort: Sort) { }
-
-    @HostListener('click', ['$event.shiftKey'])
-    public toggleSort(shiftClick: boolean) {
-        if (shiftClick) {
-            return;
-        }
-        this._sort.toggle(this.sortBy);
-    }
-
     @HostBinding('class.sorting') sorting = true;
 
     @HostBinding('class.asc')
@@ -28,5 +18,15 @@ export class SortDirective {
     @HostBinding('class.desc')
     public get desc() {
         return this._sort.comparator === this.sortBy && this._sort.reverse;
+    }
+
+    constructor(private _sort: Sort) { }
+
+    @HostListener('click', ['$event.shiftKey'])
+    public toggleSort(shiftClick: boolean) {
+        if (shiftClick) {
+            return;
+        }
+        this._sort.toggle(this.sortBy);
     }
 }
