@@ -41,10 +41,23 @@ export class Sort {
     }
 
     public compare(a: any, b: any): number {
-        if (this.getData(a, this.comparator) > this.getData(b, this.comparator)) {
+        let propA = this.getData(a, this.comparator);
+        let propB = this.getData(b, this.comparator);
+
+        if (typeof propA === 'undefined' || propA === null) {
+            if (typeof propB === 'undefined' || propB === null) {
+                return 0;
+            }
+
             return this.reverse ? -1 : 1;
-        } else if (this.getData(a, this.comparator) < this.getData(b, this.comparator)) {
-            return this.reverse ? 1 : -1;
+        } else {
+            if (typeof propB === 'undefined' || propB === null) {
+                return this.reverse ? 1 : -1;
+            } else if (propA < propB) {
+                return this.reverse ? 1 : -1;
+            } else if (propA > propB) {
+                return this.reverse ? -1 : 1;
+            }
         }
 
         return 0;
