@@ -51,7 +51,9 @@ export class ResultComponent implements AfterViewInit, OnDestroy {
     public maxVal = maxVal;
     public statusMap = statusMap;
 
-    constructor(private sort: Sort, private filters: Filters) { }
+    constructor(private sort: Sort, private filters: Filters) {
+        this.sort.toggle('rank');
+    }
 
     @Input() public set config(config: TableConfiguration) {
         if ((this.sort.comparator === 'time' || this.sort.comparator === 'status') &&
