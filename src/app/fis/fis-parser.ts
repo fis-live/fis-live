@@ -7,6 +7,7 @@ import {
 import { ResetAction, LoadMainAction, LoadUpdateAction } from '../state/actions/connection';
 import { Meteo } from '../models/meteo';
 import { RaceInfo } from '../models/race-info';
+import { BATCH_ACTION } from '../state/reducers/index';
 
 export function parseMain(data: any): Action[] {
     const actions: Action[] = [];
@@ -133,7 +134,7 @@ export function parseMain(data: any): Action[] {
         }
     }
 
-    return actions;
+    return [{type: BATCH_ACTION, payload: actions}];
 }
 
 export function parseUpdate(data: any): Action[] {
@@ -220,9 +221,7 @@ export function parseUpdate(data: any): Action[] {
         });
     }
 
-    if (update) {
-        actions.push(new LoadUpdateAction());
-    }
 
-    return reload ? [new ResetAction(), new LoadMainAction(null)] : actions;
+    return reload ? [new ResetAction(), new LoadMainAction(null)] :
+        update ? [{type: BATCH_ACTION, payload: actions}, new LoadUpdateAction()] : [{type: BATCH_ACTION, payload: actions}];
 }

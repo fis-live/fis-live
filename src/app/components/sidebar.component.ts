@@ -2,9 +2,9 @@ import {
     ChangeDetectionStrategy, Component, Input, state, transition, style, animate, trigger,
     EventEmitter, Output
 } from '@angular/core';
-import {Racer} from '../models/racer';
+import { Racer } from '../models/racer';
 import { Http, Response } from '@angular/http';
-import { Observable } from 'rxjs/rx';
+import { Observable } from 'rxjs/Rx';
 
 import { nationalities } from '../fis/fis-constants';
 

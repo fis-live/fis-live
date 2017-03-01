@@ -36,6 +36,19 @@ export interface AppState {
 
 let metaReducer;
 
+export const BATCH_ACTION = 'BATCHING_REDUCER.BATCH';
+
+const enableBatching = (reducer: Function) => {
+    return function batchingReducer(state, action) {
+        switch (action.type) {
+            case BATCH_ACTION:
+                return action.payload.reduce(batchingReducer, state);
+            default:
+                return reducer(state, action);
+        }
+    };
+};
+
 const resetState = (reducer: Function) => {
     return function(state, action) {
         if (action.type === ConnectionActions.RESET) {
@@ -47,9 +60,9 @@ const resetState = (reducer: Function) => {
 };
 
 if (process.env.ENV === 'production') {
-    metaReducer = compose(resetState, localStorageSync(['settings'], true), combineReducers);
+    metaReducer = compose(resetState, enableBatching, localStorageSync(['settings'], true), combineReducers);
 } else {
-    metaReducer = compose(storeFreeze, resetState, localStorageSync(['settings'], true), combineReducers);
+    metaReducer = compose(storeFreeze, enableBatching, resetState, localStorageSync(['settings'], true), combineReducers);
 }
 
 export function reducer(state: any, action: any): any {
