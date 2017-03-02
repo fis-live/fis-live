@@ -106,7 +106,7 @@ export class TabComponent {
         let count = results[0].entities.length;
         const fromStartList = [];
         for (let i = 0; i < count; i++) {
-            const status = results[0].entities[i].status.toLowerCase();
+            const status = results[0].entities[i].status ? results[0].entities[i].status.toLowerCase() : null;
             let key = 0;
             switch (status) {
                 case 'finish':
@@ -135,7 +135,7 @@ export class TabComponent {
                 fromStartList[results[0].entities[i].racer.bib] = {
                     racer: results[0].entities[i].racer,
                     time: key,
-                    status: results[0].entities[i].status.toLowerCase() === 'finish' ? 'N/A' : results[0].entities[i].status,
+                    status: status === 'finish' ? 'N/A' : results[0].entities[i].status,
                     rank: null,
                     diff: this.maxVal,
                     state: ''

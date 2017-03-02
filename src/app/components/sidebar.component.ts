@@ -1,7 +1,8 @@
 import {
-    ChangeDetectionStrategy, Component, Input, state, transition, style, animate, trigger,
-    EventEmitter, Output
+    ChangeDetectionStrategy, Component, Input, EventEmitter, Output
 } from '@angular/core';
+import { style, animate, trigger, transition, state } from '@angular/animations';
+
 import { Racer } from '../models/racer';
 import { Http, Response } from '@angular/http';
 import { Observable } from 'rxjs/Rx';

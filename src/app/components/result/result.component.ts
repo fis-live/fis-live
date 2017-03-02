@@ -1,7 +1,8 @@
 import {
-    Component, Input, trigger, state, style, transition, animate, ChangeDetectionStrategy, EventEmitter, Output,
+    Component, Input, ChangeDetectionStrategy, EventEmitter, Output,
     OnDestroy, AfterViewInit
 } from '@angular/core';
+import { style, animate, trigger, transition, state } from '@angular/animations';
 
 import { ResultItem, TableConfiguration } from '../tab.component';
 import { Racer } from '../../models/racer';

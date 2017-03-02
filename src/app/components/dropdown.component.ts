@@ -5,13 +5,9 @@ import {
     HostListener,
     Input,
     Output,
-    ChangeDetectionStrategy,
-    style,
-    animate,
-    trigger,
-    transition,
-    state, AnimationTransitionEvent
+    ChangeDetectionStrategy, ChangeDetectorRef
 } from '@angular/core';
+import { style, animate, trigger, transition, state, AnimationEvent } from '@angular/animations';
 
 export interface DropdownItem {
     data_value: any;
@@ -65,7 +61,7 @@ export class DropdownComponent {
     public isOpen = false;
     public isVisible = false;
 
-    constructor(private elementRef: ElementRef) { }
+    constructor(private elementRef: ElementRef, private _changeDetectorRef: ChangeDetectorRef) { }
 
 
     public getText(): string {
@@ -87,13 +83,13 @@ export class DropdownComponent {
         this.isOpen = !this.isOpen;
     }
 
-    public animationStarted($event: AnimationTransitionEvent): void {
+    public animationStarted($event: AnimationEvent): void {
         if ($event.fromState === 'hidden') {
             this.isVisible = true;
         }
     }
 
-    public animationDone($event: AnimationTransitionEvent): void {
+    public animationDone($event: AnimationEvent): void {
         if ($event.fromState === 'visible') {
             this.isVisible = false;
         }
@@ -126,6 +122,7 @@ export class DropdownComponent {
                 current = current.parentNode;
             }
             this.isOpen = false; // Close dropdown
+            this._changeDetectorRef.markForCheck();
         }
     }
 }

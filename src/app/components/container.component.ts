@@ -1,9 +1,9 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
-import {ActivatedRoute, Params, Router} from '@angular/router';
+import { ActivatedRoute, Params, Router } from '@angular/router';
 import { Store } from '@ngrx/store';
 import { Observable } from 'rxjs/Observable';
 
-import {AppState, getRaceInfoState, getLoadingState, getFavoriteRacers, getSettingsState} from '../state/reducers/';
+import { AppState, getRaceInfoState, getLoadingState, getFavoriteRacers, getSettingsState } from '../state/reducers/';
 import { State as RaceInfoState } from '../state/reducers/race-info';
 import { State as LoadingState } from '../state/reducers/loading';
 import { ResetAction, LoadMainAction, StopUpdateAction } from '../state/actions/connection';

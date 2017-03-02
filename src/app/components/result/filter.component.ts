@@ -1,6 +1,6 @@
 import {
     Component, ChangeDetectionStrategy, ElementRef, HostListener, Output, EventEmitter, Input, AfterContentInit,
-    OnDestroy, AfterViewInit
+    OnDestroy, AfterViewInit, ChangeDetectorRef
 } from '@angular/core';
 import { Observable, Subscription, Subject } from 'rxjs/Rx';
 import { Filter } from './interfaces/filter';
@@ -46,7 +46,7 @@ export class FilterComponent implements Filter, AfterViewInit, OnDestroy {
     public isOpen = false;
     public input: string;
 
-    constructor(private filters: Filters, private elementRef: ElementRef) { }
+    constructor(private filters: Filters, private elementRef: ElementRef, private _changeDetectorRef: ChangeDetectorRef) { }
 
     ngAfterViewInit() {
         this._unRegister = this.filters.add(this);
@@ -98,6 +98,7 @@ export class FilterComponent implements Filter, AfterViewInit, OnDestroy {
                 current = current.parentNode;
             }
             this.isOpen = false; // Close dropdown
+            this._changeDetectorRef.markForCheck();
         }
     }
 }

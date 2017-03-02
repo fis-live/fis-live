@@ -3,12 +3,9 @@ import {
     Input,
     ChangeDetectionStrategy,
     Output,
-    EventEmitter,
-    style,
-    animate,
-    trigger,
-    transition
+    EventEmitter
 } from '@angular/core';
+import { style, animate, trigger, transition } from '@angular/animations';
 import { Action } from '@ngrx/store';
 import { State as AlertState } from '../../state/reducers/alert';
 
