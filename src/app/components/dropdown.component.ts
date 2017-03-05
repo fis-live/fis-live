@@ -54,7 +54,30 @@ export class DropdownComponent {
     public cssClass: string;
 
     @Input()
-    public items: DropdownItem[];
+    public set items(items: DropdownItem[]) {
+        this._items = items;
+        if (items != null && items.length > 0) {
+            if (typeof this.selectedItem !== 'undefined' && this.selectedItem !== null) {
+                const item = items.find(itm => itm.data_value === this.selectedItem.data_value);
+                if (typeof item !== 'undefined') {
+                    this.select(item);
+                } else {
+                    this.select(items[0]);
+                }
+            } else {
+                this.select(items[0]);
+            }
+        } else {
+            this.hasSelected = false;
+            this.selectedChanged.emit(null);
+        }
+    };
+
+    public get items(): DropdownItem[] {
+        return this._items;
+    }
+
+    private _items: DropdownItem[];
 
     public selectedItem: DropdownItem;
     public hasSelected = false;
@@ -92,17 +115,6 @@ export class DropdownComponent {
     public animationDone($event: AnimationEvent): void {
         if ($event.fromState === 'visible') {
             this.isVisible = false;
-        }
-    }
-
-    public setSelected(data_value: any): void {
-        if (data_value != null) {
-            const selected = this.items.find((item) => item.data_value === data_value);
-            this.select(selected);
-        } else {
-            this.selectedItem = null;
-            this.hasSelected = false;
-            this.selectedChanged.emit(null);
         }
     }
 

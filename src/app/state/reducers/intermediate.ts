@@ -51,6 +51,6 @@ export const getInterAsDropdownItems = createSelector(getAllIntermediates, (inte
     return intermediates.map(row => ({
         data_value: row.id,
         selected_text: row.distance == null ? row.name : row.distance + ' KM',
-        default_text: row.distance == null ? row.name : row.name + ' ' + row.distance + ' KM'
+        default_text: row.distance == null ? row.name : row.distance + ' KM'
     }));
 });

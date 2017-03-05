@@ -50,7 +50,7 @@ export class TabComponent {
     public diffs$: Observable<DropdownItem[]>;
     public tableConfig$: Observable<TableConfiguration>;
 
-    public filter$: Subject<number> = new BehaviorSubject<number>(0);
+    public filter$: Subject<number> = new BehaviorSubject<number>(null);
     public diff$: Subject<number> = new BehaviorSubject<number>(null);
     @Input() breakpoint = 'large';
     private maxVal = 1000000000;
@@ -73,7 +73,7 @@ export class TabComponent {
     }
 
     public setInter($event: DropdownItem) {
-        this.filter$.next(+$event.data_value);
+        this.filter$.next($event !== null ? +$event.data_value : null);
     }
 
     public parseResults(results, inter, diff): TableConfiguration {
@@ -191,7 +191,7 @@ export class TabComponent {
     }
 
     public setDiff($event: DropdownItem) {
-        this.diff$.next(+$event.data_value);
+        this.diff$.next($event !== null ? +$event.data_value : null);
     }
 
     public toggleFavorite(racer: Racer): void {
