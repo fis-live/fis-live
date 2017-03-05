@@ -1,4 +1,4 @@
-export function unserialize(data: any) {
+export function unserialize(data: string): any {
     //  discuss at: http://locutus.io/php/unserialize/
     // original by: Arpad Ray (mailto:arpad@php.net)
     // improved by: Pedro Tainha (http://www.pedrotainha.com)
@@ -24,40 +24,30 @@ export function unserialize(data: any) {
     //   example 2: unserialize('a:2:{s:9:"firstName";s:5:"Kevin";s:7:"midName";s:3:"van";}')
     //   returns 2: {firstName: 'Kevin', midName: 'van'}
 
-    const utf8Overhead = function (chr) {
-        // http://locutus.io/php/unserialize:571#comment_95906
-        const code = chr.charCodeAt(0);
-        const zeroCodes = [
-            338,
-            339,
-            352,
-            353,
-            376,
-            402,
-            8211,
-            8212,
-            8216,
-            8217,
-            8218,
-            8220,
-            8221,
-            8222,
-            8224,
-            8225,
-            8226,
-            8230,
-            8240,
-            8364,
-            8482
-        ];
-        if (code < 0x0080 || code >= 0x00A0 && code <= 0x00FF || zeroCodes.indexOf(code) !== -1) {
-            return 0;
-        }
-        if (code < 0x0800) {
-            return 1;
+    const utf8Overhead = function (str: string): number {
+        let s = str.length;
+        for (let i = str.length - 1; i >= 0; i--) {
+            const code = str.charCodeAt(i);
+            if (code > 0x7f && code <= 0x7ff) {
+                s++;
+            } else if (code > 0x7ff && code <= 0xffff) {
+                s += 2;
+            }
+            // trail surrogate
+            if (code >= 0xDC00 && code <= 0xDFFF) {
+                i--;
+            }
         }
 
-        return 2;
+        return s - 1;
+    };
+
+    const decodeChrXML = (_data) => {
+        _data = _data.replace(/&lt;/g, '<');
+        _data = _data.replace(/&gt;/g, '>');
+        _data = _data.replace(/&amp;/g, '&');
+        _data = _data.replace(/&apos;/g, '\'');
+        return _data;
     };
 
     const error = function (type: string, msg: string) {
@@ -222,16 +212,5 @@ export function unserialize(data: any) {
         return [dtype, dataoffset - offset, typeconvert(readdata)];
     };
 
-    return _unserialize((data + ''), 0)[2];
-}
-
-export function json(body: string | Object): any {
-    let jsonResponse: string | Object;
-    if (body !== null && (typeof body === 'function' || typeof body === 'object')) {
-        jsonResponse = body;
-    } else if (typeof body === 'string') {
-        jsonResponse = JSON.parse(<string> body);
-    }
-
-    return jsonResponse;
+    return _unserialize(decodeChrXML(data + ''), 0)[2];
 }
