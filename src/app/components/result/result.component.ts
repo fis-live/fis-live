@@ -137,61 +137,6 @@ export class ResultComponent implements AfterViewInit, OnDestroy {
         return timeStr;
     }
 
-    // public sort(a: ResultItem, b: ResultItem): number {
-    //
-    //     if (this.getData(a, this.sortBy) > this.getData(b, this.sortBy)) {
-    //         return (this.sortOrder === 'asc') ? 1 : -1;
-    //     } else if (this.getData(a, this.sortBy) < this.getData(b, this.sortBy)) {
-    //         return (this.sortOrder === 'asc') ? -1 : 1;
-    //     }
-    //
-    //     return 0;
-    // }
-    // public getSortingClass(column: string) {
-    //     const sortable = !(column === 'rank' && !this.config.isStartList);
-    //     if (column === 'time' && this.config.isStartList) {
-    //         column = 'status';
-    //     }
-    //
-    //     return {
-    //         'sorting': sortable && this.sortBy !== column,
-    //         'sorting_desc': this.sortBy === column && this.sortOrder === 'desc',
-    //         'sorting_asc': this.sortBy === column && this.sortOrder === 'asc'
-    //     };
-    // }
-    //
-    // public setSorting(column: string): void {
-    //     if (column === 'rank' && !this.config.isStartList) {
-    //         return;
-    //     }
-    //
-    //     if (column === 'time' && this.config.isStartList) {
-    //         column = 'status';
-    //     }
-    //
-    //     if (this.sortBy === column) {
-    //         switch (this.sortOrder) {
-    //             case '':
-    //                 this.sortOrder = 'asc';
-    //                 break;
-    //             case 'asc':
-    //                 this.sortOrder = 'desc';
-    //                 break;
-    //             case 'desc':
-    //                 this.sortOrder = 'asc';
-    //                 break;
-    //             default:
-    //                 this.sortOrder = '';
-    //         }
-    //     } else {
-    //         this.sortOrder = 'asc';
-    //     }
-    //
-    //     this.sortBy = column;
-    //
-    //     this.rows.sort((a, b) => this.sort(a, b));
-    // }
-
     public getData(row: ResultItem, propertyName: string): any {
         return propertyName.split('.').reduce((prev: any, curr: string) => prev[curr], row);
     }

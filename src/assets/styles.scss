@@ -4,8 +4,8 @@
 @import "~semantic-ui-css/components/button.min.css";
 @import "~semantic-ui-css/components/menu.min.css";
 @import "~semantic-ui-css/components/dropdown.min.css";
-@import "~semantic-ui-css/components/table.min.css";
-@import "~semantic-ui-css/components/sidebar.min.css";
+//@import "~semantic-ui-css/components/table.min.css";
+//@import "~semantic-ui-css/components/sidebar.min.css";
 @import "~semantic-ui-css/components/segment.min.css";
 @import "~semantic-ui-css/components/flag.min.css";
 @import "~semantic-ui-css/components/input.min.css";
@@ -24,33 +24,12 @@
 @import "~clarity-ui/src/nav/sidenav.clarity";
 @import "~clarity-ui/src/tabs/tabs.clarity";
 
-@import "css/site.css";
+@import "~semantic-ui-css/components/site.css";
 @import "css/dropdown.css";
 @import "css/grid.css";
 @import "css/table";
 @import "css/menu";
-
-
-.nav-link-tag {
-    color: #313131;
-    display: inline-block;
-    padding-left: 8px;
-    font-size: 10px;
-    font-weight: 400;
-    vertical-align: top;
-    letter-spacing: .02em;
-}
-
-.backdrop.open {
-    position: fixed;
-    top: 0;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    background: rgba(0,0,0,.85);
-    cursor: pointer;
-    z-index: 1038;
-}
+@import "css/sidebar";
 
 .alert.alert-app-level {
     position: fixed;
@@ -65,10 +44,6 @@
     left: 0;
     right: 0;
     margin: auto;
-}
-
-button.nav-link {
-    min-width: 72px;
 }
 
 .ui.icon.input > i.search::before {

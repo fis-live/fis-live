@@ -1,5 +1,4 @@
-<div [@animate]="isOpen ? 'visible' : 'hidden'" style="z-index: 1039; background-color: #FFFFFF"
-     class="ui visible wide sidebar vertical">
+<div [@animate]="isOpen ? 'visible' : 'hidden'" class="sidebar">
 
     <div style="padding: 5px;">
         <div class="ui mini action input">
@@ -31,35 +30,35 @@
     </ul>
 
 
-        <ng-container *ngIf="tab === 'live'">
-            <nav class="sidenav" style="border:none; width: 100%; max-width: none;">
-                <section class="sidenav-content">
-                    <section *ngFor="let races of upcomingRaces$ | async" class="nav-group collapsible">
-                        <input [checked]="!races.date.startsWith('Today')" [attr.id]="'races' + races.date" type="checkbox">
-                        <label [attr.for]="'races' + races.date">{{ races.date }}<span *ngIf="races.liveCount > 0" class="badge badge-success" style="float: right; margin-top: 4.5px;">{{ races.liveCount }}</span></label>
-                        <ul class="nav-list">
-                            <ng-template ngFor let-place [ngForOf]="races.places">
-                                <li style="padding-left: 6px; background: #eee">{{ place.place }}</li>
-                                <li *ngFor="let race of place.races" >
-                                    <a (click)="close()" [routerLink]="['', race.codex]" routerLinkActive="active" class="nav-link">{{ race.discipline }}
-                                        <span class="nav-link-tag">{{ race.category }}&nbsp;{{ race.gender }}</span>
-                                        <span [class.label-info]="race.status == 'Results'" [class.label-success]="race.status == 'Live'" class="label" style="float: right; height: 16px;">{{ race.status ? race.status : race.time }}</span>
-                                    </a>
-                                </li>
-                            </ng-template>
-                        </ul>
-                    </section>
+    <ng-container *ngIf="tab === 'live'">
+        <nav class="sidenav">
+            <section class="sidenav-content">
+                <section *ngFor="let races of upcomingRaces$ | async" class="nav-group collapsible">
+                    <input [checked]="!races.date.startsWith('Today')" [attr.id]="'races' + races.date" type="checkbox">
+                    <label [attr.for]="'races' + races.date">{{ races.date }}<span *ngIf="races.liveCount > 0" class="badge badge-success">{{ races.liveCount }}</span></label>
+                    <ul class="nav-list">
+                        <ng-template ngFor let-place [ngForOf]="races.places">
+                            <li style="padding-left: 6px; background: #eee">{{ place.place }}</li>
+                            <li *ngFor="let race of place.races" >
+                                <a (click)="close()" [routerLink]="['', race.codex]" routerLinkActive="active" class="nav-link">{{ race.discipline }}
+                                    <span class="nav-link-tag">{{ race.category }}&nbsp;{{ race.gender }}</span>
+                                    <span [class.label-info]="race.status == 'Results'" [class.label-success]="race.status == 'Live'" class="label">{{ race.status ? race.status : race.time }}</span>
+                                </a>
+                            </li>
+                        </ng-template>
+                    </ul>
                 </section>
-            </nav>
-        </ng-container>
+            </section>
+        </nav>
+    </ng-container>
 
     <ng-container *ngIf="tab === 'more'">
         <div style="padding: 10px;">
         </div>
     </ng-container>
 
-        <ng-container *ngIf="tab === 'settings'">
-            <div style="padding: 10px;">
+    <ng-container *ngIf="tab === 'settings'">
+        <div style="padding: 10px;">
             <div class="ui divided list">
                 <div *ngFor="let racer of favoriteRacers" class="item">
                     <div class="right floated content">
@@ -71,8 +70,8 @@
                     {{ FLAGS[racer.nationality] || racer.nationality }}
                 </div>
             </div>
-            </div>
-        </ng-container>
+        </div>
+    </ng-container>
 
 
 </div>

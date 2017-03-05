@@ -1,0 +1,55 @@
+.sidebar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    -webkit-overflow-scrolling: touch;
+    height: 100% !important;
+    max-height: 100%;
+    max-width: 100%;
+    border-radius: 0 !important;
+    margin: 0 !important;
+    overflow-y: auto !important;
+    z-index: 1039;
+    background-color: $clr-white;
+}
+
+.sidenav {
+    border:none;
+    width: 100%;
+    max-width: none;
+
+    .badge {
+        float: right;
+        margin-top: 4.5px;
+    }
+
+    .label {
+        float: right;
+        height: 16px;
+    }
+}
+
+.nav-link-tag {
+    color: #313131;
+    display: inline-block;
+    padding-left: 8px;
+    font-size: 10px;
+    font-weight: 400;
+    vertical-align: top;
+    letter-spacing: .02em;
+}
+
+.backdrop.open {
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: rgba(0,0,0,.85);
+    cursor: pointer;
+    z-index: 1038;
+}
+
+button.nav-link {
+    min-width: 72px;
+}
