@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { Http, Response } from '@angular/http';
 import { Observable, TimeInterval } from 'rxjs/Rx';
 
-import { unserialize, json } from './unserialize';
+import { unserialize } from './unserialize';
 import { ErrorTimeInterval } from './operator/timeoutInterval';
 import { FisServer } from '../models/fis-server';
 import { Action } from '@ngrx/store';
@@ -79,7 +79,7 @@ export class FisConnectionService {
 
     private parse(result: TimeInterval<Response>): any {
         this.interval = result.interval;
-        const data = json(unserialize(result.value.text().slice(4, -5)));
+        const data = unserialize(result.value.text().slice(4, -5));
         if (!data.live || isNaN(data.live[1]) || isNaN(data.live[0])) {
             throw new Error('No live information');
         }
@@ -93,7 +93,7 @@ export class FisConnectionService {
     }
 
     private parseServerList(result: any): FisServer[] {
-        const data = json(unserialize(result.text().slice(4, -5)));
+        const data = unserialize(result.text().slice(4, -5));
         const servers: any[] = data.servers;
 
         for (let i = 0; i < servers.length; i++) {
