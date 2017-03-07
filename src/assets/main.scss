@@ -1,14 +1,3 @@
-@import "~semantic-ui-css/components/reset.min.css";
-@import "~semantic-ui-css/components/button.min.css";
-@import "~semantic-ui-css/components/menu.min.css";
-@import "~semantic-ui-css/components/dropdown.min.css";
-@import "~semantic-ui-css/components/flag.min.css";
-@import "~semantic-ui-css/components/input.min.css";
-
-@import "~perfect-scrollbar/dist/css/perfect-scrollbar.min.css";
-
-@import "~clarity-icons/clarity-icons.min.css";
-
 @import "~clarity-ui/src/labels/labels.clarity";
 @import "~clarity-ui/src/spinners/spinner.clarity";
 @import "~clarity-ui/src/buttons/buttons.clarity";
@@ -18,8 +7,6 @@
 @import "~clarity-ui/src/alert/alert.clarity";
 @import "~clarity-ui/src/nav/sidenav.clarity";
 @import "~clarity-ui/src/tabs/tabs.clarity";
-
-@import "~semantic-ui-css/components/site.css";
 
 @import "styles/dropdown";
 @import "styles/grid";

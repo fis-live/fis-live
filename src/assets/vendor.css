@@ -1,0 +1,11 @@
+@import "~semantic-ui-css/components/reset.min.css";
+@import "~semantic-ui-css/components/button.min.css";
+@import "~semantic-ui-css/components/menu.min.css";
+@import "~semantic-ui-css/components/dropdown.min.css";
+@import "~semantic-ui-css/components/flag.min.css";
+@import "~semantic-ui-css/components/input.min.css";
+@import "~semantic-ui-css/components/site.css";
+
+@import "~perfect-scrollbar/dist/css/perfect-scrollbar.min.css";
+
+@import "~clarity-icons/clarity-icons.min.css";
