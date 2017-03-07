@@ -57,17 +57,17 @@ module.exports = {
             {
                 test: /\.css$/,
                 exclude: helpers.root('src', 'app'),
-                loader: ExtractTextPlugin.extract({fallback:'style-loader', use: 'css-loader?sourceMap'})
+                loader: ExtractTextPlugin.extract({fallback:'style-loader', use: 'css-loader'})
             },
             {
                 test: /\.less$/,
                 exclude: helpers.root('src', 'app'),
-                loader: ExtractTextPlugin.extract({fallback:'style-loader', use: 'css-loader!less-loader'})
+                loader: ExtractTextPlugin.extract({fallback:'style-loader', use: 'css-loader!postcss-loader!less-loader'})
             },
             {
                 test: /\.scss$|\.sass$/,
                 exclude: helpers.root('src', 'app'),
-                loader: ExtractTextPlugin.extract({fallback:'style-loader', use: 'css-loader!sass-loader'})
+                loader: ExtractTextPlugin.extract({fallback:'style-loader', use: 'css-loader!postcss-loader!sass-loader'})
             }
         ]
     },
