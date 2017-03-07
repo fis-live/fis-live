@@ -8,7 +8,7 @@ import { State as RaceInfoState } from '../state/reducers/race-info';
 import { State as LoadingState } from '../state/reducers/loading';
 import { ResetAction, LoadMainAction, StopUpdateAction } from '../state/actions/connection';
 import { WindowSize } from '../services/window-size';
-import { Subscription } from 'rxjs/Rx';
+import { Subscription } from 'rxjs/Subscription';
 import { Racer } from '../models/racer';
 
 @Component({

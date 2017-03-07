@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Http, Response } from '@angular/http';
-import { Observable, TimeInterval } from 'rxjs/Rx';
+import { Observable } from 'rxjs/Observable';
+import { TimeInterval } from 'rxjs/operator/timeInterval';
 
 import { unserialize } from './unserialize';
 import { ErrorTimeInterval } from './operator/timeoutInterval';

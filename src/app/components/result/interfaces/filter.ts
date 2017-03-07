@@ -1,4 +1,4 @@
-import { Observable } from 'rxjs/Rx';
+import { Observable } from 'rxjs/Observable';
 
 export interface Filter {
     changes: Observable<any>;

@@ -2,7 +2,8 @@ import {
     Component, ChangeDetectionStrategy, ElementRef, HostListener, Output, EventEmitter, Input, AfterContentInit,
     OnDestroy, AfterViewInit, ChangeDetectorRef
 } from '@angular/core';
-import { Observable, Subscription, Subject } from 'rxjs/Rx';
+import { Observable } from 'rxjs/Observable';
+import { Subject } from 'rxjs/Subject';
 import { Filter } from './interfaces/filter';
 import { Filters } from './providers/filter';
 

@@ -1,5 +1,7 @@
 import { Injectable } from '@angular/core';
-import { Observable, Subscription, Subject } from 'rxjs/Rx';
+import { Observable } from 'rxjs/Observable';
+import { Subscription } from 'rxjs/Subscription';
+import { Subject } from 'rxjs/Subject';
 
 import { Filter } from '../interfaces/filter';
 

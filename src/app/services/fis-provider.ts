@@ -1,6 +1,6 @@
 import { Action } from '@ngrx/store';
 import { Http, Response } from '@angular/http';
-import { Observable } from 'rxjs/Rx';
+import { Observable } from 'rxjs/Observable';
 
 export class FisService {
     private BASE_URL = 'https://fislive-cors.herokuapp.com';

@@ -7,7 +7,7 @@ import { style, animate, trigger, transition, state } from '@angular/animations'
 import { ResultItem, TableConfiguration } from '../tab.component';
 import { Racer } from '../../models/racer';
 import { Sort } from './providers/sort';
-import { Subscription } from 'rxjs/Rx';
+import { Subscription } from 'rxjs/Subscription';
 import { Filters } from './providers/filter';
 
 import { nationalities, maxVal, statusMap } from '../../fis/fis-constants';

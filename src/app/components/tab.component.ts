@@ -2,7 +2,9 @@ import { Component, Input, ChangeDetectionStrategy } from '@angular/core';
 import { Store } from '@ngrx/store';
 
 import { AppState, getDropdownItems } from '../state/reducers';
-import { Observable, Subject, BehaviorSubject } from 'rxjs/Rx';
+import { Observable } from 'rxjs/Observable';
+import { Subject } from 'rxjs/Subject';
+import { BehaviorSubject } from 'rxjs/BehaviorSubject';
 import { Racer } from '../models/racer';
 import { DropdownItem } from './dropdown.component';
 import { ToggleFavoriteAction } from '../state/actions/settings';

@@ -5,7 +5,7 @@ import { style, animate, trigger, transition, state } from '@angular/animations'
 
 import { Racer } from '../models/racer';
 import { Http, Response } from '@angular/http';
-import { Observable } from 'rxjs/Rx';
+import { Observable } from 'rxjs/Observable';
 
 import { nationalities } from '../fis/fis-constants';
 
