@@ -84,7 +84,7 @@ export function unserialize(data: string): any {
         for (i = 0; i < length; i++) {
             chr = _data.slice(offset + (i - 1), offset + i);
             buf.push(chr);
-            length -= utf8Overhead(chr);
+            // length -= utf8Overhead(chr);
         }
 
         return {length: buf.length, buffer: buf.join('')};
