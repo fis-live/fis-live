@@ -3,7 +3,6 @@
     width: 100%;
     background: #FFFFFF;
     border: none;
-    border-top: 1px solid #D4D4D5;
     margin: 0;
     text-align: left;
     color: rgba(0, 0, 0, 0.87);
@@ -20,7 +19,7 @@
             box-sizing: border-box;
             overflow: hidden;
             max-height: 100px;
-            padding: 0.3em .7em;
+            padding: 4px 8px;
         }
     }
 
@@ -36,7 +35,7 @@
         > div {
             box-sizing: border-box;
             border-bottom: 2px solid rgba(34, 36, 38, .1);
-            padding: 0.4em 0.3em 0.4em 0.7em;
+            padding: 4px 4px 4px 8px;
         }
 
         &:not(:last-child)::before {
@@ -75,7 +74,7 @@
 
         > app-filter {
             display: flex;
-            padding-right: 0.4em;
+            padding-right: 6px;
             border-bottom: 2px solid rgba(34, 36, 38, .1);
 
             .filter-toggle {
@@ -128,7 +127,7 @@
         }
 
         &::after {
-            margin: 0 0 0 0.3em;
+            margin: 0 0 0 4px;
             content: '';
             height: 8px;
             width: 8px;

@@ -26,7 +26,7 @@ export interface TableConfiguration {
 @Component({
     selector: 'app-tab',
     template: `
-<div class="ui top attached buttons">
+<div class="action-bar">
     <app-dropdown [items]="intermediates$ | async"
         [placeholder]="'Select intermediate...'"
         [cssClass]="'button primary'"
@@ -37,7 +37,7 @@ export interface TableConfiguration {
         [cssClass]="'button positive'"
         (selectedChanged)="setDiff($event)"></app-dropdown>
 </div>
-<div class="ui attached segment" appScrollbar>
+<div class="segment" appScrollbar>
     <app-table (toggleFavorite)="toggleFavorite($event)"
         [breakpoint]="breakpoint"
         [config]="tableConfig$ | async"></app-table>

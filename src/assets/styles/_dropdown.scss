@@ -2,21 +2,19 @@
     text-align: center;
 }
 
-.ui.buttons app-dropdown {
-    -webkit-box-flex: 1;
-    -ms-flex: 1 0 auto;
+.action-bar app-dropdown {
     flex: 1 0 auto;
     border-radius: 0;
     margin: 0;
 }
 
-.ui.buttons app-dropdown > .button {
+.action-bar app-dropdown > .button {
     width: 100%;
-    border-radius: .28571429rem 0 0 0;
+    border-radius: 0 4px 0 0;
 }
 
-.ui.buttons app-dropdown:first-child > .button {
-    border-radius: .28571429rem 0 0 0 !important;
+.action-bar app-dropdown:first-child > .button {
+    border-radius: 4px 0 0 0 !important;
 }
 
 .ui.dropdown > .menu {

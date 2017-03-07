@@ -5,7 +5,7 @@ import { enableProdMode } from '@angular/core';
 import { AppModule } from './app/app.module';
 import './app/rxjs-operators';
 
-import './assets/styles.scss';
+import './assets/main.scss';
 
 if (process.env.ENV === 'production') {
     enableProdMode();
