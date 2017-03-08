@@ -14,7 +14,7 @@ import { nationalities, maxVal, statusMap } from '../../fis/fis-constants';
 
 @Component({
     selector: 'app-table',
-    templateUrl: 'result.component.html',
+    templateUrl: 'datagrid.component.html',
     providers: [ Sort, Filters ],
     animations: [
         trigger('color', [
@@ -40,7 +40,7 @@ import { nationalities, maxVal, statusMap } from '../../fis/fis-constants';
     ],
     changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class ResultComponent implements AfterViewInit, OnDestroy {
+export class DatagridComponent implements AfterViewInit, OnDestroy {
     public rows: ResultItem[];
     private _config: TableConfiguration;
     private _subscriptions: Subscription[] = [];

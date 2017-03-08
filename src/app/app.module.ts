@@ -17,15 +17,15 @@ import { ConnectionEffects } from './state/connection-effects';
 import { FisConnectionService } from './services/fis-connection';
 import { appRoutes } from './routes';
 import { TabComponent } from './components/tab.component';
-import { ResultComponent } from './components/result/result.component';
+import { DatagridComponent } from './components/datagrid/datagrid.component';
 import { WindowSize } from './services/window-size';
-import { FilterComponent } from './components/result/filter.component';
-import { FocusDirective } from './components/result/focus.directive';
+import { FilterComponent } from './components/datagrid/filter.component';
+import { FocusDirective } from './components/datagrid/focus.directive';
 import { IconComponent } from './components/ui/icon.component';
 import { SidebarComponent } from './components/sidebar.component';
 import { ResultService } from './services/result.service';
 import { ScrollbarDirective } from './components/scrollbar.directive';
-import { SortDirective } from './components/result/sort.directive';
+import { SortDirective } from './components/datagrid/sort.directive';
 
 @NgModule({
     declarations: [
@@ -35,7 +35,7 @@ import { SortDirective } from './components/result/sort.directive';
         MenuComponent,
         ContainerComponent,
         TabComponent,
-        ResultComponent,
+        DatagridComponent,
         FilterComponent,
         FocusDirective,
         IconComponent,
