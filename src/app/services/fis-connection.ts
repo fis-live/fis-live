@@ -55,15 +55,17 @@ export class FisConnectionService {
     }
 
     public poll(): Observable<any> {
-        return Observable.timer(this.delay).switchMap(() => this.getHttpRequest())
+        return Observable.of(null).switchMap(() => Observable.timer(this.delay).switchMap(() => this.getHttpRequest())
             .map(result => this.parse(result))
-            .catch(error => this.handleError(error));
+            .catch(error => this.handleError(error))).repeat();
     }
 
     public loadMain(codex: number | null): Observable<any> {
         this.initialize(codex);
 
-        return this.poll();
+        return Observable.timer(this.delay).switchMap(() => this.getHttpRequest())
+            .map(result => this.parse(result))
+            .catch(error => this.handleError(error));
     }
 
     private getHttpRequest(): Observable<TimeInterval<Response>> {
@@ -114,7 +116,9 @@ export class FisConnectionService {
         this.delay = (this.delay > 0) ? this.delay : 1000;
 
         if (this.errorCount < 10) {
-            return this.poll();
+            return (this.version === 0) ? Observable.timer(this.delay).switchMap(() => this.getHttpRequest())
+                    .map(result => this.parse(result))
+                    .catch(error => this.handleError(error)) : this.poll();
         }
 
         const errMsg = (error instanceof Error) ? error :

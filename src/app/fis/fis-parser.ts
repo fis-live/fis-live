@@ -4,7 +4,7 @@ import {
     SetStatusAction, UpdateMeteoAction, SetRaceMessageAction, UpdateRaceInfoAction,
     AddRacerAction
 } from '../state/actions/race';
-import { ResetAction, LoadMainAction, LoadUpdateAction } from '../state/actions/connection';
+import { ResetAction, LoadMainAction, StopUpdateAction } from '../state/actions/connection';
 import { Meteo } from '../models/meteo';
 import { RaceInfo } from '../models/race-info';
 import { BATCH_ACTION } from '../state/reducers/index';
@@ -140,7 +140,7 @@ export function parseMain(data: any): Action[] {
 export function parseUpdate(data: any): Action[] {
     const actions = [];
     let reload = false;
-    let update = true;
+    let stopUpdating = true;
     const maxVal = 1000000000;
 
     if (data.events) {
@@ -204,7 +204,7 @@ export function parseUpdate(data: any): Action[] {
                     reload = true;
                     break;
                 case 'official_result':
-                    update = false;
+                    stopUpdating = false;
             }
 
             if (key > maxVal) {
@@ -223,5 +223,5 @@ export function parseUpdate(data: any): Action[] {
 
 
     return reload ? [new ResetAction(), new LoadMainAction(null)] :
-        update ? [{type: BATCH_ACTION, payload: actions}, new LoadUpdateAction()] : [{type: BATCH_ACTION, payload: actions}];
+        stopUpdating ? [{type: BATCH_ACTION, payload: actions}, new StopUpdateAction()] : [{type: BATCH_ACTION, payload: actions}];
 }

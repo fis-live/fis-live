@@ -8,6 +8,9 @@ import { Http, Response } from '@angular/http';
 import { Observable } from 'rxjs/Observable';
 
 import { nationalities } from '../fis/fis-constants';
+import { AppState, getDelayState } from '../state/reducers/index';
+import { Store } from '@ngrx/store';
+import { SetDelayAction, ToggleFavoriteAction } from '../state/actions/settings';
 
 @Component({
     selector: 'app-sidebar',
@@ -30,10 +33,24 @@ export class SidebarComponent {
     public tab = 'live';
     public upcomingRaces$: Observable<any>;
     public FLAGS = nationalities;
+    public delay$: Observable<number>;
 
 
-    constructor(private http: Http) {
+    constructor(private http: Http, private store: Store<AppState>) {
         this.upcomingRaces$ = this.loadRaces();
+        this.delay$ = store.select(getDelayState);
+    }
+
+    public setDelay(delay: number) {
+        if (isNaN(delay) || delay < 0) {
+            return;
+        }
+
+        this.store.dispatch(new SetDelayAction(delay));
+    }
+
+    public toggleFavorite(racer: Racer) {
+        this.store.dispatch(new ToggleFavoriteAction(racer));
     }
 
     public loadRaces(): Observable<any> {

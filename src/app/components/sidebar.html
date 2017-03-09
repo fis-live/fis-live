@@ -22,7 +22,7 @@
         <li role="presentation" class="nav-item">
             <button (click)="tab = 'settings'" [class.active]="tab === 'settings'" class="btn btn-link nav-link"
                     type="button">
-                <clr-icon shape="cog" [class.is-solid]="tab === 'settings'"></clr-icon>
+                Settings
             </button>
         </li>
     </ul>
@@ -57,10 +57,13 @@
 
     <ng-container *ngIf="tab === 'settings'">
         <div style="padding: 10px;">
+            <label for="delay">Delay</label>
+            <span style="float: right;">ms</span>
+            <input type="number" id="delay" [ngModel]="delay$ | async" (ngModelChange)="setDelay($event)" placeholder="Enter value here" style="float: right; width: 100px;">
             <div class="ui divided list">
                 <div *ngFor="let racer of favoriteRacers" class="item">
                     <div class="right floated content">
-                        <button type="button" class="close" aria-label="Close" (click)="close()">
+                        <button type="button" class="close" aria-label="Close" (click)="toggleFavorite(racer)">
                             <clr-icon shape="trash" size="24"></clr-icon>
                         </button>
                     </div>

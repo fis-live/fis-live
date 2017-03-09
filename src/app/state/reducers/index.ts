@@ -12,6 +12,7 @@ import * as Result from './result';
 import * as Settings from './settings';
 import * as Loading from './loading';
 import { ConnectionActions } from '../actions/connection';
+import { getDelay } from './settings';
 
 const reducers: { [key: string]: ActionReducer<any> } = {
     alert: Alert.reducer,
@@ -93,3 +94,5 @@ export const getFavoriteRacers = createSelector(getRacers, getSettingsState,
             return _racers;
         }
 );
+
+export const getDelayState = createSelector(getSettingsState, getDelay);

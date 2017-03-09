@@ -15,9 +15,13 @@ import {
 import { FisServer } from '../models/fis-server';
 import { ShowLoadingAction, HideLoadingAction, LoadPdfAction } from './actions/connection';
 import { parseMain, parseUpdate } from '../fis/fis-parser';
+import { Store } from '@ngrx/store';
+import { AppState, getDelayState } from './reducers/index';
 
 @Injectable()
 export class ConnectionEffects {
+
+    public delay = 0;
 
     @Effect() loadServers$ = this.actions$
         .ofType(ConnectionActions.LOAD_SERVERS)
@@ -80,7 +84,7 @@ export class ConnectionEffects {
                     .mergeMap(data => {
                         const actions = parseUpdate(data);
 
-                        return Observable.of(...actions);
+                        return Observable.of(actions).delay(this.delay);
                     })
                     .catch((error) => {
                         console.log(error);
@@ -88,7 +92,7 @@ export class ConnectionEffects {
                             severity: 'danger',
                             message: 'Could not find live data. Check the codex and try again.',
                             action: 'Retry',
-                            actions: [new LoadUpdateAction()]
+                            actions: [new SelectServerAction(), new LoadUpdateAction()]
                         }));
                     });
             }
@@ -98,5 +102,9 @@ export class ConnectionEffects {
         .ofType(ConnectionActions.LOAD_MAIN)
         .mapTo(new ShowLoadingAction());
 
-    constructor(private actions$: Actions, private _connection: FisConnectionService) { }
+    constructor(private actions$: Actions, private _connection: FisConnectionService, private store: Store<AppState>) {
+        store.select(getDelayState).subscribe((delay) => {
+            this.delay = isNaN(delay) ? this.delay : +delay;
+        });
+    }
 }

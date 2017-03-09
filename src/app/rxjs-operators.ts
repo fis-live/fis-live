@@ -5,9 +5,11 @@ import 'rxjs/add/observable/of';
 import 'rxjs/add/observable/empty';
 import 'rxjs/add/observable/from';
 import 'rxjs/add/observable/timer';
+import 'rxjs/add/operator/repeat';
 
 import 'rxjs/add/operator/catch';
 import 'rxjs/add/operator/map';
+import 'rxjs/add/operator/delay';
 import 'rxjs/add/operator/timeout';
 import 'rxjs/add/operator/retry';
 import 'rxjs/add/operator/mergeMap';

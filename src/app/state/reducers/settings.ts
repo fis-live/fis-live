@@ -5,10 +5,12 @@ import { Racer } from '../../models/racer';
 
 export interface State {
     favoriteRacers: Racer[];
+    delay: number;
 }
 
 const initialState: State = {
-    favoriteRacers: []
+    favoriteRacers: [],
+    delay: 0
 };
 
 
@@ -19,12 +21,22 @@ export function reducer(state: State = initialState, action: Action): State {
 
             if (state.favoriteRacers.find((row) => row.id === racer.id) != null) {
                 return {
-                    favoriteRacers: state.favoriteRacers.reduce((arr, row) => (racer.id === row.id) ? arr : arr.concat(row), [])
+                    favoriteRacers: state.favoriteRacers.reduce((arr, row) => (racer.id === row.id) ? arr : arr.concat(row), []),
+                    delay: state.delay
                 };
             }
 
             return {
-                favoriteRacers: [ ...state.favoriteRacers, racer ]
+                favoriteRacers: [ ...state.favoriteRacers, racer ],
+                delay: state.delay
+            };
+
+        case SettingsActions.SET_DELAY:
+            const delay: number = action.payload;
+
+            return {
+                favoriteRacers: state.favoriteRacers,
+                delay: delay
             };
 
 
@@ -34,3 +46,5 @@ export function reducer(state: State = initialState, action: Action): State {
 }
 
 export const getFavoriteRacers = (state: State) => state.favoriteRacers;
+
+export const getDelay = (state: State) => state.delay;
