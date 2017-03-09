@@ -7,6 +7,8 @@
 @import "~clarity-ui/src/alert/alert.clarity";
 @import "~clarity-ui/src/nav/sidenav.clarity";
 @import "~clarity-ui/src/tabs/tabs.clarity";
+@import "~clarity-ui/src/forms/select.clarity";
+@import "~clarity-ui/src/forms/inputs.clarity";
 
 @import "styles/dropdown";
 @import "styles/grid";
@@ -29,15 +31,29 @@
     margin: auto;
 }
 
-.ui.icon.input > i.search::before {
-    background-image: generateSearchIcon("#999999");
-    @include icon-background-styles();
-    left: 20%;
-    position: absolute;
-    text-align: center;
-    top: 20%;
-    width: 60%;
-    height: 60%;
-    content: '';
-    margin: 0;
+.search-input {
+    position: relative;
+    input {
+        padding-right: 22px;
+    }
+
+    &::after {
+        background-image: generateSearchIcon("#999999");
+        height: 16px;
+        width: 16px;
+        top: 4px;
+        right: 3px;
+        @include icon-background-styles();
+        margin: 0;
+        position: absolute;
+        content: '';
+    }
+}
+
+.sidenav .nav-group label {
+    font-weight: 700;
+}
+
+.label, a.label {
+    letter-spacing: normal;
 }

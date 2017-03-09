@@ -40,6 +40,7 @@ export class Filters {
         return () => {
             subscription.unsubscribe();
             this._all.splice(index, 1);
+            this._change.next();
         };
     }
 

@@ -1,10 +1,8 @@
 <div [@animate]="isOpen ? 'visible' : 'hidden'" class="sidebar">
 
     <div style="padding: 5px;">
-        <div class="ui mini action input">
-            <input (keyup.enter)="go(codex.value)" #codex placeholder="Enter codex..." type="text">
-            <button (click)="go(codex.value)" class="ui icon button">Go</button>
-        </div>
+            <input style="font-size: 11px;" (keyup.enter)="go(codex.value)" #codex placeholder="Enter codex..." type="text">
+            <button (click)="go(codex.value)" class="btn btn-sm btn-primary">Go</button>
         <button type="button" class="close" aria-label="Close" (click)="close()">
             <clr-icon shape="times" size="32"></clr-icon>
         </button>
@@ -38,7 +36,7 @@
                     <label [attr.for]="'races' + races.date">{{ races.date }}<span *ngIf="races.liveCount > 0" class="badge badge-success">{{ races.liveCount }}</span></label>
                     <ul class="nav-list">
                         <ng-template ngFor let-place [ngForOf]="races.places">
-                            <li style="padding-left: 6px; background: #eee">{{ place.place }}</li>
+                            <li style="padding-left: 6px; background: #89CBDF">{{ place.place }}</li>
                             <li *ngFor="let race of place.races" >
                                 <a (click)="close()" [routerLink]="['', race.codex]" routerLinkActive="active" class="nav-link">{{ race.discipline }}
                                     <span class="nav-link-tag">{{ race.category }}&nbsp;{{ race.gender }}</span>

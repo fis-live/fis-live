@@ -1,6 +1,5 @@
 import {
-    Component, ChangeDetectionStrategy, ElementRef, HostListener, Output, EventEmitter, Input, AfterContentInit,
-    OnDestroy, AfterViewInit, ChangeDetectorRef
+    Component, ChangeDetectionStrategy, ElementRef, HostListener, OnDestroy, AfterViewInit, ChangeDetectorRef
 } from '@angular/core';
 import { Observable } from 'rxjs/Observable';
 import { Subject } from 'rxjs/Subject';
@@ -23,14 +22,13 @@ import { Filters } from './providers/filter';
         </button>
     </div>
     
-    <div class="ui icon input">
+    <div class="search-input">
         <input focusOnInit
             placeholder="Search..." type="text"
             [(ngModel)]="input"
             (keyup)="filterChanged()"
             (keyup.enter)="close()"
             (keyup.escape)="reset()">
-        <i class="search icon"></i>
     </div>
 </div>
 `,
