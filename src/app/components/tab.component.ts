@@ -7,7 +7,6 @@ import { Subject } from 'rxjs/Subject';
 import { BehaviorSubject } from 'rxjs/BehaviorSubject';
 import { Racer } from '../models/racer';
 import { DropdownItem } from './dropdown.component';
-import { ToggleFavoriteAction } from '../state/actions/settings';
 import { ResultService } from '../services/result.service';
 
 export interface ResultItem {
@@ -40,9 +39,7 @@ export interface TableConfiguration {
         (selectedChanged)="setDiff($event)"></app-dropdown>
 </div>
 <div class="segment" appScrollbar>
-    <app-table (toggleFavorite)="toggleFavorite($event)"
-        [breakpoint]="breakpoint"
-        [config]="tableConfig$ | async"></app-table>
+    <app-table [breakpoint]="breakpoint" [config]="tableConfig$ | async"></app-table>
 </div>`,
     changeDetection: ChangeDetectionStrategy.OnPush
 })
@@ -194,9 +191,5 @@ export class TabComponent {
 
     public setDiff($event: DropdownItem) {
         this.diff$.next($event !== null ? +$event.data_value : null);
-    }
-
-    public toggleFavorite(racer: Racer): void {
-        this._store.dispatch(new ToggleFavoriteAction(racer));
     }
 }

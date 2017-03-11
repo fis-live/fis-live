@@ -13,7 +13,7 @@ import {
     ResetAction
 } from './actions';
 import { FisServer } from '../models/fis-server';
-import { ShowLoadingAction, HideLoadingAction, LoadPdfAction } from './actions/connection';
+import { ShowLoadingAction, HideLoadingAction, LoadPdfAction, StopUpdateAction } from './actions/connection';
 import { parseMain, parseUpdate } from '../fis/fis-parser';
 import { Store } from '@ngrx/store';
 import { AppState, getDelayState } from './reducers/index';
@@ -64,9 +64,7 @@ export class ConnectionEffects {
     @Effect() loadPdf$ = this.actions$
         .ofType(ConnectionActions.LOAD_PDF)
         .switchMap(action => this._connection.loadPdf(action.payload)
-            .mergeMap(actions => {
-                return Observable.from(actions);
-            })
+            .mergeMap(actions => Observable.from(actions))
             .catch((error) => {
                 console.log(error);
                 return Observable.empty();
@@ -87,13 +85,7 @@ export class ConnectionEffects {
                         return Observable.of(actions).delay(this.delay);
                     })
                     .catch((error) => {
-                        console.log(error);
-                        return Observable.of(new ShowAlertAction({
-                            severity: 'danger',
-                            message: 'Could not find live data. Check the codex and try again.',
-                            action: 'Retry',
-                            actions: [new SelectServerAction(), new LoadUpdateAction()]
-                        }));
+                        return Observable.from([new ResetAction(), new SelectServerAction(), new LoadMainAction(null)]);
                     });
             }
         );

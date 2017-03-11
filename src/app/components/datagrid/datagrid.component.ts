@@ -46,7 +46,6 @@ export class DatagridComponent implements AfterViewInit, OnDestroy {
     private _subscriptions: Subscription[] = [];
 
     @Input() public breakpoint = 'large';
-    @Output() public toggleFavorite = new EventEmitter<Racer>();
 
     public FLAGS = nationalities;
     public maxVal = maxVal;
