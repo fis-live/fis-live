@@ -82,7 +82,7 @@ export class ConnectionEffects {
                     .mergeMap(data => {
                         const actions = parseUpdate(data);
 
-                        return Observable.of(actions).delay(this.delay);
+                        return Observable.from(actions).delay(this.delay);
                     })
                     .catch((error) => {
                         return Observable.from([new ResetAction(), new SelectServerAction(), new LoadMainAction(null)]);

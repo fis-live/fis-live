@@ -140,7 +140,7 @@ export function parseMain(data: any): Action[] {
 export function parseUpdate(data: any): Action[] {
     const actions = [];
     let reload = false;
-    let stopUpdating = true;
+    let stopUpdating = false;
     const maxVal = 1000000000;
 
     if (data.events) {
@@ -204,7 +204,7 @@ export function parseUpdate(data: any): Action[] {
                     reload = true;
                     break;
                 case 'official_result':
-                    stopUpdating = false;
+                    stopUpdating = true;
             }
 
             if (key > maxVal) {
