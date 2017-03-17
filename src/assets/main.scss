@@ -1,7 +1,40 @@
+@import "~bootstrap/scss/variables";
+@import "~bootstrap/scss/mixins";
+@import "~bootstrap/scss/normalize";
+
+@import "~clarity-ui/src/utils/vendor/decimalRounding.clarity";
+@import "~clarity-ui/src/utils/vendor/mathPow.clarity";
+
+@import "~clarity-ui/src/utils/mixins.clarity";
+@import "~clarity-ui/src/utils/helpers.clarity";
+
+//Color
+@import "~clarity-ui/src/color/utils/colors.clarity";
+@import "~clarity-ui/src/color/utils/contrast-cache.clarity";
+@import "~clarity-ui/src/color/utils/helpers.clarity";
+@import "~clarity-ui/src/color/color.clarity"; // depends on colors.clarity, helper.clarity, contrast-cache.clarity
+
+//Layer - z-indices
+@import "~clarity-ui/src/utils/layers.clarity";
+
+//Variables
+@import "~clarity-ui/src/utils/variables.clarity"; // depends on helpers.clarity, color.clarity
+
+@import "~bootstrap/scss/utilities";
+@import "~bootstrap/scss/close";
+@import "~bootstrap/scss/images";
+
+@import "~clarity-ui/src/forms/utils/form-variables.clarity";
+@import "~clarity-ui/src/forms/utils/mixins.clarity";
+
+@import "~clarity-ui/src/typography/typography.clarity";
+
+
 @import "~clarity-ui/src/labels/labels.clarity";
 @import "~clarity-ui/src/spinners/spinner.clarity";
 @import "~clarity-ui/src/buttons/buttons.clarity";
 @import "~clarity-ui/src/nav/nav.clarity";
+@import "~clarity-ui/src/images/icons.clarity";
 @import "~clarity-ui/src/images/images.clarity";
 @import "~clarity-ui/src/close/close.clarity";
 @import "~clarity-ui/src/alert/alert.clarity";
