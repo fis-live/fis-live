@@ -1,6 +1,6 @@
 import { Component, Input, ChangeDetectionStrategy, Output, EventEmitter } from '@angular/core';
 
-import { RaceInfo } from '../models/race-info';
+import { State as RaceInfoState } from '../state/reducers/race-info';
 
 @Component({
     selector: 'app-menu',
@@ -28,7 +28,7 @@ import { RaceInfo } from '../models/race-info';
 export class MenuComponent {
 
     @Input()
-    public raceInfo: RaceInfo;
+    public raceInfo: RaceInfoState;
 
     @Output()
     public refresh: EventEmitter<any> = new EventEmitter();
