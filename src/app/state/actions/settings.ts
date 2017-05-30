@@ -3,7 +3,8 @@ import { Racer } from '../../models/racer';
 
 export const SettingsActions = {
     TOGGLE_FAVORITE: '[Settings] Toggle favorite',
-    SET_DELAY: '[Settings] Set delay'
+    SET_DELAY: '[Settings] Set delay',
+    RESET: '[Settings] Reset settings'
 };
 
 export class ToggleFavoriteAction implements Action {
@@ -18,4 +19,10 @@ export class SetDelayAction implements Action {
 
     constructor(public payload: number) {
     }
+}
+
+export class ResetSettingsAction implements Action {
+    type = SettingsActions.RESET;
+
+    constructor() { }
 }

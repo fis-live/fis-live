@@ -39,6 +39,9 @@ export function reducer(state: State = initialState, action: Action): State {
                 delay: delay
             };
 
+        case SettingsActions.RESET:
+            return initialState;
+
 
         default:
             return state;
