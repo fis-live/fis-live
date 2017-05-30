@@ -28,16 +28,16 @@
 @import "~clarity-ui/src/typography/typography.clarity";
 
 
-@import "~clarity-ui/src/labels/labels.clarity";
-@import "~clarity-ui/src/spinners/spinner.clarity";
-@import "~clarity-ui/src/buttons/buttons.clarity";
-@import "~clarity-ui/src/nav/nav.clarity";
-@import "~clarity-ui/src/images/icons.clarity";
-@import "~clarity-ui/src/images/images.clarity";
-@import "~clarity-ui/src/close/close.clarity";
-@import "~clarity-ui/src/alert/alert.clarity";
-@import "~clarity-ui/src/nav/sidenav.clarity";
-@import "~clarity-ui/src/tabs/tabs.clarity";
+@import "~clarity-ui/src/emphasis/labels.clarity";
+@import "~clarity-ui/src/progress/spinner/spinner.clarity";
+@import "~clarity-ui/src/button/buttons.clarity";
+@import "~clarity-ui/src/layout/nav/nav.clarity";
+@import "~clarity-ui/src/image/icons.clarity";
+@import "~clarity-ui/src/image/images.clarity";
+@import "~clarity-ui/src/utils/close.clarity";
+@import "~clarity-ui/src/emphasis/alert/alert.clarity";
+@import "~clarity-ui/src/layout/nav/sidenav.clarity";
+@import "~clarity-ui/src/layout/tabs/tabs.clarity";
 @import "~clarity-ui/src/forms/select.clarity";
 @import "~clarity-ui/src/forms/inputs.clarity";
 

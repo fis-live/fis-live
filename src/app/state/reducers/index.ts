@@ -12,7 +12,6 @@ import * as Result from './result';
 import * as Settings from './settings';
 import * as Loading from './loading';
 import { ConnectionActions } from '../actions/connection';
-import { getDelay } from './settings';
 
 const reducers: { [key: string]: ActionReducer<any> } = {
     alert: Alert.reducer,
@@ -61,9 +60,9 @@ const resetState = (reducer: Function) => {
 };
 
 if (process.env.ENV === 'production') {
-    metaReducer = compose(resetState, enableBatching, localStorageSync(['settings'], true), combineReducers);
+    metaReducer = compose(enableBatching, resetState, localStorageSync({keys: ['settings'], removeOnUndefined: true, rehydrate: true}), combineReducers);
 } else {
-    metaReducer = compose(storeFreeze, enableBatching, resetState, localStorageSync(['settings'], true), combineReducers);
+    metaReducer = compose(storeFreeze, enableBatching, resetState, localStorageSync({keys: ['settings'], removeOnUndefined: true, rehydrate: true}), combineReducers);
 }
 
 export function reducer(state: any, action: any): any {
@@ -95,4 +94,4 @@ export const getFavoriteRacers = createSelector(getRacers, getSettingsState,
         }
 );
 
-export const getDelayState = createSelector(getSettingsState, getDelay);
+export const getDelayState = createSelector(getSettingsState, Settings.getDelay);
