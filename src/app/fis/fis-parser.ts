@@ -1,13 +1,11 @@
-import { AddIntermediateAction, AddStartListAction, RegisterResultAction } from '../state/actions/';
 import { Action } from '@ngrx/store';
 import {
-    SetStatusAction, UpdateMeteoAction, SetRaceMessageAction, UpdateRaceInfoAction,
-    AddRacerAction
+    SetStatus, UpdateMeteo, SetRaceMessage, UpdateRaceInfo,
+    AddRacer, AddIntermediate, AddStartList, RegisterResult
 } from '../state/actions/race';
-import { ResetAction, LoadMainAction, StopUpdateAction } from '../state/actions/connection';
+import { Reset, LoadMain, StopUpdate, Batch } from '../state/actions/connection';
 import { Meteo } from '../models/meteo';
 import { RaceInfo } from '../models/race-info';
-import { BATCH_ACTION } from '../state/reducers/index';
 
 export function parseMain(data: any): Action[] {
     const actions: Action[] = [];
@@ -44,10 +42,10 @@ export function parseMain(data: any): Action[] {
         humidity: data.meteo[5]
     };
 
-    actions.push(new UpdateRaceInfoAction(raceInfo));
-    actions.push(new SetRaceMessageAction(data.message));
-    actions.push(new UpdateMeteoAction(meteo));
-    actions.push(new AddIntermediateAction({key: -1, id: 0, distance: null, name: 'Start list'}));
+    actions.push(new UpdateRaceInfo(raceInfo));
+    actions.push(new SetRaceMessage(data.message));
+    actions.push(new UpdateMeteo(meteo));
+    actions.push(new AddIntermediate({key: -1, id: 0, distance: null, name: 'Start list'}));
 
     data.racedef.forEach((def, index) => {
         let name = 'Finish';
@@ -55,12 +53,12 @@ export function parseMain(data: any): Action[] {
             name = 'Intermediate ' + def[1];
         }
 
-        actions.push(new AddIntermediateAction({key: index, id: def[1], distance: def[2], name: name}));
+        actions.push(new AddIntermediate({key: index, id: def[1], distance: def[2], name: name}));
     });
 
     for ( let i = 0; i < data.racers.length; i++ ) {
         if (data.racers[i] !== null) {
-            actions.push(new AddRacerAction({
+            actions.push(new AddRacer({
                     id: data.racers[i][0],
                     bib: data.racers[i][1],
                     firstName: data.racers[i][3].trim(),
@@ -76,7 +74,7 @@ export function parseMain(data: any): Action[] {
     for (let i = 0; i < data.startlist.length; i++) {
         if (data.startlist[i] !== null) {
             actions.push(
-                new AddStartListAction({
+                new AddStartList({
                     racer: data.startlist[i][0],
                     status: data.startlist[i][1],
                     order: i + 1
@@ -113,7 +111,7 @@ export function parseMain(data: any): Action[] {
             }
             if (key > maxVal) {
                 actions.push(
-                    new RegisterResultAction({
+                    new RegisterResult({
                         status: data.startlist[i][1],
                         intermediate: 99,
                         racer: data.startlist[i][0],
@@ -128,13 +126,13 @@ export function parseMain(data: any): Action[] {
         if (data.result[i]) {
             for ( let j = 0; j < data.result[i].length; j++) {
                 actions.push(
-                    new RegisterResultAction({status: '', intermediate: data.racedef[j][1], racer: i, time: data.result[i][j]})
+                    new RegisterResult({status: '', intermediate: data.racedef[j][1], racer: i, time: data.result[i][j]})
                 );
             }
         }
     }
 
-    return [{type: BATCH_ACTION, payload: actions}];
+    return [new Batch(actions)];
 }
 
 export function parseUpdate(data: any): Action[] {
@@ -148,15 +146,15 @@ export function parseUpdate(data: any): Action[] {
             let key = 0;
             switch (event[0]) {
                 case 'inter':
-                    actions.push(new RegisterResultAction({
+                    actions.push(new RegisterResult({
                         status: '', intermediate: event[3], racer: event[2], time: event[4]
                     }));
                     break;
                 case 'finish':
-                    actions.push(new RegisterResultAction({
+                    actions.push(new RegisterResult({
                         status: '', intermediate: event[3], racer: event[2], time: event[4]
                     }));
-                    actions.push(new SetStatusAction({id: event[2], status: event[0]}));
+                    actions.push(new SetStatus({id: event[2], status: event[0]}));
                     break;
                 case 'dnf':
                     key = maxVal * 3;
@@ -179,11 +177,11 @@ export function parseUpdate(data: any): Action[] {
                 case 'ff':
                 case 'start':
                 case 'nextstart':
-                    actions.push(new SetStatusAction({id: event[2], status: event[0]}));
-                    actions.push(new SetStatusAction({id: event[2], status: event[0]}));
+                    actions.push(new SetStatus({id: event[2], status: event[0]}));
+                    actions.push(new SetStatus({id: event[2], status: event[0]}));
                     break;
                 case 'meteo':
-                    actions.push(new UpdateMeteoAction({
+                    actions.push(new UpdateMeteo({
                         air_temperature: event[1],
                         wind: event[2],
                         weather: event[3],
@@ -198,7 +196,7 @@ export function parseUpdate(data: any): Action[] {
                 case 'activeheat':
                     break;
                 case 'message':
-                    actions.push(new SetRaceMessageAction(event[1]));
+                    actions.push(new SetRaceMessage(event[1]));
                     break;
                 case 'reloadmain':
                     reload = true;
@@ -208,9 +206,9 @@ export function parseUpdate(data: any): Action[] {
             }
 
             if (key > maxVal) {
-                actions.push(new SetStatusAction({id: event[2], status: event[0]}));
+                actions.push(new SetStatus({id: event[2], status: event[0]}));
                 actions.push(
-                    new RegisterResultAction({
+                    new RegisterResult({
                         status: event[0],
                         intermediate: 99,
                         racer: event[2],
@@ -222,6 +220,6 @@ export function parseUpdate(data: any): Action[] {
     }
 
 
-    return reload ? [new ResetAction(), new LoadMainAction(null)] :
-        stopUpdating ? [{type: BATCH_ACTION, payload: actions}, new StopUpdateAction()] : [{type: BATCH_ACTION, payload: actions}];
+    return reload ? [new Reset(), new LoadMain(null)] :
+        stopUpdating ? [new Batch(actions), new StopUpdate()] : [new Batch(actions)];
 }

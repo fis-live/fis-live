@@ -1,85 +1,96 @@
 import { Action } from '@ngrx/store';
 import { Racer } from '../../models/racer';
 
-export const RaceActions = {
-    REGISTER_RESULT: '[Result] Register result',
-    ADD_RACER: '[Racer] Add racer',
-    SET_STATUS: '[Racer] Set status',
-    UPDATE_RACE_INFO: '[Info] Update race info',
-    SET_RACE_MESSAGE: '[Info] Set message',
-    ADD_INTERMEDIATE: '[Intermediate] Add intermediate',
-    ADD_START_LIST: '[Start list] Add entry',
-    UPDATE_METEO: '[Info] Update meteo',
-    SET_START_TIME: '[Result] Register start time',
-    SET_BIB_COLOR: '[Racer] Set bib color'
-};
+export const REGISTER_RESULT = '[Result] Register result';
+export const ADD_RACER = '[Racer] Add racer';
+export const SET_STATUS = '[Racer] Set status';
+export const UPDATE_RACE_INFO = '[Info] Update race info';
+export const SET_RACE_MESSAGE = '[Info] Set message';
+export const ADD_INTERMEDIATE = '[Intermediate] Add intermediate';
+export const ADD_START_LIST = '[Start list] Add entry';
+export const UPDATE_METEO = '[Info] Update meteo';
+export const SET_START_TIME = '[Result] Register start time';
+export const SET_BIB_COLOR = '[Racer] Set bib color';
 
-export class RegisterResultAction implements Action {
-    type = RaceActions.REGISTER_RESULT;
+export class RegisterResult implements Action {
+    readonly type = REGISTER_RESULT;
 
     constructor(public payload: any) {
     }
 }
 
-export class AddRacerAction implements Action {
-    type = RaceActions.ADD_RACER;
+export class AddRacer implements Action {
+    readonly type = ADD_RACER;
 
     constructor(public payload: Racer) {
     }
 }
 
-export class SetStatusAction implements Action {
-    type = RaceActions.SET_STATUS;
+export class SetStatus implements Action {
+    readonly type = SET_STATUS;
 
     constructor(public payload: any) {
     }
 }
 
-export class SetBibColorAction implements Action {
-    type = RaceActions.SET_BIB_COLOR;
+export class SetBibColor implements Action {
+    readonly type = SET_BIB_COLOR;
 
     constructor(public payload: any) {
     }
 }
 
-export class SetStartTimeAction implements Action {
-    type = RaceActions.SET_START_TIME;
+export class SetStartTime implements Action {
+    readonly type = SET_START_TIME;
 
     constructor(public payload: any) {
     }
 }
 
-export class UpdateRaceInfoAction implements Action {
-    type = RaceActions.UPDATE_RACE_INFO;
+export class UpdateRaceInfo implements Action {
+    readonly type = UPDATE_RACE_INFO;
 
     constructor(public payload: any) {
     }
 }
 
-export class SetRaceMessageAction implements Action {
-    type = RaceActions.SET_RACE_MESSAGE;
+export class SetRaceMessage implements Action {
+    readonly type = SET_RACE_MESSAGE;
 
     constructor(public payload: any) {
     }
 }
 
-export class AddIntermediateAction implements Action {
-    type = RaceActions.ADD_INTERMEDIATE;
+export class AddIntermediate implements Action {
+    readonly type = ADD_INTERMEDIATE;
 
     constructor(public payload: any) {
     }
 }
 
-export class AddStartListAction implements Action {
-    type = RaceActions.ADD_START_LIST;
+export class AddStartList implements Action {
+    readonly type = ADD_START_LIST;
 
     constructor(public payload: any) {
     }
 }
 
-export class UpdateMeteoAction implements Action {
-    type = RaceActions.UPDATE_METEO;
+export class UpdateMeteo implements Action {
+    readonly type = UPDATE_METEO;
 
     constructor(public payload: any) {
     }
 }
+
+
+export type RaceAction
+    = RegisterResult
+    | AddRacer
+    | SetStatus
+    | SetBibColor
+    | SetStartTime
+    | UpdateRaceInfo
+    | SetRaceMessage
+    | AddIntermediate
+    | AddStartList
+    | UpdateMeteo;

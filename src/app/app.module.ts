@@ -12,7 +12,7 @@ import { AlertComponent } from './components/ui/alert.component';
 import { DropdownComponent } from './components/dropdown.component';
 import { ContainerComponent } from './components/container.component';
 import { MenuComponent } from './components/menu.component';
-import { reducer } from './state/reducers/index';
+import {metaReducers, reducers} from './state/reducers/index';
 import { ConnectionEffects } from './state/connection-effects';
 import { FisConnectionService } from './services/fis-connection';
 import { appRoutes } from './routes';
@@ -49,8 +49,8 @@ import { SortDirective } from './components/datagrid/sort.directive';
         HttpModule,
         BrowserAnimationsModule,
         RouterModule.forRoot(appRoutes, { useHash: true }),
-        StoreModule.provideStore(reducer),
-        EffectsModule.run(ConnectionEffects)
+        StoreModule.forRoot(reducers, { metaReducers: metaReducers }),
+        EffectsModule.forRoot([ConnectionEffects])
     ],
     providers: [ FisConnectionService, WindowSize, ResultService ],
     bootstrap: [ AppComponent ]

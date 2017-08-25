@@ -153,7 +153,7 @@ export class FisConnectionService {
         this.baseURL = `http://${urlServer}/`;
     }
 
-    public loadPdf(doc: number): Observable<Action[]> {
+    public loadPdf(doc: string): Observable<Action[]> {
         return this._http.get(`${this.proxy}pdf.json?codex=${this.codex}&doc=${doc}`)
             .map((response) => response.json())
             .catch((error) => {

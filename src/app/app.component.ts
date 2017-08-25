@@ -4,7 +4,7 @@ import { Observable } from 'rxjs/Observable';
 
 import { AppState, getAlertState } from './state/reducers/';
 import { State as AlertState } from './state/reducers/alert';
-import { CloseAlertAction } from './state/actions/connection';
+import { CloseAlert } from './state/actions/connection';
 
 @Component({
     selector: 'app-root',
@@ -19,7 +19,7 @@ export class AppComponent {
     }
 
     public closeAlert(): void {
-        this._store.dispatch(new CloseAlertAction());
+        this._store.dispatch(new CloseAlert());
     }
 
     public alertAction(actions: Action[]): void {

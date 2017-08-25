@@ -1,6 +1,4 @@
-import { Action } from '@ngrx/store';
-
-import { SettingsActions } from '../actions/';
+import * as SettingsActions from '../actions/settings';
 import { Racer } from '../../models/racer';
 
 export interface State {
@@ -14,7 +12,7 @@ const initialState: State = {
 };
 
 
-export function reducer(state: State = initialState, action: Action): State {
+export function reducer(state: State = initialState, action: SettingsActions.SettingsAction): State {
     switch (action.type) {
         case SettingsActions.TOGGLE_FAVORITE:
             const racer: Racer = action.payload;
@@ -27,7 +25,7 @@ export function reducer(state: State = initialState, action: Action): State {
             }
 
             return {
-                favoriteRacers: [ ...state.favoriteRacers, racer ],
+                favoriteRacers: [...state.favoriteRacers, racer],
                 delay: state.delay
             };
 

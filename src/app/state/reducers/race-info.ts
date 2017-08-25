@@ -1,6 +1,4 @@
-import { Action } from '@ngrx/store';
-
-import { RaceActions } from '../actions';
+import * as RaceActions from '../actions/race';
 import { RaceInfo } from '../../models/race-info';
 import { Meteo } from '../../models/meteo';
 
@@ -37,7 +35,7 @@ const initialState: State = {
 };
 
 
-export function reducer(state: State = initialState, action: Action): State {
+export function reducer(state: State = initialState, action: RaceActions.RaceAction): State {
     switch (action.type) {
         case RaceActions.UPDATE_RACE_INFO:
             const info = action.payload;

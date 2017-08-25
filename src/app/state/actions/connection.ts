@@ -1,82 +1,101 @@
 import { Action } from '@ngrx/store';
 
-export const ConnectionActions = {
-    LOAD_SERVERS: '[Connection] Load servers',
-    SELECT_SERVER: '[Connection] Select server',
-    SHOW_ALERT: '[Alert] Show alert',
-    LOAD_MAIN: '[Connection] Load main',
-    LOAD_PDF: '[Connection] Load pdf',
-    LOAD_UPDATE: '[Connection] Load update',
-    STOP_UPDATE: '[Connection] Stop updating',
-    RESET: '[Connection] Reset state',
-    CLOSE_ALERT: '[Alert] Close alert',
-    SHOW_LOADING: '[Loading] Show loading indicator',
-    HIDE_LOADING: '[Loading] Hide loading indicator'
-};
+export const LOAD_SERVERS = '[Connection] Load servers';
+export const SELECT_SERVER = '[Connection] Select server';
+export const SHOW_ALERT = '[Alert] Show alert';
+export const LOAD_MAIN = '[Connection] Load main';
+export const LOAD_PDF = '[Connection] Load pdf';
+export const LOAD_UPDATE = '[Connection] Load update';
+export const STOP_UPDATE = '[Connection] Stop updating';
+export const RESET = '[Connection] Reset state';
+export const CLOSE_ALERT = '[Alert] Close alert';
+export const SHOW_LOADING = '[Loading] Show loading indicator';
+export const HIDE_LOADING = '[Loading] Hide loading indicator';
+export const BATCH = '[Connection] Batch action';
 
 
-export class LoadServerAction implements Action {
-    type = ConnectionActions.LOAD_SERVERS;
-
-    constructor() { }
-}
-
-export class SelectServerAction implements Action {
-    type = ConnectionActions.SELECT_SERVER;
+export class LoadServer implements Action {
+    readonly type = LOAD_SERVERS;
 
     constructor() { }
 }
 
-export class ShowAlertAction implements Action {
-    type = ConnectionActions.SHOW_ALERT;
+export class SelectServer implements Action {
+    readonly type = SELECT_SERVER;
+
+    constructor() { }
+}
+
+export class ShowAlert implements Action {
+    readonly type = SHOW_ALERT;
 
     constructor(public payload: any) { }
 }
 
-export class ResetAction implements Action {
-    type = ConnectionActions.RESET;
+export class Reset implements Action {
+    readonly type = RESET;
 
     constructor() { }
 }
 
-export class LoadMainAction implements Action {
-    type = ConnectionActions.LOAD_MAIN;
+export class LoadMain implements Action {
+    readonly type = LOAD_MAIN;
 
     constructor(public payload: number) { }
 }
 
-export class LoadPdfAction implements Action {
-    type = ConnectionActions.LOAD_PDF;
+export class LoadPdf implements Action {
+    readonly type = LOAD_PDF;
 
     constructor(public payload: string) { }
 }
 
-export class LoadUpdateAction implements Action {
-    type = ConnectionActions.LOAD_UPDATE;
+export class LoadUpdate implements Action {
+    readonly type = LOAD_UPDATE;
 
     constructor() { }
 }
 
-export class StopUpdateAction implements Action {
-    type = ConnectionActions.STOP_UPDATE;
+export class StopUpdate implements Action {
+    readonly type = STOP_UPDATE;
 
     constructor() { }
 }
 
-export class CloseAlertAction implements Action {
-    type = ConnectionActions.CLOSE_ALERT;
+export class CloseAlert implements Action {
+    readonly type = CLOSE_ALERT;
 
     constructor() { }
 }
 
-export class ShowLoadingAction implements Action {
-    type = ConnectionActions.SHOW_LOADING;
+export class ShowLoading implements Action {
+    readonly type = SHOW_LOADING;
 
     constructor() { }
 }
 
-export class HideLoadingAction implements Action {
-    type = ConnectionActions.HIDE_LOADING;
+export class HideLoading implements Action {
+    readonly type = HIDE_LOADING;
 
     constructor() { }
 }
+
+export class Batch implements Action {
+    readonly type = BATCH;
+
+    constructor(public payload: Action[]) { }
+}
+
+export type ConnectionAction
+    = LoadServer
+    | SelectServer
+    | ShowAlert
+    | Reset
+    | LoadMain
+    | LoadPdf
+    | LoadUpdate
+    | StopUpdate
+    | CloseAlert
+    | ShowLoading
+    | HideLoading
+    | Batch;

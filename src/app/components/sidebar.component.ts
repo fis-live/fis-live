@@ -10,7 +10,7 @@ import { Observable } from 'rxjs/Observable';
 import { nationalities } from '../fis/fis-constants';
 import { AppState, getDelayState } from '../state/reducers/index';
 import { Store } from '@ngrx/store';
-import { SetDelayAction, ToggleFavoriteAction } from '../state/actions/settings';
+import { SetDelay, ToggleFavorite } from '../state/actions/settings';
 
 @Component({
     selector: 'app-sidebar',
@@ -46,11 +46,11 @@ export class SidebarComponent {
             return;
         }
 
-        this.store.dispatch(new SetDelayAction(delay));
+        this.store.dispatch(new SetDelay(delay));
     }
 
     public toggleFavorite(racer: Racer) {
-        this.store.dispatch(new ToggleFavoriteAction(racer));
+        this.store.dispatch(new ToggleFavorite(racer));
     }
 
     public loadRaces(): Observable<any> {

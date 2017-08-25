@@ -6,7 +6,7 @@ import { Observable } from 'rxjs/Observable';
 import { AppState, getRaceInfoState, getLoadingState, getFavoriteRacers, getSettingsState } from '../state/reducers/';
 import { State as RaceInfoState } from '../state/reducers/race-info';
 import { State as LoadingState } from '../state/reducers/loading';
-import { ResetAction, LoadMainAction, StopUpdateAction } from '../state/actions/connection';
+import { Reset, LoadMain, StopUpdate } from '../state/actions/connection';
 import { WindowSize } from '../services/window-size';
 import { Subscription } from 'rxjs/Subscription';
 import { Racer } from '../models/racer';
@@ -135,9 +135,9 @@ export class ContainerComponent implements OnInit, OnDestroy {
     }
 
     private reload(): void {
-        this._store.dispatch(new StopUpdateAction());
-        this._store.dispatch(new ResetAction());
-        this._store.dispatch(new LoadMainAction(this.codex));
+        this._store.dispatch(new StopUpdate());
+        this._store.dispatch(new Reset());
+        this._store.dispatch(new LoadMain(this.codex));
     }
 
     public ngOnDestroy(): void {

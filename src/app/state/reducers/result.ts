@@ -1,6 +1,4 @@
-import { Action } from '@ngrx/store';
-
-import { RaceActions } from '../actions';
+import * as RaceActions from '../actions/race';
 
 export interface Item {
     racer: number;
@@ -16,7 +14,7 @@ export interface State {
     };
 }
 
-export function reducer(state: State = {[0]: {fastest: null, entities: []}}, action: Action): State {
+export function reducer(state: State = {[0]: {fastest: null, entities: []}}, action: RaceActions.RaceAction): State {
     const maxVal = 1000000000;
 
     switch (action.type) {

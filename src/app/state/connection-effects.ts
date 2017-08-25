@@ -3,17 +3,8 @@ import { Effect, Actions } from '@ngrx/effects';
 import { Observable } from 'rxjs/Observable';
 
 import { FisConnectionService } from '../services/fis-connection';
-import {
-    ConnectionActions,
-    ShowAlertAction,
-    LoadServerAction,
-    LoadMainAction,
-    SelectServerAction,
-    LoadUpdateAction,
-    ResetAction
-} from './actions';
+import * as ConnectionActions from './actions/connection';
 import { FisServer } from '../models/fis-server';
-import { ShowLoadingAction, HideLoadingAction, LoadPdfAction, StopUpdateAction } from './actions/connection';
 import { parseMain, parseUpdate } from '../fis/fis-parser';
 import { Store } from '@ngrx/store';
 import { AppState, getDelayState } from './reducers/index';
@@ -25,15 +16,15 @@ export class ConnectionEffects {
 
     @Effect() loadServers$ = this.actions$
         .ofType(ConnectionActions.LOAD_SERVERS)
-        .startWith(new LoadServerAction())
+        .startWith(new ConnectionActions.LoadServer())
         .switchMap(() => this._connection.getServerList()
-            .map((servers: FisServer[]) => new SelectServerAction())
+            .map((servers: FisServer[]) => new ConnectionActions.SelectServer())
             .catch((error) => {
-                return Observable.of(new ShowAlertAction({
+                return Observable.of(new ConnectionActions.ShowAlert({
                     severity: 'danger',
                     message: 'Could not connect to FIS. Check your internet connection and try again.',
                     action: 'Retry',
-                    actions: [new LoadServerAction()]
+                    actions: [new ConnectionActions.LoadServer()]
                 }));
             })
         );
@@ -44,26 +35,26 @@ export class ConnectionEffects {
 
     @Effect() loadMain$ = this.actions$
         .ofType(ConnectionActions.LOAD_MAIN)
-        .switchMap(action => this._connection.loadMain(action.payload)
+        .switchMap((action: ConnectionActions.LoadMain) => this._connection.loadMain(action.payload)
             .mergeMap(data => {
                 const actions = parseMain(data);
                 const suffix = data.runinfo[1] === 'Q' ? 'QUA' : 'SL';
 
-                return Observable.of(...actions, new HideLoadingAction(), new LoadPdfAction(suffix), new LoadUpdateAction());
+                return Observable.of(...actions, new ConnectionActions.HideLoading(), new ConnectionActions.LoadPdf(suffix), new ConnectionActions.LoadUpdate());
             })
             .catch((error) => {
-                return Observable.of(new HideLoadingAction(), new ShowAlertAction({
+                return Observable.from([new ConnectionActions.HideLoading(), new ConnectionActions.ShowAlert({
                     severity: 'danger',
                     message: 'Could not find live data. Check the codex and try again.',
                     action: 'Retry',
-                    actions: [new ResetAction(), new LoadMainAction(null)]
-                }));
+                    actions: [new ConnectionActions.Reset(), new ConnectionActions.LoadMain(null)]
+                })]);
             })
         );
 
     @Effect() loadPdf$ = this.actions$
         .ofType(ConnectionActions.LOAD_PDF)
-        .switchMap(action => this._connection.loadPdf(action.payload)
+        .switchMap((action: ConnectionActions.LoadPdf) => this._connection.loadPdf(action.payload)
             .mergeMap(actions => Observable.from(actions))
             .catch((error) => {
                 console.log(error);
@@ -85,14 +76,14 @@ export class ConnectionEffects {
                         return Observable.from(actions).delay(this.delay);
                     })
                     .catch((error) => {
-                        return Observable.from([new ResetAction(), new SelectServerAction(), new LoadMainAction(null)]);
+                        return Observable.from([new ConnectionActions.Reset(), new ConnectionActions.SelectServer(), new ConnectionActions.LoadMain(null)]);
                     });
             }
         );
 
     @Effect() loading$ = this.actions$
         .ofType(ConnectionActions.LOAD_MAIN)
-        .mapTo(new ShowLoadingAction());
+        .mapTo(new ConnectionActions.ShowLoading());
 
     constructor(private actions$: Actions, private _connection: FisConnectionService, private store: Store<AppState>) {
         store.select(getDelayState).subscribe((delay) => {

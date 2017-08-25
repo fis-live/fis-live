@@ -1,7 +1,6 @@
-import { Action } from '@ngrx/store';
 import { createSelector } from 'reselect';
 
-import { RaceActions } from '../actions';
+import * as RaceActions from '../actions/race';
 import { Racer } from '../../models/racer';
 
 export interface State {
@@ -15,7 +14,7 @@ const initialState: State = {
 };
 
 
-export function reducer(state: State = initialState, action: Action): State {
+export function reducer(state: State = initialState, action: RaceActions.RaceAction): State {
     switch (action.type) {
         case RaceActions.ADD_RACER:
             const racer: Racer = action.payload;

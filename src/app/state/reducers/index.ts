@@ -1,8 +1,8 @@
-import { compose } from '@ngrx/core';
-import { ActionReducer, combineReducers } from '@ngrx/store';
+import { ActionReducer, MetaReducer } from '@ngrx/store';
 import { createSelector } from 'reselect';
 import { storeFreeze } from 'ngrx-store-freeze';
 import { localStorageSync } from 'ngrx-store-localstorage';
+import { ActionReducerMap } from '@ngrx/store';
 
 import * as Alert from './alert';
 import * as Inter from './intermediate';
@@ -11,9 +11,9 @@ import * as Racer from './racer';
 import * as Result from './result';
 import * as Settings from './settings';
 import * as Loading from './loading';
-import { ConnectionActions } from '../actions/connection';
+import * as ConnectionActions from '../actions/connection';
 
-const reducers: { [key: string]: ActionReducer<any> } = {
+export const reducers: ActionReducerMap<AppState> = {
     alert: Alert.reducer,
     intermediates: Inter.reducer,
     raceInfo: RaceInfo.reducer,
@@ -34,22 +34,18 @@ export interface AppState {
 }
 
 
-let metaReducer;
-
-export const BATCH_ACTION = 'BATCHING_REDUCER.BATCH';
-
-const enableBatching = (reducer: Function) => {
-    return function batchingReducer(state, action) {
+export function enableBatching(reducer: ActionReducer<AppState>): ActionReducer<AppState> {
+    return function batchingReducer(state, action: any) {
         switch (action.type) {
-            case BATCH_ACTION:
+            case ConnectionActions.BATCH:
                 return action.payload.reduce(batchingReducer, state);
             default:
                 return reducer(state, action);
         }
     };
-};
+}
 
-const resetState = (reducer: Function) => {
+export function resetState(reducer: ActionReducer<AppState>): ActionReducer<AppState> {
     return function(state, action) {
         if (action.type === ConnectionActions.RESET) {
             state = undefined;
@@ -57,18 +53,15 @@ const resetState = (reducer: Function) => {
 
         return reducer(state, action);
     };
-};
-
-if (process.env.ENV === 'production') {
-    metaReducer = compose(enableBatching, resetState, localStorageSync({keys: ['settings'], removeOnUndefined: true, rehydrate: true}), combineReducers);
-} else {
-    metaReducer = compose(storeFreeze, enableBatching, resetState, localStorageSync({keys: ['settings'], removeOnUndefined: true, rehydrate: true}), combineReducers);
 }
 
-export function reducer(state: any, action: any): any {
-    return metaReducer(reducers)(state, action);
+export function localStorageSyncReducer(reducer: ActionReducer<AppState>): ActionReducer<AppState> {
+    return localStorageSync({keys: ['settings'], removeOnUndefined: true, rehydrate: true})(reducer);
 }
 
+export const metaReducers: MetaReducer<AppState>[] = process.env.ENV === 'production' ?
+    [enableBatching, resetState, localStorageSyncReducer] :
+    [storeFreeze, enableBatching, resetState, localStorageSyncReducer];
 
 export const getAlertState = (state: AppState) => state.alert;
 export const getInterState = (state: AppState) => state.intermediates;

@@ -1,6 +1,6 @@
 import { Action } from '@ngrx/store';
 
-import { ConnectionActions } from '../actions';
+import * as ConnectionActions from '../actions/connection';
 
 export interface State {
     isOpen: boolean;
@@ -19,7 +19,7 @@ const initialState: State = {
 };
 
 
-export function reducer(state: State = initialState, action: Action): State {
+export function reducer(state: State = initialState, action: ConnectionActions.ConnectionAction): State {
     switch (action.type) {
         case ConnectionActions.SHOW_ALERT:
             const alert: any = action.payload;

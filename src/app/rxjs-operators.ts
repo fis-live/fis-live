@@ -22,6 +22,4 @@ import 'rxjs/add/operator/publishReplay';
 import 'rxjs/add/operator/switchMap';
 import 'rxjs/add/operator/toPromise';
 
-import '@ngrx/core/add/operator/select';
-
 import './services/operator/add/timeoutInterval';

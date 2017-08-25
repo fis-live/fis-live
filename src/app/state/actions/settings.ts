@@ -1,28 +1,30 @@
 import { Action } from '@ngrx/store';
 import { Racer } from '../../models/racer';
 
-export const SettingsActions = {
-    TOGGLE_FAVORITE: '[Settings] Toggle favorite',
-    SET_DELAY: '[Settings] Set delay',
-    RESET: '[Settings] Reset settings'
-};
 
-export class ToggleFavoriteAction implements Action {
-    type = SettingsActions.TOGGLE_FAVORITE;
+export const TOGGLE_FAVORITE = '[Settings] Toggle favorite';
+export const SET_DELAY = '[Settings] Set delay';
+export const RESET = '[Settings] Reset settings';
 
-    constructor(public payload: Racer) {
-    }
+export class ToggleFavorite implements Action {
+    readonly type = TOGGLE_FAVORITE;
+
+    constructor(public payload: Racer) { }
 }
 
-export class SetDelayAction implements Action {
-    type = SettingsActions.SET_DELAY;
+export class SetDelay implements Action {
+    readonly type = SET_DELAY;
 
-    constructor(public payload: number) {
-    }
+    constructor(public payload: number) { }
 }
 
-export class ResetSettingsAction implements Action {
-    type = SettingsActions.RESET;
+export class ResetSettings implements Action {
+    readonly type = RESET;
 
     constructor() { }
 }
+
+export type SettingsAction
+    = ToggleFavorite
+    | SetDelay
+    | ResetSettings;
