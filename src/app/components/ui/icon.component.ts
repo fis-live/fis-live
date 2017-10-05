@@ -12,5 +12,5 @@ export class IconComponent {
     @HostBinding('style.width.px')
     @HostBinding('style.height.px')
     @Input()
-    public size: number = 16;
+    public size: number;
 }
