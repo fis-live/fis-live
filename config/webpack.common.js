@@ -62,12 +62,44 @@ module.exports = {
             {
                 test: /\.less$/,
                 exclude: helpers.root('src', 'app'),
-                loader: ExtractTextPlugin.extract({fallback:'style-loader', use: 'css-loader!postcss-loader!less-loader'})
+                loader: ExtractTextPlugin.extract({fallback:'style-loader',   use: [
+                    {
+                        loader: 'css-loader',
+                        options: {
+                            importLoaders: 2 // 0 => no loaders (default); 1 => postcss-loader; 2 => postcss-loader, sass-loader
+                        }
+                    },
+                    {
+                        loader: 'postcss-loader',
+                        options: {
+                            plugins: (loader) => [
+                                require('autoprefixer')()
+                            ]
+                        }
+                    },
+                    'less-loader'
+                ]})
             },
             {
                 test: /\.scss$|\.sass$/,
                 exclude: helpers.root('src', 'app'),
-                loader: ExtractTextPlugin.extract({fallback:'style-loader', use: 'css-loader!postcss-loader!sass-loader'})
+                loader: ExtractTextPlugin.extract({fallback:'style-loader',   use: [
+                    {
+                        loader: 'css-loader',
+                        options: {
+                            importLoaders: 2 // 0 => no loaders (default); 1 => postcss-loader; 2 => postcss-loader, sass-loader
+                        }
+                    },
+                    {
+                        loader: 'postcss-loader',
+                        options: {
+                            plugins: (loader) => [
+                                require('autoprefixer')()
+                            ]
+                        }
+                    },
+                    'sass-loader'
+                ]})
             }
         ]
     },
