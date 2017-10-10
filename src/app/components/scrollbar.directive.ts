@@ -1,6 +1,6 @@
 import { OnInit, OnDestroy, Directive, ElementRef } from '@angular/core';
 
-import * as ps from 'perfect-scrollbar';
+import PerfectScrollbar from 'perfect-scrollbar';
 
 @Directive({
     selector: '[appScrollbar]'
@@ -8,12 +8,13 @@ import * as ps from 'perfect-scrollbar';
 export class ScrollbarDirective implements OnInit, OnDestroy {
 
     public observer: MutationObserver;
+    private ps: PerfectScrollbar;
 
     constructor (private el: ElementRef) { }
 
     ngOnInit() {
         if (this.getScrollbarWidth() > 0) {
-            ps.initialize(this.el.nativeElement, {
+            this.ps = new PerfectScrollbar(this.el.nativeElement, {
                 wheelSpeed: 2
             });
 
@@ -29,12 +30,12 @@ export class ScrollbarDirective implements OnInit, OnDestroy {
     ngOnDestroy() {
         if (this.observer) {
             this.observer.disconnect();
-            ps.destroy(this.el.nativeElement);
+            this.ps.destroy();
         }
     }
 
     public update(): void {
-        ps.update(this.el.nativeElement);
+        this.ps.update();
     }
 
     public getScrollbarWidth() {
