@@ -1,13 +1,12 @@
 import {
     Component,
-    ElementRef,
     EventEmitter,
-    HostListener,
     Input,
     Output,
-    ChangeDetectionStrategy, ChangeDetectorRef
+    ChangeDetectionStrategy
 } from '@angular/core';
-import { style, animate, trigger, transition, state, AnimationEvent } from '@angular/animations';
+import { style, animate, trigger, transition } from '@angular/animations';
+import { IfOpenService } from './utils/if-open.service';
 
 export interface DropdownItem {
     data_value: any;
@@ -18,15 +17,11 @@ export interface DropdownItem {
 @Component({
     selector: 'app-dropdown',
     template: `
-    <div [attr.class]="'ui scrolling dropdown ' + cssClass" (click)="toggleDropdown()" [ngClass]="{'active visible': isOpen}">
-        <div class="text" [ngClass]="{'default': !hasSelected}">{{ getText() }}</div>
+    <div [attr.class]="'ui scrolling dropdown ' + cssClass" (click)="toggleDropdown()" [class.active]="isOpen$ | async">
+        <div class="text">{{ getText() }}</div>
         <i class="dropdown icon"></i>
 
-        <div class="menu"
-            (@animate.start)="animationStarted($event)"
-            (@animate.done)="animationDone($event)"
-            [class.visible]="isVisible"
-            [@animate]="isOpen ? 'visible' : 'hidden'">
+        <div class="visible menu" *appIfOpen appOutsideClick [@animate]>
             <div *ngFor="let item of items"
                 [ngClass]="{'selected active': selectedItem == item}"
                 (click)="select(item)" class="item">{{ item.default_text }}</div>
@@ -34,11 +29,16 @@ export interface DropdownItem {
     </div>
     `,
     changeDetection: ChangeDetectionStrategy.OnPush,
+    providers: [IfOpenService],
     animations: [
         trigger('animate', [
-            state('hidden', style({opacity: 0, transform: 'scaleY(0)'})),
-            state('visible', style({opacity: 1, transform: 'scaleY(1)'})),
-            transition('hidden <=> visible', animate('200ms ease'))
+            transition(':enter', [
+                style({opacity: 0, transform: 'scaleY(0)'}),
+                animate('200ms ease', style({opacity: 1, transform: 'scaleY(1)'}))
+            ]),
+            transition(':leave', [
+                animate('200ms ease', style({opacity: 0, transform: 'scaleY(0)'}))
+            ])
         ])
     ],
 })
@@ -81,11 +81,9 @@ export class DropdownComponent {
 
     public selectedItem: DropdownItem;
     public hasSelected = false;
-    public isOpen = false;
-    public isVisible = false;
+    public isOpen$ = this.openService.openChange;
 
-    constructor(private elementRef: ElementRef, private _changeDetectorRef: ChangeDetectorRef) { }
-
+    constructor(private openService: IfOpenService) { }
 
     public getText(): string {
         if (this.hasSelected) {
@@ -103,38 +101,6 @@ export class DropdownComponent {
     }
 
     public toggleDropdown(): void {
-        this.isOpen = !this.isOpen;
-    }
-
-    public animationStarted($event: AnimationEvent): void {
-        if ($event.fromState === 'hidden') {
-            this.isVisible = true;
-        }
-    }
-
-    public animationDone($event: AnimationEvent): void {
-        if ($event.fromState === 'visible') {
-            this.isVisible = false;
-        }
-    }
-
-    // called on mouse clicks anywhere in the DOM.
-    // Checks to see if the mouseclick happened on the host or outside
-    @HostListener('document:click', [`$event.target`])
-    onMouseClick(target: any): void {
-        if (this.isOpen) {
-            let current: any = target; // Get the element in the DOM on which the mouse was clicked
-            const dropdownHost: any = this.elementRef.nativeElement; // Get the current dropdown native HTML element
-
-            // Start checking if current and dropdownHost are equal. If not traverse to the parentNode and check again.
-            while (current) {
-                if (current === dropdownHost) {
-                    return;
-                }
-                current = current.parentNode;
-            }
-            this.isOpen = false; // Close dropdown
-            this._changeDetectorRef.markForCheck();
-        }
+        this.openService.open = !this.openService.open;
     }
 }

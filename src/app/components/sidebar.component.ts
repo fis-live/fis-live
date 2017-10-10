@@ -14,7 +14,7 @@ import { SetDelay, ToggleFavorite } from '../state/actions/settings';
 
 @Component({
     selector: 'app-sidebar',
-    templateUrl: 'sidebar.html',
+    templateUrl: 'sidebar.component.html',
     changeDetection: ChangeDetectionStrategy.OnPush,
     animations: [
         trigger('animate', [

@@ -1,10 +1,9 @@
-import {
-    Component, ChangeDetectionStrategy, ElementRef, HostListener, OnDestroy, AfterViewInit, ChangeDetectorRef
-} from '@angular/core';
+import { Component, ChangeDetectionStrategy, OnDestroy, AfterViewInit } from '@angular/core';
 import { Observable } from 'rxjs/Observable';
 import { Subject } from 'rxjs/Subject';
 import { Filter } from './interfaces/filter';
 import { Filters } from './providers/filter';
+import { IfOpenService } from '../utils/if-open.service';
 
 @Component({
     selector: 'app-filter',
@@ -13,11 +12,11 @@ import { Filters } from './providers/filter';
     {{ input }}
 <i (click)="reset()" class="icon delete"></i>
 </div-->
-<span class="filter-toggle" [ngClass]="{'filter-open': isOpen, 'filtered': isActive()}" (click)="open()"></span>
+<span class="filter-toggle" [ngClass]="{'filter-open': isOpen$ | async, 'filtered': isActive()}" (click)="toggle()"></span>
 
-<div class="datagrid-filter" *ngIf="isOpen">
+<div class="datagrid-filter" *appIfOpen appOutsideClick>
     <div class="datagrid-filter-close-wrapper">
-        <button type="button" class="close" aria-label="Close" (click)="close()">
+        <button type="button" class="close" aria-label="Close" (click)="toggle()">
             <clr-icon shape="times"></clr-icon>
         </button>
     </div>
@@ -27,12 +26,13 @@ import { Filters } from './providers/filter';
             placeholder="Search..." type="text"
             [(ngModel)]="input"
             (keyup)="filterChanged()"
-            (keyup.enter)="close()"
+            (keyup.enter)="toggle()"
             (keyup.escape)="reset()">
     </div>
 </div>
 `,
-    changeDetection: ChangeDetectionStrategy.OnPush
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    providers: [IfOpenService]
 })
 export class FilterComponent implements Filter, AfterViewInit, OnDestroy {
     private _changes: Subject<any> = new Subject<any>();
@@ -42,10 +42,10 @@ export class FilterComponent implements Filter, AfterViewInit, OnDestroy {
         return this._changes.asObservable();
     }
 
-    public isOpen = false;
+    public isOpen$ = this.openService.openChange;
     public input: string;
 
-    constructor(private filters: Filters, private elementRef: ElementRef, private _changeDetectorRef: ChangeDetectorRef) { }
+    constructor(private filters: Filters, private openService: IfOpenService) { }
 
     ngAfterViewInit() {
         this._unRegister = this.filters.add(this);
@@ -63,41 +63,19 @@ export class FilterComponent implements Filter, AfterViewInit, OnDestroy {
         this._changes.next();
     }
 
-    public close(): void {
-        this.isOpen = false;
-    }
-
-    public open(): void {
-        this.isOpen = true;
+    public toggle(): void {
+        this.openService.open = !this.openService.open;
     }
 
     public reset(): void {
         this.input = null;
         this.filterChanged();
-        this.isOpen = false;
+        this.toggle();
     }
 
     ngOnDestroy(): void {
         if (this._unRegister) {
             this._unRegister();
-        }
-    }
-
-    @HostListener('document:click', [`$event.target`])
-    onMouseClick(target: any): void {
-        if (this.isOpen) {
-            let current: any = target; // Get the element in the DOM on which the mouse was clicked
-            const host: HTMLElement = this.elementRef.nativeElement; // Get the current dropdown native HTML element
-
-            // Start checking if current and dropdownHost are equal. If not traverse to the parentNode and check again.
-            while (current) {
-                if (current === host) {
-                    return;
-                }
-                current = current.parentNode;
-            }
-            this.isOpen = false; // Close dropdown
-            this._changeDetectorRef.markForCheck();
         }
     }
 }
