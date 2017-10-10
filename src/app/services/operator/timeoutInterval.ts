@@ -5,46 +5,11 @@ import { Scheduler } from 'rxjs/Scheduler';
 import { async } from 'rxjs/scheduler/async';
 import { TimeInterval } from 'rxjs/operator/timeInterval';
 
-/**
- * @param due
- * @param errorToSend
- * @param scheduler
- * @return {Observable<TimeInterval<any>>|WebSocketSubject<T>|Observable<T>}
- * @method timeInterval
- * @owner Observable
- */
-export function timeoutInterval<T>(due: number,
-                                   errorToSend: any = null,
-                                   scheduler: Scheduler = async): Observable<TimeInterval<T>> {
-    const absoluteTimeout = false;
-    const waitFor = absoluteTimeout ? (+due - scheduler.now()) : Math.abs(<number>due);
-    return this.lift(new TimeoutIntervalOperator(waitFor, absoluteTimeout, errorToSend, scheduler));
-}
-
 export class ErrorTimeInterval {
-    constructor(public error: any, public interval: number) {
-
-    }
+    constructor(public error: any, public interval: number) { }
 }
 
-export interface TimeoutIntervalSignature<T> {
-    (due: number, scheduler?: Scheduler): Observable<TimeInterval<T>>;
-}
-
-class TimeoutIntervalOperator<T> implements Operator<T, TimeInterval<T>> {
-    constructor(private waitFor: number,
-                private absoluteTimeout: boolean,
-                private errorToSend: any,
-                private scheduler: Scheduler) {
-    }
-
-    call(observer: Subscriber<TimeInterval<T>>, source: any): any {
-        return source._subscribe(new TimeoutIntervalSubscriber<T>(
-            observer, this.absoluteTimeout, this.waitFor, this.errorToSend, this.scheduler
-        ));
-    }
-}
-
+export type TimeoutIntervalSignature<T> = (due: number, scheduler?: Scheduler) => Observable<TimeInterval<T>>;
 
 /**
  * We need this JSDoc comment for affecting ESDoc.
@@ -120,4 +85,34 @@ class TimeoutIntervalSubscriber<T> extends Subscriber<T> {
     notifyTimeout() {
         this.error(this.errorToSend || new Error('timeout'));
     }
+}
+
+class TimeoutIntervalOperator<T> implements Operator<T, TimeInterval<T>> {
+    constructor(private waitFor: number,
+                private absoluteTimeout: boolean,
+                private errorToSend: any,
+                private scheduler: Scheduler) {
+    }
+
+    call(observer: Subscriber<TimeInterval<T>>, source: any): any {
+        return source._subscribe(new TimeoutIntervalSubscriber<T>(
+            observer, this.absoluteTimeout, this.waitFor, this.errorToSend, this.scheduler
+        ));
+    }
+}
+
+/**
+ * @param due
+ * @param errorToSend
+ * @param scheduler
+ * @return {Observable<TimeInterval<any>>|WebSocketSubject<T>|Observable<T>}
+ * @method timeInterval
+ * @owner Observable
+ */
+export function timeoutInterval<T>(due: number,
+                                   errorToSend: any = null,
+                                   scheduler: Scheduler = async): Observable<TimeInterval<T>> {
+    const absoluteTimeout = false;
+    const waitFor = absoluteTimeout ? (+due - scheduler.now()) : Math.abs(<number>due);
+    return this.lift(new TimeoutIntervalOperator(waitFor, absoluteTimeout, errorToSend, scheduler));
 }

@@ -1,12 +1,12 @@
-import { ElementRef, Renderer, Directive, OnInit } from '@angular/core';
+import { ElementRef, Directive, OnInit } from '@angular/core';
 
 @Directive({
-    selector : '[focusOnInit]'
+    selector : '[appFocusOnInit]'
 })
 export class FocusDirective implements OnInit {
-    constructor(public renderer: Renderer, public elementRef: ElementRef) {}
+    constructor(public elementRef: ElementRef) {}
 
     ngOnInit() {
-        this.renderer.invokeElementMethod(this.elementRef.nativeElement, 'focus', []);
+        this.elementRef.nativeElement.focus();
     }
 }

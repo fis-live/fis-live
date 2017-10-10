@@ -21,7 +21,7 @@ export interface DropdownItem {
     <div [attr.class]="'ui scrolling dropdown ' + cssClass" (click)="toggleDropdown()" [ngClass]="{'active visible': isOpen}">
         <div class="text" [ngClass]="{'default': !hasSelected}">{{ getText() }}</div>
         <i class="dropdown icon"></i>
-        
+
         <div class="menu"
             (@animate.start)="animationStarted($event)"
             (@animate.done)="animationDone($event)"
@@ -71,7 +71,7 @@ export class DropdownComponent {
             this.hasSelected = false;
             this.selectedChanged.emit(null);
         }
-    };
+    }
 
     public get items(): DropdownItem[] {
         return this._items;

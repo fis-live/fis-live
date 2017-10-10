@@ -1,3 +1,4 @@
+/* tslint:disable:component-selector */
 import { Component, ChangeDetectionStrategy, Input, HostBinding } from '@angular/core';
 
 @Component({

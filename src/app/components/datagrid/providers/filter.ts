@@ -17,7 +17,7 @@ export class Filters {
 
     public get change(): Observable<any> {
         return this._change.asObservable();
-    };
+    }
 
     private _all: FilterWithSub[] = [];
 

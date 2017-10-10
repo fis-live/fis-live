@@ -119,7 +119,7 @@ export class FisConnectionService {
         if (this.errorCount < 10) {
             return (this.version === 0) ? Observable.timer(this.delay).switchMap(() => this.getHttpRequest())
                     .map(result => this.parse(result))
-                    .catch(error => this.handleError(error)) : this.poll();
+                    .catch(e => this.handleError(e)) : this.poll();
         }
 
         const errMsg = (error instanceof Error) ? error :
@@ -139,15 +139,15 @@ export class FisConnectionService {
 
         const r = Math.random() * sum;
         let partialSum = 0;
-        let i = 0;
+        let j = 0;
         while (urlServer == null && partialSum <= r) {
-            partialSum += this.server_list[i].weight;
+            partialSum += this.server_list[j].weight;
 
             if (r < partialSum) {
-                urlServer = this.server_list[i].url;
+                urlServer = this.server_list[j].url;
             }
 
-            i++;
+            j++;
         }
 
         this.baseURL = `http://${urlServer}/`;

@@ -21,9 +21,9 @@ import { Filters } from './providers/filter';
             <clr-icon shape="times"></clr-icon>
         </button>
     </div>
-    
+
     <div class="search-input">
-        <input focusOnInit
+        <input appFocusOnInit
             placeholder="Search..." type="text"
             [(ngModel)]="input"
             (keyup)="filterChanged()"

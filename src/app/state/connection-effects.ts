@@ -40,7 +40,11 @@ export class ConnectionEffects {
                 const actions = parseMain(data);
                 const suffix = data.runinfo[1] === 'Q' ? 'QUA' : 'SL';
 
-                return Observable.of(...actions, new ConnectionActions.HideLoading(), new ConnectionActions.LoadPdf(suffix), new ConnectionActions.LoadUpdate());
+                return Observable.of(...actions,
+                    new ConnectionActions.HideLoading(),
+                    new ConnectionActions.LoadPdf(suffix),
+                    new ConnectionActions.LoadUpdate()
+                );
             })
             .catch((error) => {
                 return Observable.from([new ConnectionActions.HideLoading(), new ConnectionActions.ShowAlert({
@@ -76,7 +80,11 @@ export class ConnectionEffects {
                         return Observable.from(actions).delay(this.delay);
                     })
                     .catch((error) => {
-                        return Observable.from([new ConnectionActions.Reset(), new ConnectionActions.SelectServer(), new ConnectionActions.LoadMain(null)]);
+                        return Observable.from([
+                            new ConnectionActions.Reset(),
+                            new ConnectionActions.SelectServer(),
+                            new ConnectionActions.LoadMain(null)
+                        ]);
                     });
             }
         );

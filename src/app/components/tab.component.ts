@@ -32,7 +32,7 @@ export interface TableConfiguration {
         [placeholder]="'Select intermediate...'"
         [cssClass]="'button primary'"
         (selectedChanged)="setInter($event)"></app-dropdown>
-        
+
      <app-dropdown [items]="diffs$ | async"
         [placeholder]="'Compare...'"
         [cssClass]="'button positive'"
