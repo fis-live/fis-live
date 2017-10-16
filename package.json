@@ -31,7 +31,6 @@
     "core-js": "^2.4.1",
     "ngrx-store-localstorage": "^0.2.0",
     "perfect-scrollbar": "^1.0.1",
-    "reselect": "^3.0.0",
     "rxjs": "^5.0.1",
     "semantic-ui-css": "^2.2.4",
     "web-animations-js": "^2.2.2",

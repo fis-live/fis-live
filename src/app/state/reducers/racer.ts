@@ -1,4 +1,4 @@
-import { createSelector } from 'reselect';
+import { createSelector } from '@ngrx/store';
 
 import * as RaceActions from '../actions/race';
 import { Racer } from '../../models/racer';

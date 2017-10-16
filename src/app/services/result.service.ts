@@ -1,7 +1,6 @@
 import { Observable } from 'rxjs/Observable';
-import { Store } from '@ngrx/store';
+import { Store, createSelector } from '@ngrx/store';
 import { Injectable } from '@angular/core';
-import { createSelector } from 'reselect';
 
 import { AppState, getResultState, getFavoriteRacers } from '../state/reducers/index';
 

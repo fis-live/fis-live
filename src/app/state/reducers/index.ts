@@ -1,5 +1,4 @@
-import { ActionReducer, MetaReducer } from '@ngrx/store';
-import { createSelector } from 'reselect';
+import { ActionReducer, MetaReducer, createSelector } from '@ngrx/store';
 import { storeFreeze } from 'ngrx-store-freeze';
 import { localStorageSync } from 'ngrx-store-localstorage';
 import { ActionReducerMap } from '@ngrx/store';
