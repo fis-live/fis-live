@@ -1,9 +1,12 @@
-import { Component, ChangeDetectionStrategy, OnDestroy, AfterViewInit } from '@angular/core';
+import {
+    Component, ChangeDetectionStrategy, AfterViewInit, ChangeDetectorRef,
+    Renderer2, ElementRef, OnDestroy
+} from '@angular/core';
 import { Observable } from 'rxjs/Observable';
 import { Subject } from 'rxjs/Subject';
 import { Filter } from './interfaces/filter';
 import { Filters } from './providers/filter';
-import { IfOpenService } from '../utils/if-open.service';
+import { AbstractPopover } from '../utils/abstract-popover';
 
 @Component({
     selector: 'app-filter',
@@ -12,9 +15,9 @@ import { IfOpenService } from '../utils/if-open.service';
     {{ input }}
 <i (click)="reset()" class="icon delete"></i>
 </div-->
-<span class="filter-toggle" [ngClass]="{'filter-open': isOpen$ | async, 'filtered': isActive()}" (click)="toggle()"></span>
+<span class="filter-toggle" [ngClass]="{'filter-open': open, 'filtered': isActive()}" (click)="toggle()"></span>
 
-<div class="datagrid-filter" *appIfOpen appOutsideClick>
+<div class="datagrid-filter" *ngIf="open">
     <div class="datagrid-filter-close-wrapper">
         <button type="button" class="close" aria-label="Close" (click)="toggle()">
             <clr-icon shape="times"></clr-icon>
@@ -31,10 +34,9 @@ import { IfOpenService } from '../utils/if-open.service';
     </div>
 </div>
 `,
-    changeDetection: ChangeDetectionStrategy.OnPush,
-    providers: [IfOpenService]
+    changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class FilterComponent implements Filter, AfterViewInit, OnDestroy {
+export class FilterComponent extends AbstractPopover implements Filter, AfterViewInit, OnDestroy {
     private _changes: Subject<any> = new Subject<any>();
     private _unRegister: () => void;
 
@@ -42,10 +44,11 @@ export class FilterComponent implements Filter, AfterViewInit, OnDestroy {
         return this._changes.asObservable();
     }
 
-    public isOpen$ = this.openService.openChange;
     public input: string;
 
-    constructor(private filters: Filters, private openService: IfOpenService) { }
+    constructor(private filters: Filters, el: ElementRef, renderer: Renderer2, cdr: ChangeDetectorRef) {
+        super(el, renderer, cdr);
+    }
 
     ngAfterViewInit() {
         this._unRegister = this.filters.add(this);
@@ -63,10 +66,6 @@ export class FilterComponent implements Filter, AfterViewInit, OnDestroy {
         this._changes.next();
     }
 
-    public toggle(): void {
-        this.openService.open = !this.openService.open;
-    }
-
     public reset(): void {
         this.input = null;
         this.filterChanged();
@@ -74,6 +73,7 @@ export class FilterComponent implements Filter, AfterViewInit, OnDestroy {
     }
 
     ngOnDestroy(): void {
+        super.ngOnDestroy();
         if (this._unRegister) {
             this._unRegister();
         }
