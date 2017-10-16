@@ -20,7 +20,7 @@ import { TabComponent } from './components/tab.component';
 import { DatagridComponent } from './components/datagrid/datagrid.component';
 import { WindowSize } from './services/window-size';
 import { FilterComponent } from './components/datagrid/filter.component';
-import { FocusDirective } from './components/datagrid/focus.directive';
+import { FocusDirective } from './components/utils/focus.directive';
 import { IconComponent } from './components/ui/icon.component';
 import { SidebarComponent } from './components/sidebar.component';
 import { ResultService } from './services/result.service';
