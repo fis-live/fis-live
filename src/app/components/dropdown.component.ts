@@ -3,10 +3,10 @@ import {
     EventEmitter,
     Input,
     Output,
-    ChangeDetectionStrategy
+    ChangeDetectionStrategy, ElementRef, Renderer2, ChangeDetectorRef
 } from '@angular/core';
 import { style, animate, trigger, transition } from '@angular/animations';
-import { IfOpenService } from './utils/if-open.service';
+import { AbstractPopover } from './utils/abstract-popover';
 
 export interface DropdownItem {
     data_value: any;
@@ -17,11 +17,11 @@ export interface DropdownItem {
 @Component({
     selector: 'app-dropdown',
     template: `
-    <div [attr.class]="'ui scrolling dropdown ' + cssClass" (click)="toggleDropdown()" [class.active]="isOpen$ | async">
+    <div [attr.class]="'ui scrolling dropdown ' + cssClass" (click)="toggle()" [class.active]="open">
         <div class="text">{{ getText() }}</div>
         <i class="dropdown icon"></i>
 
-        <div class="visible menu" *appIfOpen appOutsideClick [@animate]>
+        <div class="visible menu" *ngIf="open" [@animate]>
             <div *ngFor="let item of items"
                 [ngClass]="{'selected active': selectedItem == item}"
                 (click)="select(item)" class="item">{{ item.default_text }}</div>
@@ -29,7 +29,6 @@ export interface DropdownItem {
     </div>
     `,
     changeDetection: ChangeDetectionStrategy.OnPush,
-    providers: [IfOpenService],
     animations: [
         trigger('animate', [
             transition(':enter', [
@@ -42,7 +41,7 @@ export interface DropdownItem {
         ])
     ],
 })
-export class DropdownComponent {
+export class DropdownComponent extends AbstractPopover {
 
     @Output()
     public selectedChanged: EventEmitter<DropdownItem> = new EventEmitter<DropdownItem>();
@@ -81,9 +80,10 @@ export class DropdownComponent {
 
     public selectedItem: DropdownItem;
     public hasSelected = false;
-    public isOpen$ = this.openService.openChange;
 
-    constructor(private openService: IfOpenService) { }
+    constructor(el: ElementRef, renderer: Renderer2, cdr: ChangeDetectorRef) {
+        super(el, renderer, cdr);
+    }
 
     public getText(): string {
         if (this.hasSelected) {
@@ -98,9 +98,5 @@ export class DropdownComponent {
 
         this.selectedItem = item;
         this.hasSelected = true;
-    }
-
-    public toggleDropdown(): void {
-        this.openService.open = !this.openService.open;
     }
 }
