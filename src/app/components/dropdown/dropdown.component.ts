@@ -8,7 +8,7 @@ import { AbstractPopover } from '../utils/abstract-popover';
 @Component({
     selector: 'app-dropdown',
     template: `
-        <button class="dropdown-toggle btn btn-sm btn-primary" (click)="toggle()" type="button">
+        <button class="dropdown-toggle btn btn-sm" (click)="toggle()" type="button">
             {{ text || placeholder }}
             <clr-icon shape="caret" dir="down"></clr-icon>
         </button>

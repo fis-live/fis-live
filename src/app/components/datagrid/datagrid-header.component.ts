@@ -5,13 +5,13 @@ import {
 @Component({
     selector: 'app-grid-header',
     template: `
-        <div class="btn-group btn-primary">
-            <app-dropdown class="dropdown" [placeholder]="'Intermediate...'" (onSelected)="setSelected($event)">
+        <div class="btn-group">
+            <app-dropdown class="dropdown btn-primary" [placeholder]="'Intermediate...'" (onSelected)="setSelected($event)">
                 <button *ngFor="let item of items" [appDropdownItem]="item"
                          class="dropdown-item">{{ item.default_text }}</button>
             </app-dropdown>
 
-            <app-dropdown class="dropdown" [placeholder]="'Diff...'" (onSelected)="setSelected($event)">
+            <app-dropdown class="dropdown btn-success" [placeholder]="'Diff...'" (onSelected)="setSelected($event)">
                 <button *ngFor="let item of items" [appDropdownItem]="item"
                         [disabled]="!inter || item.data_value >= inter" class="dropdown-item">{{ item.default_text }}</button>
             </app-dropdown>
