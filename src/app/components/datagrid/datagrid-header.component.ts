@@ -6,9 +6,14 @@ import {
     selector: 'app-grid-header',
     template: `
         <div class="btn-group btn-primary">
-            <app-dropdown class="dropdown" [text]="text">
-                <button *ngFor="let item of items" appDropdownItem (click)="setSelected(item)"
-                         class="dropdown-item" [class.active]="item.data_value == selected">{{ item.default_text }}</button>
+            <app-dropdown class="dropdown" [placeholder]="'Intermediate...'" (onSelected)="setSelected($event)">
+                <button *ngFor="let item of items" [appDropdownItem]="item"
+                         class="dropdown-item">{{ item.default_text }}</button>
+            </app-dropdown>
+
+            <app-dropdown class="dropdown" [placeholder]="'Diff...'" (onSelected)="setSelected($event)">
+                <button *ngFor="let item of items" [appDropdownItem]="item"
+                        [disabled]="!inter || item.data_value >= inter" class="dropdown-item">{{ item.default_text }}</button>
             </app-dropdown>
         </div>
         <div style="flex: 1 1 auto">
@@ -23,15 +28,12 @@ import {
     changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class DatagridHeaderComponent {
+    public inter: number;
     @Input() public items: any;
-
-    public text = 'Select intermediate...';
-    public selected: any;
 
     constructor() { }
 
     public setSelected(item: any) {
-        this.text = item.default_text;
-        this.selected = item.data_value;
+        this.inter = item.data_value;
     }
 }
