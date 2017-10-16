@@ -9,7 +9,7 @@ import { StoreModule } from '@ngrx/store';
 
 import { AppComponent } from './app.component';
 import { AlertComponent } from './components/ui/alert.component';
-import { DropdownComponent } from './components/dropdown.component';
+import { DropdownComponent } from './components/dropdown/dropdown.component';
 import { ContainerComponent } from './components/container.component';
 import { MenuComponent } from './components/menu.component';
 import { metaReducers, reducers } from './state/reducers/index';
@@ -26,6 +26,8 @@ import { SidebarComponent } from './components/sidebar.component';
 import { ResultService } from './services/result.service';
 import { ScrollbarDirective } from './components/utils/scrollbar.directive';
 import { SortDirective } from './components/datagrid/sort.directive';
+import { DatagridHeaderComponent } from './components/datagrid/datagrid-header.component';
+import { DropdownItemDirective } from './components/dropdown/dropdown-item.directive';
 
 @NgModule({
     declarations: [
@@ -42,6 +44,8 @@ import { SortDirective } from './components/datagrid/sort.directive';
         SidebarComponent,
         ScrollbarDirective,
         SortDirective,
+        DatagridHeaderComponent,
+        DropdownItemDirective
     ],
     imports: [
         BrowserModule,

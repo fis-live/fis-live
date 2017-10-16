@@ -6,7 +6,6 @@ import { Observable } from 'rxjs/Observable';
 import { Subject } from 'rxjs/Subject';
 import { BehaviorSubject } from 'rxjs/BehaviorSubject';
 import { Racer } from '../models/racer';
-import { DropdownItem } from './dropdown.component';
 import { ResultService } from '../services/result.service';
 
 export interface ResultItem {
@@ -27,17 +26,7 @@ export interface TableConfiguration {
 @Component({
     selector: 'app-tab',
     template: `
-<div class="action-bar">
-    <app-dropdown [items]="intermediates$ | async"
-        [placeholder]="'Select intermediate...'"
-        [cssClass]="'button primary'"
-        (selectedChanged)="setInter($event)"></app-dropdown>
-
-     <app-dropdown [items]="diffs$ | async"
-        [placeholder]="'Compare...'"
-        [cssClass]="'button positive'"
-        (selectedChanged)="setDiff($event)"></app-dropdown>
-</div>
+        <app-grid-header [items]="intermediates$ | async" class="action-bar"></app-grid-header>
 <div class="segment" appScrollbar>
     <app-table [breakpoint]="breakpoint" [config]="tableConfig$ | async"></app-table>
 </div>`,
@@ -45,8 +34,8 @@ export interface TableConfiguration {
 })
 export class TabComponent {
 
-    public intermediates$: Observable<DropdownItem[]>;
-    public diffs$: Observable<DropdownItem[]>;
+    public intermediates$: Observable<any[]>;
+    public diffs$: Observable<any[]>;
     public tableConfig$: Observable<TableConfiguration>;
 
     public filter$: Subject<number> = new BehaviorSubject<number>(null);
@@ -71,7 +60,7 @@ export class TabComponent {
             .map(([results, inter, diff]) => this.parseResults(results, inter, diff));
     }
 
-    public setInter($event: DropdownItem) {
+    public setInter($event: any) {
         this.filter$.next($event !== null ? +$event.data_value : null);
     }
 
@@ -189,7 +178,7 @@ export class TabComponent {
         };
     }
 
-    public setDiff($event: DropdownItem) {
+    public setDiff($event: any) {
         this.diff$.next($event !== null ? +$event.data_value : null);
     }
 }

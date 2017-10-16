@@ -1,6 +1,6 @@
 import { Input, Component, ChangeDetectionStrategy, ElementRef, Renderer2, ChangeDetectorRef } from '@angular/core';
 import { style, animate, trigger, transition } from '@angular/animations';
-import { AbstractPopover } from './utils/abstract-popover';
+import { AbstractPopover } from '../utils/abstract-popover';
 
 @Component({
     selector: 'app-dropdown',
