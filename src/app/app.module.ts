@@ -26,8 +26,6 @@ import { SidebarComponent } from './components/sidebar.component';
 import { ResultService } from './services/result.service';
 import { ScrollbarDirective } from './components/utils/scrollbar.directive';
 import { SortDirective } from './components/datagrid/sort.directive';
-import { IfOpenDirective } from './components/utils/if-open.directive';
-import { OutsideClickDirective } from './components/utils/outside-click.directive';
 
 @NgModule({
     declarations: [
@@ -44,8 +42,6 @@ import { OutsideClickDirective } from './components/utils/outside-click.directiv
         SidebarComponent,
         ScrollbarDirective,
         SortDirective,
-        IfOpenDirective,
-        OutsideClickDirective
     ],
     imports: [
         BrowserModule,
