@@ -66,6 +66,15 @@ export class DatagridComponent implements AfterViewInit, OnDestroy {
     }
 
     public get config() {
+        if (this._config == null) {
+            return {
+                isStartList: true,
+                fastestTime: 0,
+                fastestDiff: 0,
+                rows: [],
+                cols: ['bib']
+            };
+        }
         return this._config;
     }
 

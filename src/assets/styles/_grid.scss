@@ -162,6 +162,7 @@ $clr-table-cornercellradius: $clr-default-borderradius - 1 !default;
     .column-switch-wrapper {
         // Has a possible sibling in the .datagrid-foot-select.checkbox container
         flex: 0 0 $clr_baselineRem_1;
+        position: relative;
 
         .column-toggle--action {
 
@@ -191,6 +192,11 @@ $clr-table-cornercellradius: $clr-default-borderradius - 1 !default;
             width: 250px;
             display: flex;
             flex-direction: column;
+            position: absolute;
+            right: 0;
+            margin-top: 5px;
+            z-index: map-get($clr-layers, dropdown-menu);
+
 
             .switch-header {
                 display: flex;

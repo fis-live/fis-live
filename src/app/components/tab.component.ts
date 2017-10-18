@@ -7,6 +7,7 @@ import { Subject } from 'rxjs/Subject';
 import { BehaviorSubject } from 'rxjs/BehaviorSubject';
 import { Racer } from '../models/racer';
 import { ResultService } from '../services/result.service';
+import { DatagridState } from './datagrid/providers/datagrid-state';
 
 export interface ResultItem {
     racer: Racer;
@@ -21,6 +22,7 @@ export interface TableConfiguration {
     fastestTime: number;
     fastestDiff: number;
     rows: ResultItem[];
+    cols: string[];
 }
 
 @Component({
@@ -30,41 +32,27 @@ export interface TableConfiguration {
 <div class="segment" appScrollbar>
     <app-table [breakpoint]="breakpoint" [config]="tableConfig$ | async"></app-table>
 </div>`,
+    providers: [DatagridState],
     changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class TabComponent {
 
     public intermediates$: Observable<any[]>;
-    public diffs$: Observable<any[]>;
     public tableConfig$: Observable<TableConfiguration>;
 
-    public filter$: Subject<number> = new BehaviorSubject<number>(null);
-    public diff$: Subject<number> = new BehaviorSubject<number>(null);
     @Input() breakpoint = 'large';
     private maxVal = 1000000000;
 
-    constructor(private _store: Store<AppState>, private _results: ResultService) {
+    constructor(private _store: Store<AppState>, private _results: ResultService, private _state: DatagridState) {
         this.intermediates$ = _store.select(getDropdownItems);
-
-        this.diffs$ = Observable.combineLatest(_store.select(getDropdownItems), this.filter$.distinctUntilChanged())
-            .map(([items, inter]) => {
-                return items.reduce((arr, item) => {
-                    return (item.data_value > 0 && item.data_value < inter) ? arr.concat(item) : arr;
-                }, [{data_value: 0, selected_text: 'From start', default_text: 'From start'}]);
-            });
 
         this.tableConfig$ = Observable.combineLatest(
             _results.results$,
-            this.filter$.distinctUntilChanged(),
-            this.diff$.distinctUntilChanged())
-            .map(([results, inter, diff]) => this.parseResults(results, inter, diff));
+            this._state.change)
+            .map(([results, inter]) => this.parseResults(results, inter.inter, inter.diff, inter.visibleColumns));
     }
 
-    public setInter($event: any) {
-        this.filter$.next($event !== null ? +$event.data_value : null);
-    }
-
-    public parseResults(results, inter, diff): TableConfiguration {
+    public parseResults(results, inter, diff, cols): TableConfiguration {
         const getValidDiff = (time, zero) => {
             if (time == null || zero == null) {
                 return this.maxVal;
@@ -87,7 +75,8 @@ export class TabComponent {
                 })),
                 isStartList: true,
                 fastestTime: 0,
-                fastestDiff: 0
+                fastestDiff: 0,
+                cols: cols
             };
         }
 
@@ -136,7 +125,8 @@ export class TabComponent {
                 rows: fromStartList.filter(row => row != null),
                 fastestTime: 0,
                 fastestDiff: 0,
-                isStartList: false
+                isStartList: false,
+                cols: cols
             };
         }
 
@@ -174,11 +164,8 @@ export class TabComponent {
             rows: rows,
             fastestTime: results[inter].fastest,
             fastestDiff: fastestDiff,
-            isStartList: false
+            isStartList: false,
+            cols: cols
         };
-    }
-
-    public setDiff($event: any) {
-        this.diff$.next($event !== null ? +$event.data_value : null);
     }
 }

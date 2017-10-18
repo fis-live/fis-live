@@ -1,6 +1,7 @@
 import {
     Component, Input, ChangeDetectionStrategy,
 } from '@angular/core';
+import {DatagridState} from "./providers/datagrid-state";
 
 @Component({
     selector: 'app-grid-header',
@@ -19,11 +20,7 @@ import {
         <div style="flex: 1 1 auto">
                     james@test.com
         </div>
-        <div class="column-switch-wrapper">
-            <button class="btn btn-sm btn-link column-toggle--action" type="button">
-                <clr-icon shape="view-columns"></clr-icon>
-            </button>
-        </div>
+        <app-dg-settings class="column-switch-wrapper"></app-dg-settings>
     `,
     changeDetection: ChangeDetectionStrategy.OnPush
 })
@@ -31,9 +28,10 @@ export class DatagridHeaderComponent {
     public inter: number;
     @Input() public items: any;
 
-    constructor() { }
+    constructor(private _state: DatagridState) { }
 
     public setSelected(item: any) {
         this.inter = item.data_value;
+        this._state.setInter(this.inter);
     }
 }

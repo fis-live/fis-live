@@ -28,6 +28,7 @@ import { ScrollbarDirective } from './components/utils/scrollbar.directive';
 import { SortDirective } from './components/datagrid/sort.directive';
 import { DatagridHeaderComponent } from './components/datagrid/datagrid-header.component';
 import { DropdownItemDirective } from './components/dropdown/dropdown-item.directive';
+import {DatagridSettingsComponent} from "./components/datagrid/datagrid-settings.component";
 
 @NgModule({
     declarations: [
@@ -45,7 +46,8 @@ import { DropdownItemDirective } from './components/dropdown/dropdown-item.direc
         ScrollbarDirective,
         SortDirective,
         DatagridHeaderComponent,
-        DropdownItemDirective
+        DropdownItemDirective,
+        DatagridSettingsComponent
     ],
     imports: [
         BrowserModule,

@@ -5,7 +5,7 @@
                 <div appSort="rank">{{ config.isStartList ? 'Order' : 'Rank' }}</div>
             </th>
 
-            <th>
+            <th *ngIf="config.cols.indexOf('bib') > -1">
                 <div appSort="racer.bib">Bib</div>
             </th>
 
@@ -32,7 +32,7 @@
         <ng-container *ngIf="breakpoint === 'large'">
             <tr [@color]="row.state" [ngClass]="{'disabled': row.rank == null, 'favorite': row.racer.isFavorite}" *ngFor="let row of rows; trackBy: track" role="row">
                 <td><div>{{ row.rank }}</div></td>
-                <td><div>{{ row.racer.bib }}</div></td>
+                <td *ngIf="config.cols.indexOf('bib') > -1"><div>{{ row.racer.bib }}</div></td>
                 <td><div>{{ row.racer.firstName }} {{ row.racer.lastName }}</div></td>
                 <td><div><span [style.font-weight]="!config.isStartList && row.rank == 1 ? 700: 'normal'">{{ getStatus(row) }}</span></div></td>
                 <td><div><i class="{{ FLAGS[row.racer.nationality] | lowercase }} flag"></i>{{ FLAGS[row.racer.nationality] || row.racer.nationality }}</div></td>
