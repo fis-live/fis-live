@@ -60,7 +60,7 @@ export function localStorageSyncReducer(reducer: ActionReducer<AppState>): Actio
 
 export const metaReducers: MetaReducer<AppState>[] = process.env.ENV === 'production' ?
     [enableBatching, resetState, localStorageSyncReducer] :
-    [storeFreeze, enableBatching, resetState, localStorageSyncReducer];
+    [ enableBatching, resetState, localStorageSyncReducer, storeFreeze];
 
 export const getAlertState = (state: AppState) => state.alert;
 export const getInterState = (state: AppState) => state.intermediates;

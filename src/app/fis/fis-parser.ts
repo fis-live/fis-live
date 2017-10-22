@@ -45,7 +45,7 @@ export function parseMain(data: any): Action[] {
     actions.push(new UpdateRaceInfo(raceInfo));
     actions.push(new SetRaceMessage(data.message));
     actions.push(new UpdateMeteo(meteo));
-    actions.push(new AddIntermediate({key: -1, id: 0, distance: null, name: 'Start list'}));
+    actions.push(new AddIntermediate({key: 0, id: 0, distance: null, name: 'Start list'}));
 
     data.racedef.forEach((def, index) => {
         let name = 'Finish';
@@ -53,7 +53,7 @@ export function parseMain(data: any): Action[] {
             name = 'Intermediate ' + def[1];
         }
 
-        actions.push(new AddIntermediate({key: index, id: def[1], distance: def[2], name: name}));
+        actions.push(new AddIntermediate({key: index + 1, id: def[1], distance: def[2], name: name}));
     });
 
     for ( let i = 0; i < data.racers.length; i++ ) {
@@ -113,7 +113,7 @@ export function parseMain(data: any): Action[] {
                 actions.push(
                     new RegisterResult({
                         status: data.startlist[i][1],
-                        intermediate: 99,
+                        intermediate: 2,
                         racer: data.startlist[i][0],
                         time: key
                     })
@@ -126,7 +126,7 @@ export function parseMain(data: any): Action[] {
         if (data.result[i]) {
             for ( let j = 0; j < data.result[i].length; j++) {
                 actions.push(
-                    new RegisterResult({status: '', intermediate: data.racedef[j][1], racer: i, time: data.result[i][j]})
+                    new RegisterResult({status: '', intermediate: j + 1, racer: i, time: data.result[i][j]})
                 );
             }
         }

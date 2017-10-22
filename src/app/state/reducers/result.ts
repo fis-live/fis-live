@@ -1,144 +1,55 @@
+import { EntityState, EntityAdapter, createEntityAdapter } from '@ngrx/entity';
 import * as RaceActions from '../actions/race';
+import { maxVal } from '../../fis/fis-constants';
 
-export interface Item {
-    racer: number;
-    time: number;
-    rank: number;
+export interface RacerData {
+    id: number;
+    order: number;
     status: string;
+    times: number[];
 }
 
-export interface State {
-    [intermediate: number]: {
-        fastest: number,
-        entities: Item[]
-    };
+export interface State extends EntityState<RacerData> {
+    history: {racer: number; intermediate: number}[];
 }
 
-export function reducer(state: State = {[0]: {fastest: null, entities: []}}, action: RaceActions.RaceAction): State {
-    const maxVal = 1000000000;
+export const adapter: EntityAdapter<RacerData> = createEntityAdapter<RacerData>();
 
+export const initialState: State = adapter.getInitialState({history: []});
+
+export function reducer(state: State = initialState, action: RaceActions.RaceAction): State {
     switch (action.type) {
         case RaceActions.ADD_START_LIST:
-            return Object.assign({}, state, {[0]: {
-                fastest: null,
-                entities: state[0].entities.concat({
-                    racer: action.payload.racer,
-                    status: action.payload.status,
-                    rank: action.payload.order,
-                    time: 0
-                })
-            }});
+            return adapter.addOne({
+                id: action.payload.racer,
+                status: action.payload.status,
+                order: action.payload.order,
+                times: [0]
+            }, state);
 
         case RaceActions.SET_START_TIME:
-            const newStartList = state[0].entities.map((row) => {
-                const _row = Object.assign({}, row);
-                if (row.racer === action.payload.racer) {
-                    _row.time = action.payload.time;
-                }
+            const times = state.entities[action.payload.racer].times.slice();
+            times[0] = action.payload.time;
 
-                return _row;
-            });
-
-            return Object.assign({}, state, {[0]: {
-                fastest: (state[0].fastest == null || action.payload.time < state[0].fastest) ? action.payload.time : state[0].fastest,
-                entities: newStartList
-            }});
+            return adapter.updateOne({id: action.payload.racer, changes: {times}}, state);
 
         case RaceActions.SET_STATUS:
-            const id: number = action.payload.id;
-            const _status: string = action.payload.status;
-
-            const startList = state[0].entities.map((row) => {
-                const _row = Object.assign({}, row);
-                if (row.racer === id) {
-                    _row.status = _status;
-                }
-
-                return _row;
-            });
-
-
-            return Object.assign({}, state, {[0]: {
-                fastest: null,
-                entities: startList
-            }});
+            return adapter.updateOne({id: action.payload.id, changes: {status: action.payload.status}}, state);
 
         case RaceActions.REGISTER_RESULT:
             const item = action.payload;
             const time = item.time || maxVal * 6;
-            const status = (item.time && item.status.length > 0) ? item.status : 'N/A';
-            let rank = (time >= maxVal) ? null : 1;
-            let duplicate = false;
-            let prevTime;
-
-            if (state[item.intermediate] == null) {
-                return Object.assign({}, state, {[item.intermediate]: {
-                    fastest: time,
-                    entities: [{racer: item.racer, status: status, time: time, rank: rank}]}}
-                );
+            const _times = state.entities[action.payload.racer].times.slice();
+            if (_times.length < item.intermediate) {
+                const l = _times.length;
+                const t = (time < maxVal) ? maxVal * 6 : time;
+                _times[item.intermediate] = time;
+                _times.fill(t, l, item.intermediate);
+            } else {
+                _times.push(time);
             }
 
-            let _state = state[item.intermediate].entities.map(row => {
-                    if (row.racer === item.racer) {
-                        duplicate = true;
-                        prevTime = row.time;
-
-                        return Object.assign({}, row, {status: status, time: time});
-                    }
-                    if (rank === null) {
-                        return row;
-                    }
-
-                    if (row.time < time) {
-                        rank += 1;
-
-                        return row;
-                    } else if (row.time === time) {
-                        return row;
-                    }
-
-                    return Object.assign({}, row, {rank: row.rank !== null ? row.rank + 1 : null});
-                }
-            );
-
-            if (duplicate) {
-                let fastest = maxVal;
-
-                _state = _state.map(row => {
-                    if (row.time < fastest) {
-                        fastest = row.time;
-                    }
-
-                    if (row.racer === item.racer) {
-                        return Object.assign({}, row, {rank: rank});
-                    }
-
-                    if (row.time >= maxVal) {
-                        return row;
-                    }
-
-                    if (row.time <= prevTime) {
-                        return row;
-                    }
-
-                    return Object.assign({}, row, {rank: row.rank - 1});
-                });
-
-                return Object.assign({}, state, {
-                    [item.intermediate]: {
-                        entities: _state,
-                        fastest: fastest
-                    }
-                });
-            }
-
-            return Object.assign({}, state, {
-                [item.intermediate]: {
-                    entities: _state.concat({racer: item.racer, status: status, time: time, rank: rank}),
-                    fastest: time < state[item.intermediate].fastest ? time : state[item.intermediate].fastest
-                }
-            });
-
+            return adapter.updateOne({id: action.payload.racer, changes: {times: _times}}, state);
 
         default:
             return state;
