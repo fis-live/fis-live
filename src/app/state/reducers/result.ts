@@ -11,14 +11,18 @@ export interface RacerData {
 
 export interface State extends EntityState<RacerData> {
     history: {racer: number; intermediate: number; isUpdate: boolean; prev?: number}[];
+    interMap: {[id: number]: number};
 }
 
 export const adapter: EntityAdapter<RacerData> = createEntityAdapter<RacerData>();
 
-export const initialState: State = adapter.getInitialState({history: []});
+export const initialState: State = adapter.getInitialState({history: [], interMap: {}});
 
 export function reducer(state: State = initialState, action: RaceActions.RaceAction): State {
     switch (action.type) {
+        case RaceActions.ADD_INTERMEDIATE:
+            return {...state, interMap: {...state.interMap, [action.payload.id]: action.payload.key}};
+
         case RaceActions.ADD_START_LIST:
             return {...adapter.addOne({
                 id: action.payload.racer,
@@ -40,14 +44,15 @@ export function reducer(state: State = initialState, action: RaceActions.RaceAct
 
         case RaceActions.REGISTER_RESULT:
             const item = action.payload;
+            const inter = state.interMap[item.intermediate];
             const time = item.time || maxVal * 6;
             const _times = state.entities[action.payload.racer].times.slice();
             const history = [];
-            if (_times.length !== item.intermediate) {
-                if (_times.length < item.intermediate) {
+            if (_times.length !== inter) {
+                if (_times.length < inter) {
                     const t = (time < maxVal) ? maxVal * 6 : time;
-                    _times[item.intermediate] = time;
-                    history.push({racer: item.racer, intermediate: item.intermediate, isUpdate: false});
+                    _times[inter] = time;
+                    history.push({racer: item.racer, intermediate: inter, isUpdate: false});
                     for (let i = 0; i < _times.length; i++) {
                         if (_times[i] === undefined) {
                             _times[i] = t;
@@ -55,13 +60,13 @@ export function reducer(state: State = initialState, action: RaceActions.RaceAct
                         }
                     }
                 } else {
-                    const t = _times[item.intermediate];
-                    _times[item.intermediate] = time;
-                    history.push({racer: item.racer, intermediate: item.intermediate, isUpdate: true, prev: t});
+                    const t = _times[inter];
+                    _times[inter] = time;
+                    history.push({racer: item.racer, intermediate: inter, isUpdate: true, prev: t});
                 }
             } else {
-                _times[item.intermediate] = time;
-                history.push({racer: item.racer, intermediate: item.intermediate, isUpdate: false});
+                _times[inter] = time;
+                history.push({racer: item.racer, intermediate: inter, isUpdate: false});
             }
 
             return {...adapter.updateOne({id: action.payload.racer, changes: {times: _times}}, state),

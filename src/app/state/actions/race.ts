@@ -1,5 +1,6 @@
 import { Action } from '@ngrx/store';
 import { Racer } from '../../models/racer';
+import { Intermediate } from '../../models/intermediate';
 
 export const REGISTER_RESULT = '[Result] Register result';
 export const ADD_RACER = '[Racer] Add racer';
@@ -64,7 +65,7 @@ export class SetRaceMessage implements Action {
 export class AddIntermediate implements Action {
     readonly type = ADD_INTERMEDIATE;
 
-    constructor(public payload: any) {
+    constructor(public payload: Intermediate) {
     }
 }
 
