@@ -282,3 +282,21 @@ export const statusMap = {
     'lapped': 'Lapped',
     'nextstart': 'Next to start'
 };
+
+export const timeToStatusMap = {
+    [maxVal + 1]: 'RAL',
+    [maxVal * 2]: 'lapped',
+    [maxVal * 3]: 'DNF',
+    [maxVal * 4]: 'DQ',
+    [maxVal * 5]: 'DNS',
+    [maxVal * 6]: 'N/A'
+};
+
+export const statusToTimeMap = {
+    'ral':      maxVal + 1,
+    'lapped':   maxVal * 2,
+    'dnf':      maxVal * 3,
+    'dq':       maxVal * 4,
+    'dns':      maxVal * 5,
+    'N/A':      maxVal * 6
+};

@@ -6,6 +6,7 @@ import {
 import { Reset, LoadMain, StopUpdate, Batch } from '../state/actions/connection';
 import { Meteo } from '../models/meteo';
 import { RaceInfo } from '../models/race-info';
+import { statusToTimeMap } from './fis-constants';
 
 export function parseMain(data: any): Action[] {
     const actions: Action[] = [];
@@ -80,44 +81,21 @@ export function parseMain(data: any): Action[] {
                     order: i + 1
                 })
             );
-            let key = 0;
-            const maxVal = 1000000000;
             switch (data.startlist[i][1]) {
-                case '':
-                case 'start':
-                case 'ff':
-                case 'q':
-                case 'lucky':
-                case 'nextstart':
-                case 'finish':
-                    break;
                 case 'ral':
-                    key = maxVal + 1;
-                    break;
                 case 'lapped':
-                    key = maxVal * 2;
-                    break;
                 case 'dnf':
-                    key = maxVal * 3;
-                    break;
                 case 'dq':
-                    key = maxVal * 4;
-                    break;
                 case 'dns':
-                    key = maxVal * 5;
+                    actions.push(
+                        new RegisterResult({
+                            status: data.startlist[i][1],
+                            intermediate: 99,
+                            racer: data.startlist[i][0],
+                            time: statusToTimeMap[data.startlist[i][1]]
+                        })
+                    );
                     break;
-                default:
-                    key = 0;
-            }
-            if (key > maxVal) {
-                actions.push(
-                    new RegisterResult({
-                        status: data.startlist[i][1],
-                        intermediate: 99,
-                        racer: data.startlist[i][0],
-                        time: key
-                    })
-                );
             }
         }
     }
@@ -139,11 +117,9 @@ export function parseUpdate(data: any): Action[] {
     const actions = [];
     let reload = false;
     let stopUpdating = false;
-    const maxVal = 1000000000;
 
     if (data.events) {
         data.events.forEach((event) => {
-            let key = 0;
             switch (event[0]) {
                 case 'inter':
                     actions.push(new RegisterResult({
@@ -157,19 +133,19 @@ export function parseUpdate(data: any): Action[] {
                     actions.push(new SetStatus({id: event[2], status: event[0]}));
                     break;
                 case 'dnf':
-                    key = maxVal * 3;
-                    break;
                 case 'dns':
-                    key = maxVal * 5;
-                    break;
                 case 'dq':
-                    key = maxVal * 4;
-                    break;
                 case 'ral':
-                    key = maxVal + 1;
-                    break;
                 case 'lapped':
-                    key = maxVal * 2;
+                    actions.push(
+                        new RegisterResult({
+                            status: event[0],
+                            intermediate: 99,
+                            racer: event[2],
+                            time: statusToTimeMap[event[0]]
+                        })
+                    );
+                    actions.push(new SetStatus({id: event[2], status: event[0]}));
                     break;
                 case 'q':
                 case 'nq':
@@ -177,7 +153,6 @@ export function parseUpdate(data: any): Action[] {
                 case 'ff':
                 case 'start':
                 case 'nextstart':
-                    actions.push(new SetStatus({id: event[2], status: event[0]}));
                     actions.push(new SetStatus({id: event[2], status: event[0]}));
                     break;
                 case 'meteo':
@@ -203,18 +178,6 @@ export function parseUpdate(data: any): Action[] {
                     break;
                 case 'official_result':
                     stopUpdating = true;
-            }
-
-            if (key > maxVal) {
-                actions.push(new SetStatus({id: event[2], status: event[0]}));
-                actions.push(
-                    new RegisterResult({
-                        status: event[0],
-                        intermediate: 99,
-                        racer: event[2],
-                        time: key
-                    })
-                );
             }
         });
     }
