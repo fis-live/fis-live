@@ -87,3 +87,18 @@ export const getFavoriteRacers = createSelector(getRacers, getSettingsState,
 );
 
 export const getDelayState = createSelector(getSettingsState, Settings.getDelay);
+
+
+export const {
+    // select the array of user ids
+    selectIds: selectUserIds,
+
+    // select the dictionary of user entities
+    selectEntities: selectUserEntities,
+
+    // select the array of users
+    selectAll: selectAllResults,
+
+    // select the total user count
+    selectTotal: selectUserTotal
+} = Result.adapter.getSelectors(getResultState);

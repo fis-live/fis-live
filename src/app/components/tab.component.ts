@@ -9,6 +9,8 @@ import { Racer } from '../models/racer';
 import { DropdownItem } from './dropdown.component';
 import { ResultService } from '../services/result.service';
 import { getFavoriteRacers } from '../state/reducers';
+import {RacerData} from "../state/reducers/result";
+import {maxVal} from "../fis/fis-constants";
 
 export interface ResultItem {
     racer: Racer;
@@ -53,7 +55,6 @@ export class TabComponent {
     public filter$: Subject<number> = new BehaviorSubject<number>(null);
     public diff$: Subject<number> = new BehaviorSubject<number>(null);
     @Input() breakpoint = 'large';
-    private maxVal = 1000000000;
 
     constructor(private _store: Store<AppState>, private _results: ResultService) {
         this.intermediates$ = _store.select(getDropdownItems);
@@ -77,64 +78,27 @@ export class TabComponent {
         this.filter$.next($event !== null ? +$event.data_value : null);
     }
 
-    public parseResults(results, inter, diff, racers): TableConfiguration {
-        const getValidDiff = (time, zero) => {
-            if (time == null || zero == null) {
-                return this.maxVal;
-            } else if (time >= this.maxVal || zero >= this.maxVal) {
-                return this.maxVal;
-            }
-
-            return time - zero;
-        };
-
-
-        if (results[inter] == null) {
-            return {
-                rows: [],
-                fastestTime: 0,
-                fastestDiff: 0,
-                isStartList: false
-            };
-        }
+    public parseResults(results: RacerData[], inter: number, diff: number, racers: {[id: number]: Racer}): TableConfiguration {
 
         const rows = [];
-        let fastestTime: number = this.maxVal;
-        let fastestDiff: number = this.maxVal;
+        let fastestTime: number = maxVal;
+        let fastestDiff: number = maxVal;
+            for (let i = 0; i < results.length; i++) {
+                const row = results[i];
 
-        if (inter === 0) {
-            results[inter].forEach((row) => {
-                fastestTime = (row.time < fastestTime) ? row.time : fastestTime;
-                rows.push({
-                    state: '',
-                    racer: racers[row.racer],
-                    time: row.time,
-                    status: row.status,
-                    rank: row.rank,
-                    diff: row.time
-                });
-            });
-
-            fastestDiff = fastestTime;
-        } else {
-            const comp = [];
-            if (diff !== null) {
-                results[diff].forEach((item) => comp[item.racer] = (inter === 0) ? 0 : item.time);
+                if (row.times[inter] !== undefined) {
+                    fastestDiff = (row.diffs[inter][diff] < fastestDiff) ? row.diffs[inter][diff] : fastestDiff;
+                    fastestTime = (row.times[inter].time < fastestTime) ? row.times[inter].time : fastestTime;
+                    rows.push({
+                        state: '',
+                        racer: racers[row.id],
+                        time: row.times[inter].time,
+                        status: '',
+                        rank: row.times[inter].rank,
+                        diff: row.diffs[inter][diff]
+                    });
+                }
             }
-            results[inter].forEach((row) => {
-                const d = getValidDiff(row.time, comp[row.racer]);
-                fastestDiff = (d < fastestDiff) ? d : fastestDiff;
-                fastestTime = (row.time < fastestTime) ? row.time : fastestTime;
-                rows.push({
-                    state: '',
-                    racer: racers[row.racer],
-                    time: row.time,
-                    status: row.status,
-                    rank: row.rank,
-                    diff: d
-                });
-            });
-        }
 
         return {
             rows: rows,
