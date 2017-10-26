@@ -55,7 +55,7 @@ export class FilterComponent extends AbstractPopover implements Filter, AfterVie
     }
 
     public accepts(item: any): boolean {
-        return item.racer.lastName.toLowerCase().indexOf(this.input.toLowerCase()) >= 0;
+        return item.name.toLowerCase().indexOf(this.input.toLowerCase()) >= 0;
     }
 
     isActive(): boolean {

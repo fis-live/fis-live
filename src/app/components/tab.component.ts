@@ -9,7 +9,7 @@ import { Racer } from '../models/racer';
 import { DropdownItem } from './dropdown.component';
 import { ResultService } from '../services/result.service';
 import { RacerData } from '../state/reducers/result';
-import { maxVal } from '../fis/fis-constants';
+import { maxVal, timeToStatusMap } from '../fis/fis-constants';
 
 export interface ResultItem {
     racer: Racer;
@@ -21,9 +21,7 @@ export interface ResultItem {
 
 export interface TableConfiguration {
     isStartList: boolean;
-    fastestTime: number;
-    fastestDiff: number;
-    rows: ResultItem[];
+    rows: any[];
 }
 
 @Component({
@@ -78,35 +76,91 @@ export class TabComponent {
 
     public parseResults(results: RacerData[], inter: number, diff: number): TableConfiguration {
 
-        const rows = [];
+        let rows = [];
         let fastestTime: number = maxVal;
         let fastestDiff: number = maxVal;
-            for (let i = 0; i < results.length; i++) {
-                const row = results[i];
 
-                if (row.times[inter] !== undefined) {
-                    fastestDiff = (row.diffs[inter][diff] < fastestDiff) ? row.diffs[inter][diff] : fastestDiff;
-                    fastestTime = (row.times[inter].time < fastestTime) ? row.times[inter].time : fastestTime;
-                    rows.push({
-                        state: '',
-                        racer: row.racer,
-                        time: row.times[inter].time,
-                        status: row.status,
-                        rank: row.times[inter].rank,
-                        diff: row.diffs[inter][diff]
-                    });
+        for (let i = 0; i < results.length; i++) {
+            const row = results[i];
+
+            if (row.times[inter] !== undefined) {
+                fastestDiff = (row.diffs[inter][diff] < fastestDiff) ? row.diffs[inter][diff] : fastestDiff;
+                fastestTime = (row.times[inter].time < fastestTime) ? row.times[inter].time : fastestTime;
+                rows.push({
+                    state: '',
+                    racer: row.racer,
+                    time: inter === 0 ? row.status : row.times[inter].time,
+                    time_sort: inter === 0 ? row.status : row.times[inter].time,
+                    rank: row.times[inter].rank,
+                    diff: row.diffs[inter][diff],
+                    diff_sort: row.diffs[inter][diff],
+                    name: row.racer.lastName + ', ' + row.racer.firstName
+                });
+            }
+        }
+
+        rows = rows.map((row) => {
+            if (inter !== 0) {
+                if (row.time > maxVal) {
+                    row.time = timeToStatusMap[row.time];
+                } else if (row.rank > 1) {
+                    row.time = '+' + this.formatTime(row.time - fastestTime);
+                } else {
+                    row.time = this.formatTime(row.time);
                 }
             }
 
+            if (diff !== null && row.diff < maxVal) {
+                if (row.diff === fastestDiff) {
+                    row.diff = this.formatTime(row.diff);
+                } else {
+                    row.diff = '+' + this.formatTime(row.diff - fastestDiff);
+                }
+            } else {
+                row.diff = '';
+            }
+
+            return row;
+        });
+
         return {
             rows: rows,
-            fastestTime: fastestTime,
-            fastestDiff: fastestDiff,
             isStartList: (inter === 0)
         };
     }
 
     public setDiff($event: DropdownItem) {
         this.diff$.next($event !== null ? +$event.data_value : null);
+    }
+
+    public formatTime(time: number): string {
+        if (time === null) {
+            return '';
+        }
+        let timeStr = '';
+
+        const hours = Math.floor(time / (1000 * 60 * 60));
+        const minutes = Math.floor((time - hours * 1000 * 60 * 60) / (1000 * 60));
+        const seconds = Math.floor((time - hours * 1000 * 60 * 60 - minutes * 1000 * 60) / 1000);
+        const tenths = Math.floor((time - hours * 1000 * 60 * 60 - minutes * 1000 * 60 - seconds * 1000) / 100);
+        const hundreds = Math.floor((time - hours * 1000 * 60 * 60 - minutes * 1000 * 60 - seconds * 1000 - tenths * 100) / 10);
+
+        if (hours > 0 || minutes > 0) {
+            if (hours > 0) {
+                timeStr = hours + ':';
+                if (minutes < 10) {
+                    timeStr += '0';
+                }
+            }
+            timeStr += minutes + ':';
+            if (seconds < 10) {
+                timeStr += '0';
+            }
+        }
+
+        timeStr += seconds + '.' + tenths;
+        timeStr += (hundreds > 0) ? hundreds : '';
+
+        return timeStr;
     }
 }

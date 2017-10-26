@@ -6,7 +6,7 @@ import {
 import { Reset, LoadMain, StopUpdate, Batch } from '../state/actions/connection';
 import { Meteo } from '../models/meteo';
 import { RaceInfo } from '../models/race-info';
-import { statusToTimeMap } from './fis-constants';
+import {nationalities, statusToTimeMap} from './fis-constants';
 
 export function parseMain(data: any): Action[] {
     const actions: Action[] = [];
@@ -64,7 +64,7 @@ export function parseMain(data: any): Action[] {
                     bib: data.racers[i][1],
                     firstName: data.racers[i][3].trim(),
                     lastName: data.racers[i][2].trim().split(' ').map(char => char[0] + char.substr(1).toLowerCase()).join(' '),
-                    nationality:  data.racers[i][4],
+                    nationality:  nationalities[data.racers[i][4]] || data.racers[i][4],
                     isFavorite: false,
                     color: ''
                 })

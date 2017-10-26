@@ -285,7 +285,7 @@ export const statusMap = {
 
 export const timeToStatusMap = {
     [maxVal + 1]: 'RAL',
-    [maxVal * 2]: 'lapped',
+    [maxVal * 2]: 'Lapped',
     [maxVal * 3]: 'DNF',
     [maxVal * 4]: 'DQ',
     [maxVal * 5]: 'DNS',
