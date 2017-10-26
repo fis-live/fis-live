@@ -16,19 +16,7 @@ const initialState: State = {
 
 export function reducer(state: State = initialState, action: RaceActions.RaceAction): State {
     switch (action.type) {
-        case RaceActions.ADD_RACER:
-            const racer: Racer = action.payload;
 
-            if (state.ids.indexOf(racer.bib) >= 0) {
-                return state;
-            }
-
-            return {
-                ids: [ ...state.ids, racer.bib ],
-                entities: Object.assign({}, state.entities, {
-                    [racer.bib]: racer
-                })
-            };
 
         case RaceActions.SET_BIB_COLOR:
             const id: number = action.payload.racer;

@@ -1,9 +1,12 @@
 import { EntityState, EntityAdapter, createEntityAdapter } from '@ngrx/entity';
 import * as RaceActions from '../actions/race';
 import { maxVal } from '../../fis/fis-constants';
+import { Racer } from '../../models/racer';
 
 export interface RacerData {
     id: number;
+    racer: Racer;
+    status: string;
     times: {time: number; rank: number}[];
     diffs: number[][];
 }
@@ -79,12 +82,26 @@ export function reducer(state: State = initialState, action: RaceActions.RaceAct
             };
         }
 
-        case RaceActions.ADD_START_LIST: {
+        case RaceActions.ADD_RACER: {
+            const racer: Racer = action.payload;
 
             return adapter.addOne({
-                id: action.payload.racer,
+                id: racer.bib,
+                status: '',
+                racer: racer,
                 times: [{time: 0, rank: null}],
                 diffs: [[0]]
+            }, state);
+        }
+
+        case RaceActions.ADD_START_LIST: {
+            return adapter.updateOne({
+                id: action.payload.racer,
+                changes: {
+                    status: action.payload.status,
+                    times: [{time: 0, rank: action.payload.order}],
+                    diffs: [[0]]
+                }
             }, state);
         }
 
@@ -97,7 +114,12 @@ export function reducer(state: State = initialState, action: RaceActions.RaceAct
         }
 
         case RaceActions.SET_STATUS: {
-            return state;
+            return adapter.updateOne({
+                id: action.payload.racer,
+                changes: {
+                    status: action.payload.status
+                }
+            }, state);
         }
 
         case RaceActions.REGISTER_RESULT: {

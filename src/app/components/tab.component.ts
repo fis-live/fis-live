@@ -8,9 +8,8 @@ import { BehaviorSubject } from 'rxjs/BehaviorSubject';
 import { Racer } from '../models/racer';
 import { DropdownItem } from './dropdown.component';
 import { ResultService } from '../services/result.service';
-import { getFavoriteRacers } from '../state/reducers';
-import {RacerData} from "../state/reducers/result";
-import {maxVal} from "../fis/fis-constants";
+import { RacerData } from '../state/reducers/result';
+import { maxVal } from '../fis/fis-constants';
 
 export interface ResultItem {
     racer: Racer;
@@ -69,16 +68,15 @@ export class TabComponent {
         this.tableConfig$ = Observable.combineLatest(
             _results.results$,
             this.filter$.distinctUntilChanged(),
-            this.diff$.distinctUntilChanged(),
-            _store.select(getFavoriteRacers))
-            .map(([results, inter, diff, racers]) => this.parseResults(results, inter, diff, racers));
+            this.diff$.distinctUntilChanged())
+            .map(([results, inter, diff]) => this.parseResults(results, inter, diff));
     }
 
     public setInter($event: DropdownItem) {
         this.filter$.next($event !== null ? +$event.data_value : null);
     }
 
-    public parseResults(results: RacerData[], inter: number, diff: number, racers: {[id: number]: Racer}): TableConfiguration {
+    public parseResults(results: RacerData[], inter: number, diff: number): TableConfiguration {
 
         const rows = [];
         let fastestTime: number = maxVal;
@@ -91,9 +89,9 @@ export class TabComponent {
                     fastestTime = (row.times[inter].time < fastestTime) ? row.times[inter].time : fastestTime;
                     rows.push({
                         state: '',
-                        racer: racers[row.id],
+                        racer: row.racer,
                         time: row.times[inter].time,
-                        status: '',
+                        status: row.status,
                         rank: row.times[inter].rank,
                         diff: row.diffs[inter][diff]
                     });
