@@ -12,7 +12,8 @@ const icons = [
     'exclamation-circle',
     'check-circle',
     'info-circle',
-    'grid-view'
+    'view-columns',
+    'caret'
 ];
 
 var template = '';

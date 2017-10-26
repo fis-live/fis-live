@@ -6,8 +6,8 @@ import { Observable } from 'rxjs/Observable';
 import { Subject } from 'rxjs/Subject';
 import { BehaviorSubject } from 'rxjs/BehaviorSubject';
 import { Racer } from '../models/racer';
-import { DropdownItem } from './dropdown.component';
 import { ResultService } from '../services/result.service';
+import { DatagridState } from './datagrid/providers/datagrid-state';
 import { RacerData } from '../state/reducers/result';
 import { maxVal, timeToStatusMap } from '../fis/fis-constants';
 
@@ -22,59 +22,37 @@ export interface ResultItem {
 export interface TableConfiguration {
     isStartList: boolean;
     rows: any[];
+    cols: string[];
 }
 
 @Component({
     selector: 'app-tab',
     template: `
-<div class="action-bar">
-    <app-dropdown [items]="intermediates$ | async"
-        [placeholder]="'Select intermediate...'"
-        [cssClass]="'button primary'"
-        (selectedChanged)="setInter($event)"></app-dropdown>
-
-     <app-dropdown [items]="diffs$ | async"
-        [placeholder]="'Compare...'"
-        [cssClass]="'button positive'"
-        (selectedChanged)="setDiff($event)"></app-dropdown>
-</div>
+        <app-grid-header [items]="intermediates$ | async" class="action-bar"></app-grid-header>
 <div class="segment" appScrollbar>
     <app-table [breakpoint]="breakpoint" [config]="tableConfig$ | async"></app-table>
 </div>`,
+    providers: [DatagridState],
     changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class TabComponent {
 
-    public intermediates$: Observable<DropdownItem[]>;
-    public diffs$: Observable<DropdownItem[]>;
+    public intermediates$: Observable<any[]>;
     public tableConfig$: Observable<TableConfiguration>;
 
-    public filter$: Subject<number> = new BehaviorSubject<number>(null);
-    public diff$: Subject<number> = new BehaviorSubject<number>(null);
     @Input() breakpoint = 'large';
 
-    constructor(private _store: Store<AppState>, private _results: ResultService) {
+    constructor(private _store: Store<AppState>, private _results: ResultService, private _state: DatagridState) {
         this.intermediates$ = _store.select(getDropdownItems);
-
-        this.diffs$ = Observable.combineLatest(_store.select(getDropdownItems), this.filter$.distinctUntilChanged())
-            .map(([items, inter]) => {
-                return items.reduce((arr, item) => {
-                    return (item.data_value > 0 && item.data_value < inter) ? arr.concat(item) : arr;
-                }, [{data_value: 0, selected_text: 'From start', default_text: 'From start'}]);
-            });
 
         this.tableConfig$ = Observable.combineLatest(
             _results.results$,
-            this.filter$.distinctUntilChanged(),
-            this.diff$.distinctUntilChanged())
-            .map(([results, inter, diff]) => this.parseResults(results, inter, diff));
+            this._state.change)
+            .map(([results, inter]) => this.parseResults(results, inter.inter, inter.diff, inter.visibleColumns));
     }
 
-    public setInter($event: DropdownItem) {
-        this.filter$.next($event !== null ? +$event.data_value : null);
-    }
 
-    public parseResults(results: RacerData[], inter: number, diff: number): TableConfiguration {
+    public parseResults(results: RacerData[], inter: number, diff: number, cols): TableConfiguration {
 
         let rows = [];
         let fastestTime: number = maxVal;
@@ -125,13 +103,11 @@ export class TabComponent {
 
         return {
             rows: rows,
-            isStartList: (inter === 0)
+            isStartList: (inter === 0),
+            cols: cols
         };
     }
 
-    public setDiff($event: DropdownItem) {
-        this.diff$.next($event !== null ? +$event.data_value : null);
-    }
 
     public formatTime(time: number): string {
         if (time === null) {

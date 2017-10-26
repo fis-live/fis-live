@@ -26,6 +26,7 @@
 @import "~clarity-ui/src/forms/utils/mixins.clarity";
 
 @import "~clarity-ui/src/typography/typography.clarity";
+@import "~clarity-ui/src/typography/lists.clarity";
 
 
 @import "~clarity-ui/src/emphasis/labels.clarity";
@@ -40,12 +41,41 @@
 @import "~clarity-ui/src/layout/tabs/tabs.clarity";
 @import "~clarity-ui/src/forms/select.clarity";
 @import "~clarity-ui/src/forms/inputs.clarity";
+@import "~clarity-ui/src/forms/checkbox/checkbox.clarity";
+@import "~clarity-ui/src/popover/dropdown/dropdown.clarity";
 
-@import "styles/dropdown";
+//@import "styles/dropdown";
 @import "styles/grid";
 @import "styles/table";
 @import "styles/menu";
 @import "styles/sidebar";
+
+.dropdown-menu {
+    visibility: visible;
+}
+
+.btn-group {
+    display: inline-flex;
+    margin-right: $clr_baselineRem_0_5;
+
+    app-dropdown{
+        margin: 0;
+
+        &:not(:first-child) .btn {
+            border-top-left-radius: 0;
+            border-bottom-left-radius: 0;
+        }
+
+        &:not(:last-child) {
+            margin: 0 1px 0 0;
+
+            .btn {
+                border-top-right-radius: 0;
+                border-bottom-right-radius: 0;
+            }
+        }
+    }
+}
 
 .alert.alert-app-level {
     position: fixed;
