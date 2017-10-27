@@ -3,36 +3,33 @@
     font-size: 0.8em;
 }
 
+header {
+    position: fixed;
+    top: 0;
+    width: 100%;
+    z-index: 101;
+
+    > .header-nav {
+        line-height: $clr-header-height;
+    }
+}
+
+header > .branding {
+    padding: 0;
+    min-width: 0;
+}
+
 .header-hamburger-trigger {
-
-    display: inline-block;
-
-    border: none;
-    background: rgba(221, 221, 221, 0.15) !important;
-    cursor: pointer;
-    padding: 0 0 4px 0; //4px to vertically align the trigger lines. display flex was not working on all browsers.
-    text-align: center;
-    white-space: nowrap;
-
-    &:focus {
-        outline-offset: -5px; //So that the outline styles aren't hidden because of the browser
-    }
-
-    color: clr-getTextColor($gray-darkest, lightest);
-    opacity: 0.65;
-
-    &:hover {
-        opacity: 1;
-    }
+    $trigger-span-psuedo-positioning: -0.291667rem;
 
     & > span,
     & > span::before,
     & > span::after {
         display: inline-block;
-        height: 2px;
-        width: $clr_baselineRem_1;
+        height: 0.0833333rem;
+        width: 1rem;
         background: $clr-white;
-        border-radius: 3px;
+        border-radius: 0.125rem;
     }
 
     & > span {
@@ -47,11 +44,34 @@
         }
 
         &::before {
-            top: -7px;
+            top: $trigger-span-psuedo-positioning;
         }
 
         &::after {
-            bottom: -7px;
+            bottom: $trigger-span-psuedo-positioning;
         }
     }
+
+
+    display: inline-block;
+
+    border: none;
+    background: none;
+    cursor: pointer;
+    font-size: 1rem;
+    height: $clr-header-height;
+    //width: $clr-header-height;
+    padding: 0 0.666667rem 0.166667rem 0.666667rem;
+    //4px to vertically align the trigger lines. display flex was not working on all browsers.
+    text-align: center;
+    white-space: nowrap;
+
+    background: rgba(221, 221, 221, 0.15) !important;
+
+    &:focus {
+        outline-offset: -0.208333rem; //So that the outline styles aren't hidden because of the browser
+    }
+
+    @include header-nav-appearance();
+
 }

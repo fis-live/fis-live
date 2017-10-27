@@ -5,23 +5,27 @@ import { State as RaceInfoState } from '../state/reducers/race-info';
 @Component({
     selector: 'app-menu',
     template: `
-<div class="ui top inverted menu fixed"  style="background-color: #004A70;">
-    <div class="item header-hamburger-trigger" (click)="openSidebar.emit(null)"><span></span></div>
-    <div class="borderless item">{{ raceInfo.info.eventName }}</div>
-    <div class="borderless fitted small item">{{ raceInfo.info.raceName }}</div>
-    <div class="right menu">
-        <div class="borderless item">{{ raceInfo.message | uppercase }}</div>
-        <div (click)="refresh.emit(null)" style="padding-bottom: 0; padding-top: 0;" class="item header-hamburger-trigger">
+        <header class="header-6" style="background-color: #004A70;">
+            <div class="branding" (click)="openSidebar.emit(null)"><button class="header-hamburger-trigger" type="button">
+                <span></span>
+            </button></div>
+            <div class="header-nav">
+                <div class="nav-text">{{ raceInfo.info.eventName }}</div>
+                <div class="nav-text">{{ raceInfo.info.raceName }}</div>
+                <div class="nav-text">{{ raceInfo.message | uppercase }}</div>
+            </div>
+    <div class="header-actions">
+        <a (click)="refresh.emit(null)" style="padding-bottom: 0; padding-top: 0;" class="nav-link nav-icon">
             <clr-icon shape="refresh"></clr-icon>
-        </div>
-        <div (click)="tab.emit('remove')" style="padding-bottom: 0; padding-top: 0;" class="item header-hamburger-trigger">
+        </a>
+        <a (click)="tab.emit('remove')" class="nav-link nav-icon">
             <clr-icon size="20" shape="minus"></clr-icon>
-        </div>
-        <div (click)="tab.emit('add')" style="padding-bottom: 0; padding-top: 0;" class="item header-hamburger-trigger">
+        </a>
+        <a (click)="tab.emit('add')"  class="nav-link nav-icon">
             <clr-icon size="20" shape="plus"></clr-icon>
-        </div>
+        </a>
     </div>
-</div>
+</header>
 `,
     changeDetection: ChangeDetectionStrategy.OnPush
 })

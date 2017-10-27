@@ -18,7 +18,6 @@ import {DatagridState} from "./providers/datagrid-state";
             </app-dropdown>
         </div>
         <div style="flex: 1 1 auto">
-                    james@test.com
         </div>
         <app-dg-settings class="column-switch-wrapper"></app-dg-settings>
     `,
