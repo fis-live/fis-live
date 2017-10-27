@@ -94,6 +94,15 @@ export function reducer(state: State = initialState, action: RaceActions.RaceAct
             }, state);
         }
 
+        case RaceActions.SET_BIB_COLOR: {
+            return adapter.updateOne({
+                id: action.payload.racer,
+                changes: {
+                    racer: {...state.entities[action.payload.racer].racer, color: action.payload.color}
+                }
+            }, state);
+        }
+
         case RaceActions.ADD_START_LIST: {
             return adapter.updateOne({
                 id: action.payload.racer,

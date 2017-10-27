@@ -3,7 +3,7 @@ import { ActivatedRoute, Params, Router } from '@angular/router';
 import { Store } from '@ngrx/store';
 import { Observable } from 'rxjs/Observable';
 
-import { AppState, getRaceInfoState, getLoadingState, getFavoriteRacers, getSettingsState } from '../state/reducers/';
+import { AppState, getRaceInfoState, getLoadingState, getSettingsState } from '../state/reducers/';
 import { State as RaceInfoState } from '../state/reducers/race-info';
 import { State as LoadingState } from '../state/reducers/loading';
 import { Reset, LoadMain, StopUpdate } from '../state/actions/connection';
