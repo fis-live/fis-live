@@ -17,7 +17,7 @@ export class DatagridState {
     }
 
     public inter: number;
-    public diff: number = 0;
+    public diff: number;
     public mode: DatagridMode;
 
     private _visibleColumns: string[] = ['rank', 'bib', 'name', 'time', 'nation', 'diff'];
@@ -27,6 +27,12 @@ export class DatagridState {
         if (this.diff >= inter) {
             this.diff = null;
         }
+
+        this._change.next({inter: this.inter, diff: this.diff, mode: this.mode, visibleColumns: this._visibleColumns});
+    }
+
+    public setDiff(diff: number): void {
+        this.diff = diff;
 
         this._change.next({inter: this.inter, diff: this.diff, mode: this.mode, visibleColumns: this._visibleColumns});
     }

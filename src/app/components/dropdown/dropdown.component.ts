@@ -9,7 +9,7 @@ import { AbstractPopover } from '../utils/abstract-popover';
     selector: 'app-dropdown',
     template: `
         <button class="dropdown-toggle btn btn-sm" (click)="toggle()" type="button">
-            {{ text || placeholder }}
+            {{ (selected != null) ? text : placeholder }}
             <clr-icon shape="caret" dir="down"></clr-icon>
         </button>
 
@@ -32,20 +32,19 @@ import { AbstractPopover } from '../utils/abstract-popover';
 })
 export class DropdownComponent extends AbstractPopover {
 
-    public selectedItem: any;
     public text: string = '';
-    @Output() public onSelected: EventEmitter<any> = new EventEmitter();
+    @Output() public selectedChange: EventEmitter<any> = new EventEmitter();
+    @Input() public selected: any;
     @Input() public placeholder: string;
 
     constructor(el: ElementRef, renderer: Renderer2, cdr: ChangeDetectorRef) {
         super(el, renderer, cdr);
     }
 
-    public select(item: any) {
-        if (this.selectedItem !== item) {
-            this.text = item.default_text;
-            this.selectedItem = item;
-            this.onSelected.emit(item);
+    public select(item: any, text: string) {
+        if (this.selected !== item) {
+            this.text = text;
+            this.selectedChange.emit(item);
         }
 
         this.toggle();

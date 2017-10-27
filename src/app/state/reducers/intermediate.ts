@@ -45,11 +45,3 @@ export const getAllIntermediates = createSelector(
     getIntermediateEntities,
     (ids, entities) => ids.map(id => entities[id])
 );
-
-export const getInterAsDropdownItems = createSelector(getAllIntermediates, (intermediates) => {
-    return intermediates.map(row => ({
-        data_value: row.key,
-        selected_text: row.distance == null ? row.name : row.distance + ' KM',
-        default_text: row.distance == null ? row.name : row.distance + ' KM'
-    }));
-});

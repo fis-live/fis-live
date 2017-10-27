@@ -51,7 +51,12 @@ export function parseMain(data: any): Action[] {
     data.racedef.forEach((def, index) => {
         let name = 'Finish';
         if (def[0] === 'inter') {
-            name = 'Intermediate ' + def[1];
+            name = '';
+        }
+
+        if (def[2] && def[2] > 0) {
+            name += ' ' + def[2] + ' KM';
+            name = name.trim();
         }
 
         actions.push(new AddIntermediate({key: index + 1, id: def[1], distance: def[2], name: name}));

@@ -1,15 +1,14 @@
 import { Component, Input, ChangeDetectionStrategy } from '@angular/core';
 import { Store } from '@ngrx/store';
 
-import { AppState, getDropdownItems } from '../state/reducers';
+import { AppState, selectAllIntermediates } from '../state/reducers';
 import { Observable } from 'rxjs/Observable';
-import { Subject } from 'rxjs/Subject';
-import { BehaviorSubject } from 'rxjs/BehaviorSubject';
 import { Racer } from '../models/racer';
 import { ResultService } from '../services/result.service';
 import { DatagridState } from './datagrid/providers/datagrid-state';
 import { RacerData } from '../state/reducers/result';
-import { maxVal, timeToStatusMap } from '../fis/fis-constants';
+import { maxVal, statusMap, timeToStatusMap } from '../fis/fis-constants';
+import { Intermediate } from '../models/intermediate';
 
 export interface ResultItem {
     racer: Racer;
@@ -37,13 +36,13 @@ export interface TableConfiguration {
 })
 export class TabComponent {
 
-    public intermediates$: Observable<any[]>;
+    public intermediates$: Observable<Intermediate[]>;
     public tableConfig$: Observable<TableConfiguration>;
 
     @Input() breakpoint = 'large';
 
     constructor(private _store: Store<AppState>, private _results: ResultService, private _state: DatagridState) {
-        this.intermediates$ = _store.select(getDropdownItems);
+        this.intermediates$ = _store.select(selectAllIntermediates);
 
         this.tableConfig$ = Observable.combineLatest(
             _results.results$,
@@ -86,6 +85,8 @@ export class TabComponent {
                 } else {
                     row.time = this.formatTime(row.time);
                 }
+            } else {
+                row.time = statusMap[row.time] || row.time.toUpperCase();
             }
 
             if (diff !== null && row.diff < maxVal) {

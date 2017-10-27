@@ -66,7 +66,7 @@ export const getResultState = (state: AppState) => state.result;
 export const getSettingsState = (state: AppState) => state.settings;
 export const getLoadingState = (state: AppState) => state.loading;
 
-export const getDropdownItems = createSelector(getInterState, Inter.getInterAsDropdownItems);
+export const selectAllIntermediates = createSelector(getInterState, Inter.getAllIntermediates);
 
 export const getDelayState = createSelector(getSettingsState, Settings.getDelay);
 
