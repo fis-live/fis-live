@@ -9,6 +9,8 @@ import { DatagridState } from './datagrid/providers/datagrid-state';
 import { RacerData } from '../state/reducers/result';
 import { maxVal, statusMap, timeToStatusMap } from '../fis/fis-constants';
 import { Intermediate } from '../models/intermediate';
+import { map } from 'rxjs/operators';
+import { combineLatest } from 'rxjs/observable/combineLatest';
 
 export interface ResultItem {
     racer: Racer;
@@ -44,10 +46,9 @@ export class TabComponent {
     constructor(private _store: Store<AppState>, private _results: ResultService, private _state: DatagridState) {
         this.intermediates$ = _store.select(selectAllIntermediates);
 
-        this.tableConfig$ = Observable.combineLatest(
+        this.tableConfig$ = combineLatest(
             _results.results$,
-            this._state.change)
-            .map(([results, inter]) => this.parseResults(results, inter.inter, inter.diff, inter.visibleColumns));
+            this._state.change).pipe(map(([results, inter]) => this.parseResults(results, inter.inter, inter.diff, inter.visibleColumns)));
     }
 
 

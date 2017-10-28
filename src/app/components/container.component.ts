@@ -10,6 +10,7 @@ import { Reset, LoadMain, StopUpdate } from '../state/actions/connection';
 import { WindowSize } from '../services/window-size';
 import { Subscription } from 'rxjs/Subscription';
 import { Racer } from '../models/racer';
+import { map, pluck } from 'rxjs/operators';
 
 @Component({
     selector: 'app-container',
@@ -28,8 +29,7 @@ export class ContainerComponent implements OnInit, OnDestroy {
     private widthSubscription: Subscription;
 
     ngOnInit() {
-        this.route.params
-            .map((params: Params) => params['codex'])
+        this.route.params.pipe(map((params: Params) => params['codex']))
             .subscribe((codex: string) => {
                 if (codex) {
                     this.codex = +codex;
@@ -42,7 +42,7 @@ export class ContainerComponent implements OnInit, OnDestroy {
     constructor(private router: Router, private route: ActivatedRoute, private _store: Store<AppState>, private window: WindowSize) {
         this.raceInfo$ = _store.select(getRaceInfoState);
         this.loading$ = _store.select(getLoadingState);
-        this.favoriteRacers$ = _store.select(getSettingsState).pluck('favoriteRacers');
+        this.favoriteRacers$ = _store.select(getSettingsState).pipe(pluck('favoriteRacers'));
         this.widthSubscription = this.window.width$.subscribe((width) => this.setWidth(width));
     }
 

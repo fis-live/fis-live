@@ -4,13 +4,14 @@ import {
 import { style, animate, trigger, transition, state } from '@angular/animations';
 
 import { Racer } from '../models/racer';
-import { Http, Response } from '@angular/http';
+import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs/Observable';
 
 import { nationalities } from '../fis/fis-constants';
 import { AppState, getDelayState } from '../state/reducers/index';
 import { Store } from '@ngrx/store';
 import { SetDelay, ToggleFavorite } from '../state/actions/settings';
+import { catchError, map } from 'rxjs/operators';
 
 @Component({
     selector: 'app-sidebar',
@@ -36,7 +37,7 @@ export class SidebarComponent {
     public delay$: Observable<number>;
 
 
-    constructor(private http: Http, private store: Store<AppState>) {
+    constructor(private http: HttpClient, private store: Store<AppState>) {
         this.upcomingRaces$ = this.loadRaces();
         this.delay$ = store.select(getDelayState);
     }
@@ -54,9 +55,9 @@ export class SidebarComponent {
     }
 
     public loadRaces(): Observable<any> {
-        return this.http.get('https://fislive-cors.herokuapp.com/liveraces.json')
-            .map((response) => {
-                const data = response.json();
+        return this.http.get<any[]>('https://fislive-cors.herokuapp.com/liveraces.json')
+            .pipe(
+                map((data) => {
                 const ret = [];
                 data.forEach((race) => {
                     if (ret.length > 5) {
@@ -82,14 +83,15 @@ export class SidebarComponent {
                 });
 
                 return ret;
-            })
-            .catch((error) => {
+            }),
+                catchError((error) => {
                 console.log(error);
                 const errMsg = (error instanceof Error) ? error :
                     (error instanceof Response) ? new Error(`${error.status} - ${error.statusText}`) : new Error('Server error');
 
                 return Observable.throw(errMsg);
-            });
+            })
+            );
     }
 
     public open(): void {

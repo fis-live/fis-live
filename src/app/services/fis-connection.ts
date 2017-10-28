@@ -1,12 +1,14 @@
 import { Injectable } from '@angular/core';
-import { Http, Response } from '@angular/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs/Observable';
-import { TimeInterval } from 'rxjs/operator/timeInterval';
 
 import { unserialize } from './unserialize';
-import { ErrorTimeInterval } from './operator/timeoutInterval';
 import { FisServer } from '../models/fis-server';
 import { Action } from '@ngrx/store';
+import { catchError, map, switchMap, repeat, timeInterval, timeout } from 'rxjs/operators';
+import { of } from 'rxjs/observable/of';
+import { timer } from 'rxjs/observable/timer';
+import { TimeInterval } from '../../../node_modules/rxjs/operators/timeInterval';
 
 @Injectable()
 export class FisConnectionService {
@@ -28,7 +30,7 @@ export class FisConnectionService {
     private SERVER_LIST_URL: string = 'http://live.fis-ski.com/general/serverList.xml';
     private TIMEOUT: number = 10000;
 
-    constructor(private _http: Http) {
+    constructor(private _http: HttpClient) {
         const d = new Date();
         this.signature = d.getSeconds().toString() + d.getMilliseconds().toString() + '-fis';
     }
@@ -51,25 +53,34 @@ export class FisConnectionService {
     }
 
     public getServerList(): Observable<FisServer[]> {
-        return this._http.get(this.proxy + this.SERVER_LIST_URL, {search: 'i=' + this.getQueryString()})
-            .map(res => this.parseServerList(res));
+        return this._http.get(this.proxy + this.SERVER_LIST_URL, {
+            responseType: 'text',
+            params: new HttpParams().set('i', this.getQueryString())
+        }).pipe(map(res => this.parseServerList(res)));
     }
 
     public poll(): Observable<any> {
-        return Observable.of(null).switchMap(() => Observable.timer(this.delay).switchMap(() => this.getHttpRequest())
-            .map(result => this.parse(result))
-            .catch(error => this.handleError(error))).repeat();
+        return of(null).pipe(
+            switchMap(() => timer(this.delay).pipe(
+                switchMap(() => this.getHttpRequest()),
+                map(result => this.parse(result)),
+                catchError(error => this.handleError(error))
+            )),
+            repeat()
+        );
     }
 
     public loadMain(codex: number | null): Observable<any> {
         this.initialize(codex);
 
-        return Observable.timer(this.delay).switchMap(() => this.getHttpRequest())
-            .map(result => this.parse(result))
-            .catch(error => this.handleError(error));
+        return timer(this.delay).pipe(
+            switchMap(() => this.getHttpRequest()),
+            map(result => this.parse(result)),
+            catchError(error => this.handleError(error))
+        );
     }
 
-    private getHttpRequest(): Observable<TimeInterval<Response>> {
+    private getHttpRequest(): Observable<TimeInterval<string>> {
         let url: string;
 
         if (this.version === 0) {
@@ -77,13 +88,15 @@ export class FisConnectionService {
         } else {
             url = `${this.baseURL}${this.codex}/updt${this.version}.xml`;
         }
-        return this._http.get(this.proxy + url, {search: 'i=' + this.getQueryString()})
-            .timeoutInterval(this.TIMEOUT);
+        return this._http.get(this.proxy + url, {
+            responseType: 'text',
+            params: new HttpParams().set('i', this.getQueryString())
+        }).pipe(timeInterval());
     }
 
-    private parse(result: TimeInterval<Response>): any {
+    private parse(result: TimeInterval<string>): any {
         this.interval = result.interval;
-        const data = unserialize(result.value.text().slice(4, -5));
+        const data = unserialize(result.value.slice(4, -5));
         if (!data.live || isNaN(data.live[1]) || isNaN(data.live[0])) {
             throw new Error('No live information');
         }
@@ -96,8 +109,8 @@ export class FisConnectionService {
         return data;
     }
 
-    private parseServerList(result: any): FisServer[] {
-        const data = unserialize(result.text().slice(4, -5));
+    private parseServerList(result: string): FisServer[] {
+        const data = unserialize(result.slice(4, -5));
         const servers: any[] = data.servers;
 
         for (let i = 0; i < servers.length; i++) {
@@ -109,17 +122,18 @@ export class FisConnectionService {
 
     private handleError(error: any) {
         this.errorCount++;
-        if (error instanceof ErrorTimeInterval) {
+        if (error instanceof TimeInterval) {
             this.interval = error.interval;
-            error = error.error;
         }
 
         this.delay = (this.delay > 0) ? this.delay : 1000;
 
         if (this.errorCount < 10) {
-            return (this.version === 0) ? Observable.timer(this.delay).switchMap(() => this.getHttpRequest())
-                    .map(result => this.parse(result))
-                    .catch(e => this.handleError(e)) : this.poll();
+            return (this.version === 0) ? timer(this.delay).pipe(
+                switchMap(() => this.getHttpRequest()),
+                map(result => this.parse(result)),
+                catchError(e => this.handleError(e))
+            ) : this.poll();
         }
 
         const errMsg = (error instanceof Error) ? error :
@@ -154,14 +168,12 @@ export class FisConnectionService {
     }
 
     public loadPdf(doc: string): Observable<Action[]> {
-        return this._http.get(`${this.proxy}pdf.json?codex=${this.codex}&doc=${doc}`)
-            .map((response) => response.json())
-            .catch((error) => {
+        return this._http.get<Action[]>(`${this.proxy}pdf.json?codex=${this.codex}&doc=${doc}`)
+            .pipe(catchError((error) => {
                 const errMsg = (error instanceof Error) ? error :
                     (error instanceof Response) ? new Error(`${error.status} - ${error.statusText}`) : new Error('Server error');
 
                 return Observable.throw(errMsg);
-            })
-            .timeout(10000);
+            }), timeout(10000));
     }
 }

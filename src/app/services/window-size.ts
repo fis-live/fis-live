@@ -1,5 +1,7 @@
 import { Observable } from 'rxjs/Observable';
 import { Injectable } from '@angular/core';
+import { fromEvent } from 'rxjs/observable/fromEvent';
+import { distinctUntilChanged, map, pluck, publishReplay, refCount, startWith } from 'rxjs/operators';
 
 const getWindowSize = () => {
     return {
@@ -9,11 +11,12 @@ const getWindowSize = () => {
 };
 
 const createWindowSize$ = () =>
-    Observable.fromEvent(window, 'resize')
-        .map(getWindowSize)
-        .startWith(getWindowSize())
-        .publishReplay(1)
-        .refCount();
+    fromEvent(window, 'resize').pipe(
+        map(getWindowSize),
+        startWith(getWindowSize()),
+        publishReplay(1),
+        refCount()
+    );
 
 @Injectable()
 export class WindowSize {
@@ -22,7 +25,13 @@ export class WindowSize {
 
     constructor() {
         const windowSize$ = createWindowSize$();
-        this.width$ = (windowSize$.pluck('width') as Observable<number>).distinctUntilChanged();
-        this.height$ = (windowSize$.pluck('height') as Observable<number>).distinctUntilChanged();
+        this.width$ = (windowSize$.pipe(
+            pluck('width'),
+            distinctUntilChanged()
+        ) as Observable<number>);
+        this.height$ = (windowSize$.pipe(
+            pluck('height'),
+            distinctUntilChanged()
+        ) as Observable<number>);
     }
 }

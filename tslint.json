@@ -2,6 +2,9 @@
   "rulesDirectory": [
     "node_modules/codelyzer"
   ],
+  "extends": [
+    "rxjs-tslint-rules"
+  ],
   "rules": {
     "angular-whitespace": [true, "check-semicolon", "check-interpolation", "check-pipe"],
     "callable-types": true,
@@ -111,6 +114,10 @@
     "directive-class-suffix": true,
     "no-access-missing-member": false,
     "templates-use-public": false,
-    "invoke-injectable": false
+    "invoke-injectable": false,
+    "rxjs-no-add": { "severity": "error" },
+    "rxjs-no-operator": { "severity": "error" },
+    "rxjs-no-patched": { "severity": "error" },
+    "rxjs-no-wholesale": { "severity": "error" }
   }
 }

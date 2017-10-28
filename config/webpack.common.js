@@ -1,8 +1,8 @@
 const webpack = require('webpack');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const ExtractTextPlugin = require('extract-text-webpack-plugin');
-const ProvidePlugin = require('webpack/lib/ProvidePlugin');
 const helpers = require('./helpers');
+const rxPaths = require('rxjs/_esm5/path-mapping');
 
 module.exports = {
     entry: {
@@ -11,7 +11,8 @@ module.exports = {
     },
 
     resolve: {
-        extensions: ['.js', '.ts']
+        extensions: ['.js', '.ts'],
+        alias: rxPaths('./node_modules')
     },
 
     module: {

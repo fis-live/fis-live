@@ -6,7 +6,7 @@ import {
 import { Reset, LoadMain, StopUpdate, Batch } from '../state/actions/connection';
 import { Meteo } from '../models/meteo';
 import { RaceInfo } from '../models/race-info';
-import {nationalities, statusToTimeMap} from './fis-constants';
+import { nationalities, statusToTimeMap } from './fis-constants';
 
 export function parseMain(data: any): Action[] {
     const actions: Action[] = [];

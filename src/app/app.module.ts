@@ -2,7 +2,7 @@ import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { NgModule } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { HttpModule } from '@angular/http';
+import { HttpClientModule } from '@angular/common/http';
 import { RouterModule } from '@angular/router';
 import { EffectsModule } from '@ngrx/effects';
 import { StoreModule } from '@ngrx/store';
@@ -28,7 +28,7 @@ import { ScrollbarDirective } from './components/utils/scrollbar.directive';
 import { SortDirective } from './components/datagrid/sort.directive';
 import { DatagridHeaderComponent } from './components/datagrid/datagrid-header.component';
 import { DropdownItemDirective } from './components/dropdown/dropdown-item.directive';
-import {DatagridSettingsComponent} from "./components/datagrid/datagrid-settings.component";
+import { DatagridSettingsComponent } from './components/datagrid/datagrid-settings.component';
 
 @NgModule({
     declarations: [
@@ -52,7 +52,7 @@ import {DatagridSettingsComponent} from "./components/datagrid/datagrid-settings
     imports: [
         BrowserModule,
         FormsModule,
-        HttpModule,
+        HttpClientModule,
         BrowserAnimationsModule,
         RouterModule.forRoot(appRoutes, { useHash: true }),
         StoreModule.forRoot(reducers, { metaReducers: metaReducers }),

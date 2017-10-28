@@ -20,7 +20,9 @@ import { DatagridState } from './providers/datagrid-state';
                 </div>
                 <ul class="switch-content list-unstyled">
                     <li class="checkbox" *ngFor="let col of columns">
-                        <input type="checkbox" [checked]="visibleColumns.indexOf(col) > -1" [id]="col" (change)="toggleColumn(col)"><label [for]="col">{{ col }}</label>
+                        <input type="checkbox"
+                               [checked]="visibleColumns.indexOf(col) > -1" [id]="col" (change)="toggleColumn(col)">
+                        <label [for]="col">{{ col }}</label>
                     </li>
                 </ul>
                 <div class="switch-footer">
@@ -43,12 +45,12 @@ import { DatagridState } from './providers/datagrid-state';
     changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class DatagridSettingsComponent extends AbstractPopover {
+    public columns: string[] = ['rank', 'bib', 'name', 'time', 'nation', 'diff'];
+    public visibleColumns: string[] = ['rank', 'bib', 'name', 'time', 'nation', 'diff'];
+
     constructor(private _state: DatagridState, el: ElementRef, renderer: Renderer2, cdr: ChangeDetectorRef) {
         super(el, renderer, cdr);
     }
-
-    public columns: string[] = ['rank', 'bib', 'name', 'time', 'nation', 'diff'];
-    public visibleColumns: string[] = ['rank', 'bib', 'name', 'time', 'nation', 'diff'];
 
 
     public toggleColumn(column: string) {

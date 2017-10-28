@@ -5,6 +5,7 @@ const commonConfig = require('./webpack.common.js');
 const helpers = require('./helpers');
 const { AotPlugin } = require('@ngtools/webpack');
 const { BaseHrefWebpackPlugin } = require('@angular-cli/base-href-webpack');
+const PurifyPlugin = require('@angular-devkit/build-optimizer').PurifyPlugin;
 
 const ENV = process.env.NODE_ENV = process.env.ENV = 'production';
 
@@ -14,6 +15,13 @@ module.exports = webpackMerge.smart(commonConfig, {
             {
                 test: /\.ts$/,
                 loader: '@ngtools/webpack',
+            },
+            {
+                test: /\.js$/,
+                loader: '@angular-devkit/build-optimizer/webpack-loader',
+                options: {
+                    sourceMap: false
+                }
             }
         ]
     },
@@ -54,6 +62,7 @@ module.exports = webpackMerge.smart(commonConfig, {
             htmlLoader: {
                 minimize: false // workaround for ng2
             }
-        })
+        }),
+        new PurifyPlugin()
     ]
 });
