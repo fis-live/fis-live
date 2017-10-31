@@ -1,8 +1,9 @@
+import { animate, style, transition, trigger } from '@angular/animations';
 import {
-    Input, Component, ChangeDetectionStrategy, ElementRef, Renderer2, ChangeDetectorRef,
-    EventEmitter, Output
+    ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, EventEmitter, Input,
+    Output, Renderer2
 } from '@angular/core';
-import { style, animate, trigger, transition } from '@angular/animations';
+
 import { AbstractPopover } from '../utils/abstract-popover';
 
 @Component({

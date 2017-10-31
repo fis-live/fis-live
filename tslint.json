@@ -57,6 +57,7 @@
     "no-switch-case-fall-through": true,
     "no-trailing-whitespace": true,
     "no-unused-expression": true,
+    "no-unused-variable": true,
     "no-use-before-declare": true,
     "no-var-keyword": true,
     "object-literal-sort-keys": false,
@@ -118,6 +119,13 @@
     "rxjs-no-add": { "severity": "error" },
     "rxjs-no-operator": { "severity": "error" },
     "rxjs-no-patched": { "severity": "error" },
-    "rxjs-no-wholesale": { "severity": "error" }
+    "rxjs-no-wholesale": { "severity": "error" },
+    "no-duplicate-imports": true,
+    "ordered-imports": [
+      true,
+      {
+        "grouped-imports": true
+      }
+    ]
   }
 }

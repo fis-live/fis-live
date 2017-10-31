@@ -1,16 +1,17 @@
-import { Component, Input, ChangeDetectionStrategy } from '@angular/core';
+import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
 import { Store } from '@ngrx/store';
-
-import { AppState, selectAllIntermediates } from '../state/reducers';
 import { Observable } from 'rxjs/Observable';
-import { Racer } from '../models/racer';
-import { ResultService } from '../services/result.service';
-import { DatagridState } from './datagrid/providers/datagrid-state';
-import { RacerData } from '../state/reducers/result';
+import { combineLatest } from 'rxjs/observable/combineLatest';
+import { map } from 'rxjs/operators';
+
 import { maxVal, statusMap, timeToStatusMap } from '../fis/fis-constants';
 import { Intermediate } from '../models/intermediate';
-import { map } from 'rxjs/operators';
-import { combineLatest } from 'rxjs/observable/combineLatest';
+import { Racer } from '../models/racer';
+import { ResultService } from '../services/result.service';
+import { AppState, selectAllIntermediates } from '../state/reducers';
+import { RacerData } from '../state/reducers/result';
+
+import { DatagridState } from './datagrid/providers/datagrid-state';
 
 export interface ResultItem {
     racer: Racer;
@@ -44,10 +45,10 @@ export class TabComponent {
     @Input() breakpoint = 'large';
 
     constructor(private _store: Store<AppState>, private _results: ResultService, private _state: DatagridState) {
-        this.intermediates$ = _store.select(selectAllIntermediates);
+        this.intermediates$ = this._store.select(selectAllIntermediates);
 
         this.tableConfig$ = combineLatest(
-            _results.results$,
+            this._results.results$,
             this._state.change).pipe(map(([results, inter]) => this.parseResults(results, inter.inter, inter.diff, inter.visibleColumns)));
     }
 

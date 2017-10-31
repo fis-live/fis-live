@@ -1,5 +1,5 @@
-import * as SettingsActions from '../actions/settings';
 import { Racer } from '../../models/racer';
+import * as SettingsActions from '../actions/settings';
 
 export interface State {
     favoriteRacers: Racer[];

@@ -1,15 +1,15 @@
-import { ActionReducer, MetaReducer, createSelector } from '@ngrx/store';
+import { ActionReducer, ActionReducerMap, createSelector, MetaReducer } from '@ngrx/store';
 import { storeFreeze } from 'ngrx-store-freeze';
 import { localStorageSync } from 'ngrx-store-localstorage';
-import { ActionReducerMap } from '@ngrx/store';
+
+import * as ConnectionActions from '../actions/connection';
 
 import * as Alert from './alert';
 import * as Inter from './intermediate';
+import * as Loading from './loading';
 import * as RaceInfo from './race-info';
 import * as Result from './result';
 import * as Settings from './settings';
-import * as Loading from './loading';
-import * as ConnectionActions from '../actions/connection';
 
 export const reducers: ActionReducerMap<AppState> = {
     alert: Alert.reducer,
@@ -71,16 +71,4 @@ export const selectAllIntermediates = createSelector(getInterState, Inter.getAll
 export const getDelayState = createSelector(getSettingsState, Settings.getDelay);
 
 
-export const {
-    // select the array of user ids
-    selectIds: selectUserIds,
-
-    // select the dictionary of user entities
-    selectEntities: selectUserEntities,
-
-    // select the array of users
-    selectAll: selectAllResults,
-
-    // select the total user count
-    selectTotal: selectUserTotal
-} = Result.adapter.getSelectors(getResultState);
+export const { selectAll: selectAllResults } = Result.adapter.getSelectors(getResultState);

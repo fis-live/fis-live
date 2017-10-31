@@ -1,5 +1,5 @@
-import { Observable } from 'rxjs/Observable';
 import { Injectable } from '@angular/core';
+import { Observable } from 'rxjs/Observable';
 import { fromEvent } from 'rxjs/observable/fromEvent';
 import { distinctUntilChanged, map, pluck, publishReplay, refCount, startWith } from 'rxjs/operators';
 

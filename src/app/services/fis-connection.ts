@@ -1,14 +1,15 @@
-import { Injectable } from '@angular/core';
 import { HttpClient, HttpErrorResponse, HttpParams } from '@angular/common/http';
+import { Injectable } from '@angular/core';
+import { Action } from '@ngrx/store';
 import { Observable } from 'rxjs/Observable';
+import { of } from 'rxjs/observable/of';
+import { _throw } from 'rxjs/observable/throw';
+import { timer } from 'rxjs/observable/timer';
+import { catchError, map, repeat, retry, switchMap, timeout } from 'rxjs/operators';
+
+import { FisServer } from '../models/fis-server';
 
 import { unserialize } from './unserialize';
-import { FisServer } from '../models/fis-server';
-import { Action } from '@ngrx/store';
-import { catchError, map, switchMap, repeat, timeout, retry } from 'rxjs/operators';
-import { of } from 'rxjs/observable/of';
-import { timer } from 'rxjs/observable/timer';
-import { _throw } from 'rxjs/observable/throw';
 
 @Injectable()
 export class FisConnectionService {

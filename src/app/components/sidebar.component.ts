@@ -1,17 +1,17 @@
-import {
-    ChangeDetectionStrategy, Component, Input, EventEmitter, Output
-} from '@angular/core';
-import { style, animate, trigger, transition, state } from '@angular/animations';
-
-import { Racer } from '../models/racer';
+import { animate, state, style, transition, trigger } from '@angular/animations';
 import { HttpClient } from '@angular/common/http';
+import {
+    ChangeDetectionStrategy, Component, EventEmitter, Input, Output
+} from '@angular/core';
+import { Store } from '@ngrx/store';
 import { Observable } from 'rxjs/Observable';
+import { _throw } from 'rxjs/observable/throw';
+import { catchError, map } from 'rxjs/operators';
 
 import { nationalities } from '../fis/fis-constants';
-import { AppState, getDelayState } from '../state/reducers/index';
-import { Store } from '@ngrx/store';
+import { Racer } from '../models/racer';
 import { SetDelay, ToggleFavorite } from '../state/actions/settings';
-import { catchError, map } from 'rxjs/operators';
+import { AppState, getDelayState } from '../state/reducers/index';
 
 @Component({
     selector: 'app-sidebar',
@@ -89,7 +89,7 @@ export class SidebarComponent {
                 const errMsg = (error instanceof Error) ? error :
                     (error instanceof Response) ? new Error(`${error.status} - ${error.statusText}`) : new Error('Server error');
 
-                return Observable.throw(errMsg);
+                return _throw(errMsg);
             })
             );
     }

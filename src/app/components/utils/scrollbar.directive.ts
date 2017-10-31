@@ -1,4 +1,4 @@
-import { OnInit, OnDestroy, Directive, ElementRef } from '@angular/core';
+import { Directive, ElementRef, OnDestroy, OnInit } from '@angular/core';
 
 import PerfectScrollbar from 'perfect-scrollbar';
 

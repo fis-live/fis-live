@@ -1,8 +1,10 @@
 import {
-    Component, Input, ChangeDetectionStrategy,
+    ChangeDetectionStrategy, Component, Input,
 } from '@angular/core';
-import { DatagridState } from './providers/datagrid-state';
+
 import { Intermediate } from '../../models/intermediate';
+
+import { DatagridState } from './providers/datagrid-state';
 
 @Component({
     selector: 'app-grid-header',

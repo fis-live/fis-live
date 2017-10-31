@@ -1,5 +1,5 @@
 /* tslint:disable:component-selector */
-import { Component, ChangeDetectionStrategy, Input, HostBinding } from '@angular/core';
+import { ChangeDetectionStrategy, Component, HostBinding, Input } from '@angular/core';
 
 @Component({
     selector: 'clr-icon',

@@ -1,6 +1,7 @@
 import { Action } from '@ngrx/store';
-import { Racer } from '../../models/racer';
+
 import { Intermediate } from '../../models/intermediate';
+import { Racer } from '../../models/racer';
 
 export const REGISTER_RESULT = '[Result] Register result';
 export const ADD_RACER = '[Racer] Add racer';

@@ -1,6 +1,6 @@
-import * as RaceActions from '../actions/race';
-import { RaceInfo } from '../../models/race-info';
 import { Meteo } from '../../models/meteo';
+import { RaceInfo } from '../../models/race-info';
+import * as RaceActions from '../actions/race';
 
 export interface State {
     info: RaceInfo;

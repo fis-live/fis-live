@@ -1,12 +1,14 @@
 import {
-    Component, ChangeDetectionStrategy, AfterViewInit, ChangeDetectorRef,
-    Renderer2, ElementRef, OnDestroy
+    AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component,
+    ElementRef, OnDestroy, Renderer2
 } from '@angular/core';
 import { Observable } from 'rxjs/Observable';
 import { Subject } from 'rxjs/Subject';
+
+import { AbstractPopover } from '../utils/abstract-popover';
+
 import { Filter } from './interfaces/filter';
 import { Filters } from './providers/filter';
-import { AbstractPopover } from '../utils/abstract-popover';
 
 @Component({
     selector: 'app-filter',

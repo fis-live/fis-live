@@ -1,7 +1,8 @@
-import { EntityState, EntityAdapter, createEntityAdapter } from '@ngrx/entity';
-import * as RaceActions from '../actions/race';
+import { createEntityAdapter, EntityAdapter, EntityState } from '@ngrx/entity';
+
 import { maxVal } from '../../fis/fis-constants';
 import { Racer } from '../../models/racer';
+import * as RaceActions from '../actions/race';
 
 export interface RacerData {
     id: number;

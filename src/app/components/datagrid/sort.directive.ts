@@ -1,4 +1,5 @@
-import { Input, Directive, HostBinding, HostListener } from '@angular/core';
+import { Directive, HostBinding, HostListener, Input } from '@angular/core';
+
 import { Sort } from './providers/sort';
 
 @Directive({

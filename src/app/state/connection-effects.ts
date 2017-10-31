@@ -1,17 +1,17 @@
 import { Injectable } from '@angular/core';
-import { Effect, Actions } from '@ngrx/effects';
-import { Observable } from 'rxjs/Observable';
-
-import { FisConnectionService } from '../services/fis-connection';
-import * as ConnectionActions from './actions/connection';
-import { FisServer } from '../models/fis-server';
-import { parseMain, parseUpdate } from '../fis/fis-parser';
+import { Actions, Effect } from '@ngrx/effects';
 import { Store } from '@ngrx/store';
-import { AppState, getDelayState } from './reducers/index';
-import { map, startWith, switchMap, catchError, tap, mergeMap, mapTo, delay } from 'rxjs/operators';
-import { of } from 'rxjs/observable/of';
-import { from } from 'rxjs/observable/from';
 import { empty } from 'rxjs/observable/empty';
+import { from } from 'rxjs/observable/from';
+import { of } from 'rxjs/observable/of';
+import { catchError, delay, map, mapTo, mergeMap, startWith, switchMap, tap } from 'rxjs/operators';
+
+import { parseMain, parseUpdate } from '../fis/fis-parser';
+import { FisServer } from '../models/fis-server';
+import { FisConnectionService } from '../services/fis-connection';
+
+import * as ConnectionActions from './actions/connection';
+import { AppState, getDelayState } from './reducers/index';
 
 @Injectable()
 export class ConnectionEffects {
@@ -101,8 +101,8 @@ export class ConnectionEffects {
         .pipe(mapTo(new ConnectionActions.ShowLoading()));
 
     constructor(private actions$: Actions, private _connection: FisConnectionService, private store: Store<AppState>) {
-        store.select(getDelayState).subscribe((delay) => {
-            this.delay = isNaN(delay) ? this.delay : +delay;
+        this.store.select(getDelayState).subscribe((value) => {
+            this.delay = isNaN(value) ? this.delay : +value;
         });
     }
 }

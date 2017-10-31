@@ -1,16 +1,16 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute, Params, Router } from '@angular/router';
 import { Store } from '@ngrx/store';
 import { Observable } from 'rxjs/Observable';
-
-import { AppState, getRaceInfoState, getLoadingState, getSettingsState } from '../state/reducers/';
-import { State as RaceInfoState } from '../state/reducers/race-info';
-import { State as LoadingState } from '../state/reducers/loading';
-import { Reset, LoadMain, StopUpdate } from '../state/actions/connection';
-import { WindowSize } from '../services/window-size';
-import { Subscription } from 'rxjs/Subscription';
-import { Racer } from '../models/racer';
 import { map, pluck } from 'rxjs/operators';
+import { Subscription } from 'rxjs/Subscription';
+
+import { Racer } from '../models/racer';
+import { WindowSize } from '../services/window-size';
+import { LoadMain, Reset, StopUpdate } from '../state/actions/connection';
+import { AppState, getLoadingState, getRaceInfoState, getSettingsState } from '../state/reducers/';
+import { State as LoadingState } from '../state/reducers/loading';
+import { State as RaceInfoState } from '../state/reducers/race-info';
 
 @Component({
     selector: 'app-container',

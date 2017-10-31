@@ -1,7 +1,7 @@
 import { createSelector } from '@ngrx/store';
 
-import * as RaceActions from '../actions/race';
 import { Intermediate } from '../../models/intermediate';
+import * as RaceActions from '../actions/race';
 
 export interface State {
     ids: number[];

@@ -1,10 +1,10 @@
 import { Component } from '@angular/core';
-import { Store, Action } from '@ngrx/store';
+import { Action, Store } from '@ngrx/store';
 import { Observable } from 'rxjs/Observable';
 
+import { CloseAlert } from './state/actions/connection';
 import { AppState, getAlertState } from './state/reducers/';
 import { State as AlertState } from './state/reducers/alert';
-import { CloseAlert } from './state/actions/connection';
 
 @Component({
     selector: 'app-root',

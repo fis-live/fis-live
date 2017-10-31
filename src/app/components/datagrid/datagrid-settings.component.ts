@@ -1,6 +1,7 @@
-import { Component, ChangeDetectionStrategy, ElementRef, ChangeDetectorRef, Renderer2 } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, Renderer2 } from '@angular/core';
 
 import { AbstractPopover } from '../utils/abstract-popover';
+
 import { DatagridState } from './providers/datagrid-state';
 
 @Component({

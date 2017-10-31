@@ -1,11 +1,13 @@
 import { Action } from '@ngrx/store';
-import {
-    SetStatus, UpdateMeteo, SetRaceMessage, UpdateRaceInfo,
-    AddRacer, AddIntermediate, AddStartList, RegisterResult
-} from '../state/actions/race';
-import { Reset, LoadMain, StopUpdate, Batch } from '../state/actions/connection';
+
 import { Meteo } from '../models/meteo';
 import { RaceInfo } from '../models/race-info';
+import { Batch, LoadMain, Reset, StopUpdate } from '../state/actions/connection';
+import {
+    AddIntermediate, AddRacer, AddStartList, RegisterResult,
+    SetRaceMessage, SetStatus, UpdateMeteo, UpdateRaceInfo
+} from '../state/actions/race';
+
 import { nationalities, statusToTimeMap } from './fis-constants';
 
 export function parseMain(data: any): Action[] {

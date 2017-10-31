@@ -1,12 +1,13 @@
+import { animate, state, style, transition, trigger } from '@angular/animations';
 import {
-    Component, Input, ChangeDetectionStrategy, OnDestroy, AfterViewInit
+    AfterViewInit, ChangeDetectionStrategy, Component, Input, OnDestroy
 } from '@angular/core';
-import { style, animate, trigger, transition, state } from '@angular/animations';
+import { Subscription } from 'rxjs/Subscription';
 
 import { ResultItem, TableConfiguration } from '../tab.component';
-import { Sort } from './providers/sort';
-import { Subscription } from 'rxjs/Subscription';
+
 import { Filters } from './providers/filter';
+import { Sort } from './providers/sort';
 
 @Component({
     selector: 'app-table',

@@ -24,23 +24,23 @@ export function unserialize(data: string): any {
     //   example 2: unserialize('a:2:{s:9:"firstName";s:5:"Kevin";s:7:"midName";s:3:"van";}')
     //   returns 2: {firstName: 'Kevin', midName: 'van'}
 
-    const utf8Overhead = function (str: string): number {
-        let s = str.length;
-        for (let i = str.length - 1; i >= 0; i--) {
-            const code = str.charCodeAt(i);
-            if (code > 0x7f && code <= 0x7ff) {
-                s++;
-            } else if (code > 0x7ff && code <= 0xffff) {
-                s += 2;
-            }
-            // trail surrogate
-            if (code >= 0xDC00 && code <= 0xDFFF) {
-                i--;
-            }
-        }
-
-        return s - 1;
-    };
+    // const utf8Overhead = function (str: string): number {
+    //     let s = str.length;
+    //     for (let i = str.length - 1; i >= 0; i--) {
+    //         const code = str.charCodeAt(i);
+    //         if (code > 0x7f && code <= 0x7ff) {
+    //             s++;
+    //         } else if (code > 0x7ff && code <= 0xffff) {
+    //             s += 2;
+    //         }
+    //         // trail surrogate
+    //         if (code >= 0xDC00 && code <= 0xDFFF) {
+    //             i--;
+    //         }
+    //     }
+    //
+    //     return s - 1;
+    // };
 
     const decodeChrXML = (_data) => {
         _data = _data.replace(/&lt;/g, '<');
