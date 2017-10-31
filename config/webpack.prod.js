@@ -3,7 +3,7 @@ const webpackMerge = require('webpack-merge');
 const ExtractTextPlugin = require('extract-text-webpack-plugin');
 const commonConfig = require('./webpack.common.js');
 const helpers = require('./helpers');
-const { AotPlugin } = require('@ngtools/webpack');
+const { AngularCompilerPlugin } = require('@ngtools/webpack');
 const { BaseHrefWebpackPlugin } = require('@angular-cli/base-href-webpack');
 const PurifyPlugin = require('@angular-devkit/build-optimizer').PurifyPlugin;
 
@@ -34,7 +34,7 @@ module.exports = webpackMerge.smart(commonConfig, {
     },
 
     plugins: [
-        new AotPlugin({
+        new AngularCompilerPlugin({
             tsConfigPath: helpers.root('tsconfig.json'),
             entryModule: helpers.root('src/app/app.module#AppModule')
         }),
