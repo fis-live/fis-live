@@ -53,7 +53,7 @@ export class DatagridHeaderComponent {
     public set inter(item: Intermediate) {
         if (item !== null) {
             this._inter = item;
-            if (this.diff != null && item.key >= this.diff.key) {
+            if (this.diff != null && item.key <= this.diff.key) {
                 this.diff = null;
             }
 
