@@ -6,11 +6,11 @@ table {
 .datagrid {
     font-size: 0.9em;
     width: 100%;
-    background: #FFFFFF;
+    background: $clr-white;
     border: none;
     margin: 0;
     text-align: left;
-    color: rgba(0, 0, 0, 0.87);
+    color: rgba($clr-black, 0.87);
 
     tbody tr:nth-child(2n) {
         background-color: rgba(0, 0, 50, 0.02);
@@ -31,15 +31,15 @@ table {
     th {
         padding: 0;
         border: none;
-        color: #565656;
+        color: $clr-dark-gray;
         font-size: 0.9em;
         position: relative;
         white-space: nowrap;
-        background: #F9FAFB;
+        background: $clr-thead-bgcolor;
 
         > div {
             box-sizing: border-box;
-            border-bottom: 2px solid rgba(34, 36, 38, .1);
+            border-bottom: 2px solid $clr-table-bordercolor;
             padding: 4px 4px 4px 8px;
         }
 
@@ -50,7 +50,7 @@ table {
             bottom: 2px;
             width: 1px;
             margin: 6px 0;
-            background-color: #DDDDDD;
+            background-color: $clr-table-bordercolor;
             content: "";
         }
     }
@@ -80,7 +80,7 @@ table {
         > app-filter {
             display: flex;
             padding-right: 6px;
-            border-bottom: 2px solid rgba(34, 36, 38, .1);
+            border-bottom: 2px solid $clr-table-bordercolor;
 
             .filter-toggle {
                 width: 16px;
@@ -89,15 +89,15 @@ table {
                 cursor: pointer;
                 vertical-align: middle;
                 margin: auto 0;
-                background: generateFilterIcon("#9A9A9A") no-repeat;
+                background: generateFilterIcon($clr-dark-midtone-gray) no-repeat;
 
                 &:hover, &.filter-open {
-                    background-image: generateFilterIcon("#007cbb");
+                    background-image: generateFilterIcon($action-blues-dark-midtone);
                 }
 
                 &.filtered {
-                    background-image: generateFilterIcon("#007cbb"),
-                    generateCircleIcon("#007cbb");
+                    background-image: generateFilterIcon($action-blues-dark-midtone),
+                    generateCircleIcon($action-blues-dark-midtone);
                 }
             }
 
@@ -108,7 +108,7 @@ table {
                 margin-top: $clr_baselineRem_0_2;
                 background: $clr-white;
                 padding: $clr_baselineRem_0_75;
-                border: 1px solid $gray-light-midtone;
+                border: 1px solid $clr-table-bordercolor;
                 box-shadow: 0 1px 3px rgba($gray-dark, 0.25);
                 border-radius: $clr-default-borderradius;
                 font-weight: normal;
@@ -128,7 +128,7 @@ table {
     th > div.sorting {
         cursor: pointer;
         &:hover {
-            color: #101f28;
+            color: $clr-near-black;
         }
 
         &::after {
@@ -143,15 +143,15 @@ table {
         }
 
         &.asc, &.desc {
-            color: #22a6f5;
-            border-color: #22a6f5;
+            color: $app-header-sort-color;
+            border-color: $app-header-sort-color;
             + app-filter {
-                color: #22a6f5;
-                border-color: #22a6f5;
+                color: $app-header-sort-color;
+                border-color: $app-header-sort-color;
             }
 
             &::after {
-                background-image: generateCaretIcon("#22a6f5");
+                background-image: generateCaretIcon($app-header-sort-color);
             }
         }
 

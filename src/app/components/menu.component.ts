@@ -5,24 +5,24 @@ import { State as RaceInfoState } from '../state/reducers/race-info';
 @Component({
     selector: 'app-menu',
     template: `
-        <header class="header-6" style="background-color: #004A70;">
+        <header class="header-5">
             <div class="branding" (click)="openSidebar.emit(null)"><button class="header-hamburger-trigger" type="button">
                 <span></span>
             </button></div>
             <div class="header-nav">
-                <div class="nav-text">{{ raceInfo.info.eventName }}</div>
-                <div class="nav-text">{{ raceInfo.info.raceName }}</div>
-                <div class="nav-text">{{ raceInfo.message | uppercase }}</div>
+                <span>{{ raceInfo.info.eventName }}</span>
+                <span class="fitted">{{ raceInfo.info.raceName }}</span>
+                <span>{{ raceInfo.message | uppercase }}</span>
             </div>
     <div class="header-actions">
-        <a (click)="refresh.emit(null)" style="padding-bottom: 0; padding-top: 0;" class="nav-link nav-icon">
+        <a (click)="refresh.emit(null)" class="nav-link nav-icon">
             <clr-icon shape="refresh"></clr-icon>
         </a>
-        <a (click)="tab.emit('remove')" class="nav-link nav-icon">
-            <clr-icon size="20" shape="minus"></clr-icon>
+        <a (click)="tab.emit('remove')" class="nav-link nav-icon no-mobile">
+            <clr-icon shape="minus"></clr-icon>
         </a>
-        <a (click)="tab.emit('add')"  class="nav-link nav-icon">
-            <clr-icon size="20" shape="plus"></clr-icon>
+        <a (click)="tab.emit('add')"  class="nav-link nav-icon no-mobile">
+            <clr-icon shape="plus"></clr-icon>
         </a>
     </div>
 </header>
