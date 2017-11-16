@@ -23,7 +23,7 @@ export class FisConnectionService {
     private codex: number;
     private version: number;
 
-    private baseURL: string = 'http://live.fis-ski.com/';
+    private baseURL: string = 'http://live.fis-ski.com/mobile/';
     private proxy: string = 'https://fislive-cors.herokuapp.com/';
 
     private server_list: FisServer[] = [];
@@ -90,9 +90,9 @@ export class FisConnectionService {
     private getHttpRequest(): Observable<string> {
         let url: string;
         if (this.version === 0) {
-            url = `${this.baseURL}${this.codex}/main.xml`;
+            url = `${this.baseURL}mobile/cc-${this.codex}/main.xml`;
         } else {
-            url = `${this.baseURL}${this.codex}/updt${this.version}.xml`;
+            url = `${this.baseURL}mobile/cc-${this.codex}/updt${this.version}.xml`;
         }
         return this._http.get(this.proxy + url, {
             responseType: 'text',
