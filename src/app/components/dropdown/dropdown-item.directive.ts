@@ -1,26 +1,26 @@
-import { Directive, ElementRef, HostBinding, HostListener, Input } from '@angular/core';
+import { Directive, HostBinding, HostListener, Input } from '@angular/core';
 
 import { DropdownComponent } from './dropdown.component';
 
 @Directive({selector: '[appDropdownItem]'})
 export class DropdownItemDirective {
-    @Input() appDropdownItem: any;
+    @Input() public appDropdownItem: any;
 
     @Input()
     @HostBinding('class.disabled')
-    disabled: boolean = false;
+    public disabled: boolean = false;
 
     @HostBinding('class.active')
     public get active() {
         return this.dropdown.selected === this.appDropdownItem;
     }
 
-    constructor(private dropdown: DropdownComponent, private el: ElementRef) { }
+    constructor(private dropdown: DropdownComponent) { }
 
     @HostListener('click')
     public onDropdownItemClick(): void {
         if (!this.disabled) {
-            this.dropdown.select(this.appDropdownItem, this.el.nativeElement.innerHTML);
+            this.dropdown.select(this.appDropdownItem);
         }
     }
 }

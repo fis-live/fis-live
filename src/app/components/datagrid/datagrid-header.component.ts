@@ -16,9 +16,9 @@ import { DatagridState } from './providers/datagrid-state';
             </app-dropdown>
 
             <app-dropdown class="dropdown btn-success" [placeholder]="'Diff...'" [(selected)]="diff">
-                <button *ngFor="let item of items.slice(0, -1)" [appDropdownItem]="item"
+                <button *ngFor="let item of diffs" [appDropdownItem]="item"
                         [disabled]="inter == null || (item.key !== 0 && item.key >= inter.key)"
-                        class="dropdown-item">{{ item.distance }} KM</button>
+                        class="dropdown-item">{{ item.name }}</button>
             </app-dropdown>
         </div>
         <div style="flex: 1 1 auto">
@@ -31,6 +31,7 @@ export class DatagridHeaderComponent {
     private _inter: Intermediate;
     private _diff: Intermediate;
     private _items: Intermediate[] = [];
+    public diffs: Intermediate[] = [];
 
     @Input() public set items(items: Intermediate[]) {
         if (items == null) {
@@ -42,6 +43,7 @@ export class DatagridHeaderComponent {
         }
 
         this._items = items;
+        this.diffs = items.map((item) => Object.assign({}, item, {name: item.distance + ' KM'})).slice(0, -1);
     }
 
     public get items(): Intermediate[] {
