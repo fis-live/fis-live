@@ -1,6 +1,6 @@
 /*@import "~semantic-ui-css/components/reset.min.css";*/
 /*@import "~semantic-ui-css/components/menu.min.css";*/
-@import "~semantic-ui-css/components/flag.min.css";
+@import "./flags.css";
 /*@import "~semantic-ui-css/components/site.css";*/
 
 @import "~perfect-scrollbar/css/perfect-scrollbar.css";

@@ -1,4 +1,4 @@
-<table class="datagrid" role="grid">
+<table class="datagrid {{ breakpoint }}" role="grid">
     <thead>
         <tr role="row">
             <th>
@@ -29,32 +29,27 @@
     </thead>
     <tbody>
 
-        <ng-container *ngIf="breakpoint === 'large'">
-            <tr [@color]="row.state" [ngClass]="{'disabled': row.rank == null, 'favorite': row.racer.isFavorite}" *ngFor="let row of rows; trackBy: track" role="row">
+        <ng-container *ngIf="breakpoint === 'large' || breakpoint === 'small'">
+            <tr [@color]="row.state"
+                class="{{ row.racer.nationality | lowercase }}"
+                [ngClass]="{'disabled': row.rank == null, 'favorite': row.racer.isFavorite}"
+                *ngFor="let row of rows; trackBy: track"
+                role="row">
                 <td><div>{{ row.rank }}</div></td>
                 <td *ngIf="config.cols.indexOf('bib') > -1"><div>{{ row.racer.bib }}</div></td>
-                <td><div>{{ row.racer.firstName }} {{ row.racer.lastName }}</div></td>
+                <td><div class="small_only flag">{{ row.racer.firstName }} {{ row.racer.lastName }}</div></td>
                 <td><div><span [style.font-weight]="!config.isStartList && row.rank == 1 ? 700: 'normal'">{{ row.time }}</span></div></td>
-                <td><div><i class="{{ row.racer.nationality | lowercase }} flag"></i>{{ row.racer.nationality }}</div></td>
+                <td *ngIf="breakpoint === 'large'"><div class="flag">{{ row.racer.nationality }}</div></td>
                 <td><div>{{ row.diff }}</div></td>
             </tr>
         </ng-container>
 
-        <ng-container *ngIf="breakpoint === 'small'">
-            <tr [@color]="row.state" [ngClass]="{'disabled': row.rank == null, 'favorite': row.racer.isFavorite}" *ngFor="let row of rows; trackBy: track" role="row">
-                <td><div>{{ row.rank }}</div></td>
-                <td><div>{{ row.racer.bib }}</div></td>
-                <td><div><i class="{{ row.racer.nationality | lowercase }} flag"></i><b>{{ row.racer.lastName }}</b>, {{ row.racer.firstName }}</div></td>
-                <td><div><span [style.font-weight]="!config.isStartList && row.rank == 1 ? 700: 'normal'">{{ row.time }}</span></div></td>
-                <td><div>{{ row.diff }}</div></td>
-            </tr>
-        </ng-container>
 
         <ng-container *ngIf="breakpoint === 'mini'">
             <tr [@color]="row.state" [ngClass]="{'disabled': row.rank == null, 'favorite': row.racer.isFavorite}" *ngFor="let row of rows; trackBy: track" role="row">
                 <td><div>{{ row.rank }}</div></td>
-                <td><div>{{ row.racer.bib }}</div></td>
-                <td><div><b>{{ row.racer.lastName }}</b>, {{ row.racer.firstName[0] }}</div></td>
+                <td *ngIf="config.cols.indexOf('bib') > -1"><div>{{ row.racer.bib }}</div></td>
+                <td><div>{{ row.racer.lastName }}, {{ row.racer.firstName[0] }}</div></td>
                 <td><div><span [style.font-weight]="!config.isStartList && row.rank == 1 ? 700: 'normal'">{{ row.time }}</span></div></td>
             </tr>
         </ng-container>
