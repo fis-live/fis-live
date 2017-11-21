@@ -38,7 +38,7 @@
   },
   "devDependencies": {
     "@angular-cli/base-href-webpack": "^1.0.10",
-    "@angular-devkit/build-optimizer": "^0.0.33",
+    "@angular-devkit/build-optimizer": "0.0.33",
     "@angular/compiler-cli": "^5.0.2",
     "@angular/platform-server": "^5.0.2",
     "@ngtools/webpack": "^1.8.3",
