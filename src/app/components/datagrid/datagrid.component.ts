@@ -1,18 +1,11 @@
 import { animate, state, style, transition, trigger } from '@angular/animations';
-import {
-    AfterViewInit, ChangeDetectionStrategy, Component, Input, OnDestroy
-} from '@angular/core';
-import { Subscription } from 'rxjs/Subscription';
+import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
 
 import { ResultItem, TableConfiguration } from '../tab.component';
-
-import { Filters } from './providers/filter';
-import { Sort } from './providers/sort';
 
 @Component({
     selector: 'app-table',
     templateUrl: 'datagrid.component.html',
-    providers: [ Sort, Filters ],
     animations: [
         trigger('color', [
             state('new', style({
@@ -37,25 +30,15 @@ import { Sort } from './providers/sort';
     ],
     changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class DatagridComponent implements AfterViewInit, OnDestroy {
+export class DatagridComponent {
     public rows: ResultItem[];
     private _config: TableConfiguration;
-    private _subscriptions: Subscription[] = [];
 
     @Input() public breakpoint = 'large';
 
-    constructor(private sort: Sort, private filters: Filters) {
-        this.sort.toggle('rank');
-    }
-
     @Input() public set config(config: TableConfiguration) {
-        if ((this.sort.comparator === 'time' || this.sort.comparator === 'status') &&
-            config.isStartList !== this._config.isStartList) {
-            this.sort.comparator = config.isStartList ? 'status' : 'time';
-        }
-
         this._config = config;
-        this.triggerRefresh();
+        this.rows = config.rows;
     }
 
     public get config() {
@@ -69,30 +52,7 @@ export class DatagridComponent implements AfterViewInit, OnDestroy {
         return this._config;
     }
 
-    private triggerRefresh() {
-        let rows = this.config.rows;
-
-        if (this.filters.hasActiveFilters()) {
-            rows = rows.filter((row) => this.filters.accepts(row));
-        }
-
-        if (rows != null && this.sort.comparator) {
-            rows.sort((a, b) => this.sort.compare(a, b));
-        }
-
-        this.rows = rows;
-    }
-
     public track(index: number, item: any): number {
         return item.racer.bib;
-    }
-
-    public ngAfterViewInit() {
-        this._subscriptions.push(this.sort.change.subscribe(() => this.triggerRefresh()));
-        this._subscriptions.push(this.filters.change.subscribe(() => this.triggerRefresh()));
-    }
-
-    public ngOnDestroy() {
-        this._subscriptions.forEach((sub: Subscription) => sub.unsubscribe());
     }
 }
