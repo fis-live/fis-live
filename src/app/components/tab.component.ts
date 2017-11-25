@@ -11,7 +11,7 @@ import { ResultService } from '../services/result.service';
 import { AppState, selectAllIntermediates } from '../state/reducers';
 import { RacerData } from '../state/reducers/result';
 
-import { DatagridState } from './datagrid/providers/datagrid-state';
+import {Columns, DatagridState} from './datagrid/providers/datagrid-state';
 import {Filters} from './datagrid/providers/filter';
 import {Sort} from './datagrid/providers/sort';
 
@@ -32,9 +32,9 @@ export interface TableConfiguration {
 @Component({
     selector: 'app-tab',
     template: `
-        <app-grid-header [items]="intermediates$ | async" class="action-bar"></app-grid-header>
+        <app-grid-header [config]="columns$ | async" [items]="intermediates$ | async" class="action-bar"></app-grid-header>
 <div class="segment" appScrollbar>
-    <app-table [breakpoint]="breakpoint" [config]="tableConfig$ | async"></app-table>
+    <app-table [columns]="columns$ | async" [config]="tableConfig$ | async"></app-table>
 </div>`,
     providers: [DatagridState, Filters, Sort],
     changeDetection: ChangeDetectionStrategy.OnPush
@@ -43,12 +43,16 @@ export class TabComponent {
 
     public intermediates$: Observable<Intermediate[]>;
     public tableConfig$: Observable<TableConfiguration>;
+    public columns$: Observable<Columns>;
 
-    @Input() breakpoint = 'large';
+    @Input() set breakpoint(breakpoint: string) {
+        this._state.setBreakpoint(breakpoint);
+    }
 
     constructor(private _store: Store<AppState>, private _state: DatagridState) {
         this.intermediates$ = this._store.select(selectAllIntermediates);
 
         this.tableConfig$ = this._state.connect();
+        this.columns$ = this._state.getVisibleColumns();
     }
 }

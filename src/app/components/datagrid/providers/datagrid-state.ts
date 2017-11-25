@@ -11,24 +11,30 @@ import { Subscription } from 'rxjs/Subscription';
 import {maxVal, statusMap, timeToStatusMap} from '../../../fis/fis-constants';
 import {BehaviorSubject} from 'rxjs/BehaviorSubject';
 
-export enum DatagridMode {
-    StartList,
-    Intermediate,
-    Analysis
+export interface Columns {
+    bib: boolean;
+    nationality: boolean;
+    diff: boolean;
 }
 
 @Injectable()
 export class DatagridState implements OnDestroy {
     private _change: BehaviorSubject<any> = new BehaviorSubject<any>({rows: [], isStartList: 1, cols: ['bib']});
-    private _visibleColumns: string[] = ['rank', 'bib', 'name', 'time', 'nation', 'diff'];
+    private _columns: BehaviorSubject<Columns>;
+    private _visibleColumns: Columns = {
+        bib: false,
+        nationality: true,
+        diff: true
+    };
     private _rows: ResultItem[] = [];
     private _subscriptions: Subscription[] = [];
 
     public inter: number;
     public diff: number;
-    public mode: DatagridMode;
 
     constructor(private _results: ResultService, private _sort: Sort, private _filters: Filters) {
+        this._columns = new BehaviorSubject(this._visibleColumns);
+        this._sort.comparator = 'rank';
         this._subscriptions = [];
         this._subscriptions.push(this._sort.change.subscribe(() => this.triggerRefresh()));
         this._subscriptions.push(this._filters.change.subscribe(() => this.triggerRefresh()));
@@ -150,6 +156,10 @@ export class DatagridState implements OnDestroy {
         return this._change.asObservable();
     }
 
+    public getVisibleColumns(): Observable<Columns> {
+        return this._columns.asObservable();
+    }
+
     public setInter(inter: number): void {
         this.inter = inter;
         if (this.diff >= inter) {
@@ -163,14 +173,17 @@ export class DatagridState implements OnDestroy {
         this.parseRows();
     }
 
-    public toggleColumn(column: string) {
-        const i = this._visibleColumns.indexOf(column);
-        if (i > -1) {
-            this._visibleColumns.splice(i, 1);
-        } else {
-            this._visibleColumns.push(column);
-        }
+    public toggleColumn(column: keyof Columns) {
+        this._visibleColumns[column] = !this._visibleColumns[column];
+        this._columns.next({...this._visibleColumns});
+    }
 
+    public setBreakpoint(breakpoint: string) {
+        if (breakpoint === 'large') {
+            //this._visibleColumns.bib = true;
+            //this._visibleColumns.nationality = true;
+            //this._visibleColumns.diff = true;
+        }
     }
 
     public ngOnDestroy() {

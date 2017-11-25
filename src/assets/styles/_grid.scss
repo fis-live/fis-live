@@ -144,7 +144,6 @@ $clr-table-cornercellradius: calc(#{$clr-default-borderradius} - 1px) !default;
     flex: 0 0 auto;
     display: flex;
     flex-flow: row nowrap;
-    justify-content: flex-end;
     align-items: stretch;
     height: 1.5rem;
     padding: 0 $clr-table-cellpadding;

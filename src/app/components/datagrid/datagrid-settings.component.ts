@@ -2,7 +2,8 @@ import { ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, Rend
 
 import { AbstractPopover } from '../utils/abstract-popover';
 
-import { DatagridState } from './providers/datagrid-state';
+import {Columns, DatagridState} from './providers/datagrid-state';
+import {Observable} from 'rxjs/Observable';
 
 @Component({
 
@@ -19,11 +20,21 @@ import { DatagridState } from './providers/datagrid-state';
                         <clr-icon shape="times"></clr-icon>
                     </button>
                 </div>
-                <ul class="switch-content list-unstyled">
-                    <li class="checkbox" *ngFor="let col of columns">
+                <ul class="switch-content list-unstyled" *ngIf="columns$ | async as columns">
+                    <li class="checkbox">
                         <input type="checkbox"
-                               [checked]="visibleColumns.indexOf(col) > -1" [id]="col" (change)="toggleColumn(col)">
-                        <label [for]="col">{{ col }}</label>
+                               [checked]="columns.bib" id="bib" (change)="toggleColumn('bib')">
+                        <label for="bib">Bib</label>
+                    </li>
+                    <li class="checkbox">
+                        <input type="checkbox"
+                               [checked]="columns.nationality" id="nation" (change)="toggleColumn('nationality')">
+                        <label for="nation">Nationality</label>
+                    </li>
+                    <li class="checkbox">
+                        <input type="checkbox"
+                               [checked]="columns.diff" id="diff" (change)="toggleColumn('diff')">
+                        <label for="diff">Diff</label>
                     </li>
                 </ul>
                 <div class="switch-footer">
@@ -46,21 +57,17 @@ import { DatagridState } from './providers/datagrid-state';
     changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class DatagridSettingsComponent extends AbstractPopover {
-    public columns: string[] = ['rank', 'bib', 'name', 'time', 'nation', 'diff'];
+    public columns$: Observable<Columns>;
     public visibleColumns: string[] = ['rank', 'bib', 'name', 'time', 'nation', 'diff'];
 
     constructor(private _state: DatagridState, el: ElementRef, renderer: Renderer2, cdr: ChangeDetectorRef) {
         super(el, renderer, cdr);
+
+        this.columns$ = this._state.getVisibleColumns();
     }
 
 
-    public toggleColumn(column: string) {
-        const i = this.visibleColumns.indexOf(column);
-        if (i > -1) {
-            this.visibleColumns.splice(i, 1);
-        } else {
-            this.visibleColumns.push(column);
-        }
+    public toggleColumn(column: keyof Columns) {
         this._state.toggleColumn(column);
     }
 }

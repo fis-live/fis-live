@@ -2,6 +2,7 @@ import { animate, state, style, transition, trigger } from '@angular/animations'
 import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
 
 import { ResultItem, TableConfiguration } from '../tab.component';
+import {Columns} from './providers/datagrid-state';
 
 @Component({
     selector: 'app-table',
@@ -34,7 +35,7 @@ export class DatagridComponent {
     public rows: ResultItem[];
     private _config: TableConfiguration;
 
-    @Input() public breakpoint = 'large';
+    @Input() public columns: Columns;
 
     @Input() public set config(config: TableConfiguration) {
         this._config = config;

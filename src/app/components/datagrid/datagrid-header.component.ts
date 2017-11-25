@@ -15,15 +15,15 @@ import { DatagridState } from './providers/datagrid-state';
                          class="dropdown-item">{{ item.name }}</button>
             </app-dropdown>
 
-            <app-dropdown class="dropdown btn-success" [placeholder]="'Diff...'" [(selected)]="diff">
+            <app-dropdown *ngIf="config.diff" class="dropdown btn-success" [placeholder]="'Diff...'" [(selected)]="diff">
                 <button *ngFor="let item of diffs" [appDropdownItem]="item"
                         [disabled]="inter == null || (item.key !== 0 && item.key >= inter.key)"
                         class="dropdown-item">{{ item.name }}</button>
             </app-dropdown>
         </div>
-        <div style="flex: 1 1 auto">
+        <!--div style="flex: 1 1 auto">
         </div>
-        <app-dg-settings class="column-switch-wrapper"></app-dg-settings>
+        <app-dg-settings class="column-switch-wrapper"></app-dg-settings-->
     `,
     changeDetection: ChangeDetectionStrategy.OnPush
 })
@@ -32,6 +32,8 @@ export class DatagridHeaderComponent {
     private _diff: Intermediate;
     private _items: Intermediate[] = [];
     public diffs: Intermediate[] = [];
+
+    @Input() config: any;
 
     @Input() public set items(items: Intermediate[]) {
         if (items == null) {

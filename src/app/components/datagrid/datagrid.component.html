@@ -5,7 +5,7 @@
                 <div appSort="rank">{{ config.isStartList ? 'Order' : 'Rank' }}</div>
             </th>
 
-            <th *ngIf="config.cols.indexOf('bib') > -1">
+            <th *ngIf="columns.bib">
                 <div appSort="racer.bib">Bib</div>
             </th>
 
@@ -18,25 +18,24 @@
                 <div appSort="time_sort">{{ config.isStartList ? 'Status' : 'Time' }}</div>
             </th>
 
-            <th *ngIf="breakpoint === 'large'">
+            <th *ngIf="columns.nationality">
                 <div appSort="racer.nationality">Nationality</div>
             </th>
 
-            <th *ngIf="breakpoint !== 'mini'">
+            <th *ngIf="columns.diff">
                 <div appSort="diff_sort">Diff.</div>
             </th>
         </tr>
     </thead>
     <tbody>
 
-        <ng-container *ngIf="breakpoint === 'large' || breakpoint === 'small'">
             <tr [@color]="row.state"
                 class="{{ row.racer.nationality | lowercase }}"
                 [ngClass]="{'disabled': row.rank == null, 'favorite': row.racer.isFavorite}"
                 *ngFor="let row of rows; trackBy: track"
                 role="row">
                 <td><div>{{ row.rank }}</div></td>
-                <td *ngIf="config.cols.indexOf('bib') > -1"><div>{{ row.racer.bib }}</div></td>
+                <td *ngIf="columns.bib"><div class="badge">{{ row.racer.bib }}</div></td>
                 <td>
                     <div class="small_only flag">
                         <a target="_blank" href="https://data.fis-ski.com/dynamic/athlete-biography.html?sector=CC&listid=&fiscode={{ row.racer.id }}&type=result">
@@ -45,19 +44,9 @@
                     </div>
                 </td>
                 <td><div><span [style.font-weight]="!config.isStartList && row.rank == 1 ? 700: 'normal'">{{ row.time }}</span></div></td>
-                <td *ngIf="breakpoint === 'large'"><div class="flag">{{ row.racer.nationality }}</div></td>
-                <td><div>{{ row.diff }}</div></td>
+                <td *ngIf="columns.nationality"><div class="flag">{{ row.racer.nationality }}</div></td>
+                <td *ngIf="columns.diff"><div>{{ row.diff }}</div></td>
             </tr>
-        </ng-container>
 
-
-        <ng-container *ngIf="breakpoint === 'mini'">
-            <tr [@color]="row.state" [ngClass]="{'disabled': row.rank == null, 'favorite': row.racer.isFavorite}" *ngFor="let row of rows; trackBy: track" role="row">
-                <td><div>{{ row.rank }}</div></td>
-                <td *ngIf="config.cols.indexOf('bib') > -1"><div>{{ row.racer.bib }}</div></td>
-                <td><div>{{ row.racer.lastName }}, {{ row.racer.firstName[0] }}</div></td>
-                <td><div><span [style.font-weight]="!config.isStartList && row.rank == 1 ? 700: 'normal'">{{ row.time }}</span></div></td>
-            </tr>
-        </ng-container>
     </tbody>
 </table>
