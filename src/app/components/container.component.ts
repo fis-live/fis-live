@@ -7,7 +7,7 @@ import { Subscription } from 'rxjs/Subscription';
 
 import { Racer } from '../models/racer';
 import { WindowSize } from '../services/window-size';
-import { LoadMain, Reset, StopUpdate } from '../state/actions/connection';
+import { LoadMain, StopUpdate } from '../state/actions/connection';
 import { AppState, getLoadingState, getRaceInfoState, getSettingsState } from '../state/reducers/';
 import { State as LoadingState } from '../state/reducers/loading';
 import { State as RaceInfoState } from '../state/reducers/race-info';
@@ -136,7 +136,6 @@ export class ContainerComponent implements OnInit, OnDestroy {
 
     private reload(): void {
         this._store.dispatch(new StopUpdate());
-        this._store.dispatch(new Reset());
         this._store.dispatch(new LoadMain(this.codex));
     }
 

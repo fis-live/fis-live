@@ -29,21 +29,20 @@
     </thead>
     <tbody>
 
-            <tr [@color]="row.state"
-                class="{{ row.racer.nationality | lowercase }}"
-                [ngClass]="{'disabled': row.rank == null, 'favorite': row.racer.isFavorite}"
+            <tr [@newRow]="row.state"
+                [ngClass]="row.classes"
                 *ngFor="let row of rows; trackBy: track"
                 role="row">
                 <td><div>{{ row.rank }}</div></td>
-                <td *ngIf="columns.bib"><div class="badge">{{ row.racer.bib }}</div></td>
+                <td class="bib" *ngIf="columns.bib"><div><span class="badge">{{ row.racer.bib }}</span></div></td>
                 <td>
                     <div class="small_only flag">
-                        <a target="_blank" href="https://data.fis-ski.com/dynamic/athlete-biography.html?sector=CC&listid=&fiscode={{ row.racer.id }}&type=result">
+                        <a style="color: inherit" target="_blank" href="https://data.fis-ski.com/dynamic/athlete-biography.html?sector=CC&listid=&fiscode={{ row.racer.id }}&type=result">
                             {{ row.racer.firstName }} {{ row.racer.lastName }}
                         </a>
                     </div>
                 </td>
-                <td><div><span [style.font-weight]="!config.isStartList && row.rank == 1 ? 700: 'normal'">{{ row.time }}</span></div></td>
+                <td class="time"><div>{{ row.time }}</div></td>
                 <td *ngIf="columns.nationality"><div class="flag">{{ row.racer.nationality }}</div></td>
                 <td *ngIf="columns.diff"><div>{{ row.diff }}</div></td>
             </tr>

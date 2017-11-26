@@ -15,11 +15,12 @@ export interface RacerData {
 export interface State extends EntityState<RacerData> {
     interMap: {[id: number]: number};
     sortedTimes: {[id: number]: {racer: number; time: number}[]};
+    history: any[];
 }
 
 export const adapter: EntityAdapter<RacerData> = createEntityAdapter<RacerData>();
 
-export const initialState: State = adapter.getInitialState({interMap: {}, sortedTimes: {}});
+export const initialState: State = adapter.getInitialState({interMap: {}, sortedTimes: {}, history: []});
 
 const getValidDiff = (time, zero) => {
     if (time == null || zero == null) {
@@ -95,14 +96,14 @@ export function reducer(state: State = initialState, action: RaceActions.RaceAct
             }, state);
         }
 
-        case RaceActions.SET_BIB_COLOR: {
-            return adapter.updateOne({
-                id: action.payload.racer,
-                changes: {
-                    racer: {...state.entities[action.payload.racer].racer, color: action.payload.color}
-                }
-            }, state);
-        }
+        // case RaceActions.SET_BIB_COLOR: {
+        //     return adapter.updateOne({
+        //         id: action.payload.racer,
+        //         changes: {
+        //             racer: {...state.entities[action.payload.racer].racer, color: action.payload.color}
+        //         }
+        //     }, state);
+        // }
 
         case RaceActions.ADD_START_LIST: {
             return adapter.updateOne({
@@ -117,7 +118,7 @@ export function reducer(state: State = initialState, action: RaceActions.RaceAct
 
         case RaceActions.SET_START_TIME: {
             const times = state.entities[action.payload.racer].times.slice();
-            times[0] = {time: action.payload.time, rank: null};
+            times[0] = Object.assign({}, times[0], {time: action.payload.time});
 
             const diffs = [[action.payload.time]].concat(updateDiffs(times, 0));
             return adapter.updateOne({id: action.payload.racer, changes: {times, diffs}}, state);
@@ -125,7 +126,7 @@ export function reducer(state: State = initialState, action: RaceActions.RaceAct
 
         case RaceActions.SET_STATUS: {
             return adapter.updateOne({
-                id: action.payload.racer,
+                id: action.payload.id,
                 changes: {
                     status: action.payload.status
                 }
@@ -220,7 +221,8 @@ export function reducer(state: State = initialState, action: RaceActions.RaceAct
 
             return {
                 ...adapter.updateMany(changes, state),
-                sortedTimes: {...state.sortedTimes, [inter]: _sortedTimes}
+                sortedTimes: {...state.sortedTimes, [inter]: _sortedTimes},
+                history: [{racer, inter}, ...state.history]
             };
         }
 

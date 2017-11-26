@@ -1,9 +1,9 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, Renderer2 } from '@angular/core';
+import { Observable } from 'rxjs/Observable';
 
 import { AbstractPopover } from '../utils/abstract-popover';
 
-import {Columns, DatagridState} from './providers/datagrid-state';
-import {Observable} from 'rxjs/Observable';
+import { Columns, DatagridState } from './providers/datagrid-state';
 
 @Component({
 
@@ -58,7 +58,6 @@ import {Observable} from 'rxjs/Observable';
 })
 export class DatagridSettingsComponent extends AbstractPopover {
     public columns$: Observable<Columns>;
-    public visibleColumns: string[] = ['rank', 'bib', 'name', 'time', 'nation', 'diff'];
 
     constructor(private _state: DatagridState, el: ElementRef, renderer: Renderer2, cdr: ChangeDetectorRef) {
         super(el, renderer, cdr);

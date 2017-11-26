@@ -28,7 +28,7 @@ import { FisConnectionService } from './services/fis-connection';
 import { ResultService } from './services/result.service';
 import { WindowSize } from './services/window-size';
 import { ConnectionEffects } from './state/connection-effects';
-import { metaReducers, reducers } from './state/reducers/index';
+import { metaReducers, reducers } from './state/reducers';
 
 @NgModule({
     declarations: [

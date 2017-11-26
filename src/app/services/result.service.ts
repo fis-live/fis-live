@@ -1,11 +1,11 @@
 import { Injectable } from '@angular/core';
 import { Store } from '@ngrx/store';
+import { BehaviorSubject } from 'rxjs/BehaviorSubject';
 import { Observable } from 'rxjs/Observable';
-
-import { AppState, selectAllResults } from '../state/reducers/index';
-import { RacerData } from '../state/reducers/result';
 import { Subscription } from 'rxjs/Subscription';
-import {BehaviorSubject} from 'rxjs/BehaviorSubject';
+
+import { AppState, getResultState } from '../state/reducers/';
+import { RacerData, State } from '../state/reducers/result';
 
 @Injectable()
 export class ResultService {
@@ -13,10 +13,16 @@ export class ResultService {
     public _change: BehaviorSubject<null> = new BehaviorSubject(null);
 
     public rows: RacerData[] = [];
+    public history: any[] = [];
 
     constructor(private _store: Store<AppState>) {
-        this.resultsSubscription = this._store.select(selectAllResults).subscribe((rows: RacerData[]) => {
-            this.rows = rows;
+        this.resultsSubscription = this._store.select(getResultState).subscribe((state: State) => {
+            this.rows = [];
+            for (let i = 0; i < state.ids.length; i++) {
+                this.rows.push(state.entities[state.ids[i]]);
+            }
+            this.history = state.history;
+
             this._change.next(null);
         });
     }

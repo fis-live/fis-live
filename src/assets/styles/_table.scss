@@ -12,7 +12,7 @@ table {
     text-align: left;
     color: rgba($clr-black, 0.87);
 
-    tbody tr:nth-child(2n) {
+    tr:nth-child(2n) {
         background-color: rgba(0, 0, 50, 0.02);
     }
 
@@ -23,8 +23,8 @@ table {
         > div {
             box-sizing: border-box;
             overflow: hidden;
-            max-height: 100px;
             padding: 4px 8px;
+            height: 24px;
         }
     }
 
@@ -55,6 +55,10 @@ table {
         }
     }
 
+    .badge {
+        margin-top: -2px;
+    }
+
     tr.last_finish > td {
         background-color: #FFE5BC;
     }
@@ -64,8 +68,34 @@ table {
     }
 
     tr.new > td {
-        background-color: #66afe9;
+        background-color: #FFE5BC;
     }
+
+    tr.normal > td {
+        transition: background-color 2s ease;
+    }
+
+    tr.leader .time {
+        font-weight: 700;
+    }
+
+    tr.red .bib .badge {
+        background: $reds-dark-midtone;
+        font-weight: 700;
+    }
+
+    tr.yellow .bib .badge {
+        background: $yellows-light;
+        color: rgba($clr-black, 0.87);
+        font-weight: 700;
+    }
+
+    tr.turquoise .bib .badge {
+        background: #40e0d0;
+        color: rgba($clr-black, 0.87);
+        font-weight: 700;
+    }
+
 
     tr.disabled {
         opacity: 0.7;

@@ -2,7 +2,7 @@ import { Action } from '@ngrx/store';
 
 import { Meteo } from '../models/meteo';
 import { RaceInfo } from '../models/race-info';
-import { Batch, LoadMain, Reset, StopUpdate } from '../state/actions/connection';
+import { Batch, LoadMain, StopUpdate } from '../state/actions/connection';
 import {
     AddIntermediate, AddRacer, AddStartList, RegisterResult,
     SetRaceMessage, SetStatus, UpdateMeteo, UpdateRaceInfo
@@ -73,7 +73,7 @@ export function parseMain(data: any): Action[] {
                     lastName: data.racers[i][2].trim().split(' ').map(char => char[0] + char.substr(1).toLowerCase()).join(' '),
                     nationality:  nationalities[data.racers[i][4]] || data.racers[i][4],
                     isFavorite: false,
-                    color: ''
+                    color: data.racers[i][5]
                 })
             );
         }
@@ -117,7 +117,7 @@ export function parseMain(data: any): Action[] {
         }
     }
 
-    return [new Batch(actions)];
+    return actions;
 }
 
 export function parseUpdate(data: any): Action[] {
@@ -188,8 +188,6 @@ export function parseUpdate(data: any): Action[] {
             }
         });
     }
-
-
-    return reload ? [new Reset(), new LoadMain(null)] :
+    return reload ? [new LoadMain(null)] :
         stopUpdating ? [new Batch(actions), new StopUpdate()] : [new Batch(actions)];
 }

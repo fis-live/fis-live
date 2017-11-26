@@ -1,15 +1,14 @@
-import {Injectable, OnDestroy} from '@angular/core';
+import { Injectable, OnDestroy } from '@angular/core';
+import { BehaviorSubject } from 'rxjs/BehaviorSubject';
 import { Observable } from 'rxjs/Observable';
-import { Subject } from 'rxjs/Subject';
+import { Subscription } from 'rxjs/Subscription';
 
+import { maxVal, statusMap, timeToStatusMap } from '../../../fis/fis-constants';
 import { ResultService } from '../../../services/result.service';
+import { ResultItem } from '../../tab.component';
 
 import { Filters } from './filter';
 import { Sort } from './sort';
-import { ResultItem } from '../../tab.component';
-import { Subscription } from 'rxjs/Subscription';
-import {maxVal, statusMap, timeToStatusMap} from '../../../fis/fis-constants';
-import {BehaviorSubject} from 'rxjs/BehaviorSubject';
 
 export interface Columns {
     bib: boolean;
@@ -19,10 +18,10 @@ export interface Columns {
 
 @Injectable()
 export class DatagridState implements OnDestroy {
-    private _change: BehaviorSubject<any> = new BehaviorSubject<any>({rows: [], isStartList: 1, cols: ['bib']});
+    private _change: BehaviorSubject<any> = new BehaviorSubject<any>({rows: [], isStartList: true});
     private _columns: BehaviorSubject<Columns>;
     private _visibleColumns: Columns = {
-        bib: false,
+        bib: true,
         nationality: true,
         diff: true
     };
@@ -43,24 +42,61 @@ export class DatagridState implements OnDestroy {
 
     private parseRows() {
         const rows = [];
+        const history: number[] = [];
         let fastestTime: number = maxVal;
         let fastestDiff: number = maxVal;
+
+        for (let i = 0; i < this._results.history.length; i++) {
+            if (this._results.history[i].inter === this.inter) {
+                history.push(this._results.history[i].racer);
+                if (history.length === 3) {
+                    break;
+                }
+            }
+        }
 
         const count = this._results.rows.length;
         for (let i = 0; i < count; i++) {
             const row = this._results.rows[i];
             if (row.times[this.inter] !== undefined) {
-                fastestDiff = (row.diffs[this.inter][this.diff] < fastestDiff) ? row.diffs[this.inter][this.diff] : fastestDiff;
+                let diff;
+                if (this.diff === 0) {
+                    diff = row.diffs[this.inter][this.diff] + this._results.rows[0].times[0].time;
+                } else {
+                    diff = row.diffs[this.inter][this.diff];
+                }
+                fastestDiff = (diff < fastestDiff) ? diff : fastestDiff;
                 fastestTime = (row.times[this.inter].time < fastestTime) ? row.times[this.inter].time : fastestTime;
+                let state = 'normal';
+
+                if (history.indexOf(row.racer.bib) > -1) {
+                    state = 'new';
+                }
+
+                const classes = [row.racer.nationality.toLowerCase(), state];
+                if (row.times[this.inter].rank === 1 && this.inter > 0) {
+                    classes.push('leader');
+                } else if (row.times[this.inter].rank == null) {
+                    classes.push('disabled');
+                }
+
+                if (row.racer.isFavorite) {
+                    classes.push('favorite');
+                }
+
+                if (row.racer.color) {
+                    classes.push(row.racer.color);
+                }
                 rows.push({
-                    state: '',
+                    state: state,
                     racer: row.racer,
                     time: this.inter === 0 ? row.status : row.times[this.inter].time,
                     time_sort: this.inter === 0 ? row.status : row.times[this.inter].time,
                     rank: row.times[this.inter].rank,
-                    diff: row.diffs[this.inter][this.diff],
+                    diff: diff,
                     diff_sort: row.diffs[this.inter][this.diff],
-                    name: row.racer.lastName + ', ' + row.racer.firstName
+                    name: row.racer.lastName + ', ' + row.racer.firstName,
+                    classes: classes
                 });
             }
         }
@@ -80,10 +116,18 @@ export class DatagridState implements OnDestroy {
                 }
 
                 if (this.diff !== null && row.diff < maxVal) {
-                    if (row.diff === fastestDiff) {
-                        row.diff = this.formatTime(row.diff);
+                    if (this.diff === 0 && this.inter === 0) {
+                        if (row.diff === fastestDiff) {
+                            row.diff = this.formatTime(row.diff - fastestDiff);
+                        } else {
+                            row.diff = '+' + this.formatTime(row.diff - fastestDiff);
+                        }
                     } else {
-                        row.diff = '+' + this.formatTime(row.diff - fastestDiff);
+                        if (row.diff === fastestDiff) {
+                            row.diff = this.formatTime(row.diff);
+                        } else {
+                            row.diff = '+' + this.formatTime(row.diff - fastestDiff);
+                        }
                     }
                 } else {
                     row.diff = '';
@@ -96,8 +140,7 @@ export class DatagridState implements OnDestroy {
             this._rows = [];
             this._change.next({
                 rows: [],
-                isStartList: (this.inter === 0),
-                cols: this._visibleColumns
+                isStartList: (this.inter === 0)
             });
         }
     }
@@ -147,8 +190,7 @@ export class DatagridState implements OnDestroy {
 
         this._change.next({
             rows: rows,
-            isStartList: (this.inter === 0),
-            cols: this._visibleColumns
+            isStartList: (this.inter === 0)
         });
     }
 
@@ -180,10 +222,20 @@ export class DatagridState implements OnDestroy {
 
     public setBreakpoint(breakpoint: string) {
         if (breakpoint === 'large') {
-            //this._visibleColumns.bib = true;
-            //this._visibleColumns.nationality = true;
-            //this._visibleColumns.diff = true;
+            this._visibleColumns.bib = true;
+            this._visibleColumns.nationality = true;
+            this._visibleColumns.diff = true;
+        } else if (breakpoint === 'small') {
+            this._visibleColumns.bib = true;
+            this._visibleColumns.nationality = false;
+            this._visibleColumns.diff = true;
+        } else {
+            this._visibleColumns.bib = false;
+            this._visibleColumns.nationality = false;
+            this._visibleColumns.diff = false;
         }
+
+        this._columns.next({...this._visibleColumns});
     }
 
     public ngOnDestroy() {

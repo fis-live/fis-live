@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Actions, Effect } from '@ngrx/effects';
-import { Store } from '@ngrx/store';
+import { Action, Store } from '@ngrx/store';
 import { empty } from 'rxjs/observable/empty';
 import { from } from 'rxjs/observable/from';
 import { of } from 'rxjs/observable/of';
@@ -44,7 +44,7 @@ export class ConnectionEffects {
                 const actions = parseMain(data);
                 const suffix = data.runinfo[1] === 'Q' ? 'QUA' : 'SL';
 
-                return of(...actions,
+                return of<Action>(new ConnectionActions.Batch([new ConnectionActions.Reset(), ...actions]),
                     new ConnectionActions.HideLoading(),
                     new ConnectionActions.LoadPdf(suffix),
                     new ConnectionActions.LoadUpdate()
@@ -55,7 +55,7 @@ export class ConnectionEffects {
                     severity: 'danger',
                     message: 'Could not find live data. Check the codex and try again.',
                     action: 'Retry',
-                    actions: [new ConnectionActions.Reset(), new ConnectionActions.LoadMain(null)]
+                    actions: [new ConnectionActions.LoadMain(null)]
                 })]);
             })
         );
@@ -64,7 +64,7 @@ export class ConnectionEffects {
         .ofType(ConnectionActions.LOAD_PDF)
         .pipe(
             switchMap((action: ConnectionActions.LoadPdf) => this._connection.loadPdf(action.payload)),
-            mergeMap(actions => from(actions)),
+            mergeMap(actions => of(new ConnectionActions.Batch(actions))),
             catchError((error) => {
                 console.log(error);
                 return empty();
@@ -87,7 +87,6 @@ export class ConnectionEffects {
                         }),
                         catchError((error) => {
                             return from([
-                                new ConnectionActions.Reset(),
                                 new ConnectionActions.SelectServer(),
                                 new ConnectionActions.LoadMain(null)
                             ]);
