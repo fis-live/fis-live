@@ -55,6 +55,7 @@ module.exports = webpackMerge.smart(commonConfig, {
                 'ENV': JSON.stringify(ENV)
             }
         }),
+        new webpack.optimize.ModuleConcatenationPlugin(),
         new webpack.LoaderOptionsPlugin({
             minimize: true,
             debug: false,
