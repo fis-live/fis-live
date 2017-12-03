@@ -84,7 +84,7 @@ export function parseMain(data: any): Action[] {
             actions.push(
                 new AddStartList({
                     racer: data.startlist[i][0],
-                    status: data.startlist[i][1],
+                    status: data.startlist[i][1] || '',
                     order: i + 1
                 })
             );
