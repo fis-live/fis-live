@@ -6,14 +6,14 @@ table {
 .datagrid {
     font-size: 0.9em;
     width: 100%;
-    background: $clr-white;
+    background: $clr-table-bgcolor;
     border: none;
     margin: 0;
     text-align: left;
-    color: rgba($clr-black, 0.87);
+    color: $clr-h6-color;
 
     tr:nth-child(2n) {
-        background-color: rgba(0, 0, 50, 0.02);
+        background-color: $clr-thead-bgcolor;
     }
 
     td {
@@ -31,7 +31,7 @@ table {
     th {
         padding: 0;
         border: none;
-        color: $clr-dark-gray;
+        color: $clr-h5-color;
         font-size: 0.9em;
         position: relative;
         white-space: nowrap;
@@ -86,13 +86,13 @@ table {
 
     tr.yellow .bib .badge {
         background: $yellows-light;
-        color: rgba($clr-black, 0.87);
+        color: $clr-black;
         font-weight: 700;
     }
 
     tr.turquoise .bib .badge {
         background: #40e0d0;
-        color: rgba($clr-black, 0.87);
+        color: $clr-black;
         font-weight: 700;
     }
 
@@ -119,7 +119,7 @@ table {
                 cursor: pointer;
                 vertical-align: middle;
                 margin: auto 0;
-                background: generateFilterIcon($clr-dark-midtone-gray) no-repeat;
+                background: generateFilterIcon($gray-dark-midtone) no-repeat;
 
                 &:hover, &.filter-open {
                     background-image: generateFilterIcon($action-blues-dark-midtone);
@@ -135,10 +135,10 @@ table {
                 position: absolute;
                 top: 100%;
                 left: 0;
-                margin-top: $clr_baselineRem_0_2;
-                background: $clr-white;
-                padding: $clr_baselineRem_0_75;
-                border: 1px solid $clr-table-bordercolor;
+                margin-top: 0.2rem;
+                background: $clr-datagrid-popover-bg-color;
+                padding: 0.75rem;
+                border: $clr-default-borderwidth solid $clr-datagrid-popover-border-color;
                 box-shadow: 0 1px 3px rgba($gray-dark, 0.25);
                 border-radius: $clr-default-borderradius;
                 font-weight: normal;
@@ -158,7 +158,7 @@ table {
     th > div.sorting {
         cursor: pointer;
         &:hover {
-            color: $clr-near-black;
+            color: $clr-h6-color;
         }
 
         &::after {
@@ -197,7 +197,7 @@ table {
     bottom: 0;
     left: 0;
     right: 0;
-    background: rgba($clr-white, 0.6);
+    background: rgba($clr-table-bgcolor, 0.6);
     z-index: 99;
 
     .spinner {
@@ -207,5 +207,24 @@ table {
         left: 0;
         right: 0;
         margin: auto;
+    }
+}
+
+.search-input {
+    position: relative;
+    input {
+        padding-right: 22px;
+    }
+
+    &::after {
+        background-image: generateSearchIcon($gray-dark-midtone);
+        height: 16px;
+        width: 16px;
+        top: 4px;
+        right: 3px;
+        @include icon-background-styles();
+        margin: 0;
+        position: absolute;
+        content: '';
     }
 }

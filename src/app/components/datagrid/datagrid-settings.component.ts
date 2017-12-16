@@ -9,7 +9,7 @@ import { Columns, DatagridState } from './providers/datagrid-state';
 
     selector: 'app-dg-settings',
     template: `
-            <button (click)="toggle()" class="btn btn-sm btn-link column-toggle--action" type="button">
+            <button (click)="toggle()" [class.active]="open" class="btn btn-sm btn-link column-toggle--action" type="button">
                 <clr-icon shape="view-columns"></clr-icon>
             </button>
 

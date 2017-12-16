@@ -1,0 +1,22 @@
+.alert.alert-app-level {
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+
+    .close:focus {
+        box-shadow: none;
+    }
+}
+
+.spinner-centered {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    margin: auto;
+}
+
+.label, a.label {
+    letter-spacing: normal;
+}

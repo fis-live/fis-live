@@ -10,13 +10,18 @@
     margin: 0 !important;
     overflow-y: auto !important;
     z-index: 1039;
-    background-color: $clr-white;
+    background-color: $clr-wizard-sidenav-bgcolor;
 }
 
 .sidenav {
     border:none;
     width: 100%;
     max-width: none;
+
+    .place {
+        padding-left: 6px;
+        background: $clr-badge-light-blue-bg-color;
+    }
 
     .badge {
         float: right;
@@ -27,6 +32,10 @@
         float: right;
         height: 16px;
         padding-bottom: 0;
+    }
+
+    .nav-group label {
+        font-weight: 700;
     }
 }
 

@@ -1,108 +1,6 @@
 html, body {
     height: 100%;
-    background-color: $clr-near-white;
-}
-
-// Backgrounds
-$clr-table-bgcolor: $clr-white !default;
-$clr-thead-bgcolor: $clr-near-white !default;
-
-// Borders
-$clr-tablerow-bordercolor: $clr-light-gray !default;
-$clr-table-bordercolor: $clr-light-midtone-gray !default;
-$clr-table-borderwidth: $clr-default-borderwidth !default;
-$clr-table-borderstyle: $clr-table-borderwidth solid $clr-table-bordercolor !default;
-
-// Etc.
-$clr-table-fontsize: clr-getTypePropertyValueForDomElement(table_text, font-size);
-$clr-table-lineheight: 0.583333rem !default;
-$clr-table-cellpadding: 0.5rem !default;
-$clr-table-smallpadding: 0.25rem !default;
-
-$clr-table-lineheightPaddingShim: (1rem - $clr-table-lineheight)/2 !default;
-$clr-table-topcellpadding: $clr-table-cellpadding - $clr-rem-1px !default;
-$clr-table-bottomcellpadding: $clr-table-cellpadding - $clr-rem-1px !default;
-
-// Border radius of corner cells needs to be slightly less than the table's,
-// To make sure they correctly cover the whole area up to the border.
-$clr-table-cornercellradius: calc(#{$clr-default-borderradius} - 1px) !default;
-
-// Mixin for basic table styles to be able to reuse them on non-table elements.
-@mixin basic-table($table, $thead, $tbody, $tr, $th, $td) {
-    #{$table} {
-        border-collapse: separate;
-        border: $clr-table-borderstyle;
-        border-radius: $clr-default-borderradius;
-
-        background-color: $clr-table-bgcolor;
-        color: clr-getTextColor($clr-table-bgcolor, text);
-        margin: 0;
-        margin-top: 1rem;
-        max-width: 100%;
-        width: 100%;
-
-        #{$th},
-        #{$td} {
-            font-size: $clr-table-fontsize;
-            line-height: $clr-table-lineheight;
-
-            border-top: $clr-table-borderwidth solid $clr-tablerow-bordercolor;
-            padding: $clr-table-topcellpadding $clr-table-cellpadding $clr-table-bottomcellpadding;
-            text-align: center;
-            vertical-align: top;
-
-            &.left {
-                text-align: left;
-
-                &:first-child {
-                    padding-left: $clr-table-smallpadding;
-                }
-            }
-        }
-
-        #{$th} {
-            @include clr-getTypePropertiesForDomElement(table_header, (color, font-size, font-weight, letter-spacing));
-
-            background-color: $clr-thead-bgcolor;
-            vertical-align: bottom;
-            border-bottom: $clr-table-borderstyle;
-            border-top: 0 none;
-        }
-
-        #{$tbody} #{$tr}:first-child #{$td} {
-            border-top: 0 none;
-        }
-
-        // in the rare event we have more than one tbody element.
-        #{$tbody} + #{$tbody} {
-            border-top: $clr-table-borderstyle;
-        }
-
-        // Rounded corners on tables are a pain...
-        #{$thead} #{$th} {
-            &:first-child {
-                border-radius: $clr-table-cornercellradius 0 0 0;
-            }
-
-            &:last-child {
-                border-radius: 0 $clr-table-cornercellradius 0 0;
-            }
-        }
-
-        #{$tbody}:last-child {
-            #{$tr}:last-child {
-                #{$td} {
-                    &:first-child {
-                        border-radius: 0 0 0 $clr-table-cornercellradius;
-                    }
-
-                    &:last-child {
-                        border-radius: 0 0 $clr-table-cornercellradius 0;
-                    }
-                }
-            }
-        }
-    }
+    background-color: $clr-global-app-background;
 }
 
 
@@ -133,7 +31,7 @@ $clr-table-cornercellradius: calc(#{$clr-default-borderradius} - 1px) !default;
     -webkit-overflow-scrolling: touch;
 
     line-height: 16px;
-    background-color: $clr-white;
+    background-color: $clr-table-bgcolor;
     border-bottom-left-radius: 4px;
     border-bottom-right-radius: 4px;
     border: 1px solid $clr-table-bordercolor;
@@ -166,30 +64,27 @@ $clr-table-cornercellradius: calc(#{$clr-default-borderradius} - 1px) !default;
         position: relative;
 
         .column-toggle--action {
-
             // I'm overriding .btn/.btn-link here but am not confident this is the correct way to do it.
             min-width: 0.75rem;
             padding-left: 0;
             padding-right: 0;
 
-            clr-icon {
-                color: $clr-dark-midtone-gray;
-                &:hover {
-                    color: $clr-action-blue;
-                }
+            color: $clr-dark-midtone-gray;
+            &:hover {
+                color: $clr-action-blue;
+            }
 
-                &--active, .active {
-                    color: $clr-action-blue;
-                }
+            &.active {
+                color: $clr-action-blue;
             }
         }
 
         .column-switch {
-            border-radius: $clr-default-borderradius;
+            border-radius: $clr-global-borderradius;
             padding: 0.75rem;
-            background-color: $clr-white;
-            border: $clr-default-borderwidth solid $clr-light-midtone-gray;
-            box-shadow: 0 1px 3px rgba(116, 116, 116, 0.25);
+            background-color: $clr-datagrid-popover-bg-color;
+            border: $clr-default-borderwidth solid $clr-datagrid-popover-border-color;
+            box-shadow: 0 1px 3px rgba(116, 116, 116, 0.25); // TODO: Add theme-able variable
             width: 10.416667rem;
             display: flex;
             flex-direction: column;

@@ -1,32 +1,9 @@
-@import "~bootstrap/scss/variables";
-@import "~bootstrap/scss/mixins";
-@import "~bootstrap/scss/normalize";
+@import "dependencies.app";
+@import "variables.app";
 
-@import "~clarity-ui/src/utils/vendor/decimalRounding.clarity";
-@import "~clarity-ui/src/utils/vendor/mathPow.clarity";
-
-@import "~clarity-ui/src/utils/mixins.clarity";
-@import "~clarity-ui/src/utils/helpers.clarity";
-
-//Color
-@import "~clarity-ui/src/color/utils/colors.clarity";
-@import "~clarity-ui/src/color/utils/contrast-cache.clarity";
-@import "~clarity-ui/src/color/utils/helpers.clarity";
-@import "~clarity-ui/src/color/color.clarity"; // depends on colors.clarity, helper.clarity, contrast-cache.clarity
-
-
-//Layer - z-indices
-@import "~clarity-ui/src/utils/layers.clarity";
-
-$clr-header-height: 1.66667rem;
-$app-header-sort-color: #22a6f5;
-//Variables
-@import "~clarity-ui/src/utils/variables.clarity"; // depends on helpers.clarity, color.clarity
-
+@import "~clarity-ui/src/utils/maps.clarity";
 @import "~clarity-ui/src/utils/reboot.clarity";
 
-
-@import "~bootstrap/scss/close";
 
 @import "~clarity-ui/src/forms/utils/form-variables.clarity";
 @import "~clarity-ui/src/forms/utils/mixins.clarity";
@@ -51,82 +28,9 @@ $app-header-sort-color: #22a6f5;
 @import "~clarity-ui/src/forms/checkbox/checkbox.clarity";
 @import "~clarity-ui/src/popover/dropdown/dropdown.clarity";
 
-//@import "styles/dropdown";
+@import "styles/overwrites.app";
+@import "styles/dropdown";
 @import "styles/grid";
 @import "styles/table";
 @import "styles/menu";
 @import "styles/sidebar";
-
-
-.dropdown-menu {
-    visibility: visible;
-}
-
-.btn-group {
-    display: inline-flex;
-    margin-right: $clr_baselineRem_0_5;
-
-    app-dropdown{
-        margin: 0;
-
-        &:not(:first-child) .btn {
-            border-top-left-radius: 0;
-            border-bottom-left-radius: 0;
-        }
-
-        &:not(:last-child) {
-            margin: 0 1px 0 0;
-
-            .btn {
-                border-top-right-radius: 0;
-                border-bottom-right-radius: 0;
-            }
-        }
-    }
-}
-
-.alert.alert-app-level {
-    position: fixed;
-    bottom: 0;
-    width: 100%;
-
-    .close:focus {
-        box-shadow: none;
-    }
-}
-
-.spinner-centered {
-    position: absolute;
-    top: 0;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    margin: auto;
-}
-
-.search-input {
-    position: relative;
-    input {
-        padding-right: 22px;
-    }
-
-    &::after {
-        background-image: generateSearchIcon("#999999");
-        height: 16px;
-        width: 16px;
-        top: 4px;
-        right: 3px;
-        @include icon-background-styles();
-        margin: 0;
-        position: absolute;
-        content: '';
-    }
-}
-
-.sidenav .nav-group label {
-    font-weight: 700;
-}
-
-.label, a.label {
-    letter-spacing: normal;
-}

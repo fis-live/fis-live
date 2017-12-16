@@ -36,7 +36,7 @@
                     <label [attr.for]="'races' + races.date">{{ races.date }}<span *ngIf="races.liveCount > 0" class="badge badge-success">{{ races.liveCount }}</span></label>
                     <ul class="nav-list">
                         <ng-template ngFor let-place [ngForOf]="races.places">
-                            <li style="padding-left: 6px; background: #89CBDF">{{ place.place }}</li>
+                            <li class="place">{{ place.place }}</li>
                             <li *ngFor="let race of place.races" >
                                 <a (click)="close()" [routerLink]="['', race.codex]" routerLinkActive="active" class="nav-link">{{ race.discipline }}
                                     <span class="nav-link-tag">{{ race.category }}&nbsp;{{ race.gender }}</span>
