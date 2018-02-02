@@ -6,14 +6,14 @@ table {
 .datagrid {
     font-size: 0.9em;
     width: 100%;
-    background: $clr-table-bgcolor;
+    background: $app-table-bgcolor;
     border: none;
     margin: 0;
     text-align: left;
     color: $clr-h6-color;
 
     tr:nth-child(2n) {
-        background-color: $clr-thead-bgcolor;
+        background-color: $app-thead-bgcolor;
     }
 
     td {
@@ -35,11 +35,11 @@ table {
         font-size: 0.9em;
         position: relative;
         white-space: nowrap;
-        background: $clr-thead-bgcolor;
+        background: $app-thead-bgcolor;
 
         > div {
             box-sizing: border-box;
-            border-bottom: 2px solid $clr-table-bordercolor;
+            border-bottom: 2px solid $app-table-bordercolor;
             padding: 4px 4px 4px 8px;
         }
 
@@ -50,7 +50,7 @@ table {
             bottom: 2px;
             width: 1px;
             margin: 6px 0;
-            background-color: $clr-table-bordercolor;
+            background-color: $app-table-bordercolor;
             content: "";
         }
     }
@@ -110,7 +110,7 @@ table {
         > app-filter {
             display: flex;
             padding-right: 6px;
-            border-bottom: 2px solid $clr-table-bordercolor;
+            border-bottom: 2px solid $app-table-bordercolor;
 
             .filter-toggle {
                 width: 16px;
@@ -197,7 +197,7 @@ table {
     bottom: 0;
     left: 0;
     right: 0;
-    background: rgba($clr-table-bgcolor, 0.6);
+    background: rgba($app-table-bgcolor, 0.6);
     z-index: 99;
 
     .spinner {

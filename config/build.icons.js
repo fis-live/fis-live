@@ -1,4 +1,4 @@
-const AllShapes = require('clarity-icons/shapes/all-shapes').AllShapes;
+const AllShapes = require('@clr/icons/shapes/all-shapes').AllShapes;
 const fs = require('fs');
 
 const icons = [
