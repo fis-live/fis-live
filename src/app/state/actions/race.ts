@@ -13,6 +13,7 @@ export const ADD_START_LIST = '[Start list] Add entry';
 export const UPDATE_METEO = '[Info] Update meteo';
 export const SET_START_TIME = '[Result] Register start time';
 export const SET_BIB_COLOR = '[Racer] Set bib color';
+export const ADD_NOTE = '[Racer] Set wave start';
 
 export class RegisterResult implements Action {
     readonly type = REGISTER_RESULT;
@@ -44,6 +45,13 @@ export class SetBibColor implements Action {
 
 export class SetStartTime implements Action {
     readonly type = SET_START_TIME;
+
+    constructor(public payload: any) {
+    }
+}
+
+export class AddNote implements Action {
+    readonly type = ADD_NOTE;
 
     constructor(public payload: any) {
     }
@@ -91,6 +99,7 @@ export type RaceAction
     | SetStatus
     | SetBibColor
     | SetStartTime
+    | AddNote
     | UpdateRaceInfo
     | SetRaceMessage
     | AddIntermediate

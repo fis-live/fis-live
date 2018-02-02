@@ -69,8 +69,14 @@ export class DatagridState implements OnDestroy {
                 fastestTime = (row.times[this.inter].time < fastestTime) ? row.times[this.inter].time : fastestTime;
                 let state = 'normal';
 
-                if (history.indexOf(row.racer.bib) > -1) {
-                    state = 'new';
+                if (this.inter === 0) {
+                    if (history.indexOf(row.racer.bib) === 0) {
+                        state = 'update';
+                    }
+                } else {
+                    if (history.indexOf(row.racer.bib) > -1) {
+                        state = 'new';
+                    }
                 }
 
                 const classes = [row.racer.nationality.toLowerCase(), state];
@@ -96,6 +102,7 @@ export class DatagridState implements OnDestroy {
                     diff: diff,
                     diff_sort: row.diffs[this.inter][this.diff],
                     name: row.racer.lastName + ', ' + row.racer.firstName,
+                    notes: row.notes,
                     classes: classes
                 });
             }
@@ -107,7 +114,7 @@ export class DatagridState implements OnDestroy {
                     if (row.time > maxVal) {
                         row.time = timeToStatusMap[row.time];
                     } else if (row.rank > 1) {
-                        row.time = '+' + this.formatTime(row.time - fastestTime);
+                        row.time = row.notes.join(' ') + '+' + this.formatTime(row.time - fastestTime);
                     } else {
                         row.time = this.formatTime(row.time);
                     }

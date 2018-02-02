@@ -10,6 +10,7 @@ export interface RacerData {
     status: string;
     times: {time: number; rank: number}[];
     diffs: number[][];
+    notes: string[];
 }
 
 export interface State extends EntityState<RacerData> {
@@ -92,7 +93,17 @@ export function reducer(state: State = initialState, action: RaceActions.RaceAct
                 status: '',
                 racer: racer,
                 times: [{time: 0, rank: null}],
-                diffs: [[0]]
+                diffs: [[0]],
+                notes: []
+            }, state);
+        }
+
+        case RaceActions.ADD_NOTE: {
+            return adapter.updateOne({
+                id: action.payload.racer,
+                changes: {
+                    notes: [...state.entities[action.payload.racer].notes, 'W']
+                }
             }, state);
         }
 
@@ -125,12 +136,13 @@ export function reducer(state: State = initialState, action: RaceActions.RaceAct
         }
 
         case RaceActions.SET_STATUS: {
-            return adapter.updateOne({
+            return {
+                ...adapter.updateOne({
                 id: action.payload.id,
                 changes: {
                     status: action.payload.status
                 }
-            }, state);
+            }, state), history: [{racer: action.payload.id, inter: 0, update: true}, ...state.history]};
         }
 
         case RaceActions.REGISTER_RESULT: {
