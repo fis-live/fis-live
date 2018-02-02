@@ -5,6 +5,7 @@ import { localStorageSync } from 'ngrx-store-localstorage';
 import * as ConnectionActions from '../actions/connection';
 
 import * as Alert from './alert';
+import * as Calendar from './calendar';
 import * as Inter from './intermediate';
 import * as Loading from './loading';
 import * as RaceInfo from './race-info';
@@ -18,6 +19,7 @@ export const reducers: ActionReducerMap<AppState> = {
     result: Result.reducer,
     settings: Settings.reducer,
     loading: Loading.reducer,
+    calendar: Calendar.reducer
 };
 
 export interface AppState {
@@ -27,6 +29,7 @@ export interface AppState {
     result: Result.State;
     settings: Settings.State;
     loading: Loading.State;
+    calendar: Calendar.State;
 }
 
 
@@ -60,6 +63,7 @@ export const metaReducers: MetaReducer<AppState>[] = process.env.ENV === 'produc
     [ enableBatching, resetState, localStorageSyncReducer, storeFreeze];
 
 export const getAlertState = (state: AppState) => state.alert;
+export const getCalendarState = (state: AppState) => state.calendar;
 export const getInterState = (state: AppState) => state.intermediates;
 export const getRaceInfoState = (state: AppState) => state.raceInfo;
 export const getResultState = (state: AppState) => state.result;
@@ -67,6 +71,8 @@ export const getSettingsState = (state: AppState) => state.settings;
 export const getLoadingState = (state: AppState) => state.loading;
 
 export const selectAllIntermediates = createSelector(getInterState, Inter.getAllIntermediates);
+
+export const selectRacesByPlace = createSelector(getCalendarState, Calendar.getRacesByPlace);
 
 export const getDelayState = createSelector(getSettingsState, Settings.getDelay);
 

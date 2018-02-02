@@ -8,6 +8,7 @@ import { timer } from 'rxjs/observable/timer';
 import { catchError, map, repeat, retry, switchMap, timeout } from 'rxjs/operators';
 
 import { FisServer } from '../models/fis-server';
+import { Race } from '../models/race';
 
 import { unserialize } from './unserialize';
 
@@ -134,6 +135,19 @@ export class FisConnectionService {
         this.delay = (this.delay > 0) ? this.delay : 1000;
 
         return _throw(error);
+    }
+
+    public loadCalendar(): Observable<Race[]> {
+        return this._http.get<Race[]>('https://fislive-cors.herokuapp.com/liveraces.json')
+            .pipe(
+                catchError((error) => {
+                    console.log(error);
+                    const errMsg = (error instanceof Error) ? error :
+                        (error instanceof Response) ? new Error(`${error.status} - ${error.statusText}`) : new Error('Server error');
+
+                    return _throw(errMsg);
+                })
+            );
     }
 
     public selectServer(): void {

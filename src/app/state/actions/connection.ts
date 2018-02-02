@@ -1,11 +1,15 @@
 import { Action } from '@ngrx/store';
 
+import { Race } from '../../models/race';
+
 export const LOAD_SERVERS = '[Connection] Load servers';
 export const SELECT_SERVER = '[Connection] Select server';
 export const SHOW_ALERT = '[Alert] Show alert';
 export const LOAD_MAIN = '[Connection] Load main';
 export const LOAD_PDF = '[Connection] Load pdf';
 export const LOAD_UPDATE = '[Connection] Load update';
+export const LOAD_CALENDAR = '[Connection] Load calendar';
+export const SET_CALENDAR = '[Connection] Set calendar';
 export const STOP_UPDATE = '[Connection] Stop updating';
 export const RESET = '[Connection] Reset state';
 export const CLOSE_ALERT = '[Alert] Close alert';
@@ -56,6 +60,18 @@ export class LoadUpdate implements Action {
     constructor() { }
 }
 
+export class LoadCalendar implements Action {
+    readonly type = LOAD_CALENDAR;
+
+    constructor() { }
+}
+
+export class SetCalendar implements Action {
+    readonly type = SET_CALENDAR;
+
+    constructor(public payload: Race[]) { }
+}
+
 export class StopUpdate implements Action {
     readonly type = STOP_UPDATE;
 
@@ -94,6 +110,8 @@ export type ConnectionAction
     | LoadMain
     | LoadPdf
     | LoadUpdate
+    | LoadCalendar
+    | SetCalendar
     | StopUpdate
     | CloseAlert
     | ShowLoading

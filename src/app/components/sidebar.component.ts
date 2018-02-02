@@ -1,17 +1,14 @@
 import { animate, state, style, transition, trigger } from '@angular/animations';
-import { HttpClient } from '@angular/common/http';
 import {
     ChangeDetectionStrategy, Component, EventEmitter, Input, Output
 } from '@angular/core';
 import { Store } from '@ngrx/store';
 import { Observable } from 'rxjs/Observable';
-import { _throw } from 'rxjs/observable/throw';
-import { catchError, map } from 'rxjs/operators';
 
 import { nationalities } from '../fis/fis-constants';
 import { Racer } from '../models/racer';
 import { SetDelay, ToggleFavorite } from '../state/actions/settings';
-import { AppState, getDelayState } from '../state/reducers/index';
+import { AppState, getDelayState, selectRacesByPlace } from '../state/reducers';
 
 @Component({
     selector: 'app-sidebar',
@@ -36,9 +33,8 @@ export class SidebarComponent {
     public FLAGS = nationalities;
     public delay$: Observable<number>;
 
-
-    constructor(private http: HttpClient, private store: Store<AppState>) {
-        this.upcomingRaces$ = this.loadRaces();
+    constructor(private store: Store<AppState>) {
+        this.upcomingRaces$ = store.select(selectRacesByPlace);
         this.delay$ = store.select(getDelayState);
     }
 
@@ -52,46 +48,6 @@ export class SidebarComponent {
 
     public toggleFavorite(racer: Racer) {
         this.store.dispatch(new ToggleFavorite(racer));
-    }
-
-    public loadRaces(): Observable<any> {
-        return this.http.get<any[]>('https://fislive-cors.herokuapp.com/liveraces.json')
-            .pipe(
-                map((data) => {
-                const ret = [];
-                data.forEach((race) => {
-                    if (ret.length > 5) {
-                        return;
-                    }
-
-                    const i = ret.findIndex((row) => row.date === race.date);
-                    if (i === -1) {
-                        ret.push({
-                            liveCount: race.status === 'Live' ? 1 : 0,
-                            date: race.date,
-                            places: [{place: race.place, races: [race]}]
-                        });
-                    } else {
-                        const j = ret[i].places.findIndex((row) => row.place === race.place);
-                        if (j === -1) {
-                            ret[i].places.push({place: race.place, races: [race]});
-                        } else {
-                            ret[i].places[j].races.push(race);
-                        }
-                        ret[i].liveCount += race.status === 'Live' ? 1 : 0;
-                    }
-                });
-
-                return ret;
-            }),
-                catchError((error) => {
-                console.log(error);
-                const errMsg = (error instanceof Error) ? error :
-                    (error instanceof Response) ? new Error(`${error.status} - ${error.statusText}`) : new Error('Server error');
-
-                return _throw(errMsg);
-            })
-            );
     }
 
     public open(): void {

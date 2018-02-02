@@ -8,10 +8,11 @@ import { catchError, delay, map, mapTo, mergeMap, startWith, switchMap, tap } fr
 
 import { parseMain, parseUpdate } from '../fis/fis-parser';
 import { FisServer } from '../models/fis-server';
+import { Race } from '../models/race';
 import { FisConnectionService } from '../services/fis-connection';
 
 import * as ConnectionActions from './actions/connection';
-import { AppState, getDelayState } from './reducers/index';
+import { AppState, getDelayState } from './reducers';
 
 @Injectable()
 export class ConnectionEffects {
@@ -92,6 +93,22 @@ export class ConnectionEffects {
                             ]);
                         })
                     );
+            })
+        );
+
+    @Effect() loadCalendar$ = this.actions$
+        .ofType(ConnectionActions.LOAD_CALENDAR)
+        .pipe(
+            startWith(new ConnectionActions.LoadCalendar()),
+            switchMap((action) => this._connection.loadCalendar()),
+            map((races: Race[]) => new ConnectionActions.SetCalendar(races)),
+            catchError((error) => {
+                return from([new ConnectionActions.HideLoading(), new ConnectionActions.ShowAlert({
+                    severity: 'danger',
+                    message: 'Could not load calendar. Check your internet connection and try again.',
+                    action: 'Retry',
+                    actions: [new ConnectionActions.LoadCalendar()]
+                })]);
             })
         );
 
