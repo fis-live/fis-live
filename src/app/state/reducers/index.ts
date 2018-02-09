@@ -47,7 +47,15 @@ export function enableBatching(reducer: ActionReducer<AppState>): ActionReducer<
 export function resetState(reducer: ActionReducer<AppState>): ActionReducer<AppState> {
     return function(state, action) {
         if (action.type === ConnectionActions.RESET) {
-            state = undefined;
+            state = {
+                alert: undefined,
+                intermediates: undefined,
+                raceInfo: undefined,
+                result: undefined,
+                settings: state.settings,
+                loading: undefined,
+                calendar: state.calendar
+            };
         }
 
         return reducer(state, action);
