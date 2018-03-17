@@ -9,8 +9,8 @@
 
 
 
-@import "~@clr/ui/src/forms/utils/form-variables.clarity";
-@import "~@clr/ui/src/forms/utils/mixins.clarity";
+@import "~@clr/ui/src/forms-deprecated/utils/form-variables.clarity";
+@import "~@clr/ui/src/forms-deprecated/utils/mixins.clarity";
 
 @import "~@clr/ui/src/typography/typography.clarity";
 @import "~@clr/ui/src/typography/lists.clarity";
@@ -27,9 +27,9 @@
 @import "~@clr/ui/src/layout/nav/sidenav.clarity";
 @import "~@clr/ui/src/layout/tabs/tabs.clarity";
 @import "~@clr/ui/src/layout/nav/header.clarity";
-@import "~@clr/ui/src/forms/select.clarity";
-@import "~@clr/ui/src/forms/inputs.clarity";
-@import "~@clr/ui/src/forms/checkbox/checkbox.clarity";
+@import "~@clr/ui/src/forms-deprecated/select.clarity";
+@import "~@clr/ui/src/forms-deprecated/inputs.clarity";
+@import "~@clr/ui/src/forms-deprecated/checkbox/checkbox.clarity";
 @import "~@clr/ui/src/popover/dropdown/dropdown.clarity";
 
 @import "styles/overwrites.app";

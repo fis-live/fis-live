@@ -6,7 +6,7 @@ import { AppModule } from './app/app.module';
 import './assets/main.scss';
 import './assets/vendor.css';
 
-if (process.env.ENV === 'production') {
+if (process.env.NODE_ENV === 'production') {
     enableProdMode();
 }
 

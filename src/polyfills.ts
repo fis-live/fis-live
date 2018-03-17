@@ -18,7 +18,7 @@ import 'zone.js/dist/zone';
 
 import 'web-animations-js';
 
-if (process.env.ENV === 'production') {
+if (process.env.NODE_ENV === 'production') {
 
 } else {
     Error['stackTraceLimit'] = Infinity;

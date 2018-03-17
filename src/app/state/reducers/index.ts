@@ -1,5 +1,4 @@
 import { ActionReducer, ActionReducerMap, createSelector, MetaReducer } from '@ngrx/store';
-import { storeFreeze } from 'ngrx-store-freeze';
 import { localStorageSync } from 'ngrx-store-localstorage';
 
 import * as ConnectionActions from '../actions/connection';
@@ -66,9 +65,7 @@ export function localStorageSyncReducer(reducer: ActionReducer<AppState>): Actio
     return localStorageSync({keys: ['settings'], removeOnUndefined: true, rehydrate: true})(reducer);
 }
 
-export const metaReducers: MetaReducer<AppState>[] = process.env.ENV === 'production' ?
-    [enableBatching, resetState, localStorageSyncReducer] :
-    [ enableBatching, resetState, localStorageSyncReducer, storeFreeze];
+export const metaReducers: MetaReducer<AppState>[] = [enableBatching, resetState, localStorageSyncReducer];
 
 export const getAlertState = (state: AppState) => state.alert;
 export const getCalendarState = (state: AppState) => state.calendar;
