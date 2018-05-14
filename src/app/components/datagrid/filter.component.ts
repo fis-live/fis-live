@@ -2,8 +2,7 @@ import {
     AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component,
     ElementRef, OnDestroy, Renderer2
 } from '@angular/core';
-import { Observable } from 'rxjs/Observable';
-import { Subject } from 'rxjs/Subject';
+import { Observable, Subject } from 'rxjs';
 
 import { AbstractPopover } from '../utils/abstract-popover';
 

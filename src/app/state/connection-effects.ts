@@ -1,9 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Actions, Effect } from '@ngrx/effects';
 import { Action, Store } from '@ngrx/store';
-import { empty } from 'rxjs/observable/empty';
-import { from } from 'rxjs/observable/from';
-import { of } from 'rxjs/observable/of';
+import { EMPTY, from, of } from 'rxjs';
 import { catchError, delay, map, mapTo, mergeMap, startWith, switchMap, tap } from 'rxjs/operators';
 
 import { parseMain, parseUpdate } from '../fis/fis-parser';
@@ -68,7 +66,7 @@ export class ConnectionEffects {
             mergeMap(actions => of(new ConnectionActions.Batch(actions))),
             catchError((error) => {
                 console.log(error);
-                return empty();
+                return EMPTY;
             })
         );
 
@@ -76,7 +74,7 @@ export class ConnectionEffects {
         .ofType(ConnectionActions.LOAD_UPDATE, ConnectionActions.STOP_UPDATE)
         .pipe(switchMap(action => {
                 if (action.type === ConnectionActions.STOP_UPDATE) {
-                    return empty();
+                    return EMPTY;
                 }
 
                 return this._connection.poll()

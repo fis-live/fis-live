@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { Action, Store } from '@ngrx/store';
-import { Observable } from 'rxjs/Observable';
+import { Observable } from 'rxjs';
 
 import { CloseAlert } from './state/actions/connection';
 import { AppState, getAlertState } from './state/reducers/';

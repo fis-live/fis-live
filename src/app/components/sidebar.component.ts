@@ -3,7 +3,7 @@ import {
     ChangeDetectionStrategy, Component, EventEmitter, Input, Output
 } from '@angular/core';
 import { Store } from '@ngrx/store';
-import { Observable } from 'rxjs/Observable';
+import { Observable } from 'rxjs';
 
 import { nationalities } from '../fis/fis-constants';
 import { Racer } from '../models/racer';

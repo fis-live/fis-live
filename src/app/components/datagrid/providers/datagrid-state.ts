@@ -1,7 +1,5 @@
 import { Injectable, OnDestroy } from '@angular/core';
-import { BehaviorSubject } from 'rxjs/BehaviorSubject';
-import { Observable } from 'rxjs/Observable';
-import { Subscription } from 'rxjs/Subscription';
+import { BehaviorSubject, Observable, Subscription } from 'rxjs';
 
 import { maxVal, statusMap, timeToStatusMap } from '../../../fis/fis-constants';
 import { ResultService } from '../../../services/result.service';

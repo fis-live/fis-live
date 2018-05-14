@@ -1,10 +1,7 @@
 import { HttpClient, HttpErrorResponse, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Action } from '@ngrx/store';
-import { Observable } from 'rxjs/Observable';
-import { of } from 'rxjs/observable/of';
-import { _throw } from 'rxjs/observable/throw';
-import { timer } from 'rxjs/observable/timer';
+import { Observable, of, throwError, timer } from 'rxjs';
 import { catchError, map, repeat, retry, switchMap, timeout } from 'rxjs/operators';
 
 import { FisServer } from '../models/fis-server';
@@ -134,7 +131,7 @@ export class FisConnectionService {
 
         this.delay = (this.delay > 0) ? this.delay : 1000;
 
-        return _throw(error);
+        return throwError(error);
     }
 
     public loadCalendar(): Observable<Race[]> {
@@ -145,7 +142,7 @@ export class FisConnectionService {
                     const errMsg = (error instanceof Error) ? error :
                         (error instanceof Response) ? new Error(`${error.status} - ${error.statusText}`) : new Error('Server error');
 
-                    return _throw(errMsg);
+                    return throwError(errMsg);
                 })
             );
     }

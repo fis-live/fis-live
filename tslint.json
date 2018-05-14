@@ -2,9 +2,6 @@
   "rulesDirectory": [
     "node_modules/codelyzer"
   ],
-  "extends": [
-    "rxjs-tslint-rules"
-  ],
   "rules": {
     "angular-whitespace": [true, "check-semicolon", "check-interpolation", "check-pipe"],
     "callable-types": true,
@@ -16,7 +13,6 @@
     "curly": true,
     "eofline": true,
     "forin": true,
-    "import-blacklist": [true, "rxjs"],
     "import-spacing": true,
     "indent": [
       true,
@@ -89,7 +85,6 @@
         "variable-declaration": "nospace"
       }
     ],
-    "typeof-compare": true,
     "unified-signatures": true,
     "variable-name": false,
     "whitespace": [
@@ -116,10 +111,6 @@
     "no-access-missing-member": false,
     "templates-use-public": false,
     "invoke-injectable": false,
-    "rxjs-no-add": { "severity": "error" },
-    "rxjs-no-operator": { "severity": "error" },
-    "rxjs-no-patched": { "severity": "error" },
-    "rxjs-no-wholesale": { "severity": "error" },
     "no-duplicate-imports": true,
     "ordered-imports": [
       true,

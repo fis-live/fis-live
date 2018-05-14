@@ -1,12 +1,10 @@
 const ContextReplacementPlugin = require('webpack').ContextReplacementPlugin;
-const webpack = require('webpack');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const AngularCompilerPlugin = require('@ngtools/webpack').AngularCompilerPlugin;
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 const PurifyPlugin = require('@angular-devkit/build-optimizer').PurifyPlugin;
 const CheckerPlugin = require('awesome-typescript-loader').CheckerPlugin;
 
-const rxPaths = require('rxjs/_esm5/path-mapping');
 const path = require("path");
 
 module.exports = function(env, argv) {
@@ -79,8 +77,7 @@ module.exports = function(env, argv) {
         },
 
         resolve: {
-            extensions: ['.js', '.ts'],
-            alias: rxPaths(path.resolve(__dirname, '../node_modules'))
+            extensions: ['.js', '.ts']
         },
 
         module: {
