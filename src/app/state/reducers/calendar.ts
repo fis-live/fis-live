@@ -1,11 +1,11 @@
 import { Race } from '../../models/race';
-import * as ConnectionActions from '../actions/connection';
+import { ConnectionAction, ConnectionActionTypes } from '../actions/connection';
 
 export type State = Race[];
 
-export function reducer(state: State = [], action: ConnectionActions.ConnectionAction): State {
+export function reducer(state: State = [], action: ConnectionAction): State {
     switch (action.type) {
-        case ConnectionActions.SET_CALENDAR:
+        case ConnectionActionTypes.SetCalendar:
             return action.payload;
 
         default:

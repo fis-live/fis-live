@@ -2,25 +2,26 @@ import { Action } from '@ngrx/store';
 
 import { Racer } from '../../models/racer';
 
-
-export const TOGGLE_FAVORITE = '[Settings] Toggle favorite';
-export const SET_DELAY = '[Settings] Set delay';
-export const RESET = '[Settings] Reset settings';
+export const enum SettingsActionTypes {
+    ToggleFavorite = '[Settings] Toggle favorite',
+    SetDelay = '[Settings] Set delay',
+    Reset = '[Settings] Reset settings'
+}
 
 export class ToggleFavorite implements Action {
-    readonly type = TOGGLE_FAVORITE;
+    readonly type = SettingsActionTypes.ToggleFavorite;
 
     constructor(public payload: Racer) { }
 }
 
 export class SetDelay implements Action {
-    readonly type = SET_DELAY;
+    readonly type = SettingsActionTypes.SetDelay;
 
     constructor(public payload: number) { }
 }
 
 export class ResetSettings implements Action {
-    readonly type = RESET;
+    readonly type = SettingsActionTypes.Reset;
 
     constructor() { }
 }

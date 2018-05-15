@@ -2,108 +2,109 @@ import { Action } from '@ngrx/store';
 
 import { Race } from '../../models/race';
 
-export const LOAD_SERVERS = '[Connection] Load servers';
-export const SELECT_SERVER = '[Connection] Select server';
-export const SHOW_ALERT = '[Alert] Show alert';
-export const LOAD_MAIN = '[Connection] Load main';
-export const LOAD_PDF = '[Connection] Load pdf';
-export const LOAD_UPDATE = '[Connection] Load update';
-export const LOAD_CALENDAR = '[Connection] Load calendar';
-export const SET_CALENDAR = '[Connection] Set calendar';
-export const STOP_UPDATE = '[Connection] Stop updating';
-export const RESET = '[Connection] Reset state';
-export const CLOSE_ALERT = '[Alert] Close alert';
-export const SHOW_LOADING = '[Loading] Show loading indicator';
-export const HIDE_LOADING = '[Loading] Hide loading indicator';
-export const BATCH = '[Connection] Batch action';
+export const enum ConnectionActionTypes {
+    LoadServers = '[Connection] Load servers',
+    SelectServer = '[Connection] Select server',
+    ShowAlert = '[Alert] Show alert',
+    LoadMain = '[Connection] Load main',
+    LoadPdf = '[Connection] Load pdf',
+    LoadUpdate = '[Connection] Load update',
+    LoadCalendar = '[Connection] Load calendar',
+    SetCalendar = '[Connection] Set calendar',
+    StopUpdate = '[Connection] Stop updating',
+    Reset = '[Connection] Reset state',
+    CloseAlert = '[Alert] Close alert',
+    ShowLoading = '[Loading] Show loading indicator',
+    HideLoading = '[Loading] Hide loading indicator',
+    Batch = '[Connection] Batch action'
+}
 
-
-export class LoadServer implements Action {
-    readonly type = LOAD_SERVERS;
+export class LoadServers implements Action {
+    readonly type = ConnectionActionTypes.LoadServers;
 
     constructor() { }
 }
 
 export class SelectServer implements Action {
-    readonly type = SELECT_SERVER;
+    readonly type = ConnectionActionTypes.SelectServer;
 
     constructor() { }
 }
 
 export class ShowAlert implements Action {
-    readonly type = SHOW_ALERT;
+    readonly type = ConnectionActionTypes.ShowAlert;
 
     constructor(public payload: any) { }
 }
 
 export class Reset implements Action {
-    readonly type = RESET;
+    readonly type = ConnectionActionTypes.Reset;
 
     constructor() { }
 }
 
 export class LoadMain implements Action {
-    readonly type = LOAD_MAIN;
+    readonly type = ConnectionActionTypes.LoadMain;
 
     constructor(public payload: number) { }
 }
 
 export class LoadPdf implements Action {
-    readonly type = LOAD_PDF;
+    readonly type = ConnectionActionTypes.LoadPdf;
 
     constructor(public payload: string) { }
 }
 
 export class LoadUpdate implements Action {
-    readonly type = LOAD_UPDATE;
+    readonly type = ConnectionActionTypes.LoadUpdate;
 
     constructor() { }
 }
 
 export class LoadCalendar implements Action {
-    readonly type = LOAD_CALENDAR;
+    readonly type = ConnectionActionTypes.LoadCalendar;
 
     constructor() { }
 }
 
 export class SetCalendar implements Action {
-    readonly type = SET_CALENDAR;
+    readonly type = ConnectionActionTypes.SetCalendar;
 
     constructor(public payload: Race[]) { }
 }
 
 export class StopUpdate implements Action {
-    readonly type = STOP_UPDATE;
+    readonly type = ConnectionActionTypes.StopUpdate;
 
     constructor() { }
 }
 
 export class CloseAlert implements Action {
-    readonly type = CLOSE_ALERT;
+    readonly type = ConnectionActionTypes.CloseAlert;
 
     constructor() { }
 }
 
 export class ShowLoading implements Action {
-    readonly type = SHOW_LOADING;
+    readonly type = ConnectionActionTypes.ShowLoading;
 
     constructor() { }
 }
 
 export class HideLoading implements Action {
-    readonly type = HIDE_LOADING;
+    readonly type = ConnectionActionTypes.HideLoading;
 
     constructor() { }
 }
 
 export class Batch implements Action {
-    readonly type = BATCH;
+    readonly type = ConnectionActionTypes.Batch;
 
     constructor(public payload: Action[]) { }
 }
 
 export type ConnectionAction
-    = LoadServer
+    = LoadServers
     | SelectServer
     | ShowAlert
     | Reset

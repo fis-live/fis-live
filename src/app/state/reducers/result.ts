@@ -2,7 +2,7 @@ import { createEntityAdapter, EntityAdapter, EntityState } from '@ngrx/entity';
 
 import { maxVal } from '../../fis/fis-constants';
 import { Racer } from '../../models/racer';
-import * as RaceActions from '../actions/race';
+import { RaceAction, RaceActionTypes } from '../actions/race';
 
 export interface RacerData {
     id: number;
@@ -75,9 +75,9 @@ const insertTime = (state, sortedTimes, _times, racer, time, inter) => {
     return changes;
 };
 
-export function reducer(state: State = initialState, action: RaceActions.RaceAction): State {
+export function reducer(state: State = initialState, action: RaceAction): State {
     switch (action.type) {
-        case RaceActions.ADD_INTERMEDIATE: {
+        case RaceActionTypes.AddIntermediate: {
             return {
                 ...state,
                 interMap: {...state.interMap, [action.payload.id]: action.payload.key},
@@ -85,7 +85,7 @@ export function reducer(state: State = initialState, action: RaceActions.RaceAct
             };
         }
 
-        case RaceActions.ADD_RACER: {
+        case RaceActionTypes.AddRacer: {
             const racer: Racer = action.payload;
 
             return adapter.addOne({
@@ -98,7 +98,7 @@ export function reducer(state: State = initialState, action: RaceActions.RaceAct
             }, state);
         }
 
-        case RaceActions.ADD_NOTE: {
+        case RaceActionTypes.AddNote: {
             return adapter.updateOne({
                 id: action.payload.racer,
                 changes: {
@@ -107,7 +107,7 @@ export function reducer(state: State = initialState, action: RaceActions.RaceAct
             }, state);
         }
 
-        // case RaceActions.SET_BIB_COLOR: {
+        // case RaceActionTypes.SetBibColor: {
         //     return adapter.updateOne({
         //         id: action.payload.racer,
         //         changes: {
@@ -116,7 +116,7 @@ export function reducer(state: State = initialState, action: RaceActions.RaceAct
         //     }, state);
         // }
 
-        case RaceActions.ADD_START_LIST: {
+        case RaceActionTypes.AddStartList: {
             return adapter.updateOne({
                 id: action.payload.racer,
                 changes: {
@@ -127,7 +127,7 @@ export function reducer(state: State = initialState, action: RaceActions.RaceAct
             }, state);
         }
 
-        case RaceActions.SET_START_TIME: {
+        case RaceActionTypes.SetStartTime: {
             const times = state.entities[action.payload.racer].times.slice();
             times[0] = Object.assign({}, times[0], {time: action.payload.time});
 
@@ -135,7 +135,7 @@ export function reducer(state: State = initialState, action: RaceActions.RaceAct
             return adapter.updateOne({id: action.payload.racer, changes: {times, diffs}}, state);
         }
 
-        case RaceActions.SET_STATUS: {
+        case RaceActionTypes.SetStatus: {
             return {
                 ...adapter.updateOne({
                 id: action.payload.id,
@@ -145,7 +145,7 @@ export function reducer(state: State = initialState, action: RaceActions.RaceAct
             }, state), history: [{racer: action.payload.id, inter: 0, update: true}, ...state.history]};
         }
 
-        case RaceActions.REGISTER_RESULT: {
+        case RaceActionTypes.RegisterResult: {
             const inter = state.interMap[action.payload.intermediate];
             const time = action.payload.time || maxVal * 6;
             const racer = action.payload.racer;

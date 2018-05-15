@@ -1,6 +1,6 @@
 import { Meteo } from '../../models/meteo';
 import { RaceInfo } from '../../models/race-info';
-import * as RaceActions from '../actions/race';
+import { RaceAction, RaceActionTypes } from '../actions/race';
 
 export interface State {
     info: RaceInfo;
@@ -35,9 +35,9 @@ const initialState: State = {
 };
 
 
-export function reducer(state: State = initialState, action: RaceActions.RaceAction): State {
+export function reducer(state: State = initialState, action: RaceAction): State {
     switch (action.type) {
-        case RaceActions.UPDATE_RACE_INFO:
+        case RaceActionTypes.UpdateRaceInfo:
             const info = action.payload;
 
             return {
@@ -46,7 +46,7 @@ export function reducer(state: State = initialState, action: RaceActions.RaceAct
                 message: state.message
             };
 
-        case RaceActions.SET_RACE_MESSAGE:
+        case RaceActionTypes.SetRaceMessage:
             const message: string = action.payload;
 
             return {
@@ -55,7 +55,7 @@ export function reducer(state: State = initialState, action: RaceActions.RaceAct
                 message: message
             };
 
-        case RaceActions.UPDATE_METEO:
+        case RaceActionTypes.UpdateMeteo:
             const meteo = action.payload;
 
             return {

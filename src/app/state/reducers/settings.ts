@@ -1,5 +1,5 @@
 import { Racer } from '../../models/racer';
-import * as SettingsActions from '../actions/settings';
+import { SettingsAction, SettingsActionTypes } from '../actions/settings';
 
 export interface State {
     favoriteRacers: Racer[];
@@ -12,9 +12,9 @@ const initialState: State = {
 };
 
 
-export function reducer(state: State = initialState, action: SettingsActions.SettingsAction): State {
+export function reducer(state: State = initialState, action: SettingsAction): State {
     switch (action.type) {
-        case SettingsActions.TOGGLE_FAVORITE:
+        case SettingsActionTypes.ToggleFavorite:
             const racer: Racer = action.payload;
 
             if (state.favoriteRacers.find((row) => row.id === racer.id) != null) {
@@ -29,7 +29,7 @@ export function reducer(state: State = initialState, action: SettingsActions.Set
                 delay: state.delay
             };
 
-        case SettingsActions.SET_DELAY:
+        case SettingsActionTypes.SetDelay:
             const delay: number = action.payload;
 
             return {
@@ -37,7 +37,7 @@ export function reducer(state: State = initialState, action: SettingsActions.Set
                 delay: delay
             };
 
-        case SettingsActions.RESET:
+        case SettingsActionTypes.Reset:
             return initialState;
 
 

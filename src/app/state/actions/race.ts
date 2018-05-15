@@ -3,93 +3,84 @@ import { Action } from '@ngrx/store';
 import { Intermediate } from '../../models/intermediate';
 import { Racer } from '../../models/racer';
 
-export const REGISTER_RESULT = '[Result] Register result';
-export const ADD_RACER = '[Racer] Add racer';
-export const SET_STATUS = '[Racer] Set status';
-export const UPDATE_RACE_INFO = '[Info] Update race info';
-export const SET_RACE_MESSAGE = '[Info] Set message';
-export const ADD_INTERMEDIATE = '[Intermediate] Add intermediate';
-export const ADD_START_LIST = '[Start list] Add entry';
-export const UPDATE_METEO = '[Info] Update meteo';
-export const SET_START_TIME = '[Result] Register start time';
-export const SET_BIB_COLOR = '[Racer] Set bib color';
-export const ADD_NOTE = '[Racer] Set wave start';
+export const enum RaceActionTypes {
+    RegisterResult = '[Result] Register result',
+    AddRacer = '[Racer] Add racer',
+    SetStatus = '[Racer] Set status',
+    UpdateRaceInfo = '[Info] Update race info',
+    SetRaceMessage = '[Info] Set message',
+    AddIntermediate = '[Intermediate] Add intermediate',
+    AddStartList = '[Start list] Add entry',
+    UpdateMeteo = '[Info] Update meteo',
+    SetStartTime = '[Result] Register start time',
+    SetBibColor = '[Racer] Set bib color',
+    AddNote = '[Racer] Set wave start'
+}
 
 export class RegisterResult implements Action {
-    readonly type = REGISTER_RESULT;
+    readonly type = RaceActionTypes.RegisterResult;
 
-    constructor(public payload: any) {
-    }
+    constructor(public payload: any) { }
 }
 
 export class AddRacer implements Action {
-    readonly type = ADD_RACER;
+    readonly type = RaceActionTypes.AddRacer;
 
-    constructor(public payload: Racer) {
-    }
+    constructor(public payload: Racer) { }
 }
 
 export class SetStatus implements Action {
-    readonly type = SET_STATUS;
+    readonly type = RaceActionTypes.SetStatus;
 
-    constructor(public payload: any) {
-    }
+    constructor(public payload: any) { }
 }
 
 export class SetBibColor implements Action {
-    readonly type = SET_BIB_COLOR;
+    readonly type = RaceActionTypes.SetBibColor;
 
-    constructor(public payload: any) {
-    }
+    constructor(public payload: any) { }
 }
 
 export class SetStartTime implements Action {
-    readonly type = SET_START_TIME;
+    readonly type = RaceActionTypes.SetStartTime;
 
-    constructor(public payload: any) {
-    }
+    constructor(public payload: any) { }
 }
 
 export class AddNote implements Action {
-    readonly type = ADD_NOTE;
+    readonly type = RaceActionTypes.AddNote;
 
-    constructor(public payload: any) {
-    }
+    constructor(public payload: any) { }
 }
 
 export class UpdateRaceInfo implements Action {
-    readonly type = UPDATE_RACE_INFO;
+    readonly type = RaceActionTypes.UpdateRaceInfo;
 
-    constructor(public payload: any) {
-    }
+    constructor(public payload: any) { }
 }
 
 export class SetRaceMessage implements Action {
-    readonly type = SET_RACE_MESSAGE;
+    readonly type = RaceActionTypes.SetRaceMessage;
 
-    constructor(public payload: any) {
-    }
+    constructor(public payload: any) { }
 }
 
 export class AddIntermediate implements Action {
-    readonly type = ADD_INTERMEDIATE;
+    readonly type = RaceActionTypes.AddIntermediate;
 
-    constructor(public payload: Intermediate) {
-    }
+    constructor(public payload: Intermediate) { }
 }
 
 export class AddStartList implements Action {
-    readonly type = ADD_START_LIST;
+    readonly type = RaceActionTypes.AddStartList;
 
-    constructor(public payload: any) {
-    }
+    constructor(public payload: any) { }
 }
 
 export class UpdateMeteo implements Action {
-    readonly type = UPDATE_METEO;
+    readonly type = RaceActionTypes.UpdateMeteo;
 
-    constructor(public payload: any) {
-    }
+    constructor(public payload: any) { }
 }
 
 

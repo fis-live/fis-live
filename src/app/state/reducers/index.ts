@@ -1,7 +1,7 @@
 import { ActionReducer, ActionReducerMap, createSelector, MetaReducer } from '@ngrx/store';
 import { localStorageSync } from 'ngrx-store-localstorage';
 
-import * as ConnectionActions from '../actions/connection';
+import { ConnectionActionTypes } from '../actions/connection';
 
 import * as Alert from './alert';
 import * as Calendar from './calendar';
@@ -35,7 +35,7 @@ export interface AppState {
 export function enableBatching(reducer: ActionReducer<AppState>): ActionReducer<AppState> {
     return function batchingReducer(state, action: any) {
         switch (action.type) {
-            case ConnectionActions.BATCH:
+            case ConnectionActionTypes.Batch:
                 return action.payload.reduce(batchingReducer, state);
             default:
                 return reducer(state, action);
@@ -45,7 +45,7 @@ export function enableBatching(reducer: ActionReducer<AppState>): ActionReducer<
 
 export function resetState(reducer: ActionReducer<AppState>): ActionReducer<AppState> {
     return function(state, action) {
-        if (action.type === ConnectionActions.RESET) {
+        if (action.type === ConnectionActionTypes.Reset) {
             state = {
                 alert: undefined,
                 intermediates: undefined,
