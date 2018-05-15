@@ -1,4 +1,4 @@
-import { ConnectionAction, ConnectionActionTypes} from '../actions/connection';
+import { ConnectionAction, ConnectionActionTypes } from '../actions/connection';
 
 export type State = boolean;
 
