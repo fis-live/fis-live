@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { fromEvent, Observable } from 'rxjs';
-import { distinctUntilChanged, map, pluck, publishReplay, refCount, startWith } from 'rxjs/operators';
+import { distinctUntilChanged, map, publishReplay, refCount, startWith } from 'rxjs/operators';
 
 const getWindowSize = () => {
     return {
@@ -24,13 +24,13 @@ export class WindowSize {
 
     constructor() {
         const windowSize$ = createWindowSize$();
-        this.width$ = (windowSize$.pipe(
-            pluck('width'),
+        this.width$ = windowSize$.pipe(
+            map(window => window.width),
             distinctUntilChanged()
-        ) as Observable<number>);
-        this.height$ = (windowSize$.pipe(
-            pluck('height'),
+        );
+        this.height$ = windowSize$.pipe(
+            map(window => window.height),
             distinctUntilChanged()
-        ) as Observable<number>);
+        );
     }
 }

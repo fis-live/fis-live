@@ -1,4 +1,4 @@
-import { Race } from '../../models/race';
+import { Race, RacesByPlace } from '../../models/race';
 import { ConnectionAction, ConnectionActionTypes } from '../actions/connection';
 
 export type State = Race[];
@@ -14,7 +14,7 @@ export function reducer(state: State = [], action: ConnectionAction): State {
 }
 
 export const getRacesByPlace = (state: State) => {
-    const ret = [];
+    const ret: RacesByPlace[] = [];
     state.forEach((race) => {
         if (ret.length > 5) {
             return;

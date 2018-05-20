@@ -1,12 +1,10 @@
 import { Injectable } from '@angular/core';
 import { Actions, Effect } from '@ngrx/effects';
-import { Action, Store } from '@ngrx/store';
+import { Store } from '@ngrx/store';
 import { EMPTY, from, of } from 'rxjs';
 import { catchError, delay, map, mapTo, mergeMap, startWith, switchMap, tap } from 'rxjs/operators';
 
 import { parseMain, parseUpdate } from '../fis/fis-parser';
-import { FisServer } from '../models/fis-server';
-import { Race } from '../models/race';
 import { FisConnectionService } from '../services/fis-connection';
 
 import {
@@ -28,11 +26,12 @@ export class ConnectionEffects {
     public delay = 0;
 
     @Effect() loadServers$ = this.actions$
-        .ofType(ConnectionActionTypes.LoadServers).pipe(
+        .ofType<LoadServers>(ConnectionActionTypes.LoadServers)
+        .pipe(
             startWith(new LoadServers()),
             switchMap(() => this._connection.getServerList()),
-            map((servers: FisServer[]) => new SelectServer()),
-            catchError((error) => {
+            map(() => new SelectServer()),
+            catchError(() => {
                 return of(new ShowAlert({
                     severity: 'danger',
                     message: 'Could not connect to FIS. Check your internet connection and try again.',
@@ -43,23 +42,23 @@ export class ConnectionEffects {
         );
 
     @Effect({dispatch: false}) selectServer$ = this.actions$
-        .ofType(ConnectionActionTypes.SelectServer).pipe(tap((action => this._connection.selectServer())));
+        .ofType(ConnectionActionTypes.SelectServer).pipe(tap(() => this._connection.selectServer()));
 
     @Effect() loadMain$ = this.actions$
-        .ofType(ConnectionActionTypes.LoadMain)
+        .ofType<LoadMain>(ConnectionActionTypes.LoadMain)
         .pipe(
             switchMap((action: LoadMain) => this._connection.loadMain(action.payload)),
             mergeMap(data => {
                 const actions = parseMain(data);
                 const suffix = data.runinfo[1] === 'Q' ? 'QUA' : 'SL';
 
-                return of<Action>(new Batch([new Reset(), ...actions]),
+                return of(new Batch([new Reset(), ...actions]),
                     new HideLoading(),
                     new LoadPdf(suffix),
                     new LoadUpdate()
                 );
             }),
-            catchError((error) => {
+            catchError(() => {
                 return from([new HideLoading(), new ShowAlert({
                     severity: 'danger',
                     message: 'Could not find live data. Check the codex and try again.',
@@ -70,9 +69,9 @@ export class ConnectionEffects {
         );
 
     @Effect() loadPdf$ = this.actions$
-        .ofType(ConnectionActionTypes.LoadPdf)
+        .ofType<LoadPdf>(ConnectionActionTypes.LoadPdf)
         .pipe(
-            switchMap((action: LoadPdf) => this._connection.loadPdf(action.payload)),
+            switchMap((action) => this._connection.loadPdf(action.payload)),
             mergeMap(actions => of(new Batch(actions))),
             catchError((error) => {
                 console.log(error);
@@ -90,11 +89,11 @@ export class ConnectionEffects {
                 return this._connection.poll()
                     .pipe(
                         mergeMap(data => {
-                        const actions = parseUpdate(data);
+                            const actions = parseUpdate(data);
 
-                        return from(actions).pipe(delay(this.delay));
+                            return from(actions).pipe(delay(this.delay));
                         }),
-                        catchError((error) => {
+                        catchError(() => {
                             return from([
                                 new SelectServer(),
                                 new LoadMain(null)
@@ -105,12 +104,12 @@ export class ConnectionEffects {
         );
 
     @Effect() loadCalendar$ = this.actions$
-        .ofType(ConnectionActionTypes.LoadCalendar)
+        .ofType<LoadCalendar>(ConnectionActionTypes.LoadCalendar)
         .pipe(
             startWith(new LoadCalendar()),
-            switchMap((action) => this._connection.loadCalendar()),
-            map((races: Race[]) => new SetCalendar(races)),
-            catchError((error) => {
+            switchMap(() => this._connection.loadCalendar()),
+            map((races) => new SetCalendar(races)),
+            catchError(() => {
                 return from([new HideLoading(), new ShowAlert({
                     severity: 'danger',
                     message: 'Could not load calendar. Check your internet connection and try again.',

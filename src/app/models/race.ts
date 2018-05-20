@@ -8,3 +8,9 @@ export interface Race {
     discipline: string;
     gender: string;
 }
+
+export interface RacesByPlace {
+    liveCount: number;
+    date: string;
+    places: [{place: string; races: Race[]}];
+}
