@@ -2,8 +2,9 @@ import { Injectable } from '@angular/core';
 import { Store } from '@ngrx/store';
 import { BehaviorSubject, Observable, Subscription } from 'rxjs';
 
+import { RacerData } from '../models/racer';
 import { AppState, getResultState } from '../state/reducers/';
-import { RacerData, State } from '../state/reducers/result';
+import { State } from '../state/reducers/result';
 
 @Injectable()
 export class ResultService {

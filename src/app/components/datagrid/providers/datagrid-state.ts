@@ -56,15 +56,15 @@ export class DatagridState implements OnDestroy {
         const count = this._results.rows.length;
         for (let i = 0; i < count; i++) {
             const row = this._results.rows[i];
-            if (row.times[this.inter] !== undefined) {
+            if (row.results[this.inter] !== undefined) {
                 let diff;
                 if (this.diff === 0) {
-                    diff = row.diffs[this.inter][this.diff] + this._results.rows[0].times[0].time;
+                    diff = row.results[this.inter].diffs[this.diff] + this._results.rows[0].results[0].time;
                 } else {
-                    diff = row.diffs[this.inter][this.diff];
+                    diff = row.results[this.inter].diffs[this.diff];
                 }
                 fastestDiff = (diff < fastestDiff) ? diff : fastestDiff;
-                fastestTime = (row.times[this.inter].time < fastestTime) ? row.times[this.inter].time : fastestTime;
+                fastestTime = (row.results[this.inter].time < fastestTime) ? row.results[this.inter].time : fastestTime;
                 let state = 'normal';
 
                 if (this.inter === 0) {
@@ -78,9 +78,9 @@ export class DatagridState implements OnDestroy {
                 }
 
                 const classes = [row.racer.nationality.toLowerCase(), state];
-                if (row.times[this.inter].rank === 1 && this.inter > 0) {
+                if (row.results[this.inter].rank === 1 && this.inter > 0) {
                     classes.push('leader');
-                } else if (row.times[this.inter].rank == null) {
+                } else if (row.results[this.inter].rank == null) {
                     classes.push('disabled');
                 }
 
@@ -94,11 +94,11 @@ export class DatagridState implements OnDestroy {
                 rows.push({
                     state: state,
                     racer: row.racer,
-                    time: this.inter === 0 ? row.status : row.times[this.inter].time,
-                    time_sort: this.inter === 0 ? row.status : row.times[this.inter].time,
-                    rank: row.times[this.inter].rank,
+                    time: this.inter === 0 ? row.status : row.results[this.inter].time,
+                    time_sort: this.inter === 0 ? row.status : row.results[this.inter].time,
+                    rank: row.results[this.inter].rank,
                     diff: diff,
-                    diff_sort: row.diffs[this.inter][this.diff],
+                    diff_sort: row.results[this.inter].diffs[this.diff],
                     name: row.racer.lastName + ', ' + row.racer.firstName,
                     notes: row.notes,
                     classes: classes
