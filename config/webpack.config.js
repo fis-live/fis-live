@@ -4,6 +4,7 @@ const AngularCompilerPlugin = require('@ngtools/webpack').AngularCompilerPlugin;
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 const PurifyPlugin = require('@angular-devkit/build-optimizer').PurifyPlugin;
 const CheckerPlugin = require('awesome-typescript-loader').CheckerPlugin;
+const UglifyJsPlugin = require('uglifyjs-webpack-plugin');
 
 const path = require("path");
 
@@ -19,6 +20,62 @@ module.exports = function(env, argv) {
             options: {
                 sourceMap: false
             }
+        },
+        {
+            test: /\.css$/,
+            exclude: path.resolve(__dirname, '../src/app'),
+            use: [
+                MiniCssExtractPlugin.loader,
+                {
+                    loader: 'css-loader',
+                    options: {
+                        importLoaders: 1
+                    }
+                },
+                {
+                    loader: 'postcss-loader',
+                    options: {
+                        plugins: (loader) => [
+                            require('cssnano')({
+                                preset: ['default', {
+                                    discardComments: {
+                                        removeAll: true,
+                                    }
+                                }]
+                            })
+                        ]
+                    }
+                }
+            ]
+        },
+        {
+            test: /\.scss$|\.sass$/,
+            exclude: path.resolve(__dirname, '../src/app'),
+            use: [
+                MiniCssExtractPlugin.loader,
+                {
+                    loader: 'css-loader',
+                    options: {
+                        importLoaders: 2
+                    }
+                },
+                {
+                    loader: 'postcss-loader',
+                    options: {
+                        plugins: (loader) => [
+                            require('autoprefixer')(),
+                            require('cssnano')({
+                                preset: ['default', {
+                                    discardComments: {
+                                        removeAll: true,
+                                    }
+                                }]
+                            })
+                        ]
+                    }
+                },
+                'sass-loader'
+            ]
         }
     ];
 
@@ -36,15 +93,43 @@ module.exports = function(env, argv) {
                     loader: 'angular2-template-loader'
                 }
             ]
+        },
+        {
+            test: /\.css$/,
+            exclude: path.resolve(__dirname, '../src/app'),
+            use: [
+                'style-loader',
+                'css-loader'
+            ]
+        },
+        {
+            test: /\.scss$|\.sass$/,
+            exclude: path.resolve(__dirname, '../src/app'),
+            use: [
+                'style-loader',
+                {
+                    loader: 'css-loader',
+                    options: {
+                        importLoaders: 1
+                    }
+                },
+                'sass-loader'
+            ]
         }
     ];
+
+    const isProd = env.mode === 'prod';
+    const filename = isProd ? '[name].[hash]' : '[name]';
 
     const prodPlugins = [
         new AngularCompilerPlugin({
             tsConfigPath: path.resolve(__dirname, '../tsconfig.json'),
             entryModule: path.resolve(__dirname, '../src/app/app.module#AppModule')
         }),
-        new PurifyPlugin()
+        new PurifyPlugin(),
+        new MiniCssExtractPlugin({
+            filename: 'assets/' + filename + '.css'
+        })
     ];
 
     const devPlugins = [
@@ -53,15 +138,14 @@ module.exports = function(env, argv) {
 
 
     const publicPath = argv['output-public-path'] ? argv['output-public-path'] : '/';
-    const mode = env.mode === 'prod' ? 'production' : 'development';
-    const loaders = env.mode === 'prod' ? prodLoaders : devLoaders;
-    const plugins = env.mode === 'prod' ? prodPlugins : devPlugins;
-    const filename = env.mode === 'prod' ? '[name].[hash]' : '[name]';
-    const chunkFilename = env.mode === 'prod' ? '[id].[hash].chunk' : '[id].chunk';
-    const output = env.mode === 'prod' ? {
+    const mode = isProd ? 'production' : 'development';
+    const loaders = isProd ? prodLoaders : devLoaders;
+    const plugins = isProd ? prodPlugins : devPlugins;
+    const chunkFilename = isProd ? '[id].[hash].chunk' : '[id].chunk';
+    const output = isProd ? {
         path: path.resolve(__dirname, '../dist'),
     } : {};
-    const dev = env.mode === 'prod' ? {} : {
+    const dev = isProd ? {} : {
         devtool: 'cheap-module-eval-source-map',
         devServer: {
             historyApiFallback: true,
@@ -69,6 +153,22 @@ module.exports = function(env, argv) {
             port: 8080
         }
     };
+
+    const prod = isProd ? {
+        optimization: {
+            minimizer: [
+                    new UglifyJsPlugin({
+                        cache: true,
+                        parallel: true,
+                        uglifyOptions: {
+                            output: {
+                                comments: false
+                            }
+                        }
+                    })
+                ]
+            }
+    } : {};
 
     return {
         entry: {
@@ -94,48 +194,13 @@ module.exports = function(env, argv) {
                     options: {
                         name: 'assets/' + filename + '.[ext]'
                     }
-                },
-                {
-                    test: /\.css$/,
-                    exclude: path.resolve(__dirname, '../src/app'),
-                    use: [
-                        MiniCssExtractPlugin.loader,
-                        {
-                            loader: 'css-loader',
-                            options: {
-                                minimize: mode === 'production'
-                            }
-                        }
-                    ]
-                },
-                {
-                    test: /\.scss$|\.sass$/,
-                    exclude: path.resolve(__dirname, '../src/app'),
-                    use: [
-                        MiniCssExtractPlugin.loader,
-                        {
-                            loader: 'css-loader',
-                            options: {
-                                importLoaders: 2, // 0 => no loaders (default); 1 => postcss-loader; 2 => postcss-loader, sass-loader
-                                minimize: mode === 'production'
-                            }
-                        },
-                        {
-                            loader: 'postcss-loader',
-                            options: {
-                                plugins: (loader) => [
-                                    require('autoprefixer')()
-                                ]
-                            }
-                        },
-                        'sass-loader'
-                    ]
                 }
             ]
         },
 
         mode: mode,
         ...dev,
+        ...prod,
 
         performance: {
             hints: false
@@ -150,9 +215,6 @@ module.exports = function(env, argv) {
 
         plugins: [
             ...plugins,
-            new MiniCssExtractPlugin({
-                filename: 'assets/' + filename + '.css'
-            }),
             new HtmlWebpackPlugin({
                 template: path.resolve(__dirname, '../src/index.html'),
                 baseHref: publicPath,
