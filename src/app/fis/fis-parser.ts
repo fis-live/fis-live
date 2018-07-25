@@ -57,7 +57,7 @@ export function parseMain(data: any): Action[] {
         }
 
         if (def[2] && def[2] > 0) {
-            name += ' ' + def[2] + ' KM';
+            name += ' ' + def[2] + ' ' + raceInfo.lengthUnit.toUpperCase();
             name = name.trim();
         }
 
