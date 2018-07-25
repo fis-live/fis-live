@@ -23,8 +23,7 @@ table {
         > div {
             box-sizing: border-box;
             overflow: hidden;
-            padding: 4px 8px;
-            height: 24px;
+            padding: 0 8px;
         }
     }
 
@@ -40,7 +39,7 @@ table {
         > div {
             box-sizing: border-box;
             border-bottom: 2px solid $app-table-bordercolor;
-            padding: 4px 4px 4px 8px;
+            padding: 0 4px 0 8px;
         }
 
         &:not(:last-child)::before {

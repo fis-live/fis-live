@@ -12,13 +12,12 @@ import { Columns } from './providers/datagrid-state';
         trigger('newRow', [
             transition('void => new', [
                 query('td > div', [
-                    style({backgroundColor: '#FFF', maxHeight: '0px', padding: '0 8px', overflow: 'hidden'}),
+                    style({backgroundColor: '#FFF', maxHeight: '0px'}),
                     group([
                         animate('800ms ease',
                             style({
                                 backgroundColor: '#F7D57F',
                                 maxHeight: '24px',
-                                padding: '4px 8px'
                             })),
                         animate('600ms 5000ms ease', style({
                             backgroundColor: '*',
@@ -28,15 +27,15 @@ import { Columns } from './providers/datagrid-state';
             ]),
 
             transition('normal => update', [
-                    style({backgroundColor: '*'}),
-                    animate('1000ms ease', keyframes([
-                        style({
-                            backgroundColor: '#D8E1FF',
-                        }),
-                        style({
-                            backgroundColor: '*',
-                        })
-                    ]))
+                style({backgroundColor: '*'}),
+                animate('1000ms ease', keyframes([
+                    style({
+                        backgroundColor: '#D8E1FF',
+                    }),
+                    style({
+                        backgroundColor: '*',
+                    })
+                ]))
             ])
         ])
     ],
