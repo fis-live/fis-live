@@ -10,14 +10,13 @@ import { FisConnectionService } from '../services/fis-connection';
 import {
     Batch,
     ConnectionActionTypes,
-    HideLoading,
-    LoadCalendar,
-    LoadMain, LoadPdf, LoadServers, LoadUpdate, Reset,
+    LoadCalendar, LoadMain, LoadPdf, LoadServers, LoadUpdate,
+    Reset,
     SelectServer,
     SetCalendar,
-    ShowAlert,
-    ShowLoading
+    ShowAlert
 } from './actions/connection';
+import { HideLoading, ShowLoading } from './actions/loading';
 import { AppState, getDelayState } from './reducers';
 
 @Injectable()

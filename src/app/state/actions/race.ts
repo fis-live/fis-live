@@ -1,5 +1,6 @@
 import { Action } from '@ngrx/store';
 
+import { Note, Result, StartListEntry, Status } from '../../fis/models';
 import { Intermediate } from '../../models/intermediate';
 import { Racer } from '../../models/racer';
 
@@ -7,11 +8,8 @@ export const enum RaceActionTypes {
     RegisterResult = '[Result] Register result',
     AddRacer = '[Racer] Add racer',
     SetStatus = '[Racer] Set status',
-    UpdateRaceInfo = '[Info] Update race info',
-    SetRaceMessage = '[Info] Set message',
     AddIntermediate = '[Intermediate] Add intermediate',
     AddStartList = '[Start list] Add entry',
-    UpdateMeteo = '[Info] Update meteo',
     SetStartTime = '[Result] Register start time',
     SetBibColor = '[Racer] Set bib color',
     AddNote = '[Racer] Set wave start'
@@ -20,7 +18,7 @@ export const enum RaceActionTypes {
 export class RegisterResult implements Action {
     readonly type = RaceActionTypes.RegisterResult;
 
-    constructor(public payload: any) { }
+    constructor(public payload: Result) { }
 }
 
 export class AddRacer implements Action {
@@ -32,7 +30,7 @@ export class AddRacer implements Action {
 export class SetStatus implements Action {
     readonly type = RaceActionTypes.SetStatus;
 
-    constructor(public payload: any) { }
+    constructor(public payload: Status) { }
 }
 
 export class SetBibColor implements Action {
@@ -50,19 +48,7 @@ export class SetStartTime implements Action {
 export class AddNote implements Action {
     readonly type = RaceActionTypes.AddNote;
 
-    constructor(public payload: any) { }
-}
-
-export class UpdateRaceInfo implements Action {
-    readonly type = RaceActionTypes.UpdateRaceInfo;
-
-    constructor(public payload: any) { }
-}
-
-export class SetRaceMessage implements Action {
-    readonly type = RaceActionTypes.SetRaceMessage;
-
-    constructor(public payload: any) { }
+    constructor(public payload: Note) { }
 }
 
 export class AddIntermediate implements Action {
@@ -74,13 +60,7 @@ export class AddIntermediate implements Action {
 export class AddStartList implements Action {
     readonly type = RaceActionTypes.AddStartList;
 
-    constructor(public payload: any) { }
-}
-
-export class UpdateMeteo implements Action {
-    readonly type = RaceActionTypes.UpdateMeteo;
-
-    constructor(public payload: any) { }
+    constructor(public payload: StartListEntry) { }
 }
 
 
@@ -91,8 +71,5 @@ export type RaceAction
     | SetBibColor
     | SetStartTime
     | AddNote
-    | UpdateRaceInfo
-    | SetRaceMessage
     | AddIntermediate
-    | AddStartList
-    | UpdateMeteo;
+    | AddStartList;

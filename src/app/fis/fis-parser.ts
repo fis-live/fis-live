@@ -3,10 +3,8 @@ import { Action } from '@ngrx/store';
 import { Meteo } from '../models/meteo';
 import { RaceInfo } from '../models/race-info';
 import { Batch, LoadMain, StopUpdate } from '../state/actions/connection';
-import {
-    AddIntermediate, AddRacer, AddStartList, RegisterResult,
-    SetRaceMessage, SetStatus, UpdateMeteo, UpdateRaceInfo
-} from '../state/actions/race';
+import { SetRaceMessage, UpdateMeteo, UpdateRaceInfo } from '../state/actions/info';
+import { AddIntermediate, AddRacer, AddStartList, RegisterResult, SetStatus } from '../state/actions/race';
 
 import { nationalities, statusToTimeMap } from './fis-constants';
 

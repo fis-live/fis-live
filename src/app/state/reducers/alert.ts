@@ -22,7 +22,7 @@ const initialState: State = {
 export function reducer(state: State = initialState, action: ConnectionAction): State {
     switch (action.type) {
         case ConnectionActionTypes.ShowAlert:
-            const alert: any = action.payload;
+            const alert = action.payload;
 
             return {
                 isOpen: true,

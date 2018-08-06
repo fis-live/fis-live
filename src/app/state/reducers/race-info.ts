@@ -1,6 +1,6 @@
 import { Meteo } from '../../models/meteo';
 import { RaceInfo } from '../../models/race-info';
-import { RaceAction, RaceActionTypes } from '../actions/race';
+import { InfoAction, InfoActionTypes } from '../actions/info';
 
 export interface State {
     info: RaceInfo;
@@ -35,35 +35,28 @@ const initialState: State = {
 };
 
 
-export function reducer(state: State = initialState, action: RaceAction): State {
+export function reducer(state: State = initialState, action: InfoAction): State {
     switch (action.type) {
-        case RaceActionTypes.UpdateRaceInfo:
-            const info = action.payload;
-
+        case InfoActionTypes.UpdateRaceInfo:
             return {
-                info: Object.assign({}, state.info, info),
+                info: {...state.info, ...action.raceInfo},
                 meteo: state.meteo,
                 message: state.message
             };
 
-        case RaceActionTypes.SetRaceMessage:
-            const message: string = action.payload;
-
+        case InfoActionTypes.SetRaceMessage:
             return {
                 info: state.info,
                 meteo: state.meteo,
-                message: message
+                message: action.message
             };
 
-        case RaceActionTypes.UpdateMeteo:
-            const meteo = action.payload;
-
+        case InfoActionTypes.UpdateMeteo:
             return {
                 info: state.info,
-                meteo: Object.assign({}, state.meteo, meteo),
+                meteo: {...state.meteo, ...action.meteo},
                 message: state.message
             };
-
 
         default:
             return state;

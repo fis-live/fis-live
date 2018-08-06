@@ -1,5 +1,6 @@
 import { Action } from '@ngrx/store';
 
+import { Alert } from '../../models/alert';
 import { Race } from '../../models/race';
 
 export const enum ConnectionActionTypes {
@@ -14,8 +15,6 @@ export const enum ConnectionActionTypes {
     StopUpdate = '[Connection] Stop updating',
     Reset = '[Connection] Reset state',
     CloseAlert = '[Alert] Close alert',
-    ShowLoading = '[Loading] Show loading indicator',
-    HideLoading = '[Loading] Hide loading indicator',
     Batch = '[Connection] Batch action'
 }
 
@@ -34,7 +33,7 @@ export class SelectServer implements Action {
 export class ShowAlert implements Action {
     readonly type = ConnectionActionTypes.ShowAlert;
 
-    constructor(public payload: any) { }
+    constructor(public payload: Alert) { }
 }
 
 export class Reset implements Action {
@@ -85,18 +84,6 @@ export class CloseAlert implements Action {
     constructor() { }
 }
 
-export class ShowLoading implements Action {
-    readonly type = ConnectionActionTypes.ShowLoading;
-
-    constructor() { }
-}
-
-export class HideLoading implements Action {
-    readonly type = ConnectionActionTypes.HideLoading;
-
-    constructor() { }
-}
-
 export class Batch implements Action {
     readonly type = ConnectionActionTypes.Batch;
 
@@ -115,6 +102,4 @@ export type ConnectionAction
     | SetCalendar
     | StopUpdate
     | CloseAlert
-    | ShowLoading
-    | HideLoading
     | Batch;

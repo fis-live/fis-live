@@ -1,15 +1,15 @@
-import { ConnectionAction, ConnectionActionTypes } from '../actions/connection';
+import { LoadingAction, LoadingActionTypes } from '../actions/loading';
 
 export type State = boolean;
 
 const initialState: State = false;
 
-export function reducer(state: State = initialState, action: ConnectionAction): State {
+export function reducer(state: State = initialState, action: LoadingAction): State {
     switch (action.type) {
-        case ConnectionActionTypes.ShowLoading:
+        case LoadingActionTypes.ShowLoading:
             return true;
 
-        case ConnectionActionTypes.HideLoading:
+        case LoadingActionTypes.HideLoading:
             return false;
 
         default:
