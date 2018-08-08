@@ -1,12 +1,13 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, Renderer2 } from '@angular/core';
 import { Observable } from 'rxjs';
 
+import { Columns } from '../../models/table';
+
 import { AbstractPopover } from '../utils/abstract-popover';
 
-import { Columns, DatagridState } from './providers/datagrid-state';
+import { DatagridState } from './providers/datagrid-state';
 
 @Component({
-
     selector: 'app-dg-settings',
     template: `
             <button (click)="toggle()" [class.active]="open" class="btn btn-sm btn-link column-toggle--action" type="button">

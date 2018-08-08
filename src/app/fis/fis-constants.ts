@@ -280,7 +280,11 @@ export const statusMap = {
     'start': 'Started',
     'finish': 'Finished',
     'lapped': 'Lapped',
-    'nextstart': 'Next to start'
+    'nextstart': 'Next to start',
+    'ral': 'RAL',
+    'dnf': 'DNF',
+    'dq': 'DQ',
+    'dns': 'DNS'
 };
 
 export const timeToStatusMap = {

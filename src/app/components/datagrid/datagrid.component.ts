@@ -1,9 +1,7 @@
 import { animate, group, keyframes, query, style, transition, trigger } from '@angular/animations';
 import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
 
-import { ResultItem, TableConfiguration } from '../tab.component';
-
-import { Columns } from './providers/datagrid-state';
+import { Columns, ResultItem, TableConfiguration } from '../../models/table';
 
 @Component({
     selector: 'app-table',
@@ -42,7 +40,6 @@ import { Columns } from './providers/datagrid-state';
     changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class DatagridComponent {
-    public rows: ResultItem[];
     private _config: TableConfiguration;
     @Input() public breakpoint: string;
 
@@ -50,8 +47,8 @@ export class DatagridComponent {
 
     @Input()
     public set config(config: TableConfiguration) {
+        console.log(config);
         this._config = config;
-        this.rows = config.rows;
     }
 
     public get config() {
@@ -59,13 +56,13 @@ export class DatagridComponent {
             return {
                 isStartList: true,
                 rows: [],
-                cols: ['bib']
+                fastest: {time: 0, diff: 0}
             };
         }
         return this._config;
     }
 
-    public track(index: number, item: any): number {
-        return item.racer.bib;
+    public track(index: number, item: ResultItem): number {
+        return item.bib;
     }
 }

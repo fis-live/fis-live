@@ -8,8 +8,20 @@ export interface Racer {
     isFavorite: boolean;
 }
 
+export interface Prop<T> {
+    value: T;
+    display: T | string;
+}
+
+export interface Standing {
+    version: number;
+    ids: number[];
+    leader: number;
+    bestDiff: number[];
+}
+
 export interface Result {
-    time: number;
+    time: Prop<number>;
     rank: number | null;
     diffs: number[];
 }

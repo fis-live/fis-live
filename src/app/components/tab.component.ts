@@ -2,28 +2,13 @@ import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
 import { Store } from '@ngrx/store';
 import { Observable } from 'rxjs';
 
-
 import { Intermediate } from '../models/intermediate';
-import { Racer } from '../models/racer';
+import { Columns, TableConfiguration } from '../models/table';
 import { AppState, selectAllIntermediates } from '../state/reducers';
 
-import { Columns, DatagridState } from './datagrid/providers/datagrid-state';
+import { DatagridState } from './datagrid/providers/datagrid-state';
 import { Filters } from './datagrid/providers/filter';
 import { Sort } from './datagrid/providers/sort';
-
-export interface ResultItem {
-    racer: Racer;
-    time: number;
-    status: string;
-    diff: number;
-    rank: number;
-}
-
-export interface TableConfiguration {
-    isStartList: boolean;
-    rows: any[];
-    cols: string[];
-}
 
 @Component({
     selector: 'app-tab',

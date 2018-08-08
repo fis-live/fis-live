@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Observable, Subject, Subscription } from 'rxjs';
+import { BehaviorSubject, Observable, Subject, Subscription } from 'rxjs';
 
 import { Filter } from '../interfaces/filter';
 
@@ -11,7 +11,7 @@ interface FilterWithSub {
 
 @Injectable()
 export class Filters {
-    private _change = new Subject<any>();
+    private _change = new BehaviorSubject<any>(null);
 
     public get change(): Observable<any> {
         return this._change.asObservable();
@@ -32,13 +32,13 @@ export class Filters {
 
     public add(filter: Filter): () => void {
         const index = this._all.length;
-        const subscription = filter.changes.subscribe(() => this._change.next());
+        const subscription = filter.changes.subscribe(() => this._change.next(null));
         this._all.push({filter, subscription});
 
         return () => {
             subscription.unsubscribe();
             this._all.splice(index, 1);
-            this._change.next();
+            this._change.next(null);
         };
     }
 

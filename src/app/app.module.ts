@@ -6,6 +6,7 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { RouterModule } from '@angular/router';
 import { EffectsModule } from '@ngrx/effects';
 import { StoreModule } from '@ngrx/store';
+import { StoreDevtoolsModule } from '@ngrx/store-devtools';
 
 import { AppComponent } from './app.component';
 import { ContainerComponent } from './components/container.component';
@@ -25,7 +26,6 @@ import { FocusDirective } from './components/utils/focus.directive';
 import { ScrollbarDirective } from './components/utils/scrollbar.directive';
 import { appRoutes } from './routes';
 import { FisConnectionService } from './services/fis-connection';
-import { ResultService } from './services/result.service';
 import { WindowSize } from './services/window-size';
 import { ConnectionEffects } from './state/connection-effects';
 import { metaReducers, reducers } from './state/reducers';
@@ -56,9 +56,10 @@ import { metaReducers, reducers } from './state/reducers';
         BrowserAnimationsModule,
         RouterModule.forRoot(appRoutes, { useHash: true }),
         StoreModule.forRoot(reducers, { metaReducers: metaReducers }),
+        StoreDevtoolsModule.instrument(),
         EffectsModule.forRoot([ConnectionEffects])
     ],
-    providers: [ FisConnectionService, WindowSize, ResultService ],
+    providers: [ FisConnectionService, WindowSize ],
     bootstrap: [ AppComponent ]
 })
 export class AppModule {

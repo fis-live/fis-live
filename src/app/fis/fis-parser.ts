@@ -6,7 +6,7 @@ import { Batch, LoadMain, StopUpdate } from '../state/actions/connection';
 import { SetRaceMessage, UpdateMeteo, UpdateRaceInfo } from '../state/actions/info';
 import { AddIntermediate, AddRacer, AddStartList, RegisterResult, SetStatus } from '../state/actions/race';
 
-import { nationalities, statusToTimeMap } from './fis-constants';
+import { nationalities, statusMap, statusToTimeMap } from './fis-constants';
 
 export function parseMain(data: any): Action[] {
     const actions: Action[] = [];
@@ -82,7 +82,7 @@ export function parseMain(data: any): Action[] {
             actions.push(
                 new AddStartList({
                     racer: data.startlist[i][0],
-                    status: data.startlist[i][1] || '',
+                    status: statusMap[data.startlist[i][1]] || data.startlist[i][1] || '',
                     order: i + 1
                 })
             );
@@ -94,7 +94,7 @@ export function parseMain(data: any): Action[] {
                 case 'dns':
                     actions.push(
                         new RegisterResult({
-                            status: data.startlist[i][1],
+                            status: statusMap[data.startlist[i][1]] || data.startlist[i][1] || '',
                             intermediate: 99,
                             racer: data.startlist[i][0],
                             time: statusToTimeMap[data.startlist[i][1]]
@@ -144,13 +144,13 @@ export function parseUpdate(data: any): Action[] {
                 case 'lapped':
                     actions.push(
                         new RegisterResult({
-                            status: event[0],
+                            status: statusMap[event[0]],
                             intermediate: 99,
                             racer: event[2],
                             time: statusToTimeMap[event[0]]
                         })
                     );
-                    actions.push(new SetStatus({id: event[2], status: event[0]}));
+                    actions.push(new SetStatus({id: event[2], status: statusMap[event[0]]}));
                     break;
                 case 'q':
                 case 'nq':
@@ -158,7 +158,7 @@ export function parseUpdate(data: any): Action[] {
                 case 'ff':
                 case 'start':
                 case 'nextstart':
-                    actions.push(new SetStatus({id: event[2], status: event[0]}));
+                    actions.push(new SetStatus({id: event[2], status: statusMap[event[0]]}));
                     break;
                 case 'meteo':
                     actions.push(new UpdateMeteo({

@@ -1,12 +1,12 @@
 import { Injectable } from '@angular/core';
-import { Observable, Subject } from 'rxjs';
+import { BehaviorSubject, Observable, Subject } from 'rxjs';
 
 @Injectable()
 export class Sort {
     public reverse = false;
     public comparator: string;
 
-    private _change = new Subject<Sort>();
+    private _change = new BehaviorSubject<Sort>(null);
 
     private getData(item: any, property: string): any {
         let value = item;
