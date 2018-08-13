@@ -55,8 +55,7 @@ export class DatagridComponent {
         if (this._config == null) {
             return {
                 isStartList: true,
-                rows: [],
-                fastest: {time: 0, diff: 0}
+                rows: []
             };
         }
         return this._config;

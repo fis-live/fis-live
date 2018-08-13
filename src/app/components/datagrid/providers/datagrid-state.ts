@@ -18,7 +18,6 @@ export class DatagridState {
         nationality: true,
         diff: true
     };
-    private fastest = {time: 0, diff: 0};
 
     public inter: number;
     public diff: number;
@@ -31,7 +30,7 @@ export class DatagridState {
     }
 
     public connect(): Observable<TableConfiguration> {
-        return         combineLatest(
+        return combineLatest(
             this.view.pipe(switchMap((view) => this.store.pipe(createViewSelector(view)))),
             this._sort.change,
             this._filters.change
@@ -44,13 +43,12 @@ export class DatagridState {
                 }
 
                 if (rows != null && this._sort.comparator) {
-                    rows.sort((a, b) => this._sort.compare(a, b));
+                    rows = rows.slice().sort((a, b) => this._sort.compare(a, b));
                 }
 
                 return {
                     rows: rows,
-                    isStartList: (this.inter === 0),
-                    fastest: this.fastest
+                    isStartList: (this.inter === 0)
                 };
             })
         );

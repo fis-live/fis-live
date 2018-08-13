@@ -22,5 +22,4 @@ export interface ResultItem {
 export interface TableConfiguration {
     isStartList: boolean;
     rows: ResultItem[];
-    fastest: {time: number, diff: number};
 }

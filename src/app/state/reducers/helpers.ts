@@ -5,11 +5,6 @@ import { RacerData, Result, Standing } from '../../models/racer';
 
 import { State } from './result';
 
-export interface Changeset {
-    changes: Update<RacerData>[];
-    updatedStandings: {[id: number]: Standing};
-}
-
 export function getValidDiff(time: number | null, zero: number | null): number {
     if (time == null || zero == null) {
         return maxVal;
@@ -27,23 +22,25 @@ function getDiffs(results: Result[], inter: number, time: number | null): number
 
     const diffs: number[] = [];
     for (let i = 0; i < inter; i++) {
-        diffs[i] = getValidDiff(time, results[i].time.value);
+        diffs[i] = getValidDiff(time, results[i].time);
     }
 
     return diffs;
 }
 
-export function registerResult(state: State, racer: number, time: number, inter: number): Changeset {
-    const changeset: Changeset = {changes: [], updatedStandings: {}};
+export function registerResult(state: State, racer: number, time: number, inter: number): {changes: Update<RacerData>[]; standings: {[id: number]: Standing}} {
+    const changes: Update<RacerData>[] = [];
+    const standings: {[id: number]: Standing} = {};
     const results = [...state.entities[racer].results];
+
     if (results.length < inter) {
-        const t = (time < maxVal) ? {value: maxVal * 6, display: 'N/A'} : {value: time, display: timeToStatusMap[time]};
+        const t = (time < maxVal) ? maxVal * 6 : time;
 
         for (let i = 0; i < inter; i++) {
             if (results[i] === undefined) {
-                results[i] = {time: t, rank: null, diffs: (new Array(i)).fill(maxVal)};
-                changeset.updatedStandings[i] = {
-                    leader: 0,
+                results[i] = {time: t, status: timeToStatusMap[time], rank: null, diffs: (new Array(i)).fill(maxVal)};
+                standings[i] = {
+                    leader: state.standings[i].leader,
                     bestDiff: state.standings[i].bestDiff,
                     version: state.standings[i].version + 1,
                     ids: [...state.standings[i].ids, racer]
@@ -58,16 +55,16 @@ export function registerResult(state: State, racer: number, time: number, inter:
     let diffs: number[] = [];
 
     if (time < maxVal) {
-        for (const t of state.standings[inter].ids) {
-            if (state.entities[t].results[inter].time.value < maxVal) {
-                if (time < state.entities[t].results[inter].time.value) {
-                    const res = [...state.entities[t].results];
+        for (const id of state.standings[inter].ids) {
+            if (state.entities[id].results[inter].time < maxVal) {
+                if (time < state.entities[id].results[inter].time) {
+                    const res = [...state.entities[id].results];
                     res[inter] = {...res[inter], rank: res[inter].rank + 1};
-                    changeset.changes.push({
-                        id: t,
+                    changes.push({
+                        id: id,
                         changes: {results: res}
                     });
-                } else if (time > state.entities[t].results[inter].time.value) {
+                } else if (time > state.entities[id].results[inter].time) {
                     rank += 1;
                 }
             }
@@ -78,7 +75,7 @@ export function registerResult(state: State, racer: number, time: number, inter:
         }
 
         for (let i = 0; i < inter; i++) {
-            diffs[i] = getValidDiff(time, results[i].time.value);
+            diffs[i] = getValidDiff(time, results[i].time);
             if (diffs[i] < bestDiff[i]) {
                 bestDiff[i] = diffs[i];
             }
@@ -88,30 +85,34 @@ export function registerResult(state: State, racer: number, time: number, inter:
         diffs = (new Array(inter)).fill(maxVal);
     }
 
-    changeset.updatedStandings[inter] = {
+    standings[inter] = {
         leader: leader,
         version: state.standings[inter].version + 1,
         bestDiff: bestDiff,
         ids: [...state.standings[inter].ids, racer]
     };
-    results[inter] = {time: {value: time, display: timeToStatusMap[time] || time}, rank, diffs: diffs};
-    changeset.changes.push({
+
+    results[inter] = {time: time, status: timeToStatusMap[time], rank, diffs: diffs};
+    changes.push({
         id: racer,
         changes: {results: results}
     });
 
-    return changeset;
+    return { changes, standings };
 }
 
-export function updateResult(state: State, racer: number, time: number, inter: number): Changeset {
-    const changeset: Changeset = {changes: [], updatedStandings: {}};
+export function updateResult(state: State, racer: number, time: number, inter: number): {changes: Update<RacerData>[]; standings: {[id: number]: Standing}} {
+    const changes: Update<RacerData>[] = [];
+    const standings: {[id: number]: Standing} = {};
+
     const results = [...state.entities[racer].results];
-    const prev = results[inter].time.value;
+    const prev = results[inter].time;
 
     let rank = 1;
     for (const id of state.standings[inter].ids) {
+        // TODO: Recheck leader and best diffs in this loop
         let rankAdj = 0;
-        const t = state.entities[id].results[inter].time.value;
+        const t = state.entities[id].results[inter].time;
 
         if (racer === id || t > maxVal) {
             continue;
@@ -130,7 +131,7 @@ export function updateResult(state: State, racer: number, time: number, inter: n
         if (rankAdj !== 0) {
             const res = [...state.entities[id].results];
             res[inter] = {...res[inter], rank: res[inter].rank + rankAdj};
-            changeset.changes.push({
+            changes.push({
                 id: id,
                 changes: {results: res}
             });
@@ -140,32 +141,35 @@ export function updateResult(state: State, racer: number, time: number, inter: n
     if (time > maxVal) {
         rank = null;
     }
-    results[inter] = {time: {value: time, display: timeToStatusMap[time] || time}, rank, diffs: getDiffs(results, inter, time)};
+    results[inter] = {time: time, status: timeToStatusMap[time], rank, diffs: getDiffs(results, inter, time)};
 
     for (let i = inter + 1; i < results.length; i++) {
         const diffs = [...results[i].diffs];
-        diffs[inter] = getValidDiff(results[i].time.value, time);
+        const bestDiff = state.standings[i].bestDiff;
+        if (diffs[inter] === bestDiff[inter]) {
+            // TODO: Recompute best diff
+        }
+        diffs[inter] = getValidDiff(results[i].time, time);
 
         results[i] = {...results[i], diffs};
-        changeset.updatedStandings[i] = {
-            leader: 0,
-            bestDiff: state.standings[i].bestDiff,
+        standings[i] = {
+            ...state.standings[i],
+            bestDiff,
             version: state.standings[i].version + 1,
-            ids: state.standings[i].ids
         };
     }
 
-    changeset.updatedStandings[inter] = {
+    standings[inter] = {
         leader: 0,
         bestDiff: state.standings[inter].bestDiff,
         version: state.standings[inter].version + 1,
         ids: [...state.standings[inter].ids, racer]
     };
 
-    changeset.changes.push({
+    changes.push({
         id: racer,
         changes: {results: results}
     });
 
-    return changeset;
+    return { changes, standings };
 }

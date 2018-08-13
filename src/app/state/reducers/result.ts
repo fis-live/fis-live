@@ -4,11 +4,11 @@ import { Observable, pipe, UnaryFunction } from 'rxjs';
 import { filter, map } from 'rxjs/operators';
 
 import { maxVal } from '../../fis/fis-constants';
-import { Racer, RacerData, Standing } from '../../models/racer';
+import { RacerData, Standing } from '../../models/racer';
 import { ResultItem } from '../../models/table';
 import { RaceAction, RaceActionTypes } from '../actions/race';
 
-import { Changeset, getValidDiff, registerResult, updateResult } from './helpers';
+import { getValidDiff, registerResult, updateResult } from './helpers';
 import { AppState, getResultState } from './index';
 
 export interface State extends EntityState<RacerData> {
@@ -34,13 +34,11 @@ export function reducer(state: State = initialState, action: RaceAction): State 
         }
 
         case RaceActionTypes.AddRacer: {
-            const racer: Racer = action.payload;
-
             return adapter.addOne({
-                id: racer.bib,
+                id: action.payload.bib,
                 status: '',
-                racer: racer,
-                results: [{time: {value: 0, display: 0}, rank: null, diffs: [0]}],
+                racer: action.payload,
+                results: [{time: 0, status: '', rank: null, diffs: [0]}],
                 notes: []
             }, state);
         }
@@ -57,12 +55,12 @@ export function reducer(state: State = initialState, action: RaceAction): State 
         case RaceActionTypes.AddStartList: {
             const standings = {...state.standings[0]};
             standings.ids = standings.ids.concat(action.payload.racer);
-            standings.version = standings.version + 1;
+            standings.version += 1;
             return {...adapter.updateOne({
                 id: action.payload.racer,
                 changes: {
                     status: action.payload.status,
-                    results: [{time: {value: 0, display: 0}, rank: action.payload.order, diffs: [0]}]
+                    results: [{time: 0, status: action.payload.status, rank: action.payload.order, diffs: [0]}]
                 }
             }, state),
                 standings: {...state.standings, [0]: standings}};
@@ -70,10 +68,10 @@ export function reducer(state: State = initialState, action: RaceAction): State 
 
         case RaceActionTypes.SetStartTime: {
             const results = [...state.entities[action.payload.racer].results];
-            results[0] = {...results[0], time: {value: action.payload.time, display: action.payload.time}, diffs: [action.payload.time]};
+            results[0] = {...results[0], time: action.payload.time, diffs: [action.payload.time]};
             for (let i = 1; i < results.length; i++) {
                 const diffs = [...results[i].diffs];
-                diffs[0] = getValidDiff(results[i].time.value, action.payload.time);
+                diffs[0] = getValidDiff(results[i].time, action.payload.time);
 
                 results[i] = {...results[i], diffs};
             }
@@ -96,7 +94,7 @@ export function reducer(state: State = initialState, action: RaceAction): State 
             const time = action.payload.time || maxVal * 6;
             const racer = action.payload.racer;
 
-            let changes: Changeset = {changes: [], updatedStandings: {}};
+            let changes = {changes: [], standings: {}};
 
             if (state.entities[racer].results.length > inter) {
                 changes = updateResult(state, racer, time, inter);
@@ -106,7 +104,7 @@ export function reducer(state: State = initialState, action: RaceAction): State 
 
             return {
                 ...adapter.updateMany(changes.changes, state),
-                standings: {...state.standings, ...changes.updatedStandings}
+                standings: {...state.standings, ...changes.standings}
             };
         }
 
@@ -168,6 +166,7 @@ export const createViewSelector = (view: {inter: number, diff: number}): UnaryFu
             for (const i of state.standings[view.inter].ids) {
                 const row = state.entities[i];
                 const diff = row.results[view.inter].diffs[view.diff];
+                const time = row.results[view.inter].time;
                 const _state = 'normal';
 
                 const classes = [row.racer.nationality.toLowerCase(), _state];
@@ -191,11 +190,11 @@ export const createViewSelector = (view: {inter: number, diff: number}): UnaryFu
                     bib: row.racer.bib,
                     nationality: row.racer.nationality,
                     time: view.inter === 0 ? {display: row.status, value: row.status} : {
-                        display: formatTime(row.results[view.inter].time.value, state.standings[view.inter].leader),
-                        value: row.results[view.inter].time.value
+                        display: time < maxVal ? formatTime(time, state.standings[view.inter].leader) : row.results[view.inter].status,
+                        value: time
                     },
                     rank: row.results[view.inter].rank,
-                    diff: formatTime(diff, state.standings[view.inter].bestDiff[view.diff]),
+                    diff: diff < maxVal ? formatTime(diff, state.standings[view.inter].bestDiff[view.diff]) : '',
                     name: {
                         display: row.racer.lastName + ', ' + row.racer.firstName,
                         value: row.racer.lastName + ', ' + row.racer.firstName

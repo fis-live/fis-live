@@ -21,14 +21,10 @@ export interface Standing {
 }
 
 export interface Result {
-    time: Prop<number>;
+    time: number;
+    status: string;
     rank: number | null;
     diffs: number[];
-}
-
-export interface RacerAndTime {
-    time: number;
-    racer: number;
 }
 
 export interface RacerData {
