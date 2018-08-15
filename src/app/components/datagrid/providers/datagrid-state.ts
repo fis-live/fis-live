@@ -19,10 +19,10 @@ export class DatagridState {
         diff: true
     };
 
-    public inter: number;
-    public diff: number;
+    public inter: number | null;
+    public diff: number | null;
 
-    private view: Subject<{inter: number, diff: number}> = new Subject<{inter: number, diff: number}>();
+    private view: Subject<{inter: number | null, diff: number | null}> = new Subject<{inter: number | null, diff: number | null}>();
 
     constructor(private _sort: Sort, private _filters: Filters, private store: Store<AppState>) {
         this._columns = new BehaviorSubject(this._visibleColumns);
@@ -58,15 +58,20 @@ export class DatagridState {
         return this._columns.asObservable();
     }
 
-    public setInter(inter: number): void {
-        this.inter = inter;
-        if (this.diff >= inter) {
+    public setInter(inter: number | null): void {
+        if (inter === null) {
             this.diff = null;
+            this.inter = null;
+        } else {
+            this.inter = inter;
+            if (this.diff !== null && this.diff >= inter) {
+                this.diff = null;
+            }
         }
         this.view.next({inter: this.inter, diff: this.diff});
     }
 
-    public setDiff(diff: number): void {
+    public setDiff(diff: number | null): void {
         this.diff = diff;
         this.view.next({inter: this.inter, diff: this.diff});
     }

@@ -6,7 +6,7 @@ export class Sort {
     public reverse = false;
     public comparator: string;
 
-    private _change = new BehaviorSubject<Sort>(null);
+    private _change = new BehaviorSubject<null>(null);
 
     private getData(item: any, property: string): any {
         let value = item;
@@ -22,10 +22,10 @@ export class Sort {
     }
 
     private emitChange() {
-        this._change.next(this);
+        this._change.next(null);
     }
 
-    public get change(): Observable<Sort> {
+    public get change(): Observable<null> {
         return this._change.asObservable();
     }
 

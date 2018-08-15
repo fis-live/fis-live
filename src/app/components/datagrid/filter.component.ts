@@ -45,7 +45,7 @@ export class FilterComponent extends AbstractPopover implements Filter, AfterVie
         return this._changes.asObservable();
     }
 
-    public input: string;
+    public input: string | null = null;
 
     constructor(private filters: Filters, el: ElementRef, renderer: Renderer2, cdr: ChangeDetectorRef) {
         super(el, renderer, cdr);
@@ -56,11 +56,11 @@ export class FilterComponent extends AbstractPopover implements Filter, AfterVie
     }
 
     public accepts(item: any): boolean {
-        return item.name.value.toLowerCase().indexOf(this.input.toLowerCase()) >= 0;
+        return this.input === null || item.name.value.toLowerCase().indexOf(this.input.toLowerCase()) >= 0;
     }
 
     isActive(): boolean {
-        return this.input && this.input.length > 0;
+        return this.input !== null && this.input.length > 0;
     }
 
     public filterChanged() {

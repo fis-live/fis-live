@@ -17,9 +17,9 @@ export function reducer(state: State = initialState, action: SettingsAction): St
         case SettingsActionTypes.ToggleFavorite:
             const racer: Racer = action.payload;
 
-            if (state.favoriteRacers.find((row) => row.id === racer.id) != null) {
+            if (state.favoriteRacers.find((row) => row.id === racer.id) !== undefined) {
                 return {
-                    favoriteRacers: state.favoriteRacers.reduce((arr, row) => (racer.id === row.id) ? arr : arr.concat(row), []),
+                    favoriteRacers: state.favoriteRacers.reduce((arr: Racer[], row) => (racer.id === row.id) ? arr : arr.concat(row), []),
                     delay: state.delay
                 };
             }

@@ -17,7 +17,7 @@ import { DatagridState } from './providers/datagrid-state';
 
             <app-dropdown *ngIf="config.diff" class="dropdown btn-success" [placeholder]="'Diff...'" [(selected)]="diff">
                 <button *ngFor="let item of diffs" [appDropdownItem]="item"
-                        [disabled]="inter == null || (item.key !== 0 && item.key >= inter.key)"
+                        [disabled]="isDisabled(item.key)"
                         class="dropdown-item">{{ item.name }}</button>
             </app-dropdown>
         </div>
@@ -28,8 +28,8 @@ import { DatagridState } from './providers/datagrid-state';
     changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class DatagridHeaderComponent {
-    private _inter: Intermediate;
-    private _diff: Intermediate;
+    private _inter: Intermediate | null = null;
+    private _diff: Intermediate | null = null;
     private _items: Intermediate[] = [];
     public diffs: Intermediate[] = [];
 
@@ -54,14 +54,18 @@ export class DatagridHeaderComponent {
 
     constructor(private _state: DatagridState) { }
 
-    public set inter(item: Intermediate) {
+    public isDisabled(key: number): boolean {
+        return this.inter === null || (key !== 0 && key >= this.inter.key);
+    }
+
+    public set inter(item: Intermediate | null) {
         if (item !== null) {
             this._inter = item;
-            if (this.diff != null && item.key <= this.diff.key) {
+            if (this.diff !== null && item.key <= this.diff.key) {
                 this.diff = null;
             }
 
-            this._state.setInter(this.inter.key);
+            this._state.setInter(item.key);
         } else {
             this._inter = item;
             this.diff = null;
@@ -73,9 +77,9 @@ export class DatagridHeaderComponent {
         return this._inter;
     }
 
-    public set diff(item: Intermediate) {
+    public set diff(item: Intermediate | null) {
         this._diff = item;
-        this._state.setDiff((item != null) ? item.key : null);
+        this._state.setDiff((item !== null) ? item.key : null);
     }
 
     public get diff() {

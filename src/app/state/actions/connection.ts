@@ -45,7 +45,7 @@ export class Reset implements Action {
 export class LoadMain implements Action {
     readonly type = ConnectionActionTypes.LoadMain;
 
-    constructor(public payload: number) { }
+    constructor(public payload: number | null) { }
 }
 
 export class LoadPdf implements Action {

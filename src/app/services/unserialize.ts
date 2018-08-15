@@ -42,7 +42,7 @@ export function unserialize(data: string): any {
     //     return s - 1;
     // };
 
-    const decodeChrXML = (_data) => {
+    const decodeChrXML = (_data: string): string => {
         _data = _data.replace(/&lt;/g, '<');
         _data = _data.replace(/&gt;/g, '>');
         _data = _data.replace(/&amp;/g, '&');
@@ -50,7 +50,7 @@ export function unserialize(data: string): any {
         return _data;
     };
 
-    const error = function (type: string, msg: string) {
+    const error = function (type: string, msg: string): never {
         if (type === 'Error') {
             throw new Error(msg);
         } else if (type === 'SyntaxError') {
@@ -60,12 +60,12 @@ export function unserialize(data: string): any {
         }
     };
 
-    const readUntil = function (_data, offset, stopchr) {
+    const readUntil = function (_data: string, offset: number, stopChar: string): string {
         let i = 2;
-        const buf = [];
+        const buf: string[] = [];
         let chr = _data.slice(offset, offset + 1);
 
-        while (chr !== stopchr) {
+        while (chr !== stopChar) {
             if ((i + offset) > _data.length) {
                 error('Error', 'Invalid');
             }
@@ -74,142 +74,97 @@ export function unserialize(data: string): any {
             i += 1;
         }
 
-        return {length: buf.length, buffer: buf.join('')};
+        return buf.join('');
     };
 
-    const readChrs = function (_data, offset, length) {
-        let i, chr, buf;
+    const readChars = function (_data: string, offset: number, length: number): string {
+        const buf: string[] = [];
 
-        buf = [];
-        for (i = 0; i < length; i++) {
-            chr = _data.slice(offset + (i - 1), offset + i);
-            buf.push(chr);
+        for (let i = 0; i < length; i++) {
+            buf.push(_data.slice(offset + (i - 1), offset + i));
             // length -= utf8Overhead(chr);
         }
 
-        return {length: buf.length, buffer: buf.join('')};
+        return buf.join('');
     };
 
-    const _unserialize = function (_data, offset) {
-        let dtype;
-        let dataoffset;
-        let keyandchrs;
-        let keys;
-        let contig;
-        let length;
-        let array;
-        let readdata;
-        let readData;
-        let ccount;
-        let stringlength;
-        let i;
-        let key;
-        let kprops;
-        let kchrs;
-        let vprops;
-        let vchrs;
-        let value;
-        let chrs = 0;
-        let typeconvert = function (x) {
-            return x;
-        };
-
+    const _unserialize = function (_data: string, offset: number): [string, number, any] {
         if (!offset) {
             offset = 0;
         }
-        dtype = (_data.slice(offset, offset + 1)).toLowerCase();
+        const type = (_data.slice(offset, offset + 1)).toLowerCase();
 
-        dataoffset = offset + 2;
+        let dataOffset = offset + 2;
+        let readData: string;
 
-        switch (dtype) {
+        switch (type) {
             case 'i':
-                typeconvert = function (x) {
-                    return parseInt(x, 10);
-                };
-                readData = readUntil(_data, dataoffset, ';');
-                chrs = readData.length;
-                readdata = readData.buffer;
-                dataoffset += chrs + 1;
-                break;
-            case 'b':
-                typeconvert = function (x) {
-                    return parseInt(x, 10) !== 0;
-                };
-                readData = readUntil(_data, dataoffset, ';');
-                chrs = readData.length;
-                readdata = readData.buffer;
-                dataoffset += chrs + 1;
-                break;
-            case 'd':
-                typeconvert = function (x) {
-                    return parseFloat(x);
-                };
-                readData = readUntil(_data, dataoffset, ';');
-                chrs = readData.length;
-                readdata = readData.buffer;
-                dataoffset += chrs + 1;
-                break;
-            case 'n':
-                readdata = null;
-                break;
-            case 's':
-                ccount = readUntil(_data, dataoffset, ':');
-                chrs = ccount.length;
-                stringlength = ccount.buffer;
-                dataoffset += chrs + 2;
+                readData = readUntil(_data, dataOffset, ';');
+                dataOffset += readData.length + 1;
 
-                readData = readChrs(_data, dataoffset + 1, parseInt(stringlength, 10));
-                chrs = readData.length;
-                readdata = readData.buffer;
-                dataoffset += chrs + 2;
-                if (chrs !== parseInt(stringlength, 10) && chrs !== readdata.length) {
+                return [type, dataOffset - offset, parseInt(readData, 10)];
+            case 'b':
+                readData = readUntil(_data, dataOffset, ';');
+                dataOffset += readData.length + 1;
+
+                return [type, dataOffset - offset, parseInt(readData, 10) !== 0];
+            case 'd':
+                readData = readUntil(_data, dataOffset, ';');
+                dataOffset += readData.length + 1;
+
+                return [type, dataOffset - offset, parseFloat(readData)];
+            case 'n':
+                return [type, dataOffset - offset, null];
+            case 's':
+                const count = readUntil(_data, dataOffset, ':');
+                const length = parseInt(count, 10);
+                dataOffset += count.length + 2;
+
+                readData = readChars(_data, dataOffset + 1, length);
+                dataOffset += readData.length + 2;
+                if (readData.length !== length) {
                     error('SyntaxError', 'String length mismatch');
                 }
-                break;
+
+                return [type, dataOffset - offset, readData];
             case 'a':
-                readdata = {};
+                let obj: any = {};
+                let isArray = true;
 
-                keyandchrs = readUntil(_data, dataoffset, ':');
-                chrs = keyandchrs.length;
-                keys = keyandchrs.buffer;
-                dataoffset += chrs + 2;
+                const keys = readUntil(_data, dataOffset, ':');
+                dataOffset += keys.length + 2;
 
-                length = parseInt(keys, 10);
-                contig = true;
+                const numKeys = parseInt(keys, 10);
 
-                for (i = 0; i < length; i++) {
-                    kprops = _unserialize(_data, dataoffset);
-                    kchrs = kprops[1];
-                    key = kprops[2];
-                    dataoffset += kchrs;
+                for (let i = 0; i < numKeys; i++) {
+                    const keyProps = _unserialize(_data, dataOffset);
+                    const key = keyProps[2];
+                    dataOffset += keyProps[1];
 
-                    vprops = _unserialize(_data, dataoffset);
-                    vchrs = vprops[1];
-                    value = vprops[2];
-                    dataoffset += vchrs;
+                    const valueProps = _unserialize(_data, dataOffset);
+                    dataOffset += valueProps[1];
 
-                    if (key !== i) {
-                        contig = false;
+                    if (keyProps[0] !== 'i' || key !== i) {
+                        isArray = false;
                     }
 
-                    readdata[key] = value;
+                    obj[key] = valueProps[2];
                 }
 
-                if (contig) {
-                    array = new Array(length);
-                    for (i = 0; i < length; i++) {
-                        array[i] = readdata[i];
+                if (isArray) {
+                    const array = new Array(numKeys);
+                    for (let i = 0; i < numKeys; i++) {
+                        array[i] = obj[i];
                     }
-                    readdata = array;
+                    obj = array;
                 }
 
-                dataoffset += 1;
-                break;
-            default:
-                error('SyntaxError', 'Unknown / Unhandled data type(s): ' + dtype);
-                break;
+                dataOffset += 1;
+
+                return [type, dataOffset - offset, obj];
         }
-        return [dtype, dataoffset - offset, typeconvert(readdata)];
+
+        throw new SyntaxError('Unknown / Unhandled data type(s): ' + type);
     };
 
     return _unserialize(decodeChrXML(data + ''), 0)[2];

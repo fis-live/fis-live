@@ -28,7 +28,9 @@ function getDiffs(results: Result[], inter: number, time: number | null): number
     return diffs;
 }
 
-export function registerResult(state: State, racer: number, time: number, inter: number): {changes: Update<RacerData>[]; standings: {[id: number]: Standing}} {
+export function registerResult(state: State,
+                               racer: number,
+                               time: number, inter: number): {changes: Update<RacerData>[]; standings: {[id: number]: Standing}} {
     const changes: Update<RacerData>[] = [];
     const standings: {[id: number]: Standing} = {};
     const results = [...state.entities[racer].results];
@@ -49,7 +51,7 @@ export function registerResult(state: State, racer: number, time: number, inter:
         }
     }
 
-    let rank: number = 1;
+    let rank: number | null = 1;
     let leader = state.standings[inter].leader;
     const bestDiff = state.standings[inter].bestDiff;
     let diffs: number[] = [];
@@ -59,7 +61,8 @@ export function registerResult(state: State, racer: number, time: number, inter:
             if (state.entities[id].results[inter].time < maxVal) {
                 if (time < state.entities[id].results[inter].time) {
                     const res = [...state.entities[id].results];
-                    res[inter] = {...res[inter], rank: res[inter].rank + 1};
+                    const _rank = res[inter].rank;
+                    res[inter] = {...res[inter], rank: _rank !== null ? _rank + 1 : null};
                     changes.push({
                         id: id,
                         changes: {results: res}
@@ -101,14 +104,16 @@ export function registerResult(state: State, racer: number, time: number, inter:
     return { changes, standings };
 }
 
-export function updateResult(state: State, racer: number, time: number, inter: number): {changes: Update<RacerData>[]; standings: {[id: number]: Standing}} {
+export function updateResult(state: State,
+                             racer: number,
+                             time: number, inter: number): {changes: Update<RacerData>[]; standings: {[id: number]: Standing}} {
     const changes: Update<RacerData>[] = [];
     const standings: {[id: number]: Standing} = {};
 
     const results = [...state.entities[racer].results];
     const prev = results[inter].time;
 
-    let rank = 1;
+    let rank: number | null = 1;
     for (const id of state.standings[inter].ids) {
         // TODO: Recheck leader and best diffs in this loop
         let rankAdj = 0;
@@ -130,7 +135,8 @@ export function updateResult(state: State, racer: number, time: number, inter: n
 
         if (rankAdj !== 0) {
             const res = [...state.entities[id].results];
-            res[inter] = {...res[inter], rank: res[inter].rank + rankAdj};
+            const _rank = res[inter].rank;
+            res[inter] = {...res[inter], rank: _rank !== null ? _rank + rankAdj : null};
             changes.push({
                 id: id,
                 changes: {results: res}

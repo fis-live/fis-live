@@ -7,8 +7,9 @@ import { SetRaceMessage, UpdateMeteo, UpdateRaceInfo } from '../state/actions/in
 import { AddIntermediate, AddRacer, AddStartList, RegisterResult, SetStatus } from '../state/actions/race';
 
 import { nationalities, statusMap, statusToTimeMap } from './fis-constants';
+import { Main, Update } from './models';
 
-export function parseMain(data: any): Action[] {
+export function parseMain(data: Main): Action[] {
     const actions: Action[] = [];
     const raceInfo: RaceInfo = {
         eventName: data.raceinfo[0],
@@ -38,9 +39,9 @@ export function parseMain(data: any): Action[] {
         air_temperature: data.meteo[0],
         wind: data.meteo[1],
         weather: data.meteo[2],
-        snow_condition: data.meteo[3],
-        snow_temperature: data.meteo[4],
-        humidity: data.meteo[5]
+        snow_temperature: data.meteo[3],
+        humidity: data.meteo[4],
+        snow_condition: data.meteo[5]
     };
 
     actions.push(new UpdateRaceInfo(raceInfo));
@@ -63,15 +64,16 @@ export function parseMain(data: any): Action[] {
     });
 
     for ( let i = 0; i < data.racers.length; i++ ) {
-        if (data.racers[i] !== null) {
+        const racer = data.racers[i];
+        if (racer !== null) {
             actions.push(new AddRacer({
-                    id: data.racers[i][0],
-                    bib: data.racers[i][1],
-                    firstName: data.racers[i][3].trim(),
-                    lastName: data.racers[i][2].trim().split(' ').map(char => char[0] + char.substr(1).toLowerCase()).join(' '),
-                    nationality:  nationalities[data.racers[i][4]] || data.racers[i][4],
+                    id: racer[0],
+                    bib: racer[1],
+                    firstName: racer[3].trim(),
+                    lastName: racer[2].trim().split(' ').map((char) => char[0] + char.substr(1).toLowerCase()).join(' '),
+                    nationality:  nationalities[racer[4]] || racer[4],
                     isFavorite: false,
-                    color: data.racers[i][5]
+                    color: racer[5]
                 })
             );
         }
@@ -106,10 +108,11 @@ export function parseMain(data: any): Action[] {
     }
 
     for ( let i = 0; i < data.result.length; i++ ) {
-        if (data.result[i]) {
-            for ( let j = 0; j < data.result[i].length; j++) {
+        const res = data.result[i];
+        if (res !== null) {
+            for ( let j = 0; j < res.length; j++) {
                 actions.push(
-                    new RegisterResult({status: '', intermediate: data.racedef[j][1], racer: i, time: data.result[i][j]})
+                    new RegisterResult({status: '', intermediate: data.racedef[j][1], racer: i, time: res[j]})
                 );
             }
         }
@@ -118,8 +121,8 @@ export function parseMain(data: any): Action[] {
     return actions;
 }
 
-export function parseUpdate(data: any): Action[] {
-    const actions = [];
+export function parseUpdate(data: Update): Action[] {
+    const actions: Action[] = [];
     let reload = false;
     let stopUpdating = false;
 
@@ -186,6 +189,9 @@ export function parseUpdate(data: any): Action[] {
             }
         });
     }
+
+    const batch = actions.length ? [new Batch(actions)] : [];
+
     return reload ? [new LoadMain(null)] :
-        stopUpdating ? [new Batch(actions), new StopUpdate()] : [new Batch(actions)];
+        stopUpdating ? [...batch, new StopUpdate()] : batch;
 }

@@ -1,10 +1,10 @@
 import { createEntityAdapter, EntityAdapter, EntityState } from '@ngrx/entity';
 import { select } from '@ngrx/store';
-import { Observable, pipe, UnaryFunction } from 'rxjs';
+import { OperatorFunction, pipe } from 'rxjs';
 import { filter, map } from 'rxjs/operators';
 
 import { maxVal } from '../../fis/fis-constants';
-import { RacerData, Standing } from '../../models/racer';
+import { Prop, RacerData, Standing } from '../../models/racer';
 import { ResultItem } from '../../models/table';
 import { RaceAction, RaceActionTypes } from '../actions/race';
 
@@ -94,7 +94,7 @@ export function reducer(state: State = initialState, action: RaceAction): State 
             const time = action.payload.time || maxVal * 6;
             const racer = action.payload.racer;
 
-            let changes = {changes: [], standings: {}};
+            let changes;
 
             if (state.entities[racer].results.length > inter) {
                 changes = updateResult(state, racer, time, inter);
@@ -149,14 +149,15 @@ const formatTime = (value: number | string, zero: number): string => {
     return timeStr;
 };
 
-export const createViewSelector = (view: {inter: number, diff: number}): UnaryFunction<Observable<AppState>, Observable<ResultItem[]>> => {
+export const createViewSelector = (view: {inter: number | null, diff: number | null}): OperatorFunction<AppState, ResultItem[]> => {
     let version: number;
     return pipe(
         select(getResultState),
-        filter((state) => state.standings[view.inter] === undefined || state.standings[view.inter].version !== version),
+        filter((state) => view.inter === null || state.standings[view.inter] === undefined
+            || state.standings[view.inter].version !== version),
         map((state: State) => {
             console.log('Here');
-            if (state.standings[view.inter] === undefined) {
+            if (view.inter === null || state.standings[view.inter] === undefined) {
                 version = 0;
                 return [];
             }
@@ -165,9 +166,23 @@ export const createViewSelector = (view: {inter: number, diff: number}): UnaryFu
             const rows = [];
             for (const i of state.standings[view.inter].ids) {
                 const row = state.entities[i];
-                const diff = row.results[view.inter].diffs[view.diff];
                 const time = row.results[view.inter].time;
                 const _state = 'normal';
+
+                let diff: Prop<number>;
+                if (view.diff !== null) {
+                    const d = row.results[view.inter].diffs[view.diff] || maxVal;
+
+                    diff = {
+                        display: d < maxVal ? formatTime(d, state.standings[view.inter].bestDiff[view.diff]) : '',
+                        value: d
+                    };
+                } else {
+                    diff = {
+                        display: '',
+                        value: maxVal
+                    };
+                }
 
                 const classes = [row.racer.nationality.toLowerCase(), _state];
                 if (row.results[view.inter].rank === 1 && view.inter > 0) {
@@ -194,7 +209,7 @@ export const createViewSelector = (view: {inter: number, diff: number}): UnaryFu
                         value: time
                     },
                     rank: row.results[view.inter].rank,
-                    diff: diff < maxVal ? formatTime(diff, state.standings[view.inter].bestDiff[view.diff]) : '',
+                    diff: diff,
                     name: {
                         display: row.racer.lastName + ', ' + row.racer.firstName,
                         value: row.racer.lastName + ', ' + row.racer.firstName

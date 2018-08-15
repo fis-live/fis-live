@@ -23,7 +23,7 @@
             </th>
 
             <th *ngIf="columns.diff">
-                <div appSort="diff">Diff.</div>
+                <div appSort="diff.value">Diff.</div>
             </th>
         </tr>
     </thead>
@@ -44,7 +44,7 @@
                 </td>
                 <td class="time"><div>{{ row.time.display }}</div></td>
                 <td *ngIf="columns.nationality"><div class="flag">{{ row.nationality }}</div></td>
-                <td *ngIf="columns.diff"><div>{{ row.diff }}</div></td>
+                <td *ngIf="columns.diff"><div>{{ row.diff.display }}</div></td>
             </tr>
 
     </tbody>

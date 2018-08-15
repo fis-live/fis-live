@@ -4,6 +4,7 @@ import { Action } from '@ngrx/store';
 import { Observable, of, throwError, timer } from 'rxjs';
 import { catchError, map, repeat, retry, switchMap, timeout } from 'rxjs/operators';
 
+import { Main, Update } from '../fis/models';
 import { FisServer } from '../models/fis-server';
 import { Race } from '../models/race';
 
@@ -35,7 +36,7 @@ export class FisConnectionService {
         this.signature = d.getSeconds().toString() + d.getMilliseconds().toString() + '-fis';
     }
 
-    public initialize(codex: number): void {
+    public initialize(codex: number | null): void {
         this.codex = codex || this.codex;
         this.version = 0;
         this.delay = 0;
@@ -60,26 +61,26 @@ export class FisConnectionService {
         }).pipe(map(res => this.parseServerList(res)));
     }
 
-    public poll(): Observable<any> {
+    public poll(): Observable<Update> {
         return of(null).pipe(
             switchMap(() => timer(this.delay)),
             switchMap(() => this.getHttpRequest()),
             timeout(this.TIMEOUT),
-            map(result => this.parse(result)),
+            map(result => (<Update> this.parse(result))),
             catchError(error => this.handleError(error)),
             retry(10),
             repeat()
         );
     }
 
-    public loadMain(codex: number | null): Observable<any> {
+    public loadMain(codex: number | null): Observable<Main> {
         this.initialize(codex);
 
         return of(null).pipe(
             switchMap(() => timer(this.delay)),
             switchMap(() => this.getHttpRequest()),
             timeout(this.TIMEOUT),
-            map(result => this.parse(result)),
+            map(result => (<Main> this.parse(result))),
             catchError(error => this.handleError(error)),
             retry(10),
         );
@@ -154,12 +155,12 @@ export class FisConnectionService {
             sum += this.server_list[i].weight;
         }
 
-        let urlServer: string = null;
+        let urlServer: string | null = null;
 
         const r = Math.random() * sum;
         let partialSum = 0;
         let j = 0;
-        while (urlServer == null && partialSum <= r) {
+        while (urlServer === null && partialSum <= r) {
             partialSum += this.server_list[j].weight;
 
             if (r < partialSum) {

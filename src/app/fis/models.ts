@@ -21,3 +21,20 @@ export interface Note {
     note: string;
 }
 
+export interface Main {
+    racedef: [string, number, number][];
+    raceinfo: string[];
+    message: string;
+    meteo: [number, string, string, number, number, string];
+    main: number;
+    live: [number, number, string];
+    racers: (null | [number, number, string, string, string, string, string, string, number])[];
+    startlist: [number, string, number][];
+    result: (null | number[])[];
+    runinfo: [number, string, string];
+}
+
+export interface Update {
+    live: [number, number, string];
+    events: any[][];
+}

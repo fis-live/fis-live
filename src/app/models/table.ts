@@ -11,7 +11,7 @@ export interface ResultItem {
     bib: number;
     nationality: string;
     time: Prop<number> | Prop<string>;
-    diff: number;
+    diff: Prop<number>;
     rank: number | null;
     state: string;
     name: Prop<string>;

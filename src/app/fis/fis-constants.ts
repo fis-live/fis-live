@@ -239,7 +239,7 @@ export const nationalities: {[short: string]: string} = {
     'ZMB': 'Zambia'
 };
 
-export const WeatherConditions = {
+export const WeatherConditions: {[status: string]: number} = {
     'sun': 1,
     'pcl': 2,
     'clo': 3,
@@ -248,7 +248,7 @@ export const WeatherConditions = {
     'fog': 6
 };
 
-export const WindConditions = {
+export const WindConditions: {[status: string]: number} = {
     'no': 1,
     'lo': 2,
     'me': 3,
@@ -276,7 +276,7 @@ export const SnowConditions: {[short: string]: string} = {
 
 export const maxVal = 1000000000;
 
-export const statusMap = {
+export const statusMap: {[status: string]: string} = {
     'start': 'Started',
     'finish': 'Finished',
     'lapped': 'Lapped',
@@ -287,7 +287,7 @@ export const statusMap = {
     'dns': 'DNS'
 };
 
-export const timeToStatusMap = {
+export const timeToStatusMap: {[time: number]: string} = {
     [maxVal + 1]: 'RAL',
     [maxVal * 2]: 'Lapped',
     [maxVal * 3]: 'DNF',
@@ -296,7 +296,7 @@ export const timeToStatusMap = {
     [maxVal * 6]: 'N/A'
 };
 
-export const statusToTimeMap = {
+export const statusToTimeMap: {[status: string]: number} = {
     'ral':      maxVal + 1,
     'lapped':   maxVal * 2,
     'dnf':      maxVal * 3,

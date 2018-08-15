@@ -43,17 +43,16 @@ class DelayBySubscriber<T> extends OuterSubscriber<T, number> {
     private active: boolean = false;
     private errored: boolean = false;
     private scheduledSub: Subscription;
-    private delayValue: number;
+    private delayValue: number = 0;
 
-    private static dispatch<T>(this: SchedulerAction<DelayState<T>>, state: DelayState<T>): void {
-        const source = state.source;
+    private static dispatch<T>(this: SchedulerAction<DelayState<T>>, state?: DelayState<T>): void {
+        const source = state!.source;
         const queue = source.queue;
-        const scheduler = state.scheduler;
-        const destination = state.destination;
+        const scheduler = state!.scheduler;
+        const destination = state!.destination;
 
         while (queue.length > 0 && (queue[0].time + source.delayValue - scheduler.now()) <= 0) {
-            console.log('Next');
-            queue.shift().notification.observe(destination);
+            queue.shift()!.notification.observe(destination);
         }
 
         if (queue.length > 0) {
@@ -64,6 +63,7 @@ class DelayBySubscriber<T> extends OuterSubscriber<T, number> {
         } else {
             this.unsubscribe();
             source.active = false;
+            // delete source.scheduledSub;
         }
     }
 
@@ -77,7 +77,6 @@ class DelayBySubscriber<T> extends OuterSubscriber<T, number> {
     private _schedule(scheduler: SchedulerLike): void {
         this.active = true;
         const delay = Math.max(0, this.queue[0].time + this.delayValue - scheduler.now());
-        console.log('Set timeout', delay);
         this.add(this.scheduledSub = scheduler.schedule<DelayState<T>>(DelayBySubscriber.dispatch, delay, {
             source: this, destination: this.destination, scheduler: scheduler
         }));
@@ -88,7 +87,6 @@ class DelayBySubscriber<T> extends OuterSubscriber<T, number> {
             return;
         }
 
-        console.log('Schedule notification');
         const scheduler = this.scheduler;
         const message = new DelayMessage(scheduler.now(), notification);
         this.queue.push(message);
@@ -105,27 +103,15 @@ class DelayBySubscriber<T> extends OuterSubscriber<T, number> {
     protected _error(err: any) {
         this.errored = true;
         this.queue = [];
-        this.destination.error(err);
+        this.destination.error!(err);
     }
 
     protected _complete() {
-        console.log('Complete');
         this.scheduleNotification(Notification.createComplete());
     }
 
     private _innerSub(result: ObservableInput<number>) {
         this.add(subscribeToResult(this, result));
-    }
-    //
-    // protected _complete(): void {
-    //     const {innerSubscription} = this;
-    //     if (!innerSubscription || innerSubscription.closed) {
-    //         super._complete();
-    //     }
-    // }
-
-    _unsubscribe () {
-        console.log('Unsubscribe');
     }
 
     notifyComplete(innerSub: Subscription): void {
@@ -136,9 +122,7 @@ class DelayBySubscriber<T> extends OuterSubscriber<T, number> {
                outerIndex: number, innerIndex: number,
                innerSub: InnerSubscriber<T, number>): void {
         this.delayValue = innerValue;
-        console.log('Notify next:', innerValue);
         if (this.active) {
-            console.log('Clear timeout');
             this.scheduledSub.unsubscribe();
             this.remove(this.scheduledSub);
             this._schedule(this.scheduler);

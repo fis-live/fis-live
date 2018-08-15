@@ -11,7 +11,7 @@ import * as RaceInfo from './race-info';
 import * as Result from './result';
 import * as Settings from './settings';
 
-export const reducers: ActionReducerMap<AppState> = {
+export const reducers: ActionReducerMap<AppState, any> = {
     alert: Alert.reducer,
     intermediates: Inter.reducer,
     raceInfo: RaceInfo.reducer,
@@ -45,16 +45,8 @@ export function enableBatching(reducer: ActionReducer<AppState>): ActionReducer<
 
 export function resetState(reducer: ActionReducer<AppState>): ActionReducer<AppState> {
     return function(state, action) {
-        if (action.type === ConnectionActionTypes.Reset) {
-            state = {
-                alert: undefined,
-                intermediates: undefined,
-                raceInfo: undefined,
-                result: undefined,
-                settings: state.settings,
-                loading: undefined,
-                calendar: state.calendar
-            };
+        if (state !== undefined && action.type === ConnectionActionTypes.Reset) {
+            return {...reducer(undefined, action), settings: state.settings, calendar: state.calendar};
         }
 
         return reducer(state, action);
