@@ -26,16 +26,19 @@ export class ConnectionEffects {
     @Effect() loadServers$ = this.actions$.pipe(
         ofType<LoadServers>(ConnectionActionTypes.LoadServers),
         startWith(new LoadServers()),
-        switchMap(() => this._connection.getServerList()),
-        map(() => new SelectServer()),
-        catchError(() => {
-            return of(new ShowAlert({
-                severity: 'danger',
-                message: 'Could not connect to FIS. Check your internet connection and try again.',
-                action: 'Retry',
-                actions: [new LoadServers()]
-            }));
-        })
+        switchMap(() =>
+            this._connection.getServerList().pipe(
+                map(() => new SelectServer()),
+                catchError(() => {
+                    return of(new ShowAlert({
+                        severity: 'danger',
+                        message: 'Could not connect to FIS. Check your internet connection and try again.',
+                        action: 'Retry',
+                        actions: [new LoadServers()]
+                    }));
+                })
+            )
+        )
     );
 
     @Effect({dispatch: false}) selectServer$ = this.actions$.pipe(
@@ -45,36 +48,43 @@ export class ConnectionEffects {
 
     @Effect() loadMain$ = this.actions$.pipe(
         ofType<LoadMain>(ConnectionActionTypes.LoadMain),
-        switchMap((action) => this._connection.loadMain(action.payload)),
-        mergeMap(data => {
-            const actions = parseMain(data);
-            const suffix = data.runinfo[1] === 'Q' ? 'QUA' : 'SL';
+        switchMap((action) =>
+            this._connection.loadMain(action.payload).pipe(
+                mergeMap(data => {
+                    const actions = parseMain(data);
+                    const suffix = data.runinfo[1] === 'Q' ? 'QUA' : 'SL';
 
-            return [
-                new Batch([new Reset(), ...actions]),
-                new HideLoading(),
-                new LoadPdf(suffix),
-                new LoadUpdate()
-            ];
-        }),
-        catchError(() => {
-            return [new HideLoading(), new ShowAlert({
-                severity: 'danger',
-                message: 'Could not find live data. Check the codex and try again.',
-                action: 'Retry',
-                actions: [new LoadMain(null)]
-            })];
-        })
+                    return [
+                        new Batch([new Reset(), ...actions]),
+                        new HideLoading(),
+                        new LoadPdf(suffix),
+                        new LoadUpdate()
+                    ];
+                }),
+                catchError(() => {
+                    console.log(this.loadMain$);
+                    return [new HideLoading(), new ShowAlert({
+                        severity: 'danger',
+                        message: 'Could not find live data. Check the codex and try again.',
+                        action: 'Retry',
+                        actions: [new LoadMain(null)]
+                    })];
+                })
+            )
+        )
     );
 
     @Effect() loadPdf$ = this.actions$.pipe(
         ofType<LoadPdf>(ConnectionActionTypes.LoadPdf),
-        switchMap((action) => this._connection.loadPdf(action.payload)),
-        map(actions => new Batch(actions)),
-        catchError((error) => {
-            console.log(error);
-            return EMPTY;
-        })
+        switchMap((action) =>
+            this._connection.loadPdf(action.payload).pipe(
+                map(actions => new Batch(actions)),
+                catchError((error) => {
+                    console.log(error);
+                    return EMPTY;
+                })
+            )
+        )
     );
 
     @Effect() loadUpdate$ = this.actions$.pipe(
@@ -100,16 +110,19 @@ export class ConnectionEffects {
     @Effect() loadCalendar$ = this.actions$.pipe(
         ofType<LoadCalendar>(ConnectionActionTypes.LoadCalendar),
         startWith(new LoadCalendar()),
-        switchMap(() => this._connection.loadCalendar()),
-        map((races) => new SetCalendar(races)),
-        catchError(() => {
-            return [new HideLoading(), new ShowAlert({
-                severity: 'danger',
-                message: 'Could not load calendar. Check your internet connection and try again.',
-                action: 'Retry',
-                actions: [new LoadCalendar()]
-            })];
-        })
+        switchMap(() =>
+            this._connection.loadCalendar().pipe(
+                map((races) => new SetCalendar(races)),
+                catchError(() => {
+                    return [new HideLoading(), new ShowAlert({
+                        severity: 'danger',
+                        message: 'Could not load calendar. Check your internet connection and try again.',
+                        action: 'Retry',
+                        actions: [new LoadCalendar()]
+                    })];
+                })
+            )
+        )
     );
 
     @Effect() loading$ = this.actions$.pipe(
