@@ -1,7 +1,7 @@
 import { Update } from '@ngrx/entity';
 
 import { maxVal, timeToStatusMap } from '../../fis/fis-constants';
-import { RacerData, Result, Standing } from '../../models/racer';
+import { RacerData, Standing } from '../../models/racer';
 
 import { State } from './result';
 
@@ -13,19 +13,6 @@ export function getValidDiff(time: number | null, zero: number | null): number {
     }
 
     return time - zero;
-}
-
-function getDiffs(results: Result[], inter: number, time: number | null): number[] {
-    if (time == null || time >= maxVal) {
-        return (new Array(inter)).fill(maxVal);
-    }
-
-    const diffs: number[] = [];
-    for (let i = 0; i < inter; i++) {
-        diffs[i] = getValidDiff(time, results[i].time);
-    }
-
-    return diffs;
 }
 
 export function registerResult(state: State,
@@ -53,7 +40,7 @@ export function registerResult(state: State,
 
     let rank: number | null = 1;
     let leader = state.standings[inter].leader;
-    const bestDiff = state.standings[inter].bestDiff;
+    const bestDiff = [...state.standings[inter].bestDiff];
     let diffs: number[] = [];
 
     if (time < maxVal) {
@@ -112,16 +99,38 @@ export function updateResult(state: State,
 
     const results = [...state.entities[racer].results];
     const prev = results[inter].time;
+    const prevDiffs = results[inter].diffs;
+
+    let leader = time;
+    const bestDiffs = [...state.standings[inter].bestDiff];
+    const checkDiffs = [];
+    const diffs = [];
+    for (let i = 0; i < inter; i++) {
+        diffs[i] = getValidDiff(time, results[i].time);
+        if (diffs[i] < bestDiffs[i]) {
+            bestDiffs[i] = diffs[i];
+        } else if (prevDiffs[i] === bestDiffs[i]) {
+            checkDiffs.push(i);
+            bestDiffs[i] = diffs[i];
+        }
+    }
 
     let rank: number | null = 1;
     for (const id of state.standings[inter].ids) {
-        // TODO: Recheck leader and best diffs in this loop
         let rankAdj = 0;
         const t = state.entities[id].results[inter].time;
 
         if (racer === id || t > maxVal) {
             continue;
         }
+
+        for (const i of checkDiffs) {
+            if (state.entities[id].results[inter].diffs[i] < bestDiffs[i]) {
+                bestDiffs[i] = state.entities[id].results[inter].diffs[i];
+            }
+        }
+
+        leader = t < leader ? t : leader;
 
         if (time < t) {
             rankAdj += 1;
@@ -147,29 +156,43 @@ export function updateResult(state: State,
     if (time > maxVal) {
         rank = null;
     }
-    results[inter] = {time: time, status: timeToStatusMap[time], rank, diffs: getDiffs(results, inter, time)};
+    results[inter] = {time: time, status: timeToStatusMap[time], rank, diffs};
 
     for (let i = inter + 1; i < results.length; i++) {
-        const diffs = [...results[i].diffs];
-        const bestDiff = state.standings[i].bestDiff;
-        if (diffs[inter] === bestDiff[inter]) {
-            // TODO: Recompute best diff
-        }
-        diffs[inter] = getValidDiff(results[i].time, time);
+        const newDiffs = [...results[i].diffs];
+        const bestDiff = [...state.standings[i].bestDiff];
 
-        results[i] = {...results[i], diffs};
+        if (newDiffs[inter] === bestDiff[inter]) {
+            bestDiff[inter] = maxVal;
+            for (const id of state.standings[i].ids) {
+                if (id === racer) {
+                    continue;
+                }
+
+                if (state.entities[id].results[i].diffs[inter] < bestDiff[inter]) {
+                    bestDiff[inter] = state.entities[id].results[i].diffs[inter];
+                }
+            }
+        }
+
+        newDiffs[inter] = getValidDiff(results[i].time, time);
+        if (newDiffs[inter] < bestDiff[inter]) {
+            bestDiff[inter] = newDiffs[inter];
+        }
+
+        results[i] = {...results[i], diffs: newDiffs};
         standings[i] = {
             ...state.standings[i],
-            bestDiff,
+            bestDiff: bestDiff,
             version: state.standings[i].version + 1,
         };
     }
 
     standings[inter] = {
-        leader: 0,
-        bestDiff: state.standings[inter].bestDiff,
+        leader: leader,
+        bestDiff: bestDiffs,
         version: state.standings[inter].version + 1,
-        ids: [...state.standings[inter].ids, racer]
+        ids: state.standings[inter].ids
     };
 
     changes.push({
