@@ -1,8 +1,6 @@
-const ContextReplacementPlugin = require('webpack').ContextReplacementPlugin;
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const AngularCompilerPlugin = require('@ngtools/webpack').AngularCompilerPlugin;
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
-const PurifyPlugin = require('@angular-devkit/build-optimizer').PurifyPlugin;
 const CheckerPlugin = require('awesome-typescript-loader').CheckerPlugin;
 const UglifyJsPlugin = require('uglifyjs-webpack-plugin');
 
@@ -126,7 +124,6 @@ module.exports = function(env, argv) {
             tsConfigPath: path.resolve(__dirname, '../tsconfig.json'),
             entryModule: path.resolve(__dirname, '../src/app/app.module#AppModule')
         }),
-        new PurifyPlugin(),
         new MiniCssExtractPlugin({
             filename: 'assets/' + filename + '.css'
         })
@@ -157,17 +154,17 @@ module.exports = function(env, argv) {
     const prod = isProd ? {
         optimization: {
             minimizer: [
-                    new UglifyJsPlugin({
-                        cache: true,
-                        parallel: true,
-                        uglifyOptions: {
-                            output: {
-                                comments: false
-                            }
+                new UglifyJsPlugin({
+                    cache: true,
+                    parallel: true,
+                    uglifyOptions: {
+                        output: {
+                            comments: false
                         }
-                    })
-                ]
-            }
+                    }
+                })
+            ]
+        }
     } : {};
 
     return {
@@ -182,6 +179,12 @@ module.exports = function(env, argv) {
 
         module: {
             rules: [
+                {
+                    // Mark files inside `@angular/core` as using SystemJS style dynamic imports.
+                    // Removing this will cause deprecation warnings to appear.
+                    test: /[\/\\]@angular[\/\\]core[\/\\].+\.js$/,
+                    parser: { system: true },
+                },
                 ...loaders,
                 {
                     test: /\.html$/,
@@ -219,11 +222,7 @@ module.exports = function(env, argv) {
                 template: path.resolve(__dirname, '../src/index.html'),
                 baseHref: publicPath,
                 favicon: path.resolve(__dirname, '../src/favicon.ico')
-            }),
-            new ContextReplacementPlugin(
-                /(.+)?angular[\\\/]core(.+)?/,
-                path.resolve(__dirname, '../src')
-            )
+            })
         ]
     };
 };
