@@ -1,3 +1,4 @@
+const ContextReplacementPlugin = require('webpack').ContextReplacementPlugin;
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const AngularCompilerPlugin = require('@ngtools/webpack').AngularCompilerPlugin;
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
@@ -222,7 +223,11 @@ module.exports = function(env, argv) {
                 template: path.resolve(__dirname, '../src/index.html'),
                 baseHref: publicPath,
                 favicon: path.resolve(__dirname, '../src/favicon.ico')
-            })
+            }),
+            new ContextReplacementPlugin(
+                /(.+)?angular[\\\/]core(.+)?/,
+                path.resolve(__dirname, '../src')
+            )
         ]
     };
 };
