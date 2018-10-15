@@ -1,0 +1,20 @@
+<button class="dropdown-toggle btn btn-sm" (click)="toggle()" type="button">
+    <ng-container *ngIf="render | async as selected; else placeholder">
+        <ng-container [ngTemplateOutlet]="template" [ngTemplateOutletContext]="{$implicit: selected}"></ng-container>
+    </ng-container>
+
+    <ng-template #placeholder>
+        <ng-content></ng-content>
+    </ng-template>
+
+    <clr-icon shape="caret" dir="down"></clr-icon>
+</button>
+
+<div *ngIf="open" class="dropdown-menu" [@animate]>
+    <button *ngFor="let option of options | async"
+            (click)="select(option)"
+            [ngClass]="{'disabled': option.disabled, 'active': option.selected}"
+            class="dropdown-item">
+        <ng-container [ngTemplateOutlet]="template" [ngTemplateOutletContext]="{$implicit: option.value}"></ng-container>
+    </button>
+</div>

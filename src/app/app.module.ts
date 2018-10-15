@@ -18,6 +18,7 @@ import { SortDirective } from './components/datagrid/sort.directive';
 import { DropdownItemDirective } from './components/dropdown/dropdown-item.directive';
 import { DropdownComponent } from './components/dropdown/dropdown.component';
 import { MenuComponent } from './components/menu.component';
+import { SelectComponent } from './components/select/select';
 import { SidebarComponent } from './components/sidebar.component';
 import { TabComponent } from './components/tab.component';
 import { AlertComponent } from './components/ui/alert.component';
@@ -47,7 +48,8 @@ import { metaReducers, reducers } from './state/reducers';
         SortDirective,
         DatagridHeaderComponent,
         DropdownItemDirective,
-        DatagridSettingsComponent
+        DatagridSettingsComponent,
+        SelectComponent
     ],
     imports: [
         BrowserModule,

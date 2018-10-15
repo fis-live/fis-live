@@ -2,27 +2,27 @@ import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
 import { Store } from '@ngrx/store';
 import { Observable } from 'rxjs';
 
-import { Intermediate } from '../models/intermediate';
 import { Columns, TableConfiguration } from '../models/table';
-import { AppState, selectAllIntermediates } from '../state/reducers';
+import { AppState } from '../state/reducers';
 
 import { DatagridState } from './datagrid/providers/datagrid-state';
 import { Filters } from './datagrid/providers/filter';
 import { Sort } from './datagrid/providers/sort';
+import { ViewSelector } from './datagrid/providers/view-selector';
+import { APP_OPTIONS } from './select/select';
 
 @Component({
     selector: 'app-tab',
     template: `
-        <app-grid-header [config]="columns$ | async" [items]="intermediates$ | async" class="action-bar"></app-grid-header>
+        <app-grid-header [config]="columns$ | async" class="action-bar"></app-grid-header>
 <div class="segment" appScrollbar>
     <app-table [breakpoint]="_breakpoint" [columns]="columns$ | async" [config]="tableConfig$ | async"></app-table>
 </div>`,
-    providers: [DatagridState, Filters, Sort],
+    providers: [DatagridState, Filters, Sort, ViewSelector, { provide: APP_OPTIONS, useExisting: ViewSelector}],
     changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class TabComponent {
 
-    public intermediates$: Observable<Intermediate[]>;
     public tableConfig$: Observable<TableConfiguration>;
     public columns$: Observable<Columns>;
     public _breakpoint: string;
@@ -33,8 +33,6 @@ export class TabComponent {
     }
 
     constructor(private _store: Store<AppState>, private _state: DatagridState) {
-        this.intermediates$ = this._store.select(selectAllIntermediates);
-
         this.tableConfig$ = this._state.connect();
         this.columns$ = this._state.getVisibleColumns();
     }

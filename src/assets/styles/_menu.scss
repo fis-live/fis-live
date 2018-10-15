@@ -46,6 +46,10 @@ header {
                 width: 1px;
                 background: hsla(0,0%,100%,.08);;
             }
+
+            &:hover {
+                opacity: 1;
+            }
             cursor: pointer;
             background-color: rgba(221, 221, 221, 0.15);
         }

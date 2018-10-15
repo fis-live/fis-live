@@ -9,6 +9,7 @@ import { createViewSelector } from '../../../state/reducers/result';
 
 import { Filters } from './filter';
 import { Sort } from './sort';
+import { ViewSelector } from './view-selector';
 
 @Injectable()
 export class DatagridState {
@@ -22,11 +23,19 @@ export class DatagridState {
     public inter: number | null;
     public diff: number | null;
 
-    private view: Subject<{inter: number | null, diff: number | null}> = new Subject<{inter: number | null, diff: number | null}>();
+    private view: Observable<{inter: number | null, diff: number | null}>;
 
-    constructor(private _sort: Sort, private _filters: Filters, private store: Store<AppState>) {
+    constructor(private _sort: Sort, private _filters: Filters, private store: Store<AppState>, private _viewSelector: ViewSelector) {
         this._columns = new BehaviorSubject(this._visibleColumns);
         this._sort.comparator = 'rank';
+        this.view = this._viewSelector.getValueChanged().pipe(
+            map((view) => {
+                return {
+                    inter: view.inter === null ? null : view.inter.key,
+                    diff: view.diff === null ? null : view.diff.key
+                };
+            })
+        );
     }
 
     public connect(): Observable<TableConfiguration> {
@@ -56,24 +65,6 @@ export class DatagridState {
 
     public getVisibleColumns(): Observable<Columns> {
         return this._columns.asObservable();
-    }
-
-    public setInter(inter: number | null): void {
-        if (inter === null) {
-            this.diff = null;
-            this.inter = null;
-        } else {
-            this.inter = inter;
-            if (this.diff !== null && this.diff >= inter) {
-                this.diff = null;
-            }
-        }
-        this.view.next({inter: this.inter, diff: this.diff});
-    }
-
-    public setDiff(diff: number | null): void {
-        this.diff = diff;
-        this.view.next({inter: this.inter, diff: this.diff});
     }
 
     public toggleColumn(column: keyof Columns) {

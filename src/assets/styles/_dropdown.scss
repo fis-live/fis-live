@@ -1,12 +1,13 @@
 .dropdown-menu {
     visibility: visible;
+    transform-origin: top center;
 }
 
 .btn-group {
     display: inline-flex;
     margin-right: 0.5rem;
 
-    app-dropdown{
+    app-dropdown, app-select {
         margin: 0;
 
         &:not(:first-child) .btn {
