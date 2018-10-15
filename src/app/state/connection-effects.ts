@@ -62,7 +62,6 @@ export class ConnectionEffects {
                     ];
                 }),
                 catchError(() => {
-                    console.log(this.loadMain$);
                     return [new HideLoading(), new ShowAlert({
                         severity: 'danger',
                         message: 'Could not find live data. Check the codex and try again.',
