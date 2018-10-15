@@ -38,3 +38,7 @@ export interface Update {
     live: [number, number, string];
     events: any[][];
 }
+
+export interface ServerList {
+    servers: [string, number, number][];
+}

@@ -1,10 +1,10 @@
 import { HttpClient, HttpErrorResponse, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Action } from '@ngrx/store';
-import { Observable, of, throwError, timer } from 'rxjs';
+import { defer, Observable, of, throwError, timer } from 'rxjs';
 import { catchError, map, repeat, retry, switchMap, timeout } from 'rxjs/operators';
 
-import { Main, Update } from '../fis/models';
+import { Main, ServerList, Update } from '../fis/models';
 import { FisServer } from '../models/fis-server';
 import { Race } from '../models/race';
 
@@ -28,7 +28,7 @@ export class FisConnectionService {
     private server_list: FisServer[] = [];
 
 
-    private SERVER_LIST_URL: string = 'http://live.fis-ski.com/general/serverList.xml';
+    private SERVER_LIST_URL: string = 'http://live.fis-ski.com/general/serverList.json';
     private TIMEOUT: number = 10000;
 
     constructor(private _http: HttpClient) {
@@ -55,8 +55,7 @@ export class FisConnectionService {
     }
 
     public getServerList(): Observable<FisServer[]> {
-        return this._http.get(this.proxy + this.SERVER_LIST_URL, {
-            responseType: 'text',
+        return this._http.get<ServerList>(this.proxy + this.SERVER_LIST_URL, {
             params: new HttpParams().set('i', this.getQueryString())
         }).pipe(map(res => this.parseServerList(res)));
     }
@@ -76,8 +75,7 @@ export class FisConnectionService {
     public loadMain(codex: number | null): Observable<Main> {
         this.initialize(codex);
 
-        return of(null).pipe(
-            switchMap(() => timer(this.delay)),
+        return defer(() => timer(this.delay)).pipe(
             switchMap(() => this.getHttpRequest()),
             timeout(this.TIMEOUT),
             map(result => (<Main> this.parse(result))),
@@ -89,7 +87,11 @@ export class FisConnectionService {
     private getHttpRequest(): Observable<string> {
         let url: string;
         if (this.version === 0) {
-            url = `${this.baseURL}mobile/cc-${this.codex}/main.xml`;
+            if (this.codex === 0) {
+                url = `test.xml`;
+            } else {
+                url = `${this.baseURL}mobile/cc-${this.codex}/main.xml`;
+            }
         } else {
             url = `${this.baseURL}mobile/cc-${this.codex}/updt${this.version}.xml`;
         }
@@ -99,9 +101,9 @@ export class FisConnectionService {
         });
     }
 
-    private parse(result: string): any {
-        this.interval = (new Date()).getTime() - this.startRequest;
-        const data = unserialize(result.slice(4, -5));
+    private parse(result: string): Main | Update {
+        this.interval = Date.now() - this.startRequest;
+        const data = unserialize(result.slice(4, -5)) as Main | Update;
         if (!data.live || isNaN(data.live[1]) || isNaN(data.live[0])) {
             throw new Error('No live information');
         }
@@ -114,13 +116,11 @@ export class FisConnectionService {
         return data;
     }
 
-    private parseServerList(result: string): FisServer[] {
-        this.interval = (new Date()).getTime() - this.startRequest;
-        const data = unserialize(result.slice(4, -5));
-        const servers: any[] = data.servers;
+    private parseServerList(result: ServerList): FisServer[] {
+        this.interval = Date.now() - this.startRequest;
 
-        for (let i = 0; i < servers.length; i++) {
-            this.server_list.push({url: servers[i][0], weight: servers[i][1], index: servers[i][2]});
+        for (const server of result.servers) {
+            this.server_list.push({url: server[0], weight: server[1], index: server[2]});
         }
 
         return this.server_list;
@@ -128,7 +128,7 @@ export class FisConnectionService {
 
     private handleError(error: HttpErrorResponse) {
         this.errorCount++;
-        this.interval = (new Date()).getTime() - this.startRequest;
+        this.interval = Date.now() - this.startRequest;
 
         this.delay = (this.delay > 0) ? this.delay : 1000;
 
