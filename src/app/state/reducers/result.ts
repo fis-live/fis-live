@@ -28,7 +28,7 @@ export function reducer(state: State = initialState, action: RaceAction): State 
                 interMap: {...state.interMap, [action.payload.id]: action.payload.key},
                 standings: {
                     ...state.standings,
-                    [action.payload.key]: {version: 0, ids: [], leader: 0, bestDiff: (new Array(action.payload.key)).fill(maxVal)}
+                    [action.payload.key]: {version: 0, ids: [], leader: maxVal, bestDiff: (new Array(action.payload.key)).fill(maxVal)}
                 }
             };
         }
@@ -69,24 +69,42 @@ export function reducer(state: State = initialState, action: RaceAction): State 
         case RaceActionTypes.SetStartTime: {
             const results = [...state.entities[action.payload.racer].results];
             results[0] = {...results[0], time: action.payload.time, diffs: [action.payload.time]};
+
+            const standings: {[id: number]: Standing} = {[0]: {...state.standings[0]}};
+            standings[0].version += 1;
+            standings[0].leader = action.payload.time < standings[0].leader ? action.payload.time : standings[0].leader;
+            standings[0].bestDiff = [standings[0].leader];
+
             for (let i = 1; i < results.length; i++) {
                 const diffs = [...results[i].diffs];
                 diffs[0] = getValidDiff(results[i].time, action.payload.time);
+                if (diffs[0] < state.standings[i].bestDiff[0]) {
+                    standings[i] = {
+                        ...state.standings[i],
+                        version: state.standings[i].version + 1,
+                        bestDiff: [diffs[0], ...state.standings[i].bestDiff.slice(1)]
+                    };
+                } else {
+                    standings[i] = {
+                        ...state.standings[i],
+                        version: state.standings[i].version + 1
+                    };
+                }
 
                 results[i] = {...results[i], diffs};
             }
 
-            return adapter.updateOne({id: action.payload.racer, changes: {results: results}}, state);
+            return {
+                ...adapter.updateOne({id: action.payload.racer, changes: {results: results}}, state),
+                standings: {...state.standings, ...standings}
+            };
         }
 
         case RaceActionTypes.SetStatus: {
             return {
-                ...adapter.updateOne({
-                id: action.payload.id,
-                changes: {
-                    status: action.payload.status
-                }
-            }, state)};
+                ...adapter.updateOne({id: action.payload.id, changes: {status: action.payload.status}}, state),
+                standings: {...state.standings, [0]: {...state.standings[0], version: state.standings[0].version + 1}}
+            };
         }
 
         case RaceActionTypes.RegisterResult: {
