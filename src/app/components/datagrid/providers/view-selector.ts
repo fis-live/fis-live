@@ -1,6 +1,6 @@
-import { Injectable } from '@angular/core';
+import { Injectable, OnDestroy } from '@angular/core';
 import { select, Store } from '@ngrx/store';
-import { BehaviorSubject, Observable, Subject } from 'rxjs';
+import { BehaviorSubject, Observable, Subscription } from 'rxjs';
 import { map } from 'rxjs/operators';
 
 import { Intermediate } from '../../../models/intermediate';
@@ -13,23 +13,45 @@ export interface View {
 }
 
 @Injectable()
-export class ViewSelector implements OptionSelector<View, Intermediate> {
+export class ViewSelector implements OptionSelector<View, Intermediate>, OnDestroy {
     private currentValue: View = {
         inter: null,
         diff: null
     };
 
-    private _valueChanged = new Subject<View>();
+    private _valueChanged = new BehaviorSubject<View>(this.currentValue);
     private _renderSelectionChanged = new BehaviorSubject<View>({
         inter: null,
         diff: null
     });
     private _source: Observable<Intermediate[]>;
+    private _subscription: Subscription;
 
     constructor(private store: Store<AppState>) {
         this._source = store.pipe(
             select(selectAllIntermediates)
         );
+
+        this._subscription = this._source.subscribe((values) => {
+            if (values.length > 0 && this.currentValue.inter !== null) {
+                if (this.currentValue.inter.key >= values.length) {
+                    this.currentValue.inter = values[0];
+                    this.currentValue.diff = null;
+                    this._valueChanged.next(this.currentValue);
+                    this._renderSelectionChanged.next(this.currentValue);
+                } else {
+                    this.currentValue.inter = values[this.currentValue.inter.key];
+                    this.currentValue.diff = this.currentValue.diff !== null ? values[this.currentValue.diff.key] : null;
+                    this._valueChanged.next(this.currentValue);
+                    this._renderSelectionChanged.next(this.currentValue);
+                }
+            } else if (values.length > 0) {
+                this.currentValue.inter = values[0];
+                this.currentValue.diff = null;
+                this._valueChanged.next(this.currentValue);
+                this._renderSelectionChanged.next(this.currentValue);
+            }
+        });
     }
 
     getOptions(key: keyof View): Observable<Option<Intermediate>[]> {
@@ -72,5 +94,9 @@ export class ViewSelector implements OptionSelector<View, Intermediate> {
 
         this._valueChanged.next(this.currentValue);
         this._renderSelectionChanged.next(this.currentValue);
+    }
+
+    ngOnDestroy() {
+        this._subscription.unsubscribe();
     }
 }

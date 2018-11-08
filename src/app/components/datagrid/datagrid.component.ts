@@ -40,26 +40,13 @@ import { Columns, ResultItem, TableConfiguration } from '../../models/table';
     changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class DatagridComponent {
-    private _config: TableConfiguration;
+    @Input() public config: TableConfiguration = {
+        isStartList: true,
+        rows: []
+    };
     @Input() public breakpoint: string;
 
     @Input() public columns: Columns;
-
-    @Input()
-    public set config(config: TableConfiguration) {
-        console.log(config);
-        this._config = config;
-    }
-
-    public get config() {
-        if (this._config == null) {
-            return {
-                isStartList: true,
-                rows: []
-            };
-        }
-        return this._config;
-    }
 
     public track(index: number, item: ResultItem): number {
         return item.bib;

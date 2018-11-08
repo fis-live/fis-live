@@ -1,9 +1,9 @@
 import { Injectable } from '@angular/core';
 import { Store } from '@ngrx/store';
-import { BehaviorSubject, combineLatest, Observable, Subject } from 'rxjs';
+import { BehaviorSubject, combineLatest, Observable } from 'rxjs';
 import { map, switchMap } from 'rxjs/operators';
 
-import { Columns, TableConfiguration } from '../../../models/table';
+import { Columns, ResultItem, TableConfiguration } from '../../../models/table';
 import { AppState } from '../../../state/reducers';
 import { createViewSelector } from '../../../state/reducers/result';
 
@@ -20,33 +20,30 @@ export class DatagridState {
         diff: true
     };
 
-    public inter: number | null;
-    public diff: number | null;
-
-    private view: Observable<{inter: number | null, diff: number | null}>;
+    private view: Observable<ResultItem[]>;
+    private isStartList: boolean;
 
     constructor(private _sort: Sort, private _filters: Filters, private store: Store<AppState>, private _viewSelector: ViewSelector) {
         this._columns = new BehaviorSubject(this._visibleColumns);
         this._sort.comparator = 'rank';
         this.view = this._viewSelector.getValueChanged().pipe(
-            map((view) => {
-                return {
+            switchMap((view) => {
+                this.isStartList = view.inter === null ? true : view.inter.key === 0;
+                return this.store.pipe(createViewSelector({
                     inter: view.inter === null ? null : view.inter.key,
                     diff: view.diff === null ? null : view.diff.key
-                };
+                }));
             })
         );
     }
 
     public connect(): Observable<TableConfiguration> {
         return combineLatest(
-            this.view.pipe(switchMap((view) => this.store.pipe(createViewSelector(view)))),
+            this.view,
             this._sort.change,
             this._filters.change
         ).pipe(
             map(([rows]) => {
-                console.log('trigger refresh');
-
                 if (this._filters.hasActiveFilters()) {
                     rows = rows.filter((row) => this._filters.accepts(row));
                 }
@@ -57,7 +54,7 @@ export class DatagridState {
 
                 return {
                     rows: rows,
-                    isStartList: (this.inter === 0)
+                    isStartList: this.isStartList
                 };
             })
         );
