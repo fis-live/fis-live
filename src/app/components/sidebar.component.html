@@ -60,7 +60,22 @@
             <label for="delay">Delay</label>
             <span style="float: right;">ms</span>
             <input type="number" id="delay" [ngModel]="delay$ | async" (ngModelChange)="setDelay($event)" placeholder="Enter value here" style="float: right; width: 100px;">
-            <div class="ui divided list">
+
+            <div class="list">
+                <div *ngFor="let event of events$ | async" class="item">
+                    <div style="flex: 1">
+                        <div style="line-height: 20px; font-weight: bold;">C. Kalla</div>
+                        <div style="line-height: 16px; font-size: 10px;">13.7 KM -4.8s (1)</div>
+                    </div>
+                    <div>
+                        <button type="button" class="btn btn-sm btn-link" aria-label="Sync" (click)="sync(event.timestamp)">
+                            Sync
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!--div class="ui divided list">
                 <div *ngFor="let racer of favoriteRacers" class="item">
                     <div class="right floated content">
                         <button type="button" class="close" aria-label="Close" (click)="toggleFavorite(racer)">
@@ -70,7 +85,7 @@
                     <div class="header">{{ racer.firstName }} {{ racer.lastName }}</div>
                     {{ FLAGS[racer.nationality] || racer.nationality }}
                 </div>
-            </div>
+            </div-->
         </div>
     </ng-container>
 

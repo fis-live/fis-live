@@ -36,7 +36,10 @@ export function enableBatching(reducer: ActionReducer<AppState>): ActionReducer<
     return function batchingReducer(state, action: any) {
         switch (action.type) {
             case ConnectionActionTypes.Batch:
-                return action.payload.reduce(batchingReducer, state);
+                const time = window.performance.now();
+                const newState = action.payload.reduce(batchingReducer, state);
+                console.log(window.performance.now() - time);
+                return newState;
             default:
                 return reducer(state, action);
         }
@@ -72,6 +75,8 @@ export const selectAllIntermediates = createSelector(getInterState, Inter.getAll
 export const selectRacesByPlace = createSelector(getCalendarState, Calendar.getRacesByPlace);
 
 export const getDelayState = createSelector(getSettingsState, Settings.getDelay);
+
+export const selectEvents = createSelector(getResultState, Result.getEvents);
 
 
 export const { selectAll: selectAllResults } = Result.adapter.getSelectors(getResultState);

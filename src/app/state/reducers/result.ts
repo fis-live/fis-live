@@ -4,7 +4,7 @@ import { OperatorFunction, pipe } from 'rxjs';
 import { filter, map } from 'rxjs/operators';
 
 import { maxVal } from '../../fis/fis-constants';
-import { Prop, RacerData, Standing } from '../../models/racer';
+import { Event, Prop, RacerData, Standing } from '../../models/racer';
 import { ResultItem } from '../../models/table';
 import { RaceAction, RaceActionTypes } from '../actions/race';
 
@@ -14,11 +14,12 @@ import { AppState, getResultState } from './index';
 export interface State extends EntityState<RacerData> {
     interMap: {[id: number]: number};
     standings: {[id: number]: Standing};
+    events: Event[];
 }
 
 export const adapter: EntityAdapter<RacerData> = createEntityAdapter<RacerData>();
 
-export const initialState: State = adapter.getInitialState({interMap: {}, standings: {}});
+export const initialState: State = adapter.getInitialState({interMap: {}, standings: {}, events: []});
 
 export function reducer(state: State = initialState, action: RaceAction): State {
     switch (action.type) {
@@ -113,6 +114,13 @@ export function reducer(state: State = initialState, action: RaceAction): State 
             const racer = action.payload.racer;
 
             let changes;
+            const event = {
+                racer: racer,
+                inter,
+                status: '2',
+                diff: -12410,
+                timestamp: Date.now()
+            };
 
             if (state.entities[racer].results.length > inter) {
                 changes = updateResult(state, racer, time, inter);
@@ -122,7 +130,8 @@ export function reducer(state: State = initialState, action: RaceAction): State 
 
             return {
                 ...adapter.updateMany(changes.changes, state),
-                standings: {...state.standings, ...changes.standings}
+                standings: {...state.standings, ...changes.standings},
+                events: [event, event]
             };
         }
 
@@ -167,6 +176,8 @@ const formatTime = (value: number | string, zero: number): string => {
     return timeStr;
 };
 
+export const getEvents = (state: State) => state.events;
+
 export const createViewSelector = (view: {inter: number | null, diff: number | null}): OperatorFunction<AppState, ResultItem[]> => {
     let version: number;
     return pipe(
@@ -174,7 +185,6 @@ export const createViewSelector = (view: {inter: number | null, diff: number | n
         filter((state) => view.inter === null || state.standings[view.inter] === undefined
             || state.standings[view.inter].version !== version),
         map((state: State) => {
-            console.log('Here');
             if (view.inter === null || state.standings[view.inter] === undefined) {
                 version = 0;
                 return [];

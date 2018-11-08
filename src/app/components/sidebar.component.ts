@@ -2,13 +2,14 @@ import { animate, state, style, transition, trigger } from '@angular/animations'
 import {
     ChangeDetectionStrategy, Component, EventEmitter, Input, Output
 } from '@angular/core';
-import { Store } from '@ngrx/store';
+import { select, Store } from '@ngrx/store';
 import { Observable } from 'rxjs';
 
 import { nationalities } from '../fis/fis-constants';
-import { Racer } from '../models/racer';
+import { RacesByPlace } from '../models/race';
+import { Event, Racer } from '../models/racer';
 import { SetDelay, ToggleFavorite } from '../state/actions/settings';
-import { AppState, getDelayState, selectRacesByPlace } from '../state/reducers';
+import { AppState, getDelayState, selectEvents, selectRacesByPlace } from '../state/reducers';
 
 @Component({
     selector: 'app-sidebar',
@@ -29,13 +30,17 @@ export class SidebarComponent {
     @Output() public navigate = new EventEmitter<number>();
 
     public tab = 'live';
-    public upcomingRaces$: Observable<any>;
+    public upcomingRaces$: Observable<RacesByPlace[]>;
     public FLAGS = nationalities;
     public delay$: Observable<number>;
+    public events$: Observable<Event[]>;
 
     constructor(private store: Store<AppState>) {
         this.upcomingRaces$ = store.select(selectRacesByPlace);
         this.delay$ = store.select(getDelayState);
+        this.events$ = store.pipe(
+            select(selectEvents)
+        );
     }
 
     public setDelay(delay: number) {
@@ -44,6 +49,10 @@ export class SidebarComponent {
         }
 
         this.store.dispatch(new SetDelay(delay));
+    }
+
+    public sync(timestamp: number) {
+        this.store.dispatch(new SetDelay(Date.now() - timestamp));
     }
 
     public toggleFavorite(racer: Racer) {

@@ -34,3 +34,11 @@ export interface RacerData {
     results: Result[];
     notes: string[];
 }
+
+export interface Event {
+    racer: number;
+    diff: number | null;
+    inter: number;
+    status: string;
+    timestamp: number;
+}

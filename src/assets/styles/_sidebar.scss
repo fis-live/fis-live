@@ -39,6 +39,17 @@
     }
 }
 
+.list {
+    > .item {
+        display: flex;
+        padding-bottom: 5px;
+        margin-top: 5px;
+        &:not(:last-child) {
+            border-bottom: 1px solid #CCC;
+        }
+    }
+}
+
 .nav-link-tag {
     color: #0094d2;
     display: inline-block;
