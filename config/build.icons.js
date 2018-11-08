@@ -22,4 +22,4 @@ icons.forEach(function(icon) {
     template += '\n<ng-container *ngIf="shape === \'' + icon + '\'">\n\t\t\t' + AllShapes[icon].trim() + '\n</ng-container>\n';
 });
 
-fs.writeFile('src/app/components/ui/icon.component.html', template);
+fs.writeFile('src/app/components/ui/icon.component.html', template, (err) => {console.log(err)});
