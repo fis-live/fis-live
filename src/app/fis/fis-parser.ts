@@ -132,13 +132,13 @@ export function parseUpdate(data: Update): Action[] {
                 case 'inter':
                     actions.push(new RegisterResult({
                         status: '', intermediate: event[3], racer: event[2], time: event[4]
-                    }));
+                    }, true));
                     break;
                 case 'finish':
                     actions.push(new RegisterResult({
                         status: '', intermediate: event[3], racer: event[2], time: event[4]
                     }));
-                    actions.push(new SetStatus({id: event[2], status: event[0]}));
+                    actions.push(new SetStatus({id: event[2], status: statusMap[event[0]]}));
                     break;
                 case 'dnf':
                 case 'dns':
@@ -173,11 +173,6 @@ export function parseUpdate(data: Update): Action[] {
                         humidity: event[6]
                     }));
                     break;
-                case 'palmier':
-                case 'tds':
-                case 'falsestart':
-                case 'activeheat':
-                    break;
                 case 'message':
                     actions.push(new SetRaceMessage(event[1]));
                     break;
@@ -186,6 +181,15 @@ export function parseUpdate(data: Update): Action[] {
                     break;
                 case 'official_result':
                     stopUpdating = true;
+                    break;
+
+                case 'palmier':
+                case 'tds':
+                case 'falsestart':
+                case 'activeheat':
+                default:
+                    console.log('Unknown event:', event);
+                    break;
             }
         });
     }

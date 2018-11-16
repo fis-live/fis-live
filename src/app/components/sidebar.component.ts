@@ -4,8 +4,8 @@ import {
 } from '@angular/core';
 import { select, Store } from '@ngrx/store';
 import { Observable } from 'rxjs';
+import { takeWhile } from 'rxjs/operators';
 
-import { nationalities } from '../fis/fis-constants';
 import { RacesByPlace } from '../models/race';
 import { Event, Racer } from '../models/racer';
 import { SetDelay, ToggleFavorite } from '../state/actions/settings';
@@ -31,7 +31,6 @@ export class SidebarComponent {
 
     public tab = 'live';
     public upcomingRaces$: Observable<RacesByPlace[]>;
-    public FLAGS = nationalities;
     public delay$: Observable<number>;
     public events$: Observable<Event[]>;
 
@@ -39,7 +38,8 @@ export class SidebarComponent {
         this.upcomingRaces$ = store.select(selectRacesByPlace);
         this.delay$ = store.select(getDelayState);
         this.events$ = store.pipe(
-            select(selectEvents)
+            select(selectEvents),
+            takeWhile((events, i) => i === 0 || events.length <= 10)
         );
     }
 

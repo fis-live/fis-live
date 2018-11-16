@@ -5,7 +5,6 @@ import { ConnectionActionTypes } from '../actions/connection';
 
 import * as Alert from './alert';
 import * as Calendar from './calendar';
-import * as Inter from './intermediate';
 import * as Loading from './loading';
 import * as RaceInfo from './race-info';
 import * as Result from './result';
@@ -13,7 +12,6 @@ import * as Settings from './settings';
 
 export const reducers: ActionReducerMap<AppState, any> = {
     alert: Alert.reducer,
-    intermediates: Inter.reducer,
     raceInfo: RaceInfo.reducer,
     result: Result.reducer,
     settings: Settings.reducer,
@@ -23,7 +21,6 @@ export const reducers: ActionReducerMap<AppState, any> = {
 
 export interface AppState {
     alert: Alert.State;
-    intermediates: Inter.State;
     raceInfo: RaceInfo.State;
     result: Result.State;
     settings: Settings.State;
@@ -64,13 +61,12 @@ export const metaReducers: MetaReducer<AppState>[] = [enableBatching, resetState
 
 export const getAlertState = (state: AppState) => state.alert;
 export const getCalendarState = (state: AppState) => state.calendar;
-export const getInterState = (state: AppState) => state.intermediates;
 export const getRaceInfoState = (state: AppState) => state.raceInfo;
 export const getResultState = (state: AppState) => state.result;
 export const getSettingsState = (state: AppState) => state.settings;
 export const getLoadingState = (state: AppState) => state.loading;
 
-export const selectAllIntermediates = createSelector(getInterState, Inter.getAllIntermediates);
+export const selectAllIntermediates = createSelector(getResultState, Result.getIntermediates);
 
 export const selectRacesByPlace = createSelector(getCalendarState, Calendar.getRacesByPlace);
 

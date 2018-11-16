@@ -4,6 +4,7 @@ import { OperatorFunction, pipe } from 'rxjs';
 import { filter, map } from 'rxjs/operators';
 
 import { maxVal } from '../../fis/fis-constants';
+import { Intermediate } from '../../models/intermediate';
 import { Event, Prop, RacerData, Standing } from '../../models/racer';
 import { ResultItem } from '../../models/table';
 import { RaceAction, RaceActionTypes } from '../actions/race';
@@ -12,21 +13,21 @@ import { getValidDiff, registerResult, updateResult } from './helpers';
 import { AppState, getResultState } from './index';
 
 export interface State extends EntityState<RacerData> {
-    interMap: {[id: number]: number};
+    intermediates: Intermediate[];
     standings: {[id: number]: Standing};
     events: Event[];
 }
 
 export const adapter: EntityAdapter<RacerData> = createEntityAdapter<RacerData>();
 
-export const initialState: State = adapter.getInitialState({interMap: {}, standings: {}, events: []});
+export const initialState: State = adapter.getInitialState({intermediates: [], standings: {}, events: []});
 
 export function reducer(state: State = initialState, action: RaceAction): State {
     switch (action.type) {
         case RaceActionTypes.AddIntermediate: {
             return {
                 ...state,
-                interMap: {...state.interMap, [action.payload.id]: action.payload.key},
+                intermediates: [...state.intermediates, action.payload],
                 standings: {
                     ...state.standings,
                     [action.payload.key]: {version: 0, ids: [], leader: maxVal, bestDiff: (new Array(action.payload.key)).fill(maxVal)}
@@ -109,17 +110,18 @@ export function reducer(state: State = initialState, action: RaceAction): State 
         }
 
         case RaceActionTypes.RegisterResult: {
-            const inter = state.interMap[action.payload.intermediate];
+            const inter = action.payload.intermediate === 99 ? state.intermediates.length - 1 : action.payload.intermediate;
             const time = action.payload.time || maxVal * 6;
             const racer = action.payload.racer;
 
             let changes;
             const event = {
-                racer: racer,
-                inter,
-                status: '2',
-                diff: -12410,
-                timestamp: Date.now()
+                racer: state.entities[racer].racer.firstName[0] + '. ' + state.entities[racer].racer.lastName,
+                inter: state.intermediates[inter].name,
+                status: '',
+                rank: 0,
+                diff: formatTime(time, state.standings[inter].leader),
+                timestamp: action.timestamp
             };
 
             if (state.entities[racer].results.length > inter) {
@@ -128,10 +130,16 @@ export function reducer(state: State = initialState, action: RaceAction): State 
                 changes = registerResult(state, racer, time, inter);
             }
 
+            let events = [...state.events];
+
+            if (action.isEvent && time < maxVal) {
+                events = [...events.slice(Math.max(events.length - 10, 0)), event];
+            }
+
             return {
                 ...adapter.updateMany(changes.changes, state),
                 standings: {...state.standings, ...changes.standings},
-                events: [event, event]
+                events: events
             };
         }
 
@@ -178,6 +186,8 @@ const formatTime = (value: number | string, zero: number): string => {
 
 export const getEvents = (state: State) => state.events;
 
+export const getIntermediates = (state: State) => state.intermediates;
+
 export const createViewSelector = (view: {inter: number | null, diff: number | null}): OperatorFunction<AppState, ResultItem[]> => {
     let version: number;
     return pipe(
@@ -192,10 +202,12 @@ export const createViewSelector = (view: {inter: number | null, diff: number | n
 
             version = state.standings[view.inter].version;
             const rows = [];
-            for (const i of state.standings[view.inter].ids) {
-                const row = state.entities[i];
+            const length = state.standings[view.inter].ids.length;
+            for (let i = 0; i < length; i++) {
+                const id = state.standings[view.inter].ids[i];
+                const row = state.entities[id];
                 const time = row.results[view.inter].time;
-                const _state = 'normal';
+                const _state = view.inter !== 0 && length - i < 4 ? 'new' : 'normal';
 
                 let diff: Prop<number>;
                 if (view.diff !== null) {

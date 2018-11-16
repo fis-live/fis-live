@@ -1,9 +1,7 @@
 import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
-import { Store } from '@ngrx/store';
 import { Observable } from 'rxjs';
 
 import { Columns, TableConfiguration } from '../models/table';
-import { AppState } from '../state/reducers';
 
 import { DatagridState } from './datagrid/providers/datagrid-state';
 import { Filters } from './datagrid/providers/filter';
@@ -15,9 +13,11 @@ import { APP_OPTIONS } from './select/select';
     selector: 'app-tab',
     template: `
         <app-grid-header [config]="columns$ | async" class="action-bar"></app-grid-header>
-<div class="segment" appScrollbar>
-    <app-table [breakpoint]="_breakpoint" [columns]="columns$ | async" [config]="tableConfig$ | async"></app-table>
-</div>`,
+
+        <div class="segment" appScrollbar>
+            <app-table [breakpoint]="_breakpoint" [columns]="columns$ | async" [config]="tableConfig$ | async"></app-table>
+        </div>
+    `,
     providers: [DatagridState, Filters, Sort, ViewSelector, { provide: APP_OPTIONS, useExisting: ViewSelector}],
     changeDetection: ChangeDetectionStrategy.OnPush
 })
@@ -32,7 +32,7 @@ export class TabComponent {
         this._breakpoint = breakpoint;
     }
 
-    constructor(private _store: Store<AppState>, private _state: DatagridState) {
+    constructor(private _state: DatagridState) {
         this.tableConfig$ = this._state.connect();
         this.columns$ = this._state.getVisibleColumns();
     }

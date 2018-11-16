@@ -36,9 +36,10 @@ export interface RacerData {
 }
 
 export interface Event {
-    racer: number;
-    diff: number | null;
-    inter: number;
+    racer: string;
+    diff: string;
+    rank: number;
+    inter: string;
     status: string;
     timestamp: number;
 }

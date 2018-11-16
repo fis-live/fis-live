@@ -18,7 +18,7 @@ export const enum RaceActionTypes {
 export class RegisterResult implements Action {
     readonly type = RaceActionTypes.RegisterResult;
 
-    constructor(public payload: Result) { }
+    constructor(public payload: Result, public isEvent = false, public timestamp: number = Date.now()) { }
 }
 
 export class AddRacer implements Action {

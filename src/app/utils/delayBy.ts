@@ -56,9 +56,7 @@ class DelayBySubscriber<T> extends OuterSubscriber<T, number> {
         }
 
         if (queue.length > 0) {
-            console.log('In queue: ', queue.length);
             const delay = Math.max(0, queue[0].time + source.delayValue - scheduler.now());
-            console.log('Reschedule: ', delay);
             this.schedule(state, delay);
         } else {
             this.unsubscribe();

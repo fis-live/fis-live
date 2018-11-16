@@ -62,7 +62,7 @@ export class ConnectionEffects {
                     ];
                 }),
                 catchError(() => {
-                    return [new HideLoading(), new ShowAlert({
+                    return [new HideLoading(), new SelectServer(), new ShowAlert({
                         severity: 'danger',
                         message: 'Could not find live data. Check the codex and try again.',
                         action: 'Retry',

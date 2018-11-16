@@ -87,11 +87,7 @@ export class FisConnectionService {
     private getHttpRequest(): Observable<string> {
         let url: string;
         if (this.version === 0) {
-            if (this.codex === 0) {
-                url = `test.xml`;
-            } else {
-                url = `${this.baseURL}mobile/cc-${this.codex}/main.xml`;
-            }
+            url = `${this.baseURL}mobile/cc-${this.codex}/main.xml`;
         } else {
             url = `${this.baseURL}mobile/cc-${this.codex}/updt${this.version}.xml`;
         }
