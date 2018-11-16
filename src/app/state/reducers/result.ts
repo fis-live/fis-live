@@ -251,7 +251,7 @@ export const createViewSelector = (view: {inter: number | null, diff: number | n
                     rank: row.results[view.inter].rank,
                     diff: diff,
                     name: {
-                        display: row.racer.lastName + ', ' + row.racer.firstName,
+                        display: row.racer.firstName + ' ' + row.racer.lastName,
                         value: row.racer.lastName + ', ' + row.racer.firstName
                     },
                     notes: row.notes,

@@ -33,10 +33,7 @@ export function enableBatching(reducer: ActionReducer<AppState>): ActionReducer<
     return function batchingReducer(state, action: any) {
         switch (action.type) {
             case ConnectionActionTypes.Batch:
-                const time = window.performance.now();
-                const newState = action.payload.reduce(batchingReducer, state);
-                console.log(window.performance.now() - time);
-                return newState;
+                return action.payload.reduce(batchingReducer, state);
             default:
                 return reducer(state, action);
         }

@@ -6,7 +6,7 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { RouterModule } from '@angular/router';
 import { EffectsModule } from '@ngrx/effects';
 import { StoreModule } from '@ngrx/store';
-import { StoreDevtoolsModule } from '@ngrx/store-devtools';
+// import { StoreDevtoolsModule } from '@ngrx/store-devtools';
 
 import { AppComponent } from './app.component';
 import { ContainerComponent } from './components/container.component';
@@ -58,7 +58,7 @@ import { metaReducers, reducers } from './state/reducers';
         BrowserAnimationsModule,
         RouterModule.forRoot(appRoutes, { useHash: true }),
         StoreModule.forRoot(reducers, { metaReducers: metaReducers }),
-        StoreDevtoolsModule.instrument(),
+        // StoreDevtoolsModule.instrument(),
         EffectsModule.forRoot([ConnectionEffects])
     ],
     providers: [ FisConnectionService, WindowSize ],
