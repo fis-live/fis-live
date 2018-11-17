@@ -207,7 +207,7 @@ export const createViewSelector = (view: {inter: number | null, diff: number | n
                 const id = state.standings[view.inter].ids[i];
                 const row = state.entities[id];
                 const time = row.results[view.inter].time;
-                const _state = view.inter !== 0 && length - i < 4 ? 'new' : 'normal';
+                const _state = row.results[view.inter].rank !== null && view.inter !== 0 && length - i < 4 ? 'new' : 'normal';
 
                 let diff: Prop<number>;
                 if (view.diff !== null) {

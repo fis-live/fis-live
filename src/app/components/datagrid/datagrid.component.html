@@ -33,7 +33,7 @@
                 [ngClass]="row.classes"
                 *ngFor="let row of config.rows; trackBy: track"
                 role="row">
-                <td><div>{{ row.rank }}</div></td>
+                <td><div>{{ row.rank || '&nbsp;' }}</div></td>
                 <td class="bib" *ngIf="columns.bib"><div><span class="badge">{{ row.bib }}</span></div></td>
                 <td>
                     <div class="small_only flag">
@@ -44,7 +44,7 @@
                 </td>
                 <td class="time"><div>{{ row.time.display }}</div></td>
                 <td *ngIf="columns.nationality"><div class="flag">{{ row.nationality }}</div></td>
-                <td *ngIf="columns.diff"><div>{{ row.diff.display }}</div></td>
+                <td *ngIf="columns.diff"><div>{{ row.diff.display || '&nbsp;' }}</div></td>
             </tr>
 
     </tbody>
