@@ -284,6 +284,7 @@ export const statusMap: {[status: string]: string} = {
     'ral': 'RAL',
     'dnf': 'DNF',
     'dq': 'DQ',
+    'dsq': 'DSQ',
     'dns': 'DNS'
 };
 
@@ -301,6 +302,7 @@ export const statusToTimeMap: {[status: string]: number} = {
     'lapped':   maxVal * 2,
     'dnf':      maxVal * 3,
     'dq':       maxVal * 4,
+    'dsq':      maxVal * 4,
     'dns':      maxVal * 5,
     'N/A':      maxVal * 6
 };
