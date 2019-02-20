@@ -166,7 +166,7 @@ export const getAllRacers = createSelector(
     }
 );
 
-const formatTime = (value: number | string, zero: number): string => {
+const formatTime = (value: number | string, zero: number | null): string => {
     if (typeof value === 'string') {
         return value;
     }
@@ -174,6 +174,11 @@ const formatTime = (value: number | string, zero: number): string => {
     if (value == null) {
         return '';
     }
+
+    if (zero === null) {
+        zero = value;
+    }
+
     let timeStr = (value === zero) ? '' : (value < zero ? '-' : '+');
     const time = (value === zero) ? value : (value < zero ? zero - value : value - zero);
 
@@ -287,7 +292,7 @@ export const createViewSelector = (view: View): OperatorFunction<AppState, Resul
                 }
                 return rows;
             } else {
-                const zeroes: number[] = [];
+                const zeroes: (number | null)[] = [];
                 if (view.zero === -1) {
                     for (const { key } of state.intermediates) {
                         if (view.display === 'total') {
@@ -298,10 +303,14 @@ export const createViewSelector = (view: View): OperatorFunction<AppState, Resul
                     }
                 } else {
                     for (const { key } of state.intermediates) {
-                        if (view.display === 'total') {
-                            zeroes[key] = state.entities[view.zero].results[key].time;
+                        if (state.entities[view.zero].results[key] != undefined) {
+                            if (view.display === 'total') {
+                                zeroes[key] = state.entities[view.zero].results[key].time;
+                            } else {
+                                zeroes[key] = key > 0 ? state.entities[view.zero].results[key].diffs[key - 1] : 0;
+                            }
                         } else {
-                            zeroes[key] = key > 0 ? state.entities[view.zero].results[key].diffs[key - 1] : 0;
+                            zeroes[key] = null;
                         }
                     }
                 }

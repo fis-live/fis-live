@@ -8,7 +8,6 @@ import { ResultItem } from '../../models/table';
 import { AppState, selectAllIntermediates } from '../../state/reducers';
 
 import { Config } from './providers/config';
-import { DatagridState } from './providers/datagrid-state';
 
 export interface ColumnDef {
     id: string;
@@ -55,10 +54,11 @@ export interface ColumnDef {
 })
 export class DatagridComponent {
     @Input() public config: Config;
+    @Input() public rows: ResultItem[];
 
     public intermediates$: Observable<ColumnDef[]>;
 
-    constructor(public state: DatagridState, store: Store<AppState>) {
+    constructor(store: Store<AppState>) {
         this.intermediates$ = store.pipe(
             select(selectAllIntermediates),
             map(values => values.map(inter => {
