@@ -16,6 +16,8 @@ import { Sort } from './providers/sort';
     changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class DatagridWrapper {
+    @Input()
+    public dgId: string;
 
     public config$: Observable<Config>;
     public row$: Observable<ResultItem[]>;
