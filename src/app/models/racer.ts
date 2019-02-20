@@ -42,4 +42,5 @@ export interface Event {
     inter: string;
     status: string;
     timestamp: number;
+    interId: number;
 }

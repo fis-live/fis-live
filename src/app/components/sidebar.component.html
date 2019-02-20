@@ -60,8 +60,19 @@
             <label for="delay">Delay</label>
             <span style="float: right;">ms</span>
             <input type="number" id="delay" [ngModel]="delay$ | async" (ngModelChange)="setDelay($event)" placeholder="Enter value here" style="float: right; width: 100px;">
+        </div>
+
+        <div style="padding: 10px;">
+
+            <div class="clr-select-wrapper" style="width: 100%">
+                <label for="select-inter">Inter</label>
+                <select class="clr-select" id="select-inter" style="float:right" [ngModel]="selectedInter | async" (ngModelChange)="next($event)">
+                    <option *ngFor="let inter of intermediates$ | async" [value]="inter.key">{{ inter.name }}</option>
+                </select>
+            </div>
 
             <div class="list">
+
                 <div *ngFor="let event of events$ | async" class="item">
                     <div style="flex: 1">
                         <div style="line-height: 20px; font-weight: bold;">{{ event.racer }}</div>

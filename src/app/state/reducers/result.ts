@@ -122,7 +122,8 @@ export function reducer(state: State = initialState, action: RaceAction): State 
                 status: '',
                 rank: 0,
                 diff: formatTime(time, state.standings[inter].leader),
-                timestamp: action.timestamp
+                timestamp: action.timestamp,
+                interId: inter
             };
 
             if (state.entities[racer].results.length > inter) {
@@ -134,7 +135,7 @@ export function reducer(state: State = initialState, action: RaceAction): State 
             let events = [...state.events];
 
             if (action.isEvent && time < maxVal) {
-                events = [...events.slice(Math.max(events.length - 10, 0)), event];
+                events = [...events.slice(Math.max(events.length - 30, 0)), event];
             }
 
             return {

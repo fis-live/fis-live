@@ -3,13 +3,14 @@ import {
     ChangeDetectionStrategy, Component, EventEmitter, Input, Output
 } from '@angular/core';
 import { select, Store } from '@ngrx/store';
-import { Observable } from 'rxjs';
-import { takeWhile } from 'rxjs/operators';
+import { BehaviorSubject, combineLatest, Observable } from 'rxjs';
+import { map } from 'rxjs/operators';
 
+import { Intermediate } from '../models/intermediate';
 import { RacesByPlace } from '../models/race';
 import { Event, Racer } from '../models/racer';
 import { SetDelay, ToggleFavorite } from '../state/actions/settings';
-import { AppState, getDelayState, selectEvents, selectRacesByPlace } from '../state/reducers';
+import { AppState, getDelayState, selectAllIntermediates, selectEvents, selectRacesByPlace } from '../state/reducers';
 
 @Component({
     selector: 'app-sidebar',
@@ -33,14 +34,16 @@ export class SidebarComponent {
     public upcomingRaces$: Observable<RacesByPlace[]>;
     public delay$: Observable<number>;
     public events$: Observable<Event[]>;
+    public intermediates$: Observable<Intermediate[]>;
+    private selectedInter = new BehaviorSubject<number>(0);
 
     constructor(private store: Store<AppState>) {
         this.upcomingRaces$ = store.select(selectRacesByPlace);
         this.delay$ = store.select(getDelayState);
-        this.events$ = store.pipe(
-            select(selectEvents),
-            takeWhile((events, i) => i === 0 || events.length <= 10)
+        this.events$ = combineLatest(this.selectedInter, store.select(selectEvents)).pipe(
+            map(([inter, events]) => events.filter(event => event.interId === inter))
         );
+        this.intermediates$ = store.pipe(select(selectAllIntermediates));
     }
 
     public setDelay(delay: number) {
@@ -68,6 +71,11 @@ export class SidebarComponent {
         this.isOpen = false;
         this.isOpenChange.emit(false);
     }
+
+    public next(id: string) {
+        this.selectedInter.next(parseInt(id, 10));
+    }
+
 
     public go(codex: number): void {
         this.close();
