@@ -1,3 +1,4 @@
+import { CdkTableModule } from '@angular/cdk/table';
 import { HttpClientModule } from '@angular/common/http';
 import { NgModule } from '@angular/core';
 import { FormsModule } from '@angular/forms';
@@ -10,17 +11,17 @@ import { StoreModule } from '@ngrx/store';
 
 import { AppComponent } from './app.component';
 import { ContainerComponent } from './components/container.component';
-import { DatagridHeaderComponent } from './components/datagrid/datagrid-header.component';
 import { DatagridSettingsComponent } from './components/datagrid/datagrid-settings.component';
+import { DatagridWrapper } from './components/datagrid/datagrid-wrapper';
 import { DatagridComponent } from './components/datagrid/datagrid.component';
 import { FilterComponent } from './components/datagrid/filter.component';
+import { DatagridHeader } from './components/datagrid/header/datagrid-header.component';
 import { SortDirective } from './components/datagrid/sort.directive';
 import { DropdownItemDirective } from './components/dropdown/dropdown-item.directive';
 import { DropdownComponent } from './components/dropdown/dropdown.component';
 import { MenuComponent } from './components/menu.component';
 import { SelectComponent } from './components/select/select';
 import { SidebarComponent } from './components/sidebar.component';
-import { TabComponent } from './components/tab.component';
 import { AlertComponent } from './components/ui/alert.component';
 import { IconComponent } from './components/ui/icon.component';
 import { FocusDirective } from './components/utils/focus.directive';
@@ -33,29 +34,30 @@ import { metaReducers, reducers } from './state/reducers';
 
 @NgModule({
     declarations: [
-        AppComponent,
-        DropdownComponent,
         AlertComponent,
-        MenuComponent,
+        AppComponent,
         ContainerComponent,
-        TabComponent,
         DatagridComponent,
+        DatagridHeader,
+        DatagridSettingsComponent,
+        DropdownComponent,
+        DropdownItemDirective,
         FilterComponent,
         FocusDirective,
         IconComponent,
-        SidebarComponent,
+        MenuComponent,
         ScrollbarDirective,
+        SelectComponent,
+        SidebarComponent,
         SortDirective,
-        DatagridHeaderComponent,
-        DropdownItemDirective,
-        DatagridSettingsComponent,
-        SelectComponent
+        DatagridWrapper
     ],
     imports: [
+        BrowserAnimationsModule,
         BrowserModule,
+        CdkTableModule,
         FormsModule,
         HttpClientModule,
-        BrowserAnimationsModule,
         RouterModule.forRoot(appRoutes, { useHash: true }),
         StoreModule.forRoot(reducers, { metaReducers: metaReducers }),
         // StoreDevtoolsModule.instrument(),

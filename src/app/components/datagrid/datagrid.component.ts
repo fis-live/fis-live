@@ -1,7 +1,21 @@
 import { animate, group, keyframes, query, style, transition, trigger } from '@angular/animations';
 import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
+import { select, Store } from '@ngrx/store';
+import { Observable } from 'rxjs';
+import { map } from 'rxjs/operators';
 
-import { Columns, ResultItem, TableConfiguration } from '../../models/table';
+import { ResultItem } from '../../models/table';
+import { AppState, selectAllIntermediates } from '../../state/reducers';
+
+import { Config } from './providers/config';
+import { DatagridState } from './providers/datagrid-state';
+
+export interface ColumnDef {
+    id: string;
+    name: string;
+    sortBy: string;
+    key: number;
+}
 
 @Component({
     selector: 'app-table',
@@ -40,13 +54,22 @@ import { Columns, ResultItem, TableConfiguration } from '../../models/table';
     changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class DatagridComponent {
-    @Input() public config: TableConfiguration = {
-        isStartList: true,
-        rows: []
-    };
-    @Input() public breakpoint: string;
+    @Input() public config: Config;
 
-    @Input() public columns: Columns;
+    public intermediates$: Observable<ColumnDef[]>;
+
+    constructor(public state: DatagridState, store: Store<AppState>) {
+        this.intermediates$ = store.pipe(
+            select(selectAllIntermediates),
+            map(values => values.map(inter => {
+                return {
+                    id: 'inter' + inter.key,
+                    sortBy: 'marks.' + inter.key + '.value',
+                    name: inter.distance + ' KM',
+                    key: inter.key
+                };
+            })));
+    }
 
     public track(index: number, item: ResultItem): number {
         return item.bib;

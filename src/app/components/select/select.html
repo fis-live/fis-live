@@ -1,4 +1,4 @@
-<button class="dropdown-toggle btn btn-sm" (click)="toggle()" type="button">
+<button class="dropdown-toggle btn" (click)="toggle()" type="button">
     <ng-container *ngIf="render | async as selected; else placeholder">
         <ng-container [ngTemplateOutlet]="template" [ngTemplateOutletContext]="{$implicit: selected}"></ng-container>
     </ng-container>

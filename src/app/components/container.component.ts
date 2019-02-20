@@ -63,7 +63,7 @@ export class ContainerComponent implements OnInit, OnDestroy {
             if (w < 768) {
                 this.breakpoints[0] = 'small';
             }
-            if (w < 330) {
+            if (w < 360) {
                 this.breakpoints[0] = 'mini';
             }
         }
@@ -74,7 +74,7 @@ export class ContainerComponent implements OnInit, OnDestroy {
             if (w < 768) {
                 this.breakpoints[1] = 'small';
             }
-            if (w < 330) {
+            if (w < 360) {
                 this.breakpoints[1] = 'mini';
             }
         }

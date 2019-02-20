@@ -1,8 +1,7 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, Renderer2 } from '@angular/core';
-import { Observable } from 'rxjs';
+import { Observable, of } from 'rxjs';
 
 import { Columns } from '../../models/table';
-
 import { AbstractPopover } from '../utils/abstract-popover';
 
 import { DatagridState } from './providers/datagrid-state';
@@ -58,16 +57,16 @@ import { DatagridState } from './providers/datagrid-state';
     changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class DatagridSettingsComponent extends AbstractPopover {
-    public columns$: Observable<Columns>;
+    public columns$: Observable<Columns> = of();
 
     constructor(private _state: DatagridState, el: ElementRef, renderer: Renderer2, cdr: ChangeDetectorRef) {
         super(el, renderer, cdr);
 
-        this.columns$ = this._state.getVisibleColumns();
+        // this.columns$ = this._state.getVisibleColumns();
     }
 
 
     public toggleColumn(column: keyof Columns) {
-        this._state.toggleColumn(column);
+        // this._state.toggleColumn(column);
     }
 }

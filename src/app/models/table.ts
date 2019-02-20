@@ -17,6 +17,7 @@ export interface ResultItem {
     name: Prop<string>;
     notes: string[];
     classes: string[];
+    marks: (Prop<number> | Prop<string>)[];
 }
 
 export interface TableConfiguration {

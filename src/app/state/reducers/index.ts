@@ -71,5 +71,7 @@ export const getDelayState = createSelector(getSettingsState, Settings.getDelay)
 
 export const selectEvents = createSelector(getResultState, Result.getEvents);
 
+export const selectAllRacers = createSelector(getResultState, Result.getAllRacers);
+
 
 export const { selectAll: selectAllResults } = Result.adapter.getSelectors(getResultState);

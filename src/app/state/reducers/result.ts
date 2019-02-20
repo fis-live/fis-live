@@ -1,8 +1,9 @@
 import { createEntityAdapter, EntityAdapter, EntityState } from '@ngrx/entity';
-import { select } from '@ngrx/store';
+import { createSelector, select } from '@ngrx/store';
 import { OperatorFunction, pipe } from 'rxjs';
 import { filter, map } from 'rxjs/operators';
 
+import { View } from '../../components/datagrid/providers/config';
 import { maxVal } from '../../fis/fis-constants';
 import { Intermediate } from '../../models/intermediate';
 import { Event, Prop, RacerData, Standing } from '../../models/racer';
@@ -148,6 +149,23 @@ export function reducer(state: State = initialState, action: RaceAction): State 
     }
 }
 
+export const getRacerIds = (state: State) => state.ids;
+
+export const getRacerEntities = (state: State) => state.entities;
+
+export const getAllRacers = createSelector(
+    getRacerIds,
+    getRacerEntities,
+    (ids, entities) => {
+        const racers = [];
+        for (const id of ids) {
+            racers.push(entities[id].racer);
+        }
+
+        return racers;
+    }
+);
+
 const formatTime = (value: number | string, zero: number): string => {
     if (typeof value === 'string') {
         return value;
@@ -188,77 +206,166 @@ export const getEvents = (state: State) => state.events;
 
 export const getIntermediates = (state: State) => state.intermediates;
 
-export const createViewSelector = (view: {inter: number | null, diff: number | null}): OperatorFunction<AppState, ResultItem[]> => {
+export const createViewSelector = (view: View): OperatorFunction<AppState, ResultItem[]> => {
     let version: number;
     return pipe(
         select(getResultState),
-        filter((state) => view.inter === null || state.standings[view.inter] === undefined
-            || state.standings[view.inter].version !== version),
+        filter((state) => {
+            const inter = view.inter ? view.inter.key : null;
+            return view.mode === 'analysis' || (
+                inter === null ||
+                state.standings[inter] === undefined ||
+                state.standings[inter].version !== version
+            );
+        }),
         map((state: State) => {
-            if (view.inter === null || state.standings[view.inter] === undefined) {
-                version = 0;
-                return [];
-            }
+            if (view.mode === 'normal') {
+                if (view.inter === null || state.standings[view.inter.key] === undefined) {
+                    version = 0;
+                    return [];
+                }
 
-            version = state.standings[view.inter].version;
-            const rows = [];
-            const length = state.standings[view.inter].ids.length;
-            for (let i = 0; i < length; i++) {
-                const id = state.standings[view.inter].ids[i];
-                const row = state.entities[id];
-                const time = row.results[view.inter].time;
-                const _state = row.results[view.inter].rank !== null && view.inter !== 0 && length - i < 4 ? 'new' : 'normal';
+                version = state.standings[view.inter.key].version;
+                const rows = [];
+                const length = state.standings[view.inter.key].ids.length;
+                for (let i = 0; i < length; i++) {
+                    const id = state.standings[view.inter.key].ids[i];
+                    const row = state.entities[id];
+                    const time = row.results[view.inter.key].time;
+                    const _state = row.results[view.inter.key].rank !== null && view.inter.key !== 0 && length - i < 4 ? 'new' : 'normal';
 
-                let diff: Prop<number>;
-                if (view.diff !== null) {
-                    const d = row.results[view.inter].diffs[view.diff] || maxVal;
+                    let diff: Prop<number>;
+                    if (view.diff !== null) {
+                        const d = row.results[view.inter.key].diffs[view.diff.key] || maxVal;
 
-                    diff = {
-                        display: d < maxVal ? formatTime(d, state.standings[view.inter].bestDiff[view.diff]) : '',
-                        value: d
-                    };
+                        diff = {
+                            display: d < maxVal ? formatTime(d, state.standings[view.inter.key].bestDiff[view.diff.key]) : '',
+                            value: d
+                        };
+                    } else {
+                        diff = {
+                            display: '',
+                            value: maxVal
+                        };
+                    }
+
+                    const classes = [row.racer.nationality.toLowerCase(), _state];
+                    if (row.results[view.inter.key].rank === 1 && view.inter.key > 0) {
+                        classes.push('leader');
+                    } else if (row.results[view.inter.key].rank == null) {
+                        classes.push('disabled');
+                    }
+
+                    if (row.racer.isFavorite) {
+                        classes.push('favorite');
+                    }
+
+                    if (row.racer.color) {
+                        classes.push(row.racer.color);
+                    }
+
+                    rows.push({
+                        state: _state,
+                        id: row.racer.id,
+                        bib: row.racer.bib,
+                        nationality: row.racer.nationality,
+                        time: view.inter.key === 0 ? {display: row.status, value: row.status} : {
+                            display: time < maxVal ?
+                                formatTime(time, state.standings[view.inter.key].leader) : row.results[view.inter.key].status,
+                            value: time
+                        },
+                        rank: row.results[view.inter.key].rank,
+                        diff: diff,
+                        name: {
+                            display: row.racer.firstName + ' ' + row.racer.lastName,
+                            value: row.racer.lastName + ', ' + row.racer.firstName
+                        },
+                        notes: row.notes,
+                        classes: classes,
+                        marks: []
+                    });
+                }
+                return rows;
+            } else {
+                const zeroes: number[] = [];
+                if (view.zero === -1) {
+                    for (const { key } of state.intermediates) {
+                        if (view.display === 'total') {
+                            zeroes[key] = state.standings[key].leader;
+                        } else {
+                            zeroes[key] = key > 0 ? state.standings[key].bestDiff[key - 1] : 0;
+                        }
+                    }
                 } else {
-                    diff = {
-                        display: '',
-                        value: maxVal
-                    };
+                    for (const { key } of state.intermediates) {
+                        if (view.display === 'total') {
+                            zeroes[key] = state.entities[view.zero].results[key].time;
+                        } else {
+                            zeroes[key] = key > 0 ? state.entities[view.zero].results[key].diffs[key - 1] : 0;
+                        }
+                    }
                 }
 
-                const classes = [row.racer.nationality.toLowerCase(), _state];
-                if (row.results[view.inter].rank === 1 && view.inter > 0) {
-                    classes.push('leader');
-                } else if (row.results[view.inter].rank == null) {
-                    classes.push('disabled');
+                if (view.inter === null || state.standings[view.inter.key] === undefined) {
+                    version = 0;
+                    return [];
                 }
 
-                if (row.racer.isFavorite) {
-                    classes.push('favorite');
+                const rows = [];
+                const length = state.ids.length;
+                for (const id of state.ids) {
+                    const row = state.entities[id];
+                    const _state = 'normal';
+                    const classes: string[] = [];
+
+                    if (row.racer.isFavorite) {
+                        classes.push('favorite');
+                    }
+
+                    if (row.racer.color) {
+                        classes.push(row.racer.color);
+                    }
+
+                    const marks: (Prop<number> | Prop<string>)[] = [];
+
+                    for (const { key } of state.intermediates) {
+                        let time: number | null;
+                        if (view.display === 'total') {
+                            time = row.results[key] != null ? row.results[key].time : null;
+                        } else {
+                            time =  row.results[key] != null ?
+                                (key === 0 ? row.results[0].diffs[0] : row.results[key].diffs[key - 1]) : null;
+                        }
+
+                        const display = (time !== null) ?  (time < maxVal ? formatTime(time, zeroes[key]) : row.results[key].status) : '';
+                        const value = (time !== null) ?  time : maxVal * 6;
+
+                        marks[key] = {
+                            display,
+                            value
+                        };
+                    }
+
+                    rows.push({
+                        state: _state,
+                        id: row.racer.id,
+                        bib: row.racer.bib,
+                        nationality: row.racer.nationality,
+                        time: {display: '', value: 0},
+                        rank: 1,
+                        diff: {display: '', value: 0},
+                        name: {
+                            display: row.racer.firstName + ' ' + row.racer.lastName,
+                            value: row.racer.lastName + ', ' + row.racer.firstName
+                        },
+                        notes: row.notes,
+                        classes: classes,
+                        marks: marks
+                    });
                 }
 
-                if (row.racer.color) {
-                    classes.push(row.racer.color);
-                }
-
-                rows.push({
-                    state: _state,
-                    id: row.racer.id,
-                    bib: row.racer.bib,
-                    nationality: row.racer.nationality,
-                    time: view.inter === 0 ? {display: row.status, value: row.status} : {
-                        display: time < maxVal ? formatTime(time, state.standings[view.inter].leader) : row.results[view.inter].status,
-                        value: time
-                    },
-                    rank: row.results[view.inter].rank,
-                    diff: diff,
-                    name: {
-                        display: row.racer.firstName + ' ' + row.racer.lastName,
-                        value: row.racer.lastName + ', ' + row.racer.firstName
-                    },
-                    notes: row.notes,
-                    classes: classes
-                });
+                return rows;
             }
-            return rows;
         })
     );
 };

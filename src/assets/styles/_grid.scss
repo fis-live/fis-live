@@ -44,13 +44,19 @@ html, body {
     align-items: stretch;
     height: 1.5rem;
     padding: 0 $clr-table-cellpadding;
+    padding-top: 0.25rem;
+    padding-bottom: calc(0.25rem - 1px);
     // Account for borders
-    line-height: calc(1.5rem - #{3 * $clr-default-borderwidth});
-    font-size: clr-getTypePropertyValueForDomElement(table_header, font-size);
+    //line-height: calc(1.5rem - #{2 * $clr-default-borderwidth});
+    //font-size: clr-getTypePropertyValueForDomElement(table_header, font-size);
     background-color: $clr-thead-bgcolor;
     border: 1px solid $app-table-bordercolor;
     border-bottom: none;
     border-radius: $clr-default-borderradius $clr-default-borderradius 0 0;
+
+    > div:not(:last-child) {
+        margin-right: 0.25rem;
+    }
 
     .pagination {
         margin-left: 1.5rem;
@@ -139,7 +145,7 @@ html, body {
     }
 }
 
-@media only screen and (max-width : 330px) {
+@media only screen and (max-width : 360px) {
     .column {
         margin: 0;
         max-width: 100%;

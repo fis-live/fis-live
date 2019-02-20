@@ -7,7 +7,7 @@
         <div class="spinner">Loading...</div>
     </div>
     <div *ngFor="let columns of rows; let row = index" class="row">
-        <app-tab *ngFor="let i of columns" class="column" [breakpoint]="breakpoints[row]"></app-tab>
+        <app-dg-wrapper *ngFor="let i of columns" class="column" [breakpoint]="breakpoints[row]"></app-dg-wrapper>
     </div>
 </div>
 
