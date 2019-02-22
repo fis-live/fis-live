@@ -72,7 +72,8 @@ export class DatagridConfig implements OptionSelector<View, Intermediate>, OnDes
 
                 this._internalConfig = {
                     ...this._internalConfig,
-                    view
+                    view,
+                    isStartList: view.inter == null || view.inter.key === 0
                 };
                 this._config.next(this._internalConfig);
                 this._renderSelectionChanged.next(view);
@@ -203,7 +204,8 @@ export class DatagridConfig implements OptionSelector<View, Intermediate>, OnDes
 
         this._internalConfig = {
             ...this._internalConfig,
-            view
+            view,
+            isStartList: view.inter == null || view.inter.key === 0
         };
         this._config.next(this._internalConfig);
         this._renderSelectionChanged.next(view);
