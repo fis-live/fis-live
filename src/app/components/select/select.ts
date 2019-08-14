@@ -16,7 +16,7 @@ import { Observable } from 'rxjs';
 
 import { AbstractPopover } from '../utils/abstract-popover';
 
-import { Option, OptionSelector } from './option-selector';
+import { KeysOfType, Option, OptionSelector } from './option-selector';
 
 export const APP_OPTIONS = new InjectionToken<OptionSelector<any, any>>('app.options');
 
@@ -40,9 +40,9 @@ export const APP_OPTIONS = new InjectionToken<OptionSelector<any, any>>('app.opt
     ]
 })
 export class SelectComponent<T, V> extends AbstractPopover implements OnInit {
-    @Input() key: keyof T;
+    @Input() key: KeysOfType<T, V | null>;
 
-    @ContentChild(TemplateRef) template: TemplateRef<{$implicit: V}>;
+    @ContentChild(TemplateRef, {static: true}) template: TemplateRef<{$implicit: V}>;
     options: Observable<Option<V>[]>;
     render: Observable<V | null>;
 

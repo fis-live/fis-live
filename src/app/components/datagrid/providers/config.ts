@@ -1,12 +1,11 @@
 import { Injectable, OnDestroy } from '@angular/core';
 import { select, Store } from '@ngrx/store';
-
 import { BehaviorSubject, Observable, Subscription } from 'rxjs';
 import { map } from 'rxjs/operators';
 
 import { Intermediate } from '../../../models/intermediate';
 import { AppState, selectAllIntermediates } from '../../../state/reducers';
-import { Option, OptionSelector } from '../../select/option-selector';
+import { KeysOfType, Option, OptionSelector } from '../../select/option-selector';
 
 export interface View {
     mode: 'normal' | 'analysis';
@@ -162,7 +161,7 @@ export class DatagridConfig implements OptionSelector<View, Intermediate>, OnDes
         this._config.next(this._internalConfig);
     }
 
-    getOptions(key: keyof View): Observable<Option<Intermediate>[]> {
+    getOptions(key: KeysOfType<View, Intermediate | null>): Observable<Option<Intermediate>[]> {
         return this._source.pipe(
             map((options) => options.map((option) => {
                     const inter = this._internalConfig.view.inter;
@@ -176,9 +175,9 @@ export class DatagridConfig implements OptionSelector<View, Intermediate>, OnDes
         );
     }
 
-    getRenderSelectionChanged(key: keyof View): Observable<Intermediate | null> {
+    getRenderSelectionChanged(key: KeysOfType<View, Intermediate | null>): Observable<Intermediate | null> {
         return this._renderSelectionChanged.asObservable().pipe(
-            map(view => key === 'diff' || key === 'inter' ? view[key] : null)
+            map(view => view[key])
         );
     }
 
@@ -191,7 +190,7 @@ export class DatagridConfig implements OptionSelector<View, Intermediate>, OnDes
         // this._renderSelectionChanged.next(this.currentValue);
     }
 
-    updateSelection(value: Intermediate, key: keyof View): void {
+    updateSelection(value: Intermediate, key: KeysOfType<View, Intermediate | null>): void {
         const view = {...this._internalConfig.view};
         if (view[key] && view[key] === value) {
             return;

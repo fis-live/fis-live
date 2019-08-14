@@ -3,7 +3,7 @@ const HtmlWebpackPlugin = require('html-webpack-plugin');
 const AngularCompilerPlugin = require('@ngtools/webpack').AngularCompilerPlugin;
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 const CheckerPlugin = require('awesome-typescript-loader').CheckerPlugin;
-const UglifyJsPlugin = require('uglifyjs-webpack-plugin');
+const TerserPlugin = require('terser-webpack-plugin');
 
 const path = require("path");
 
@@ -155,10 +155,10 @@ module.exports = function(env, argv) {
     const prod = isProd ? {
         optimization: {
             minimizer: [
-                new UglifyJsPlugin({
+                new TerserPlugin({
                     cache: true,
                     parallel: true,
-                    uglifyOptions: {
+                    terserOptions: {
                         output: {
                             comments: false
                         }
@@ -190,7 +190,7 @@ module.exports = function(env, argv) {
                 {
                     test: /\.html$/,
                     exclude: /index\.html/,
-                    loader: 'raw-loader'
+                    loader: 'html-loader'
                 },
                 {
                     test: /\.(png|jpe?g|gif|svg|woff|woff2|ttf|eot|ico)$/,

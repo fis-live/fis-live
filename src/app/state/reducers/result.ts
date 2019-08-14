@@ -50,7 +50,7 @@ export function reducer(state: State = initialState, action: RaceAction): State 
             return adapter.updateOne({
                 id: action.payload.racer,
                 changes: {
-                    notes: [...state.entities[action.payload.racer].notes, 'W']
+                    notes: [...state.entities[action.payload.racer]!.notes, 'W']
                 }
             }, state);
         }
@@ -70,7 +70,7 @@ export function reducer(state: State = initialState, action: RaceAction): State 
         }
 
         case RaceActionTypes.SetStartTime: {
-            const results = [...state.entities[action.payload.racer].results];
+            const results = [...state.entities[action.payload.racer]!.results];
             results[0] = {...results[0], time: action.payload.time, diffs: [action.payload.time]};
 
             const standings: {[id: number]: Standing} = {[0]: {...state.standings[0]}};
@@ -117,7 +117,7 @@ export function reducer(state: State = initialState, action: RaceAction): State 
 
             let changes;
             const event = {
-                racer: state.entities[racer].racer.firstName[0] + '. ' + state.entities[racer].racer.lastName,
+                racer: state.entities[racer]!.racer.firstName[0] + '. ' + state.entities[racer]!.racer.lastName,
                 inter: state.intermediates[inter].name,
                 status: '',
                 rank: 0,
@@ -126,7 +126,7 @@ export function reducer(state: State = initialState, action: RaceAction): State 
                 interId: inter
             };
 
-            if (state.entities[racer].results.length > inter) {
+            if (state.entities[racer]!.results.length > inter) {
                 changes = updateResult(state, racer, time, inter);
             } else {
                 changes = registerResult(state, racer, time, inter);
@@ -160,7 +160,7 @@ export const getAllRacers = createSelector(
     (ids, entities) => {
         const racers = [];
         for (const id of ids) {
-            racers.push(entities[id].racer);
+            racers.push(entities[id]!.racer);
         }
 
         return racers;
@@ -236,7 +236,7 @@ export const createViewSelector = (view: View): OperatorFunction<AppState, Resul
                 const length = state.standings[view.inter.key].ids.length;
                 for (let i = 0; i < length; i++) {
                     const id = state.standings[view.inter.key].ids[i];
-                    const row = state.entities[id];
+                    const row = state.entities[id]!;
                     const time = row.results[view.inter.key].time;
                     const _state = row.results[view.inter.key].rank !== null && view.inter.key !== 0 && length - i < 4 ? 'new' : 'normal';
 
@@ -304,11 +304,11 @@ export const createViewSelector = (view: View): OperatorFunction<AppState, Resul
                     }
                 } else {
                     for (const { key } of state.intermediates) {
-                        if (state.entities[view.zero].results[key] != undefined) {
+                        if (state.entities[view.zero]!.results[key] !== undefined) {
                             if (view.display === 'total') {
-                                zeroes[key] = state.entities[view.zero].results[key].time;
+                                zeroes[key] = state.entities[view.zero]!.results[key].time;
                             } else {
-                                zeroes[key] = key > 0 ? state.entities[view.zero].results[key].diffs[key - 1] : 0;
+                                zeroes[key] = key > 0 ? state.entities[view.zero]!.results[key].diffs[key - 1] : 0;
                             }
                         } else {
                             zeroes[key] = null;
@@ -324,7 +324,7 @@ export const createViewSelector = (view: View): OperatorFunction<AppState, Resul
                 const rows = [];
                 const length = state.ids.length;
                 for (const id of state.ids) {
-                    const row = state.entities[id];
+                    const row = state.entities[id]!;
                     const _state = 'normal';
                     const classes: string[] = [];
 
