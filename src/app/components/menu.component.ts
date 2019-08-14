@@ -5,7 +5,7 @@ import { State as RaceInfoState } from '../state/reducers/race-info';
 @Component({
     selector: 'app-menu',
     template: `
-        <header class="header-5">
+        <header>
             <div class="branding" (click)="openSidebar.emit(null)">
                 <button class="header-hamburger-trigger" type="button">
                     <span></span>

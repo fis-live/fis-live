@@ -79,12 +79,12 @@ table {
     }
 
     tr.red .bib .badge {
-        background: $reds-dark-midtone;
+        background: $clr-red-dark-midtone;
         font-weight: 700;
     }
 
     tr.yellow .bib .badge {
-        background: $yellows-light;
+        background: $clr-yellow;
         color: $clr-black;
         font-weight: 700;
     }
@@ -111,22 +111,47 @@ table {
             padding-right: 6px;
             border-bottom: 2px solid $app-table-bordercolor;
 
-            .filter-toggle {
-                width: 16px;
-                height: 16px;
-                background-size: contain;
-                cursor: pointer;
-                vertical-align: middle;
-                margin: auto 0;
-                background: generateFilterIcon($gray-dark-midtone) no-repeat;
+            //.filter-toggle {
+            //    width: 16px;
+            //    height: 16px;
+            //    background-size: contain;
+            //    cursor: pointer;
+            //    vertical-align: middle;
+            //    margin: auto 0;
+            //    background: generateFilterIcon($clr-dark-midtone-gray) no-repeat;
+            //
+            //    &:hover, &.filter-open {
+            //        background-image: generateFilterIcon($clr-action-blue-dark-midtone);
+            //    }
+            //
+            //    &.filtered {
+            //        background-image: generateFilterIcon($clr-action-blue-dark-midtone),
+            //        generateCircleIcon($clr-action-blue-dark-midtone);
+            //    }
+            //}
 
-                &:hover, &.filter-open {
-                    background-image: generateFilterIcon($action-blues-dark-midtone);
+            .datagrid-filter-toggle {
+                @include clr-no-styles-button();
+                cursor: pointer;
+                float: right;
+                vertical-align: middle;
+                //width: $clr-datagrid-icon-size;
+                //height: $clr-datagrid-icon-size;
+                margin: auto 0;
+                background-repeat: no-repeat;
+                background-size: contain;
+                color: $clr-color-neutral-500;
+
+                &:hover {
+                    color: $clr-color-action-600;
                 }
 
-                &.filtered {
-                    background-image: generateFilterIcon($action-blues-dark-midtone),
-                    generateCircleIcon($action-blues-dark-midtone);
+                &.datagrid-filter-open {
+                    color: $clr-color-action-600;
+                }
+
+                &.datagrid-filtered {
+                    color: $clr-color-action-600;
                 }
             }
 
@@ -138,7 +163,7 @@ table {
                 background: $clr-datagrid-popover-bg-color;
                 padding: 0.75rem;
                 border: $clr-default-borderwidth solid $clr-datagrid-popover-border-color;
-                box-shadow: 0 1px 3px rgba($gray-dark, 0.25);
+                box-shadow: 0 1px 3px rgba($clr-dark-gray, 0.25);
                 border-radius: $clr-default-borderradius;
                 font-weight: normal;
                 z-index: map-get($clr-layers, dropdown-menu);
@@ -216,7 +241,7 @@ table {
     }
 
     &::after {
-        background-image: generateSearchIcon($gray-dark-midtone);
+        background-image: generateSearchIcon($clr-dark-midtone-gray);
         height: 16px;
         width: 16px;
         top: 4px;

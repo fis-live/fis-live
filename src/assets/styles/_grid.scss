@@ -102,8 +102,8 @@ html, body {
             .switch-header {
                 display: flex;
                 justify-content: space-between;
-                font-weight: clr-getTypePropertyValueForDomElement(datagrid_column_toggle_title, font-weight);
-                font-size: clr-getTypePropertyValueForDomElement(datagrid_column_toggle_title, font-size);
+                font-weight: 400;
+                font-size: 0.666667rem;
                 padding-bottom: 0.5rem;
                 line-height: 1rem;
 

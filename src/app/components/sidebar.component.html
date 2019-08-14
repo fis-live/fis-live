@@ -1,7 +1,7 @@
 <div [@animate]="isOpen ? 'visible' : 'hidden'" class="sidebar">
 
     <div style="padding: 5px;">
-            <input style="font-size: 11px;" (keyup.enter)="go(codex.value)" #codex placeholder="Enter codex..." type="text">&nbsp;
+            <input class="clr-input" style="font-size: 11px;" (keyup.enter)="go(codex.value)" #codex placeholder="Enter codex..." type="text">&nbsp;
             <button (click)="go(codex.value)" class="btn btn-sm btn-primary">Go</button>
         <button type="button" class="close" aria-label="Close" (click)="close()">
             <clr-icon shape="times" size="32"></clr-icon>
@@ -59,7 +59,7 @@
         <div style="padding: 10px;">
             <label for="delay">Delay</label>
             <span style="float: right;">ms</span>
-            <input type="number" id="delay" [ngModel]="delay$ | async" (ngModelChange)="setDelay($event)" placeholder="Enter value here" style="float: right; width: 100px;">
+            <input class="clr-input" type="number" id="delay" [ngModel]="delay$ | async" (ngModelChange)="setDelay($event)" placeholder="Enter value here" style="float: right; width: 100px;">
         </div>
 
         <div style="padding: 10px;">

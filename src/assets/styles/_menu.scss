@@ -3,6 +3,7 @@ header {
     top: 0;
     width: 100%;
     z-index: 101;
+    background-color: #004a70;
 
     > .branding {
         padding: 0;
@@ -35,6 +36,10 @@ header {
 
     > .header-actions {
         flex: 0 0 auto;
+
+        > .nav-link {
+            padding: 0;
+        }
 
         a {
             &::before {

@@ -13,7 +13,9 @@ const icons = [
     'check-circle',
     'info-circle',
     'view-columns',
-    'caret'
+    'caret',
+    'filter-grid-circle',
+    'filter-grid'
 ];
 
 var template = '';

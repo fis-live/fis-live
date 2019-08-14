@@ -16,7 +16,14 @@ import { Filters } from './providers/filter';
     {{ input }}
 <i (click)="reset()" class="icon delete"></i>
 </div-->
-<span class="filter-toggle" [ngClass]="{'filter-open': open, 'filtered': isActive()}" (click)="toggle()"></span>
+<button
+        (click)="toggle()"
+        class="datagrid-filter-toggle"
+        [class.datagrid-filter-open]="open"
+        [class.datagrid-filtered]="isActive()"
+        type="button">
+    <clr-icon [shape]="isActive() ? 'filter-grid-circle': 'filter-grid'" class="is-solid"></clr-icon>
+</button>
 
 <div class="datagrid-filter" *ngIf="open">
     <div class="datagrid-filter-close-wrapper">
@@ -27,7 +34,7 @@ import { Filters } from './providers/filter';
 
     <div class="search-input">
         <input appFocusOnInit
-            placeholder="Search..." type="text"
+            placeholder="Search..." type="text" class="clr-input"
             [(ngModel)]="input"
             (keyup)="filterChanged()"
             (keyup.enter)="toggle()"
