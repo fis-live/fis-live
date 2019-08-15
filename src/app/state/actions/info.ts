@@ -1,34 +1,19 @@
-import { Action } from '@ngrx/store';
+import { createAction, props } from '@ngrx/store';
 
 import { Meteo } from '../../models/meteo';
 import { RaceInfo } from '../../models/race-info';
 
-export const enum InfoActionTypes {
-    UpdateRaceInfo = '[Info] Update race info',
-    SetRaceMessage = '[Info] Set message',
-    UpdateMeteo = '[Info] Update meteo',
-}
+export const updateRaceInfo = createAction(
+    '[Info] Update race info',
+    props<{raceInfo: Partial<RaceInfo>}>()
+);
 
-export class UpdateRaceInfo implements Action {
-    readonly type = InfoActionTypes.UpdateRaceInfo;
+export const setRaceMessage = createAction(
+    '[Info] Set message',
+    props<{message: string}>()
+);
 
-    constructor(public raceInfo: Partial<RaceInfo>) { }
-}
-
-export class SetRaceMessage implements Action {
-    readonly type = InfoActionTypes.SetRaceMessage;
-
-    constructor(public message: string) { }
-}
-
-export class UpdateMeteo implements Action {
-    readonly type = InfoActionTypes.UpdateMeteo;
-
-    constructor(public meteo: Partial<Meteo>) { }
-}
-
-
-export type InfoAction
-    = UpdateRaceInfo
-    | SetRaceMessage
-    | UpdateMeteo;
+export const updateMeteo = createAction(
+    '[Info] Update meteo',
+    props<{meteo: Partial<Meteo>}>()
+);

@@ -1,16 +1,19 @@
+import { Action, createReducer, on } from '@ngrx/store';
+
 import { Race, RacesByPlace } from '../../models/race';
-import { ConnectionAction, ConnectionActionTypes } from '../actions/connection';
+import { ConnectionActions } from '../actions';
 
 export type State = Race[];
 
-export function reducer(state: State = [], action: ConnectionAction): State {
-    switch (action.type) {
-        case ConnectionActionTypes.SetCalendar:
-            return action.payload;
+const initialState: State = [];
 
-        default:
-            return state;
-    }
+const calendarReducer = createReducer(
+    initialState,
+    on(ConnectionActions.setCalendar, (_state, { races }) => races)
+);
+
+export function reducer(state: State | undefined, action: Action) {
+    return calendarReducer(state, action);
 }
 
 export const getRacesByPlace = (state: State) => {

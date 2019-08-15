@@ -1,5 +1,5 @@
 import { createEntityAdapter, EntityAdapter, EntityState } from '@ngrx/entity';
-import { createSelector, select } from '@ngrx/store';
+import { Action, createReducer, createSelector, on, select } from '@ngrx/store';
 import { OperatorFunction, pipe } from 'rxjs';
 import { filter, map } from 'rxjs/operators';
 
@@ -8,10 +8,9 @@ import { maxVal } from '../../fis/fis-constants';
 import { Intermediate } from '../../models/intermediate';
 import { Event, Prop, RacerData, Standing } from '../../models/racer';
 import { ResultItem } from '../../models/table';
-import { RaceAction, RaceActionTypes } from '../actions/race';
+import { RaceActions } from '../actions';
 
 import { getValidDiff, registerResult, updateResult } from './helpers';
-import { AppState, getResultState } from './index';
 
 export interface State extends EntityState<RacerData> {
     intermediates: Intermediate[];
@@ -23,131 +22,119 @@ export const adapter: EntityAdapter<RacerData> = createEntityAdapter<RacerData>(
 
 export const initialState: State = adapter.getInitialState({intermediates: [], standings: {}, events: []});
 
-export function reducer(state: State = initialState, action: RaceAction): State {
-    switch (action.type) {
-        case RaceActionTypes.AddIntermediate: {
-            return {
-                ...state,
-                intermediates: [...state.intermediates, action.payload],
-                standings: {
-                    ...state.standings,
-                    [action.payload.key]: {version: 0, ids: [], leader: maxVal, bestDiff: (new Array(action.payload.key)).fill(maxVal)}
-                }
-            };
+const resultReducer = createReducer(
+    initialState,
+    on(RaceActions.addIntermediate, (state, { intermediate }) => ({
+        ...state,
+        intermediates: [...state.intermediates, intermediate],
+        standings: {
+            ...state.standings,
+            [intermediate.key]: {version: 0, ids: [], leader: maxVal, bestDiff: (new Array(intermediate.key)).fill(maxVal)}
         }
-
-        case RaceActionTypes.AddRacer: {
-            return adapter.addOne({
-                id: action.payload.bib,
-                status: '',
-                racer: action.payload,
-                results: [{time: 0, status: '', rank: null, diffs: [0]}],
-                notes: []
-            }, state);
+    })),
+    on(RaceActions.addRacer, (state, { racer }) => adapter.addOne({
+        id: racer.bib,
+        status: '',
+        racer: racer,
+        results: [{time: 0, status: '', rank: null, diffs: [0]}],
+        notes: []
+    }, state)),
+    on(RaceActions.addNote, (state, { note }) => adapter.updateOne({
+        id: note.racer,
+        changes: {
+            notes: [...state.entities[note.racer]!.notes, 'W']
         }
-
-        case RaceActionTypes.AddNote: {
-            return adapter.updateOne({
-                id: action.payload.racer,
+    }, state)),
+    on(RaceActions.addStartList, (state, { entry }) => {
+        const standings = {...state.standings[0]};
+        standings.ids = standings.ids.concat(entry.racer);
+        standings.version += 1;
+        return {...adapter.updateOne({
+                id: entry.racer,
                 changes: {
-                    notes: [...state.entities[action.payload.racer]!.notes, 'W']
-                }
-            }, state);
-        }
-
-        case RaceActionTypes.AddStartList: {
-            const standings = {...state.standings[0]};
-            standings.ids = standings.ids.concat(action.payload.racer);
-            standings.version += 1;
-            return {...adapter.updateOne({
-                id: action.payload.racer,
-                changes: {
-                    status: action.payload.status,
-                    results: [{time: 0, status: action.payload.status, rank: action.payload.order, diffs: [0]}]
+                    status: entry.status,
+                    results: [{time: 0, status: entry.status, rank: entry.order, diffs: [0]}]
                 }
             }, state),
-                standings: {...state.standings, [0]: standings}};
-        }
+            standings: {...state.standings, [0]: standings}};
+    }),
+    on(RaceActions.setStartTime, (state, { time }) => {
+        const results = [...state.entities[time.racer]!.results];
+        results[0] = {...results[0], time: time.time, diffs: [time.time]};
 
-        case RaceActionTypes.SetStartTime: {
-            const results = [...state.entities[action.payload.racer]!.results];
-            results[0] = {...results[0], time: action.payload.time, diffs: [action.payload.time]};
+        const standings: {[id: number]: Standing} = {[0]: {...state.standings[0]}};
+        standings[0].version += 1;
+        standings[0].leader = time.time < standings[0].leader ? time.time : standings[0].leader;
+        standings[0].bestDiff = [standings[0].leader];
 
-            const standings: {[id: number]: Standing} = {[0]: {...state.standings[0]}};
-            standings[0].version += 1;
-            standings[0].leader = action.payload.time < standings[0].leader ? action.payload.time : standings[0].leader;
-            standings[0].bestDiff = [standings[0].leader];
-
-            for (let i = 1; i < results.length; i++) {
-                const diffs = [...results[i].diffs];
-                diffs[0] = getValidDiff(results[i].time, action.payload.time);
-                if (diffs[0] < state.standings[i].bestDiff[0]) {
-                    standings[i] = {
-                        ...state.standings[i],
-                        version: state.standings[i].version + 1,
-                        bestDiff: [diffs[0], ...state.standings[i].bestDiff.slice(1)]
-                    };
-                } else {
-                    standings[i] = {
-                        ...state.standings[i],
-                        version: state.standings[i].version + 1
-                    };
-                }
-
-                results[i] = {...results[i], diffs};
-            }
-
-            return {
-                ...adapter.updateOne({id: action.payload.racer, changes: {results: results}}, state),
-                standings: {...state.standings, ...standings}
-            };
-        }
-
-        case RaceActionTypes.SetStatus: {
-            return {
-                ...adapter.updateOne({id: action.payload.id, changes: {status: action.payload.status}}, state),
-                standings: {...state.standings, [0]: {...state.standings[0], version: state.standings[0].version + 1}}
-            };
-        }
-
-        case RaceActionTypes.RegisterResult: {
-            const inter = action.payload.intermediate === 99 ? state.intermediates.length - 1 : action.payload.intermediate;
-            const time = action.payload.time || maxVal * 6;
-            const racer = action.payload.racer;
-
-            let changes;
-            const event = {
-                racer: state.entities[racer]!.racer.firstName[0] + '. ' + state.entities[racer]!.racer.lastName,
-                inter: state.intermediates[inter].name,
-                status: '',
-                rank: 0,
-                diff: formatTime(time, state.standings[inter].leader),
-                timestamp: action.timestamp,
-                interId: inter
-            };
-
-            if (state.entities[racer]!.results.length > inter) {
-                changes = updateResult(state, racer, time, inter);
+        for (let i = 1; i < results.length; i++) {
+            const diffs = [...results[i].diffs];
+            diffs[0] = getValidDiff(results[i].time, time.time);
+            if (diffs[0] < state.standings[i].bestDiff[0]) {
+                standings[i] = {
+                    ...state.standings[i],
+                    version: state.standings[i].version + 1,
+                    bestDiff: [diffs[0], ...state.standings[i].bestDiff.slice(1)]
+                };
             } else {
-                changes = registerResult(state, racer, time, inter);
+                standings[i] = {
+                    ...state.standings[i],
+                    version: state.standings[i].version + 1
+                };
             }
 
-            let events = [...state.events];
-
-            if (action.isEvent && time < maxVal) {
-                events = [...events.slice(Math.max(events.length - 30, 0)), event];
-            }
-
-            return {
-                ...adapter.updateMany(changes.changes, state),
-                standings: {...state.standings, ...changes.standings},
-                events: events
-            };
+            results[i] = {...results[i], diffs};
         }
 
-        default:
-            return state;
-    }
+        return {
+            ...adapter.updateOne({id: time.racer, changes: {results: results}}, state),
+            standings: {...state.standings, ...standings}
+        };
+    }),
+    on(RaceActions.setStatus, (state, { status }) => {
+        return {
+            ...adapter.updateOne({id: status.id, changes: {status: status.status}}, state),
+            standings: {...state.standings, [0]: {...state.standings[0], version: state.standings[0].version + 1}}
+        };
+    }),
+    on(RaceActions.registerResult, (state, { result, timestamp, isEvent }) => {
+        const inter = result.intermediate === 99 ? state.intermediates.length - 1 : result.intermediate;
+        const time = result.time || maxVal * 6;
+        const racer = result.racer;
+
+        let changes;
+        const event = {
+            racer: state.entities[racer]!.racer.firstName[0] + '. ' + state.entities[racer]!.racer.lastName,
+            inter: state.intermediates[inter].name,
+            status: '',
+            rank: 0,
+            diff: formatTime(time, state.standings[inter].leader),
+            timestamp: timestamp,
+            interId: inter
+        };
+
+        if (state.entities[racer]!.results.length > inter) {
+            changes = updateResult(state, racer, time, inter);
+        } else {
+            changes = registerResult(state, racer, time, inter);
+        }
+
+        let events = [...state.events];
+
+        if (isEvent && time < maxVal) {
+            events = [...events.slice(Math.max(events.length - 30, 0)), event];
+        }
+
+        return {
+            ...adapter.updateMany(changes.changes, state),
+            standings: {...state.standings, ...changes.standings},
+            events: events
+        };
+    })
+);
+
+export function reducer(state: State | undefined, action: Action) {
+    return resultReducer(state, action);
 }
 
 export const getRacerIds = (state: State) => state.ids;
@@ -212,10 +199,9 @@ export const getEvents = (state: State) => state.events;
 
 export const getIntermediates = (state: State) => state.intermediates;
 
-export const createViewSelector = (view: View): OperatorFunction<AppState, ResultItem[]> => {
+export const createViewSelector = (view: View): OperatorFunction<State, ResultItem[]> => {
     let version: number;
     return pipe(
-        select(getResultState),
         filter((state) => {
             const inter = view.inter ? view.inter.key : null;
             return view.mode === 'analysis' || (

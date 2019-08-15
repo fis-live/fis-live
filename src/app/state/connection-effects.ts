@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Actions, Effect, ofType } from '@ngrx/effects';
+import { Actions, createEffect, ofType } from '@ngrx/effects';
 import { select, Store } from '@ngrx/store';
 import { EMPTY, of } from 'rxjs';
 import { catchError, map, mapTo, mergeMap, startWith, switchMap, tap } from 'rxjs/operators';
@@ -8,88 +8,82 @@ import { parseMain, parseUpdate } from '../fis/fis-parser';
 import { FisConnectionService } from '../services/fis-connection';
 import { delayBy } from '../utils/delayBy';
 
-import {
-    Batch,
-    ConnectionActionTypes,
-    LoadCalendar, LoadMain, LoadPdf, LoadServers, LoadUpdate,
-    Reset,
-    SelectServer,
-    SetCalendar,
-    ShowAlert, StopUpdate
-} from './actions/connection';
-import { HideLoading, ShowLoading } from './actions/loading';
+import { ConnectionActions, LoadingActions } from './actions';
 import { AppState, getDelayState } from './reducers';
 
 @Injectable()
 export class ConnectionEffects {
 
-    @Effect() loadServers$ = this.actions$.pipe(
-        ofType<LoadServers>(ConnectionActionTypes.LoadServers),
-        startWith(new LoadServers()),
-        switchMap(() =>
-            this._connection.getServerList().pipe(
-                map(() => new SelectServer()),
-                catchError(() => {
-                    return of(new ShowAlert({
-                        severity: 'danger',
-                        message: 'Could not connect to FIS. Check your internet connection and try again.',
-                        action: 'Retry',
-                        actions: [new LoadServers()]
-                    }));
-                })
+    loadServers$ = createEffect(() =>
+        this.actions$.pipe(
+            ofType(ConnectionActions.loadServers),
+            startWith(ConnectionActions.loadServers()),
+            switchMap(() =>
+                this._connection.getServerList().pipe(
+                    map(() => ConnectionActions.selectServer()),
+                    catchError(() => {
+                        return of(ConnectionActions.showAlert({alert: {
+                            severity: 'danger',
+                            message: 'Could not connect to FIS. Check your internet connection and try again.',
+                            action: 'Retry',
+                            actions: [ConnectionActions.loadServers()]
+                        }}));
+                    })
+                )
             )
         )
     );
 
-    @Effect({dispatch: false}) selectServer$ = this.actions$.pipe(
-        ofType<SelectServer>(ConnectionActionTypes.SelectServer),
+    selectServer$ = createEffect(() => this.actions$.pipe(
+        ofType(ConnectionActions.selectServer),
         tap(() => this._connection.selectServer())
-    );
+    ), { dispatch: false });
 
-    @Effect() loadMain$ = this.actions$.pipe(
-        ofType<LoadMain>(ConnectionActionTypes.LoadMain),
+    loadMain$ = createEffect(() => this.actions$.pipe(
+        ofType(ConnectionActions.loadMain),
         switchMap((action) =>
-            this._connection.loadMain(action.payload).pipe(
+            this._connection.loadMain(action.codex).pipe(
                 mergeMap(data => {
                     const actions = parseMain(data);
                     const suffix = data.runinfo[1] === 'Q' ? 'QUA' : 'SL';
 
                     return [
-                        new Batch([new Reset(), ...actions]),
-                        new HideLoading(),
-                        new LoadPdf(suffix),
-                        new LoadUpdate()
+                        ConnectionActions.batch({ actions: [ConnectionActions.reset(), ...actions] }),
+                        LoadingActions.hideLoading(),
+                        ConnectionActions.loadPdf({ doc: suffix }),
+                        ConnectionActions.loadUpdate()
                     ];
                 }),
                 catchError(() => {
-                    return [new HideLoading(), new SelectServer(), new ShowAlert({
+                    return [LoadingActions.hideLoading(), ConnectionActions.selectServer(), ConnectionActions.showAlert({
+                        alert: {
                         severity: 'danger',
                         message: 'Could not find live data. Check the codex and try again.',
                         action: 'Retry',
-                        actions: [new LoadMain(null)]
-                    })];
+                        actions: [ConnectionActions.loadMain({ codex: null })]
+                    }})];
                 })
             )
         )
-    );
+    ));
 
-    @Effect() loadPdf$ = this.actions$.pipe(
-        ofType<LoadPdf>(ConnectionActionTypes.LoadPdf),
+    loadPdf$ = createEffect(() => this.actions$.pipe(
+        ofType(ConnectionActions.loadPdf),
         switchMap((action) =>
-            this._connection.loadPdf(action.payload).pipe(
-                map(actions => new Batch(actions)),
+            this._connection.loadPdf(action.doc).pipe(
+                map(actions => ConnectionActions.batch({actions})),
                 catchError((error) => {
                     console.log(error);
                     return EMPTY;
                 })
             )
         )
-    );
+    ));
 
-    @Effect() loadUpdate$ = this.actions$.pipe(
-        ofType<LoadUpdate | StopUpdate>(ConnectionActionTypes.LoadUpdate, ConnectionActionTypes.StopUpdate),
+    loadUpdate$ = createEffect(() => this.actions$.pipe(
+        ofType(ConnectionActions.loadUpdate, ConnectionActions.stopUpdate),
         switchMap(action => {
-            if (action.type === ConnectionActionTypes.StopUpdate) {
+            if (action.type === ConnectionActions.stopUpdate.type) {
                 return EMPTY;
             }
 
@@ -98,36 +92,36 @@ export class ConnectionEffects {
                 delayBy(this.store.pipe(select(getDelayState))),
                 catchError(() => {
                     return [
-                        new SelectServer(),
-                        new LoadMain(null)
+                        ConnectionActions.selectServer(),
+                        ConnectionActions.loadMain({codex: null})
                     ];
                 })
             );
         })
-    );
+    ));
 
-    @Effect() loadCalendar$ = this.actions$.pipe(
-        ofType<LoadCalendar>(ConnectionActionTypes.LoadCalendar),
-        startWith(new LoadCalendar()),
+    loadCalendar$ = createEffect(() => this.actions$.pipe(
+        ofType(ConnectionActions.loadCalendar),
+        startWith(ConnectionActions.loadCalendar()),
         switchMap(() =>
             this._connection.loadCalendar().pipe(
-                map((races) => new SetCalendar(races)),
+                map((races) => ConnectionActions.setCalendar({races})),
                 catchError(() => {
-                    return [new HideLoading(), new ShowAlert({
+                    return [LoadingActions.hideLoading(), ConnectionActions.showAlert({ alert: {
                         severity: 'danger',
                         message: 'Could not load calendar. Check your internet connection and try again.',
                         action: 'Retry',
-                        actions: [new LoadCalendar()]
-                    })];
+                        actions: [ConnectionActions.loadCalendar()]
+                    }})];
                 })
             )
         )
-    );
+    ));
 
-    @Effect() loading$ = this.actions$.pipe(
-        ofType<LoadMain>(ConnectionActionTypes.LoadMain),
-        mapTo(new ShowLoading())
-    );
+    loading$ = createEffect(() => this.actions$.pipe(
+        ofType(ConnectionActions.loadMain),
+        mapTo(LoadingActions.showLoading())
+    ));
 
     constructor(private actions$: Actions, private _connection: FisConnectionService, private store: Store<AppState>) { }
 }

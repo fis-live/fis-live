@@ -6,7 +6,7 @@ import { map, pluck } from 'rxjs/operators';
 
 import { Racer } from '../models/racer';
 import { WindowSize } from '../services/window-size';
-import { LoadMain, StopUpdate } from '../state/actions/connection';
+import { loadMain, stopUpdate } from '../state/actions/connection';
 import { AppState, getLoadingState, getRaceInfoState, getSettingsState } from '../state/reducers/';
 import { State as LoadingState } from '../state/reducers/loading';
 import { State as RaceInfoState } from '../state/reducers/race-info';
@@ -134,8 +134,8 @@ export class ContainerComponent implements OnInit, OnDestroy {
     }
 
     private reload(): void {
-        this._store.dispatch(new StopUpdate());
-        this._store.dispatch(new LoadMain(this.codex));
+        this._store.dispatch(stopUpdate());
+        this._store.dispatch(loadMain({codex: this.codex}));
     }
 
     public ngOnDestroy(): void {

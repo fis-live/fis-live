@@ -1,7 +1,10 @@
-import { ActionReducer, ActionReducerMap, createSelector, MetaReducer } from '@ngrx/store';
+import { Action, ActionReducer, ActionReducerMap, createReducer, createSelector, MetaReducer, on, select } from '@ngrx/store';
 import { localStorageSync } from 'ngrx-store-localstorage';
+import { OperatorFunction, pipe } from 'rxjs';
 
-import { ConnectionActionTypes } from '../actions/connection';
+import { View } from '../../components/datagrid/providers/config';
+import { ResultItem } from '../../models/table';
+import { ConnectionActions } from '../actions';
 
 import * as Alert from './alert';
 import * as Calendar from './calendar';
@@ -30,19 +33,19 @@ export interface AppState {
 
 
 export function enableBatching(reducer: ActionReducer<AppState>): ActionReducer<AppState> {
-    return function batchingReducer(state, action: any) {
-        switch (action.type) {
-            case ConnectionActionTypes.Batch:
-                return action.payload.reduce(batchingReducer, state);
-            default:
-                return reducer(state, action);
+    return function batchingReducer(state, action: Action): AppState {
+        const r = on(ConnectionActions.batch, (_state: AppState, { actions }) => actions.reduce(batchingReducer, _state));
+        if (action.type === ConnectionActions.batch.type) {
+            return r.reducer(state, action);
+        } else {
+            return reducer(state, action);
         }
     };
 }
 
 export function resetState(reducer: ActionReducer<AppState>): ActionReducer<AppState> {
     return function(state, action) {
-        if (state !== undefined && action.type === ConnectionActionTypes.Reset) {
+        if (state !== undefined && action.type === ConnectionActions.reset.type) {
             return {...reducer(undefined, action), settings: state.settings, calendar: state.calendar};
         }
 
@@ -73,5 +76,11 @@ export const selectEvents = createSelector(getResultState, Result.getEvents);
 
 export const selectAllRacers = createSelector(getResultState, Result.getAllRacers);
 
+export const selectView = (view: View): OperatorFunction<AppState, ResultItem[]> => {
+    return pipe(
+        select(getResultState),
+        Result.createViewSelector(view)
+    );
+};
 
 export const { selectAll: selectAllResults } = Result.adapter.getSelectors(getResultState);

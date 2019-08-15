@@ -2,13 +2,11 @@ import { CollectionViewer } from '@angular/cdk/collections';
 import { DataSource } from '@angular/cdk/table';
 import { Injectable } from '@angular/core';
 import { Store } from '@ngrx/store';
-
 import { combineLatest, Observable } from 'rxjs';
 import { distinctUntilChanged, map, switchMap } from 'rxjs/operators';
 
 import { ResultItem } from '../../../models/table';
-import { AppState } from '../../../state/reducers';
-import { createViewSelector } from '../../../state/reducers/result';
+import { AppState, selectView } from '../../../state/reducers';
 
 import { DatagridConfig } from './config';
 import { Filters } from './filter';
@@ -25,7 +23,7 @@ export class DatagridState implements DataSource<ResultItem> {
         this.view = this._config.getConfig().pipe(
             map (config => config.view),
             distinctUntilChanged(),
-            switchMap(view => store.pipe(createViewSelector(view)))
+            switchMap(view => store.pipe(selectView(view)))
         );
     }
 

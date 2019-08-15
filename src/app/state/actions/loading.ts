@@ -1,21 +1,9 @@
-import { Action } from '@ngrx/store';
+import { createAction } from '@ngrx/store';
 
-export const enum LoadingActionTypes {
-    ShowLoading = '[Loading] Show loading indicator',
-    HideLoading = '[Loading] Hide loading indicator'
-}
-export class ShowLoading implements Action {
-    readonly type = LoadingActionTypes.ShowLoading;
+export const showLoading = createAction(
+    '[Loading] Show loading indicator'
+);
 
-    constructor() { }
-}
-
-export class HideLoading implements Action {
-    readonly type = LoadingActionTypes.HideLoading;
-
-    constructor() { }
-}
-
-export type LoadingAction
-    = ShowLoading
-    | HideLoading;
+export const hideLoading = createAction(
+    '[Loading] Hide loading indicator'
+);

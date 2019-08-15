@@ -2,9 +2,9 @@ import { Action } from '@ngrx/store';
 
 import { Meteo } from '../models/meteo';
 import { RaceInfo } from '../models/race-info';
-import { Batch, LoadMain, StopUpdate } from '../state/actions/connection';
-import { SetRaceMessage, UpdateMeteo, UpdateRaceInfo } from '../state/actions/info';
-import { AddIntermediate, AddRacer, AddStartList, RegisterResult, SetStatus } from '../state/actions/race';
+import { batch, loadMain, stopUpdate } from '../state/actions/connection';
+import { setRaceMessage, updateMeteo, updateRaceInfo } from '../state/actions/info';
+import { addIntermediate, addRacer, addStartList, registerResult, setStatus } from '../state/actions/race';
 
 import { nationalities, statusMap, statusToTimeMap } from './fis-constants';
 import { Main, Update } from './models';
@@ -44,10 +44,10 @@ export function parseMain(data: Main): Action[] {
         snow_condition: data.meteo[5]
     };
 
-    actions.push(new UpdateRaceInfo(raceInfo));
-    actions.push(new SetRaceMessage(data.message));
-    actions.push(new UpdateMeteo(meteo));
-    actions.push(new AddIntermediate({key: 0, id: 0, distance: 0, name: 'Start list'}));
+    actions.push(updateRaceInfo({raceInfo}));
+    actions.push(setRaceMessage({message: data.message}));
+    actions.push(updateMeteo({meteo}));
+    actions.push(addIntermediate({intermediate: {key: 0, id: 0, distance: 0, name: 'Start list'}}));
 
     data.racedef.forEach((def, index) => {
         let name = 'Finish';
@@ -60,13 +60,13 @@ export function parseMain(data: Main): Action[] {
             name = name.trim();
         }
 
-        actions.push(new AddIntermediate({key: index + 1, id: def[1], distance: def[2], name: name}));
+        actions.push(addIntermediate({intermediate: {key: index + 1, id: def[1], distance: def[2], name: name}}));
     });
 
     for ( let i = 0; i < data.racers.length; i++ ) {
         const racer = data.racers[i];
         if (racer !== null) {
-            actions.push(new AddRacer({
+            actions.push(addRacer({racer: {
                     id: racer[0],
                     bib: racer[1],
                     firstName: racer[3].trim(),
@@ -74,7 +74,7 @@ export function parseMain(data: Main): Action[] {
                     nationality:  nationalities[racer[4]] || racer[4],
                     isFavorite: false,
                     color: racer[5]
-                })
+                }})
             );
         }
     }
@@ -82,11 +82,11 @@ export function parseMain(data: Main): Action[] {
     for (let i = 0; i < data.startlist.length; i++) {
         if (data.startlist[i] !== null) {
             actions.push(
-                new AddStartList({
+                addStartList({entry: {
                     racer: data.startlist[i][0],
                     status: statusMap[data.startlist[i][1]] || data.startlist[i][1] || '',
                     order: i + 1
-                })
+                }})
             );
             switch (data.startlist[i][1]) {
                 case 'ral':
@@ -95,12 +95,12 @@ export function parseMain(data: Main): Action[] {
                 case 'dq':
                 case 'dns':
                     actions.push(
-                        new RegisterResult({
+                        registerResult({result: {
                             status: statusMap[data.startlist[i][1]] || data.startlist[i][1] || '',
                             intermediate: 99,
                             racer: data.startlist[i][0],
                             time: statusToTimeMap[data.startlist[i][1]]
-                        })
+                        }, isEvent: false, timestamp: 0})
                     );
                     break;
             }
@@ -112,7 +112,8 @@ export function parseMain(data: Main): Action[] {
         if (res !== null) {
             for ( let j = 0; j < res.length; j++) {
                 actions.push(
-                    new RegisterResult({status: '', intermediate: data.racedef[j][1], racer: i, time: res[j]})
+                    registerResult(
+                        {isEvent: false, timestamp: 0, result: {status: '', intermediate: data.racedef[j][1], racer: i, time: res[j]}})
                 );
             }
         }
@@ -130,15 +131,15 @@ export function parseUpdate(data: Update): Action[] {
         data.events.forEach((event) => {
             switch (event[0]) {
                 case 'inter':
-                    actions.push(new RegisterResult({
+                    actions.push(registerResult({result: {
                         status: '', intermediate: event[3], racer: event[2], time: event[4]
-                    }, true));
+                    }, isEvent: true, timestamp: Date.now()}));
                     break;
                 case 'finish':
-                    actions.push(new RegisterResult({
+                    actions.push(registerResult({result: {
                         status: '', intermediate: event[3], racer: event[2], time: event[4]
-                    }));
-                    actions.push(new SetStatus({id: event[2], status: statusMap[event[0]]}));
+                    }, isEvent: false, timestamp: 0}));
+                    actions.push(setStatus({status: {id: event[2], status: statusMap[event[0]]}}));
                     break;
                 case 'dnf':
                 case 'dns':
@@ -146,14 +147,14 @@ export function parseUpdate(data: Update): Action[] {
                 case 'ral':
                 case 'lapped':
                     actions.push(
-                        new RegisterResult({
+                        registerResult({result: {
                             status: statusMap[event[0]],
                             intermediate: 99,
                             racer: event[2],
                             time: statusToTimeMap[event[0]]
-                        })
+                        }, isEvent: false, timestamp: 0})
                     );
-                    actions.push(new SetStatus({id: event[2], status: statusMap[event[0]]}));
+                    actions.push(setStatus({status: {id: event[2], status: statusMap[event[0]]}}));
                     break;
                 case 'q':
                 case 'nq':
@@ -161,20 +162,20 @@ export function parseUpdate(data: Update): Action[] {
                 case 'ff':
                 case 'start':
                 case 'nextstart':
-                    actions.push(new SetStatus({id: event[2], status: statusMap[event[0]]}));
+                    actions.push(setStatus({status: {id: event[2], status: statusMap[event[0]]}}));
                     break;
                 case 'meteo':
-                    actions.push(new UpdateMeteo({
+                    actions.push(updateMeteo({meteo: {
                         air_temperature: event[1],
                         wind: event[2],
                         weather: event[3],
                         snow_condition: event[4],
                         snow_temperature: event[5],
                         humidity: event[6]
-                    }));
+                    }}));
                     break;
                 case 'message':
-                    actions.push(new SetRaceMessage(event[1]));
+                    actions.push(setRaceMessage({message: event[1]}));
                     break;
                 case 'reloadmain':
                     reload = true;
@@ -194,8 +195,8 @@ export function parseUpdate(data: Update): Action[] {
         });
     }
 
-    const batch = actions.length ? [new Batch(actions)] : [];
+    const batched = actions.length ? [batch({actions})] : [];
 
-    return reload ? [new LoadMain(null)] :
-        stopUpdating ? [...batch, new StopUpdate()] : batch;
+    return reload ? [loadMain({codex: null})] :
+        stopUpdating ? [...batched, stopUpdate()] : batched;
 }

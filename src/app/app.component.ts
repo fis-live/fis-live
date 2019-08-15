@@ -2,7 +2,7 @@ import { Component } from '@angular/core';
 import { Action, Store } from '@ngrx/store';
 import { Observable } from 'rxjs';
 
-import { CloseAlert } from './state/actions/connection';
+import { closeAlert } from './state/actions/connection';
 import { AppState, getAlertState } from './state/reducers/';
 import { State as AlertState } from './state/reducers/alert';
 
@@ -19,7 +19,7 @@ export class AppComponent {
     }
 
     public closeAlert(): void {
-        this._store.dispatch(new CloseAlert());
+        this._store.dispatch(closeAlert());
     }
 
     public alertAction(actions: Action[]): void {

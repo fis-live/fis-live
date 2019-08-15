@@ -1,18 +1,17 @@
-import { LoadingAction, LoadingActionTypes } from '../actions/loading';
+import { Action, createReducer, on } from '@ngrx/store';
+
+import { LoadingActions } from '../actions';
 
 export type State = boolean;
 
 const initialState: State = false;
 
-export function reducer(state: State = initialState, action: LoadingAction): State {
-    switch (action.type) {
-        case LoadingActionTypes.ShowLoading:
-            return true;
+const loadingReducer = createReducer(
+    initialState,
+    on(LoadingActions.showLoading, () => true),
+    on(LoadingActions.hideLoading, () => false)
+);
 
-        case LoadingActionTypes.HideLoading:
-            return false;
-
-        default:
-            return state;
-    }
+export function reducer(state: State | undefined, action: Action) {
+    return loadingReducer(state, action);
 }

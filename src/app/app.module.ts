@@ -59,7 +59,15 @@ import { metaReducers, reducers } from './state/reducers';
         FormsModule,
         HttpClientModule,
         RouterModule.forRoot(appRoutes, { useHash: true }),
-        StoreModule.forRoot(reducers, { metaReducers: metaReducers }),
+        StoreModule.forRoot(reducers, {
+            runtimeChecks: {
+                strictStateImmutability: true,
+                strictActionImmutability: true,
+                strictStateSerializability: true,
+                strictActionSerializability: true,
+            },
+            metaReducers: metaReducers
+        }),
         // StoreDevtoolsModule.instrument(),
         EffectsModule.forRoot([ConnectionEffects])
     ],

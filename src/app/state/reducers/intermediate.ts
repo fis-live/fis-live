@@ -1,7 +1,7 @@
-import { createSelector } from '@ngrx/store';
+import { Action, createReducer, createSelector, on } from '@ngrx/store';
 
 import { Intermediate } from '../../models/intermediate';
-import { RaceAction, RaceActionTypes } from '../actions/race';
+import { RaceActions } from '../actions';
 
 export interface State {
     ids: number[];
@@ -13,27 +13,24 @@ const initialState: State = {
     entities: {}
 };
 
-
-export function reducer(state: State = initialState, action: RaceAction): State {
-    switch (action.type) {
-        case RaceActionTypes.AddIntermediate:
-            const inter: Intermediate = action.payload;
-
-            if (state.ids.indexOf(inter.id) >= 0) {
-                return state;
-            }
-
-            return {
-                ids: [ ...state.ids, inter.id ],
-                entities: Object.assign({}, state.entities, {
-                    [inter.id]: inter
-                })
-            };
-
-
-        default:
+const intermediateReducer = createReducer(
+    initialState,
+    on(RaceActions.addIntermediate, (state, { intermediate }) => {
+        if (state.ids.indexOf(intermediate.id) >= 0) {
             return state;
-    }
+        }
+
+        return {
+            ids: [ ...state.ids, intermediate.id ],
+            entities: Object.assign({}, state.entities, {
+                [intermediate.id]: intermediate
+            })
+        };
+    })
+);
+
+export function reducer(state: State | undefined, action: Action) {
+    return intermediateReducer(state, action);
 }
 
 export const getIntermediateIds = (state: State) => state.ids;

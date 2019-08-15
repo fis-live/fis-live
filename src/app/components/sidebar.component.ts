@@ -9,7 +9,7 @@ import { map } from 'rxjs/operators';
 import { Intermediate } from '../models/intermediate';
 import { RacesByPlace } from '../models/race';
 import { Event, Racer } from '../models/racer';
-import { SetDelay, ToggleFavorite } from '../state/actions/settings';
+import { setDelay, toggleFavorite } from '../state/actions/settings';
 import { AppState, getDelayState, selectAllIntermediates, selectEvents, selectRacesByPlace } from '../state/reducers';
 
 @Component({
@@ -51,15 +51,15 @@ export class SidebarComponent {
             return;
         }
 
-        this.store.dispatch(new SetDelay(delay));
+        this.store.dispatch(setDelay({delay}));
     }
 
     public sync(timestamp: number) {
-        this.store.dispatch(new SetDelay(Date.now() - timestamp));
+        this.store.dispatch(setDelay({delay: Date.now() - timestamp}));
     }
 
     public toggleFavorite(racer: Racer) {
-        this.store.dispatch(new ToggleFavorite(racer));
+        this.store.dispatch(toggleFavorite({racer}));
     }
 
     public open(): void {

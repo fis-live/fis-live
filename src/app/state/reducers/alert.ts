@@ -1,6 +1,6 @@
-import { Action } from '@ngrx/store';
+import { Action, createReducer, on } from '@ngrx/store';
 
-import { ConnectionAction, ConnectionActionTypes } from '../actions/connection';
+import { ConnectionActions } from '../actions';
 
 export interface State {
     isOpen: boolean;
@@ -18,25 +18,18 @@ const initialState: State = {
     actions: []
 };
 
+const alertReducer = createReducer(
+    initialState,
+    on(ConnectionActions.showAlert, (_state, { alert }) => ({
+        isOpen: true,
+        message: alert.message || '',
+        severity: alert.severity || '',
+        action: alert.action || '',
+        actions: alert.actions || []
+    })),
+    on(ConnectionActions.closeAlert, () => initialState)
+);
 
-export function reducer(state: State = initialState, action: ConnectionAction): State {
-    switch (action.type) {
-        case ConnectionActionTypes.ShowAlert:
-            const alert = action.payload;
-
-            return {
-                isOpen: true,
-                message: alert.message || '',
-                severity: alert.severity || '',
-                action: alert.action || '',
-                actions: alert.actions || []
-            };
-
-        case ConnectionActionTypes.CloseAlert:
-            return initialState;
-
-
-        default:
-            return state;
-    }
+export function reducer(state: State | undefined, action: Action) {
+    return alertReducer(state, action);
 }

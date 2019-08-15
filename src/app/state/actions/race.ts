@@ -1,75 +1,51 @@
-import { Action } from '@ngrx/store';
+import { createAction, props } from '@ngrx/store';
 
 import { Note, Result, StartListEntry, Status } from '../../fis/models';
 import { Intermediate } from '../../models/intermediate';
 import { Racer } from '../../models/racer';
 
-export const enum RaceActionTypes {
-    RegisterResult = '[Result] Register result',
-    AddRacer = '[Racer] Add racer',
-    SetStatus = '[Racer] Set status',
-    AddIntermediate = '[Intermediate] Add intermediate',
-    AddStartList = '[Start list] Add entry',
-    SetStartTime = '[Result] Register start time',
-    SetBibColor = '[Racer] Set bib color',
-    AddNote = '[Racer] Set wave start'
-}
+export const registerResult = createAction(
+    '[Result] Register result',
+    props<{result: Result, isEvent: boolean, timestamp: number}>()
+);
 
-export class RegisterResult implements Action {
-    readonly type = RaceActionTypes.RegisterResult;
+// export class RegisterResult implements Action {
+//     readonly type = RaceActionTypes.RegisterResult;
+//
+//     constructor(public payload: Result, public isEvent = false, public timestamp: number = Date.now()) { }
+// }
 
-    constructor(public payload: Result, public isEvent = false, public timestamp: number = Date.now()) { }
-}
+export const addRacer = createAction(
+    '[Racer] Add racer',
+    props<{racer: Racer}>()
+);
 
-export class AddRacer implements Action {
-    readonly type = RaceActionTypes.AddRacer;
+export const setStatus = createAction(
+    '[Racer] Set status',
+    props<{status: Status}>()
+);
 
-    constructor(public payload: Racer) { }
-}
+export const setBibColor = createAction(
+    '[Racer] Set bib color',
+    props<{color: any}>()
+);
 
-export class SetStatus implements Action {
-    readonly type = RaceActionTypes.SetStatus;
+export const setStartTime = createAction(
+    '[Result] Register start time',
+    props<{time: any}>()
+);
 
-    constructor(public payload: Status) { }
-}
+export const addNote = createAction(
+    '[Racer] Set wave start',
+    props<{note: Note}>()
+);
 
-export class SetBibColor implements Action {
-    readonly type = RaceActionTypes.SetBibColor;
+export const addIntermediate = createAction(
+    '[Intermediate] Add intermediate',
+    props<{intermediate: Intermediate}>()
+);
 
-    constructor(public payload: any) { }
-}
-
-export class SetStartTime implements Action {
-    readonly type = RaceActionTypes.SetStartTime;
-
-    constructor(public payload: any) { }
-}
-
-export class AddNote implements Action {
-    readonly type = RaceActionTypes.AddNote;
-
-    constructor(public payload: Note) { }
-}
-
-export class AddIntermediate implements Action {
-    readonly type = RaceActionTypes.AddIntermediate;
-
-    constructor(public payload: Intermediate) { }
-}
-
-export class AddStartList implements Action {
-    readonly type = RaceActionTypes.AddStartList;
-
-    constructor(public payload: StartListEntry) { }
-}
-
-
-export type RaceAction
-    = RegisterResult
-    | AddRacer
-    | SetStatus
-    | SetBibColor
-    | SetStartTime
-    | AddNote
-    | AddIntermediate
-    | AddStartList;
+export const addStartList = createAction(
+    '[Start list] Add entry',
+    props<{entry: StartListEntry}>()
+);

@@ -1,6 +1,8 @@
+import { Action, createReducer, on } from '@ngrx/store';
+
 import { Meteo } from '../../models/meteo';
 import { RaceInfo } from '../../models/race-info';
-import { InfoAction, InfoActionTypes } from '../actions/info';
+import { InfoActions } from '../actions';
 
 export interface State {
     info: RaceInfo;
@@ -34,31 +36,21 @@ const initialState: State = {
     message: ''
 };
 
+const infoReducer = createReducer(
+    initialState,
+    on(InfoActions.setRaceMessage, (state, { message }) => ({...state, message})),
+    on(InfoActions.updateMeteo, (state, { meteo }) => ({
+        info: state.info,
+        meteo: {...state.meteo, ...meteo},
+        message: state.message
+    })),
+    on(InfoActions.updateRaceInfo, (state, { raceInfo }) => ({
+        info: {...state.info, ...raceInfo},
+        meteo: state.meteo,
+        message: state.message
+    }))
+);
 
-export function reducer(state: State = initialState, action: InfoAction): State {
-    switch (action.type) {
-        case InfoActionTypes.UpdateRaceInfo:
-            return {
-                info: {...state.info, ...action.raceInfo},
-                meteo: state.meteo,
-                message: state.message
-            };
-
-        case InfoActionTypes.SetRaceMessage:
-            return {
-                info: state.info,
-                meteo: state.meteo,
-                message: action.message
-            };
-
-        case InfoActionTypes.UpdateMeteo:
-            return {
-                info: state.info,
-                meteo: {...state.meteo, ...action.meteo},
-                message: state.message
-            };
-
-        default:
-            return state;
-    }
+export function reducer(state: State | undefined, action: Action) {
+    return infoReducer(state, action);
 }
