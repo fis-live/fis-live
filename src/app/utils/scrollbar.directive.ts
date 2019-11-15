@@ -1,5 +1,4 @@
 import { Directive, ElementRef, OnDestroy, OnInit } from '@angular/core';
-
 import PerfectScrollbar from 'perfect-scrollbar';
 
 @Directive({

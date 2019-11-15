@@ -4,8 +4,8 @@ import { select, Store } from '@ngrx/store';
 import { EMPTY, of } from 'rxjs';
 import { catchError, map, mapTo, mergeMap, startWith, switchMap, tap } from 'rxjs/operators';
 
+import { FisConnectionService } from '../fis/fis-connection';
 import { parseMain, parseUpdate } from '../fis/fis-parser';
-import { FisConnectionService } from '../services/fis-connection';
 import { delayBy } from '../utils/delayBy';
 
 import { ConnectionActions, LoadingActions } from './actions';

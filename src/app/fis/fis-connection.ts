@@ -4,10 +4,11 @@ import { Action } from '@ngrx/store';
 import { defer, Observable, of, throwError, timer } from 'rxjs';
 import { catchError, map, repeat, retry, switchMap, timeout } from 'rxjs/operators';
 
-import { Main, ServerList, Update } from '../fis/models';
 import { FisServer } from '../models/fis-server';
 import { Race } from '../models/race';
 import { unserialize } from '../utils/unserialize';
+
+import { Main, ServerList, Update } from './models';
 
 @Injectable({
     providedIn: 'root'

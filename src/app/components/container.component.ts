@@ -5,11 +5,11 @@ import { Observable, Subscription } from 'rxjs';
 import { map, pluck } from 'rxjs/operators';
 
 import { Racer } from '../models/racer';
-import { WindowSize } from '../services/window-size';
 import { loadMain, stopUpdate } from '../state/actions/connection';
 import { AppState, getLoadingState, getRaceInfoState, getSettingsState } from '../state/reducers/';
 import { State as LoadingState } from '../state/reducers/loading';
 import { State as RaceInfoState } from '../state/reducers/race-info';
+import { WindowSize } from '../utils/window-size';
 
 @Component({
     selector: 'app-container',
