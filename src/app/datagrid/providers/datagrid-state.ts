@@ -5,8 +5,8 @@ import { Store } from '@ngrx/store';
 import { combineLatest, Observable } from 'rxjs';
 import { distinctUntilChanged, map, switchMap } from 'rxjs/operators';
 
-import { ResultItem } from '../../../models/table';
-import { AppState, selectView } from '../../../state/reducers';
+import { ResultItem } from '../../models/table';
+import { AppState, selectView } from '../../state/reducers';
 
 import { DatagridConfig } from './config';
 import { Filters } from './filter';

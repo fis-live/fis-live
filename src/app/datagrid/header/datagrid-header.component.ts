@@ -2,8 +2,8 @@ import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
 import { select, Store } from '@ngrx/store';
 import { Observable } from 'rxjs';
 
-import { Racer } from '../../../models/racer';
-import { AppState, selectAllRacers } from '../../../state/reducers';
+import { Racer } from '../../models/racer';
+import { AppState, selectAllRacers } from '../../state/reducers';
 import { Config, DatagridConfig } from '../providers/config';
 
 @Component({

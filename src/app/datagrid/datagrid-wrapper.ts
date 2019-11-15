@@ -1,8 +1,8 @@
 import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
 import { Observable } from 'rxjs';
 
-import { ResultItem } from '../../models/table';
-import { APP_OPTIONS } from '../select/select';
+import { ResultItem } from '../models/table';
+import { APP_OPTIONS } from '../core/select/select';
 
 import { Config, DatagridConfig } from './providers/config';
 import { DatagridState } from './providers/datagrid-state';

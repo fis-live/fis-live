@@ -4,7 +4,7 @@ import {
 } from '@angular/core';
 import { Observable, Subject } from 'rxjs';
 
-import { AbstractPopover } from '../../utils/abstract-popover';
+import { AbstractPopover } from '../utils/abstract-popover';
 
 import { Filter } from './interfaces/filter';
 import { Filters } from './providers/filter';

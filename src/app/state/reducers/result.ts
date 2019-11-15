@@ -3,7 +3,7 @@ import { Action, createReducer, createSelector, on, select } from '@ngrx/store';
 import { OperatorFunction, pipe } from 'rxjs';
 import { filter, map } from 'rxjs/operators';
 
-import { View } from '../../components/datagrid/providers/config';
+import { View } from '../../datagrid/providers/config';
 import { maxVal } from '../../fis/fis-constants';
 import { Intermediate } from '../../models/intermediate';
 import { Event, Prop, RacerData, Standing } from '../../models/racer';

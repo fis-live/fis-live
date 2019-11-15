@@ -4,8 +4,8 @@ import { select, Store } from '@ngrx/store';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 
-import { ResultItem } from '../../models/table';
-import { AppState, selectAllIntermediates } from '../../state/reducers';
+import { ResultItem } from '../models/table';
+import { AppState, selectAllIntermediates } from '../state/reducers';
 
 import { Config } from './providers/config';
 import { DatagridState } from "./providers/datagrid-state";

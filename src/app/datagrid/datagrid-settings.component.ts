@@ -1,8 +1,8 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, Renderer2 } from '@angular/core';
 import { Observable, of } from 'rxjs';
 
-import { Columns } from '../../models/table';
-import { AbstractPopover } from '../../utils/abstract-popover';
+import { Columns } from '../models/table';
+import { AbstractPopover } from '../utils/abstract-popover';
 
 import { DatagridState } from './providers/datagrid-state';
 

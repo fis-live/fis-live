@@ -2,7 +2,7 @@ import { Action, ActionReducer, ActionReducerMap, createReducer, createSelector,
 import { localStorageSync } from 'ngrx-store-localstorage';
 import { OperatorFunction, pipe } from 'rxjs';
 
-import { View } from '../../components/datagrid/providers/config';
+import { View } from '../../datagrid/providers/config';
 import { ResultItem } from '../../models/table';
 import { ConnectionActions } from '../actions';
 

@@ -3,9 +3,9 @@ import { select, Store } from '@ngrx/store';
 import { BehaviorSubject, Observable, Subscription } from 'rxjs';
 import { map } from 'rxjs/operators';
 
-import { Intermediate } from '../../../models/intermediate';
-import { AppState, selectAllIntermediates } from '../../../state/reducers';
-import { KeysOfType, Option, OptionSelector } from '../../select/option-selector';
+import { Intermediate } from '../../models/intermediate';
+import { AppState, selectAllIntermediates } from '../../state/reducers';
+import { KeysOfType, Option, OptionSelector } from '../../core/select/option-selector';
 
 export interface View {
     mode: 'normal' | 'analysis';
