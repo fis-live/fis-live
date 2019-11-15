@@ -10,31 +10,9 @@ import { Action } from '@ngrx/store';
 
 import { Alert } from '../../models/alert';
 
-
 @Component({
     selector: 'app-alert',
-    template: `
-        <div *ngIf="alert as _alert" [@translate] [ngClass]="'alert alert-app-level alert-' + _alert.severity" >
-            <div class="alert-items">
-                <div class="alert-item">
-                    <div class="alert-icon-wrapper">
-                        <clr-icon class="alert-icon" [shape]="iconInfoFromType(_alert.severity)"></clr-icon>
-                    </div>
-
-                    <div class="alert-text">
-                        {{ _alert.message }}
-                    </div>
-
-                    <div class="alert-actions">
-                        <button class="btn alert-action" (click)="emitAction(_alert)">{{ _alert.action }}</button>
-                    </div>
-                </div>
-            </div>
-
-            <button type="button" class="close" aria-label="Close" (click)="closeAlert()">
-                <clr-icon aria-hidden="true" shape="times"></clr-icon>
-            </button>
-        </div>`,
+    templateUrl: './alert.component.html',
     changeDetection: ChangeDetectionStrategy.OnPush,
     animations: [
         trigger('translate', [
@@ -46,7 +24,7 @@ import { Alert } from '../../models/alert';
                 animate('600ms ease', style({transform: 'translateY(100%)'}))
             ])
         ])
-    ],
+    ]
 })
 export class AlertComponent {
     @Input()

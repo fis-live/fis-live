@@ -8,6 +8,22 @@ export class ScrollbarDirective implements OnInit, OnDestroy {
     private observer?: MutationObserver;
     private ps?: PerfectScrollbar;
 
+    private static getScrollbarWidth() {
+        const e = document.createElement('div');
+        e.style.position = 'absolute';
+        e.style.top = '-9999px';
+        e.style.width = '100px';
+        e.style.height = '100px';
+        e.style.overflow = 'scroll';
+        e.style.msOverflowStyle = 'scrollbar';
+
+        document.body.appendChild(e);
+        const width = (e.offsetWidth - e.clientWidth);
+        document.body.removeChild(e);
+
+        return width;
+    }
+
     constructor (private el: ElementRef) { }
 
     ngOnInit() {
@@ -40,21 +56,5 @@ export class ScrollbarDirective implements OnInit, OnDestroy {
         if (this.ps) {
             this.ps.update();
         }
-    }
-
-    private static getScrollbarWidth() {
-        const e = document.createElement('div');
-        e.style.position = 'absolute';
-        e.style.top = '-9999px';
-        e.style.width = '100px';
-        e.style.height = '100px';
-        e.style.overflow = 'scroll';
-        e.style.msOverflowStyle = 'scrollbar';
-
-        document.body.appendChild(e);
-        const width = (e.offsetWidth - e.clientWidth);
-        document.body.removeChild(e);
-
-        return width;
     }
 }

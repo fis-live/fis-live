@@ -1,4 +1,4 @@
-import { animate, AnimationEvent, group, keyframes, query, style, transition, trigger } from '@angular/animations';
+import { animate, group, keyframes, query, style, transition, trigger } from '@angular/animations';
 import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
 import { select, Store } from '@ngrx/store';
 import { Observable } from 'rxjs';
@@ -8,7 +8,7 @@ import { ResultItem } from '../models/table';
 import { AppState, selectAllIntermediates } from '../state/reducers';
 
 import { Config } from './providers/config';
-import { DatagridState } from "./providers/datagrid-state";
+import { DatagridState } from './providers/datagrid-state';
 
 export interface ColumnDef {
     id: string;
@@ -76,10 +76,6 @@ export class DatagridComponent {
                     key: inter.key
                 };
             })));
-    }
-
-    public onAnimationEvent(event: AnimationEvent, row: ResultItem) {
-        console.log(event.fromState, event.toState, row.bib);
     }
 
     public track(index: number, item: ResultItem): number {

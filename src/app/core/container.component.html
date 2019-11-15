@@ -1,6 +1,6 @@
 <app-sidebar [(isOpen)]="sidebarOpen" (navigate)="go($event)" [favoriteRacers]="favoriteRacers$ | async"></app-sidebar>
 
-<app-menu [raceInfo]="raceInfo$ | async" (openSidebar)="showSidebar()" (refresh)="onRefresh()" (tab)="configureTabs($event)"></app-menu>
+<app-header [raceInfo]="raceInfo$ | async" (openSidebar)="showSidebar()" (refresh)="onRefresh()" (tab)="configureTabs($event)"></app-header>
 
 <div class="container">
     <div class="datagrid-spinner" *ngIf="loading$ | async">

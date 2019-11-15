@@ -127,8 +127,7 @@
     </thead>
 
     <tbody>
-        <tr
-                (@newRow.done)="onAnimationEvent($event, row)" [@newRow]="row.state" [ngClass]="row.classes" cdk-row *cdkRowDef="let row; columns: config.displayedColumns"></tr>
+        <tr [@newRow]="row.state" [ngClass]="row.classes" cdk-row *cdkRowDef="let row; columns: config.displayedColumns"></tr>
     </tbody>
 
 </table>

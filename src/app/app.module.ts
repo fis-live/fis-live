@@ -12,16 +12,16 @@ import { StoreModule } from '@ngrx/store';
 import { AppComponent } from './app.component';
 import { ContainerComponent } from './core/container.component';
 import { DatagridSettingsComponent } from './datagrid/datagrid-settings.component';
-import { DatagridWrapper } from './datagrid/datagrid-wrapper';
+import { DatagridWrapper } from './datagrid/wrapper/datagrid-wrapper';
 import { DatagridComponent } from './datagrid/datagrid.component';
 import { FilterComponent } from './datagrid/filter.component';
 import { DatagridHeader } from './datagrid/header/datagrid-header.component';
 import { SortDirective } from './datagrid/sort.directive';
-import { MenuComponent } from './core/menu.component';
+import { HeaderComponent } from './core/header/header.component';
 import { SelectComponent } from './core/select/select';
-import { SidebarComponent } from './core/sidebar.component';
-import { AlertComponent } from './core/ui/alert.component';
-import { IconComponent } from './core/ui/icon.component';
+import { SidebarComponent } from './core/sidebar/sidebar.component';
+import { AlertComponent } from './core/alert/alert.component';
+import { IconComponent } from './core/icon/icon.component';
 import { FocusDirective } from './utils/focus.directive';
 import { ScrollbarDirective } from './utils/scrollbar.directive';
 import { appRoutes } from './routes';
@@ -39,7 +39,7 @@ import { metaReducers, reducers } from './state/reducers';
         FilterComponent,
         FocusDirective,
         IconComponent,
-        MenuComponent,
+        HeaderComponent,
         ScrollbarDirective,
         SelectComponent,
         SidebarComponent,

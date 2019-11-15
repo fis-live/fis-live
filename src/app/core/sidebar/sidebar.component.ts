@@ -6,11 +6,11 @@ import { select, Store } from '@ngrx/store';
 import { BehaviorSubject, combineLatest, Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 
-import { Intermediate } from '../models/intermediate';
-import { RacesByPlace } from '../models/race';
-import { Event, Racer } from '../models/racer';
-import { setDelay, toggleFavorite } from '../state/actions/settings';
-import { AppState, getDelayState, selectAllIntermediates, selectEvents, selectRacesByPlace } from '../state/reducers';
+import { Intermediate } from '../../models/intermediate';
+import { RacesByPlace } from '../../models/race';
+import { Event, Racer } from '../../models/racer';
+import { setDelay, toggleFavorite } from '../../state/actions/settings';
+import { AppState, getDelayState, selectAllIntermediates, selectEvents, selectRacesByPlace } from '../../state/reducers';
 
 @Component({
     selector: 'app-sidebar',

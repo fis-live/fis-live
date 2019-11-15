@@ -15,7 +15,7 @@ export class Sort {
                 return undefined;
             }
 
-            value = (nestedProp === "") ? value : value[nestedProp];
+            value = (nestedProp === '') ? value : value[nestedProp];
         }
 
         return value;
@@ -41,7 +41,7 @@ export class Sort {
     }
 
     public compare(a: any, b: any): number {
-        if (this.comparator === null) return 0;
+        if (this.comparator === null) { return 0; }
 
         const propA = this.getData(a, this.comparator);
         const propB = this.getData(b, this.comparator);
