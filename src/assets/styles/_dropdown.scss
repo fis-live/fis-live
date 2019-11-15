@@ -4,15 +4,9 @@
 }
 
 .btn-group {
-    //display: inline-flex;
-
-    app-dropdown, app-select {
-
-
-
+    app-select {
         &:not(:first-child) .btn {
-            border-top-left-radius: 0;
-            border-bottom-left-radius: 0;
+            border-radius: 0 $clr-btn-border-radius $clr-btn-border-radius 0;
         }
 
         &:not(:last-child) {

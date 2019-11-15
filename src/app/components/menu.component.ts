@@ -6,18 +6,20 @@ import { State as RaceInfoState } from '../state/reducers/race-info';
     selector: 'app-menu',
     template: `
         <header>
-            <div class="branding" (click)="openSidebar.emit(null)">
+            <div class="branding" (click)="openSidebar.emit()">
                 <button class="header-hamburger-trigger" type="button">
                     <span></span>
                 </button>
             </div>
-            <div class="header-nav">
-                <span>{{ raceInfo.info.eventName }}</span>
-                <span class="fitted">{{ raceInfo.info.raceName }}</span>
-                <span class="message">{{ raceInfo.message | uppercase }}</span>
+            <div class="header-nav" *ngIf="raceInfo as race">
+		        <span>
+		            <span class="event-name">{{ race.info.eventName }}</span><br>
+		            <span class="race-name">{{ race.info.raceName }}</span>
+		        </span>
+                <span class="message">{{ race.message | uppercase }}</span>
             </div>
             <div class="header-actions">
-                <a (click)="refresh.emit(null)" class="nav-link nav-icon">
+                <a (click)="refresh.emit()" class="nav-link nav-icon">
                     <clr-icon shape="refresh"></clr-icon>
                 </a>
                 <a (click)="tab.emit('remove')" class="nav-link nav-icon no-mobile">
@@ -34,14 +36,14 @@ import { State as RaceInfoState } from '../state/reducers/race-info';
 export class MenuComponent {
 
     @Input()
-    public raceInfo: RaceInfoState;
+    public raceInfo: RaceInfoState | null = null;
 
     @Output()
-    public refresh: EventEmitter<any> = new EventEmitter();
+    public refresh: EventEmitter<void> = new EventEmitter();
 
     @Output()
-    public tab: EventEmitter<string> = new EventEmitter();
+    public tab: EventEmitter<"add" | "remove"> = new EventEmitter();
 
     @Output()
-    public openSidebar: EventEmitter<any> = new EventEmitter();
+    public openSidebar: EventEmitter<void> = new EventEmitter();
 }

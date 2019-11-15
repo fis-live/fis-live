@@ -17,7 +17,9 @@ const createWindowSize$ = () =>
         refCount()
     );
 
-@Injectable()
+@Injectable({
+    providedIn: 'root'
+})
 export class WindowSize {
     width$: Observable<number>;
     height$: Observable<number>;

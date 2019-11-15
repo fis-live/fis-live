@@ -12,11 +12,10 @@ import { Config, DatagridConfig } from '../providers/config';
     changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class DatagridHeader {
-    @Input()
-    public dgId: string;
+    @Input() public dgId: string = "";
 
-    @Input() config: Config;
-    public racers$: Observable<Racer[]>;
+    public readonly racers$: Observable<Racer[]>;
+    public readonly config$: Observable<Config> = this._config.getConfig();
 
     constructor(private _config: DatagridConfig, store: Store<AppState>) {
         this.racers$ = store.pipe(select(selectAllRacers));

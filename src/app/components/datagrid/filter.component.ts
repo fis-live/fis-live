@@ -4,7 +4,7 @@ import {
 } from '@angular/core';
 import { Observable, Subject } from 'rxjs';
 
-import { AbstractPopover } from '../utils/abstract-popover';
+import { AbstractPopover } from '../../utils/abstract-popover';
 
 import { Filter } from './interfaces/filter';
 import { Filters } from './providers/filter';
@@ -45,10 +45,10 @@ import { Filters } from './providers/filter';
     changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class FilterComponent extends AbstractPopover implements Filter, AfterViewInit, OnDestroy {
-    private _changes: Subject<any> = new Subject<any>();
-    private _unRegister: () => void;
+    private _changes = new Subject<void>();
+    private _unRegister: () => void = () => {};
 
-    public get changes(): Observable<any> {
+    public get changes(): Observable<void> {
         return this._changes.asObservable();
     }
 
@@ -82,8 +82,6 @@ export class FilterComponent extends AbstractPopover implements Filter, AfterVie
 
     ngOnDestroy(): void {
         super.ngOnDestroy();
-        if (this._unRegister) {
-            this._unRegister();
-        }
+        this._unRegister();
     }
 }

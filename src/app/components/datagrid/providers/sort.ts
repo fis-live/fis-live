@@ -1,12 +1,12 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, Observable, Subject } from 'rxjs';
+import { BehaviorSubject, Observable } from 'rxjs';
 
 @Injectable()
 export class Sort {
     public reverse = false;
-    public comparator: string;
+    public comparator: string | null = null;
 
-    private _change = new BehaviorSubject<null>(null);
+    private _change = new BehaviorSubject<void>(undefined);
 
     private getData(item: any, property: string): any {
         let value = item;
@@ -15,17 +15,17 @@ export class Sort {
                 return undefined;
             }
 
-            value = value[nestedProp];
+            value = (nestedProp === "") ? value : value[nestedProp];
         }
 
         return value;
     }
 
     private emitChange() {
-        this._change.next(null);
+        this._change.next();
     }
 
-    public get change(): Observable<null> {
+    public get change(): Observable<void> {
         return this._change.asObservable();
     }
 
@@ -41,6 +41,8 @@ export class Sort {
     }
 
     public compare(a: any, b: any): number {
+        if (this.comparator === null) return 0;
+
         const propA = this.getData(a, this.comparator);
         const propB = this.getData(b, this.comparator);
 

@@ -6,21 +6,21 @@ import PerfectScrollbar from 'perfect-scrollbar';
     selector: '[appScrollbar]'
 })
 export class ScrollbarDirective implements OnInit, OnDestroy {
-
-    public observer: MutationObserver;
-    private ps: PerfectScrollbar;
+    private observer?: MutationObserver;
+    private ps?: PerfectScrollbar;
 
     constructor (private el: ElementRef) { }
 
     ngOnInit() {
-        if (this.getScrollbarWidth() > 0) {
+        if (ScrollbarDirective.getScrollbarWidth() > 0) {
             this.ps = new PerfectScrollbar(this.el.nativeElement, {
                 wheelSpeed: 2
             });
 
-            this.observer = new MutationObserver(mutations => {
+            this.observer = new MutationObserver(() => {
                 this.update();
             });
+
             const config = {subtree: true, attributes: false, childList: true, characterData: true};
 
             this.observer.observe(this.el.nativeElement, config);
@@ -30,15 +30,20 @@ export class ScrollbarDirective implements OnInit, OnDestroy {
     ngOnDestroy() {
         if (this.observer) {
             this.observer.disconnect();
+        }
+
+        if (this.ps) {
             this.ps.destroy();
         }
     }
 
-    public update(): void {
-        this.ps.update();
+    update() {
+        if (this.ps) {
+            this.ps.update();
+        }
     }
 
-    public getScrollbarWidth() {
+    private static getScrollbarWidth() {
         const e = document.createElement('div');
         e.style.position = 'absolute';
         e.style.top = '-9999px';

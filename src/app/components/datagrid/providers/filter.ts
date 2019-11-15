@@ -11,9 +11,9 @@ interface FilterWithSub {
 
 @Injectable()
 export class Filters {
-    private _change = new BehaviorSubject<any>(null);
+    private readonly _change = new BehaviorSubject<void>(undefined);
 
-    public get change(): Observable<any> {
+    public get change(): Observable<void> {
         return this._change.asObservable();
     }
 
@@ -32,13 +32,13 @@ export class Filters {
 
     public add(filter: Filter): () => void {
         const index = this._all.length;
-        const subscription = filter.changes.subscribe(() => this._change.next(null));
+        const subscription = filter.changes.subscribe(() => this._change.next());
         this._all.push({filter, subscription});
 
         return () => {
             subscription.unsubscribe();
             this._all.splice(index, 1);
-            this._change.next(null);
+            this._change.next();
         };
     }
 

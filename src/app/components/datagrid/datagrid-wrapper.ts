@@ -17,17 +17,15 @@ import { Sort } from './providers/sort';
 })
 export class DatagridWrapper {
     @Input()
-    public dgId: string;
+    public dgId: string = "";
 
     public config$: Observable<Config>;
-    public row$: Observable<ResultItem[]>;
 
     @Input() set breakpoint(breakpoint: string) {
         this._config.setBreakpoint(breakpoint);
     }
 
-    constructor(private _config: DatagridConfig, private state: DatagridState) {
-        this.row$ = this.state.connect();
+    constructor(private _config: DatagridConfig) {
         this.config$ = this._config.getConfig();
     }
 }

@@ -34,19 +34,39 @@ table {
         font-size: 0.9em;
         position: relative;
         white-space: nowrap;
-        background: $app-thead-bgcolor;
+        //background: $app-thead-bgcolor;
+
+        background: #fafafa;
+
+        transition: background .3s ease;
+
+        &:hover {
+            background: #f2f2f2;
+        }
 
         > div {
             box-sizing: border-box;
             border-bottom: 2px solid $app-table-bordercolor;
             padding: 0 4px 0 8px;
+            font-weight: 500;
+
+            color: rgba(0,0,0,.85);
+            text-align: left;
+
+            background-clip: border-box;
+            border-bottom: 1px solid #e8e8e8;
+
+            transition: background .3s ease;
+            &:hover {
+                background: rgba(0,0,0,0.04);
+            }
         }
 
         &:not(:last-child)::before {
             position: absolute;
             top: 0;
             right: 0;
-            bottom: 2px;
+            bottom: 1px;
             width: 1px;
             margin: 6px 0;
             background-color: $app-table-bordercolor;
@@ -108,8 +128,19 @@ table {
 
         > app-filter {
             display: flex;
-            padding-right: 6px;
-            border-bottom: 2px solid $app-table-bordercolor;
+
+            height: 100%;
+            color: #bfbfbf;
+            font-size: 12px;
+            text-align: center;
+            cursor: pointer;
+            transition: all .3s;
+            border-bottom: 1px solid #e8e8e8;
+            width: 24px;
+
+            &:hover {
+                background: rgba(0,0,0,0.04);
+            }
 
             //.filter-toggle {
             //    width: 16px;
@@ -141,6 +172,15 @@ table {
                 background-repeat: no-repeat;
                 background-size: contain;
                 color: $clr-color-neutral-500;
+                width: 24px;
+
+                &:focus {
+                    outline: none;
+                }
+
+                > clr-icon {
+                    margin-top: -2px;
+                }
 
                 &:hover {
                     color: $clr-color-action-600;
@@ -181,6 +221,7 @@ table {
 
     th > div.sorting {
         cursor: pointer;
+        transition: border-bottom-color 0.3s ease;
         &:hover {
             color: $clr-h6-color;
         }

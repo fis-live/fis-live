@@ -17,8 +17,6 @@ import { DatagridComponent } from './components/datagrid/datagrid.component';
 import { FilterComponent } from './components/datagrid/filter.component';
 import { DatagridHeader } from './components/datagrid/header/datagrid-header.component';
 import { SortDirective } from './components/datagrid/sort.directive';
-import { DropdownItemDirective } from './components/dropdown/dropdown-item.directive';
-import { DropdownComponent } from './components/dropdown/dropdown.component';
 import { MenuComponent } from './components/menu.component';
 import { SelectComponent } from './components/select/select';
 import { SidebarComponent } from './components/sidebar.component';
@@ -27,8 +25,6 @@ import { IconComponent } from './components/ui/icon.component';
 import { FocusDirective } from './components/utils/focus.directive';
 import { ScrollbarDirective } from './components/utils/scrollbar.directive';
 import { appRoutes } from './routes';
-import { FisConnectionService } from './services/fis-connection';
-import { WindowSize } from './services/window-size';
 import { ConnectionEffects } from './state/connection-effects';
 import { metaReducers, reducers } from './state/reducers';
 
@@ -40,8 +36,6 @@ import { metaReducers, reducers } from './state/reducers';
         DatagridComponent,
         DatagridHeader,
         DatagridSettingsComponent,
-        DropdownComponent,
-        DropdownItemDirective,
         FilterComponent,
         FocusDirective,
         IconComponent,
@@ -71,7 +65,6 @@ import { metaReducers, reducers } from './state/reducers';
         // StoreDevtoolsModule.instrument(),
         EffectsModule.forRoot([ConnectionEffects])
     ],
-    providers: [ FisConnectionService, WindowSize ],
     bootstrap: [ AppComponent ]
 })
 export class AppModule {

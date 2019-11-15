@@ -10,7 +10,6 @@
     "module": "esnext",
     "moduleResolution": "node",
     "strict": true,
-    "strictPropertyInitialization": false,
     "importHelpers": true,
     "target": "es2015",
     "typeRoots": [
@@ -22,9 +21,8 @@
     ]
   },
   "angularCompilerOptions": {
-    "fullTemplateTypeCheck": false,
-    "strictInjectionParameters": true,
-    "enableIvy": false
+    "fullTemplateTypeCheck": true,
+    "strictInjectionParameters": true
   },
   "files": [
     "src/main.ts",

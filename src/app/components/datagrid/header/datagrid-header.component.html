@@ -1,3 +1,4 @@
+<ng-container *ngIf="config$ | async as config">
 <div class="btn-group btn-sm">
     <ng-container *ngIf="config.view.mode === 'normal'; else analysis">
         <app-select class="btn-primary" key="inter">
@@ -13,12 +14,14 @@
 
     <ng-template #analysis>
         <div class="radio btn">
-            <input type="radio" name="btn-group-zero-{{ dgId }}" id="btn-total-{{ dgId }}" value="total" [ngModel]="config.view.display" (ngModelChange)="setDisplayMode('total')">
+                <input type="radio" name="btn-group-zero-{{ dgId }}" id="btn-total-{{ dgId }}" value="total"
+                       [ngModel]="config.view.display" (ngModelChange)="setDisplayMode('total')">
             <label for="btn-total-{{ dgId }}" style="min-height: 0;">Total</label>
         </div>
 
         <div class="radio btn">
-            <input type="radio" name="btn-group-zero-{{ dgId }}" id="btn-diff-{{ dgId }}" value="diff" [ngModel]="config.view.display" (ngModelChange)="setDisplayMode('diff')">
+                <input type="radio" name="btn-group-zero-{{ dgId }}" id="btn-diff-{{ dgId }}" value="diff"
+                       [ngModel]="config.view.display" (ngModelChange)="setDisplayMode('diff')">
             <label for="btn-diff-{{ dgId }}" style="min-height: 0;">Diff</label>
         </div>
     </ng-template>
@@ -26,9 +29,12 @@
 
 <div *ngIf="config.view.mode === 'analysis'">
     <div class="clr-select-wrapper">
-        <select id="select-basic" class="clr-select" style="height: 22px" [ngModel]="config.view.zero" (ngModelChange)="setZero($event)">
-            <option value="-1">Leader</option>
-            <option *ngFor="let racer of racers$ | async" [value]="racer.bib">{{ racer.firstName }} {{ racer.lastName }}</option>
+            <select id="select-basic" class="clr-select" style="height: 22px" [ngModel]="config.view.zero"
+                    (ngModelChange)="setZero($event)">
+                <option value="-1">Leader</option>
+                <option *ngFor="let racer of racers$ | async"
+                        [value]="racer.bib">{{ racer.firstName }} {{ racer.lastName }}</option>
+
         </select>
     </div>
 </div>
@@ -41,8 +47,10 @@
 
 <div style="justify-content: end;flex: 0 0 auto;">
     <div class="clr-toggle-wrapper" *ngIf="config.breakpoint === 'large'">
-        <input type="checkbox" id="toggle-{{ dgId }}" name="toggle-basic" class="clr-toggle" [ngModel]="config.view.mode === 'analysis'" (ngModelChange)="toggleMode($event)">
+    	<input type="checkbox" id="toggle-{{ dgId }}" name="toggle-basic" class="clr-toggle"
+    		[ngModel]="config.view.mode === 'analysis'" (ngModelChange)="toggleMode($event)">
         <label for="toggle-{{ dgId }}">All</label>
     </div>
 </div>
 <!--app-dg-settings class="column-switch-wrapper"></app-dg-settings-->
+</ng-container>

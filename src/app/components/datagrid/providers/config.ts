@@ -136,6 +136,8 @@ export class DatagridConfig implements OptionSelector<View, Intermediate>, OnDes
     }
 
     public setBreakpoint(breakpoint: string) {
+        if (breakpoint === this._internalConfig.breakpoint) return;
+
         if (this._internalConfig.view.mode === 'normal') {
             let columns = [];
             if (breakpoint === 'large') {

@@ -1,4 +1,4 @@
-import { animate, group, keyframes, query, style, transition, trigger } from '@angular/animations';
+import { animate, AnimationEvent, group, keyframes, query, style, transition, trigger } from '@angular/animations';
 import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
 import { select, Store } from '@ngrx/store';
 import { Observable } from 'rxjs';
@@ -8,6 +8,7 @@ import { ResultItem } from '../../models/table';
 import { AppState, selectAllIntermediates } from '../../state/reducers';
 
 import { Config } from './providers/config';
+import { DatagridState } from "./providers/datagrid-state";
 
 export interface ColumnDef {
     id: string;
@@ -21,21 +22,28 @@ export interface ColumnDef {
     templateUrl: 'datagrid.component.html',
     animations: [
         trigger('newRow', [
-            transition('void => new', [
+            transition('void => new', group([
                 query('td > div', [
-                    style({backgroundColor: '#FFF', maxHeight: '0px'}),
+                    style({backgroundColor: '#F7D57F', maxHeight: '0px'}),
                     group([
-                        animate('800ms ease',
+                        animate('300ms ease',
                             style({
-                                backgroundColor: '#F7D57F',
                                 maxHeight: '24px',
                             })),
                         animate('600ms 5000ms ease', style({
                             backgroundColor: '*',
                         }))
                     ])
+                ]),
+                style({transform: 'translateX(30px)', opacity: 0}),
+                group([
+                    animate('600ms 300ms ease',
+                        style({
+                            opacity: 1,
+                            transform: 'translateX(0)',
+                        }))
                 ])
-            ]),
+            ])),
 
             transition('normal => update', [
                 style({backgroundColor: '*'}),
@@ -53,12 +61,11 @@ export interface ColumnDef {
     changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class DatagridComponent {
-    @Input() public config: Config;
-    @Input() public rows: ResultItem[];
+    @Input() public config!: Config;
 
-    public intermediates$: Observable<ColumnDef[]>;
+    public readonly intermediates$: Observable<ColumnDef[]>;
 
-    constructor(store: Store<AppState>) {
+    constructor(public dataSource: DatagridState, store: Store<AppState>) {
         this.intermediates$ = store.pipe(
             select(selectAllIntermediates),
             map(values => values.map(inter => {
@@ -69,6 +76,10 @@ export class DatagridComponent {
                     key: inter.key
                 };
             })));
+    }
+
+    public onAnimationEvent(event: AnimationEvent, row: ResultItem) {
+        console.log(event.fromState, event.toState, row.bib);
     }
 
     public track(index: number, item: ResultItem): number {

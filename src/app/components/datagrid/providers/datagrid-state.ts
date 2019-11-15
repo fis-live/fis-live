@@ -15,7 +15,7 @@ import { Sort } from './sort';
 @Injectable()
 export class DatagridState implements DataSource<ResultItem> {
 
-    private view: Observable<ResultItem[]>;
+    private readonly view: Observable<ResultItem[]>;
 
     constructor(private _sort: Sort, private _filters: Filters, private store: Store<AppState>, private _config: DatagridConfig) {
         this._sort.comparator = 'rank';
@@ -28,11 +28,11 @@ export class DatagridState implements DataSource<ResultItem> {
     }
 
     public connect(): Observable<ResultItem[]> {
-        return combineLatest(
+        return combineLatest([
             this.view,
             this._sort.change,
             this._filters.change
-        ).pipe(
+        ]).pipe(
             map(([rows]) => {
                 if (this._filters.hasActiveFilters()) {
                     rows = rows.filter((row) => this._filters.accepts(row));

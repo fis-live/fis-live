@@ -1,10 +1,10 @@
-<div [@animate]="isOpen ? 'visible' : 'hidden'" class="sidebar">
+<div [@animate]="isOpen ? 'visible' : 'hidden'" [style.display]="isOpen ? 'initial' : 'hidden'" class="sidebar">
 
     <div style="padding: 5px;">
             <input class="clr-input" style="font-size: 11px;" (keyup.enter)="go(codex.value)" #codex placeholder="Enter codex..." type="text">&nbsp;
             <button (click)="go(codex.value)" class="btn btn-sm btn-primary">Go</button>
         <button type="button" class="close" aria-label="Close" (click)="close()">
-            <clr-icon shape="times" size="32"></clr-icon>
+            <clr-icon shape="times" [size]="32"></clr-icon>
         </button>
     </div>
 
@@ -35,7 +35,7 @@
                     <input [checked]="!races.date.startsWith('Today')" [attr.id]="'races' + races.date" type="checkbox">
                     <label [attr.for]="'races' + races.date">{{ races.date }}<span *ngIf="races.liveCount > 0" class="badge badge-success">{{ races.liveCount }}</span></label>
                     <ul class="nav-list">
-                        <ng-template ngFor let-place [ngForOf]="races.places">
+                        <ng-container *ngFor="let place of races.places">
                             <li class="place">{{ place.place }}</li>
                             <li *ngFor="let race of place.races" >
                                 <a (click)="close()" [routerLink]="['', race.codex]" routerLinkActive="active" class="nav-link">{{ race.discipline }}
@@ -43,7 +43,7 @@
                                     <span [class.label-info]="race.status == 'Results'" [class.label-success]="race.status == 'Live'" class="label">{{ race.status ? race.status : race.time }}</span>
                                 </a>
                             </li>
-                        </ng-template>
+                        </ng-container>
                     </ul>
                 </section>
             </section>

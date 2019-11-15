@@ -1,6 +1,6 @@
 html, body {
     height: 100%;
-    background-color: $clr-global-app-background;
+    background-color: #FFFFFF;
 }
 
 
@@ -43,12 +43,7 @@ html, body {
     flex-flow: row nowrap;
     align-items: stretch;
     height: 1.5rem;
-    padding: 0 $clr-table-cellpadding;
-    padding-top: 0.25rem;
-    padding-bottom: calc(0.25rem - 1px);
-    // Account for borders
-    //line-height: calc(1.5rem - #{2 * $clr-default-borderwidth});
-    //font-size: clr-getTypePropertyValueForDomElement(table_header, font-size);
+    padding: 0.25rem $clr-table-cellpadding calc(0.25rem - 1px);
     background-color: $clr-thead-bgcolor;
     border: 1px solid $app-table-bordercolor;
     border-bottom: none;
@@ -56,92 +51,6 @@ html, body {
 
     > div:not(:last-child) {
         margin-right: 0.25rem;
-    }
-
-    .pagination {
-        margin-left: 1.5rem;
-        height: calc(1.5rem - #{2 * $clr-default-borderwidth});
-    }
-
-    .column-switch-wrapper {
-        // Has a possible sibling in the .datagrid-foot-select.checkbox container
-        flex: 0 0 1rem;
-        position: relative;
-
-        .column-toggle--action {
-            // I'm overriding .btn/.btn-link here but am not confident this is the correct way to do it.
-            min-width: 0.75rem;
-            padding-left: 0;
-            padding-right: 0;
-
-            color: $clr-dark-midtone-gray;
-            &:hover {
-                color: $clr-action-blue;
-            }
-
-            &.active {
-                color: $clr-action-blue;
-            }
-        }
-
-        .column-switch {
-            border-radius: $clr-global-borderradius;
-            padding: 0.75rem;
-            background-color: $clr-datagrid-popover-bg-color;
-            border: $clr-default-borderwidth solid $clr-datagrid-popover-border-color;
-            box-shadow: 0 1px 3px rgba(116, 116, 116, 0.25); // TODO: Add theme-able variable
-            width: 10.416667rem;
-            display: flex;
-            flex-direction: column;
-            position: absolute;
-            right: 0;
-            margin-top: 5px;
-            z-index: map-get($clr-layers, dropdown-menu);
-
-
-            .switch-header {
-                display: flex;
-                justify-content: space-between;
-                font-weight: 400;
-                font-size: 0.666667rem;
-                padding-bottom: 0.5rem;
-                line-height: 1rem;
-
-                button {
-                    min-width: 0.75rem;
-                    margin: 0;
-                    padding: 0;
-                    color: $clr-dark-midtone-gray;
-
-                    &:hover {
-                        color: $clr-action-blue;
-                    }
-                }
-            }
-
-            .switch-content {
-                max-height: 12.5rem;
-                overflow-y: auto;
-                min-height: calc(1rem + #{$clr-default-borderwidth}); // prevents scrollbars in IE.
-
-                li {
-                    line-height: 1rem;
-                    padding-left: 2 * $clr-rem-1px; // Hack that doesn't fix issue #539. TODO: Fix issue #539.
-                }
-            }
-
-            .switch-footer {
-                .btn {
-                    margin: 0;
-                    padding: 0;
-                }
-
-                .action-right {
-                    display: flex;
-                    justify-content: flex-end
-                }
-            }
-        }
     }
 }
 

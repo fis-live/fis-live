@@ -3,9 +3,9 @@ import { ChangeDetectorRef, ElementRef, OnDestroy, Renderer2 } from '@angular/co
 export abstract class AbstractPopover implements OnDestroy {
 
     public open: boolean = false;
-    private documentListener: () => void;
+    private documentListener?: () => void;
 
-    constructor(protected host: ElementRef, protected renderer: Renderer2, protected cdr: ChangeDetectorRef) { }
+    protected constructor(protected host: ElementRef, protected renderer: Renderer2, protected cdr: ChangeDetectorRef) { }
 
     public toggle() {
         this.open = !this.open;

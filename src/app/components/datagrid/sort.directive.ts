@@ -7,7 +7,7 @@ import { Sort } from './providers/sort';
 })
 export class SortDirective {
     @Input('appSort')
-    public sortBy: string;
+    public sortBy: string = "";
 
     @HostBinding('class.sorting') sorting = true;
 

@@ -8,10 +8,10 @@ import { ChangeDetectionStrategy, Component, HostBinding, Input } from '@angular
 })
 export class IconComponent {
     @Input()
-    public shape: string;
+    public shape: string = '';
 
     @HostBinding('style.width.px')
     @HostBinding('style.height.px')
     @Input()
-    public size: number;
+    public size?: number;
 }

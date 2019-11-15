@@ -16,7 +16,7 @@ import { State as RaceInfoState } from '../state/reducers/race-info';
     templateUrl: './container.component.html',
 })
 export class ContainerComponent implements OnInit, OnDestroy {
-    public codex: number;
+    public codex?: number;
     public raceInfo$: Observable<RaceInfoState>;
     public loading$: Observable<LoadingState>;
     public favoriteRacers$: Observable<Racer[]>;
@@ -38,11 +38,12 @@ export class ContainerComponent implements OnInit, OnDestroy {
             });
     }
 
-    constructor(private router: Router, private route: ActivatedRoute, private _store: Store<AppState>, private window: WindowSize) {
+    constructor(private router: Router, private route: ActivatedRoute, private _store: Store<AppState>, private windowSize: WindowSize) {
         this.raceInfo$ = _store.select(getRaceInfoState);
         this.loading$ = _store.select(getLoadingState);
+        this.width = window.innerWidth;
         this.favoriteRacers$ = _store.select(getSettingsState).pipe(pluck('favoriteRacers'));
-        this.widthSubscription = this.window.width$.subscribe((width) => this.setWidth(width));
+        this.widthSubscription = this.windowSize.width$.subscribe((width) => this.setWidth(width));
     }
 
     public go(codex: number): void {
@@ -134,8 +135,10 @@ export class ContainerComponent implements OnInit, OnDestroy {
     }
 
     private reload(): void {
-        this._store.dispatch(stopUpdate());
-        this._store.dispatch(loadMain({codex: this.codex}));
+        if (this.codex) {
+            this._store.dispatch(stopUpdate());
+            this._store.dispatch(loadMain({codex: this.codex}));
+        }
     }
 
     public ngOnDestroy(): void {

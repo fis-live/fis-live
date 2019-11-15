@@ -1,5 +1,5 @@
-<app-dg-header [dgId]="dgId" [config]="config$ | async" class="action-bar"></app-dg-header>
+<app-dg-header [dgId]="dgId" class="action-bar"></app-dg-header>
 
 <div class="segment" appScrollbar>
-    <app-table [rows]="row$ | async" [config]="config$ | async"></app-table>
+    <app-table [config]="(config$ | async)!"></app-table>
 </div>

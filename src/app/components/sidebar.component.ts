@@ -18,7 +18,7 @@ import { AppState, getDelayState, selectAllIntermediates, selectEvents, selectRa
     changeDetection: ChangeDetectionStrategy.OnPush,
     animations: [
         trigger('animate', [
-            state('hidden', style({transform: 'translateX(-100%)', display: 'none'})),
+            state('hidden', style({transform: 'translateX(-100%)'})),
             state('visible', style({transform: 'translateX(0)'})),
             transition('hidden <=> visible', animate('200ms ease-out'))
         ])
@@ -26,7 +26,7 @@ import { AppState, getDelayState, selectAllIntermediates, selectEvents, selectRa
 })
 export class SidebarComponent {
     @Input() public isOpen = false;
-    @Input() public favoriteRacers: Racer[];
+    @Input() public favoriteRacers: Racer[] | null = null;
     @Output() public isOpenChange = new EventEmitter<boolean>();
     @Output() public navigate = new EventEmitter<number>();
 
@@ -35,12 +35,12 @@ export class SidebarComponent {
     public delay$: Observable<number>;
     public events$: Observable<Event[]>;
     public intermediates$: Observable<Intermediate[]>;
-    private selectedInter = new BehaviorSubject<number>(0);
+    public selectedInter = new BehaviorSubject<number>(0);
 
     constructor(private store: Store<AppState>) {
         this.upcomingRaces$ = store.select(selectRacesByPlace);
         this.delay$ = store.select(getDelayState);
-        this.events$ = combineLatest(this.selectedInter, store.select(selectEvents)).pipe(
+        this.events$ = combineLatest([this.selectedInter, store.select(selectEvents)]).pipe(
             map(([inter, events]) => events.filter(event => event.interId === inter))
         );
         this.intermediates$ = store.pipe(select(selectAllIntermediates));
@@ -77,8 +77,8 @@ export class SidebarComponent {
     }
 
 
-    public go(codex: number): void {
+    public go(codex: string): void {
         this.close();
-        this.navigate.emit(codex);
+        this.navigate.emit(+codex);
     }
 }

@@ -42,7 +42,7 @@ class DelayBySubscriber<T> extends OuterSubscriber<T, number> {
     private queue: Array<DelayMessage<T>> = [];
     private active: boolean = false;
     private errored: boolean = false;
-    private scheduledSub: Subscription;
+    private scheduledSub!: Subscription;
     private delayValue: number = 0;
 
     private static dispatch<T>(this: SchedulerAction<DelayState<T>>, state?: DelayState<T>): void {

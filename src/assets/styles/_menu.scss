@@ -3,12 +3,19 @@ header {
     top: 0;
     width: 100%;
     z-index: 101;
-    background-color: #004a70;
+    //background-color: #004a70;
+    background: #fff;
+    box-shadow: 0 2px 8px #f0f1f2;
+    color: $clr-black;
 
     > .branding {
         padding: 0;
         min-width: 0;
         line-height: $clr-header-height;
+
+        &:hover {
+            background: #e6f7ff;
+        }
     }
 
     > .header-nav {
@@ -19,17 +26,24 @@ header {
             padding: 0 0.66667rem;
             text-overflow: ellipsis;
             overflow: hidden;
+            line-height: 0;
 
-            &.fitted {
+            &.event-name {
+                line-height: 1rem;
+                font-size: 0.75rem;
                 padding: 0;
-                color: hsla(0,0%,100%,.5);
-                font-size: .8em;
-                flex-shrink: 0;
+            }
+
+            &.race-name {
+                line-height: 0.666667rem;
+                font-size: 0.5rem;
+                padding: 0;
             }
 
             &.message {
                 flex-grow: 1;
                 text-align: right;
+                line-height: $clr-header-height;
             }
         }
     }
@@ -39,21 +53,18 @@ header {
 
         > .nav-link {
             padding: 0;
+            color: $clr-black;
         }
 
         a {
             &::before {
-                position: absolute;
-                content: "";
-                top: 0;
-                left: 0;
-                height: 100%;
-                width: 1px;
-                background: hsla(0,0%,100%,.08);;
+                @include header-section-divider();
+                background-color: #999;
             }
 
             &:hover {
                 opacity: 1;
+                background: #e6f7ff;
             }
             cursor: pointer;
             background-color: rgba(221, 221, 221, 0.15);
@@ -71,7 +82,8 @@ header {
         right: 0;
         height: 100%;
         width: 1px;
-        background: hsla(0,0%,100%,.08);;
+        opacity: 0.15;
+        background: #999;
     }
 
     & > span,
@@ -80,7 +92,7 @@ header {
         display: inline-block;
         height: 0.0833333rem;
         width: 1rem;
-        background: $clr-white;
+        background: $clr-black;
         border-radius: 0.125rem;
     }
 

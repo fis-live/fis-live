@@ -7,20 +7,21 @@ import { catchError, map, repeat, retry, switchMap, timeout } from 'rxjs/operato
 import { Main, ServerList, Update } from '../fis/models';
 import { FisServer } from '../models/fis-server';
 import { Race } from '../models/race';
+import { unserialize } from '../utils/unserialize';
 
-import { unserialize } from './unserialize';
-
-@Injectable()
+@Injectable({
+    providedIn: 'root'
+})
 export class FisConnectionService {
-    private signature: string;
+    private readonly signature: string;
     private updateCount: number = 0;
     private errorCount: number = 0;
     private interval: number = 0;
     private delay: number = 0;
-    private startRequest: number;
+    private startRequest: number = 0;
 
-    private codex: number;
-    private version: number;
+    private codex: number | null = null;
+    private version: number = 0;
 
     private baseURL: string = 'http://live.fis-ski.com/mobile/';
     private proxy: string = 'https://fislive-cors.herokuapp.com/';

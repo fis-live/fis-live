@@ -1,6 +1,6 @@
-export class Intermediate {
-    public key: number;
-    public distance: number;
-    public name: string;
-    public id: number;
+export interface Intermediate {
+    key: number;
+    distance: number;
+    name: string;
+    id: number;
 }

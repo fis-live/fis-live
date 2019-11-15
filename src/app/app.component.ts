@@ -8,10 +8,9 @@ import { State as AlertState } from './state/reducers/alert';
 
 @Component({
     selector: 'app-root',
-    templateUrl: './app.component.html',
+    templateUrl: './app.component.html'
 })
 export class AppComponent {
-
     public alert$: Observable<AlertState>;
 
     constructor(private _store: Store<AppState>) {

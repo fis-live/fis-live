@@ -8,25 +8,25 @@ import {
 } from '@angular/core';
 import { Action } from '@ngrx/store';
 
-import { State as AlertState } from '../../state/reducers/alert';
+import { Alert } from '../../models/alert';
 
 
 @Component({
     selector: 'app-alert',
     template: `
-        <div *ngIf="alert.isOpen" [@translate] [ngClass]="'alert alert-app-level alert-' + alert.severity" >
+        <div *ngIf="alert as _alert" [@translate] [ngClass]="'alert alert-app-level alert-' + _alert.severity" >
             <div class="alert-items">
                 <div class="alert-item">
                     <div class="alert-icon-wrapper">
-                        <clr-icon class="alert-icon" [shape]="iconInfoFromType(alert.severity)"></clr-icon>
+                        <clr-icon class="alert-icon" [shape]="iconInfoFromType(_alert.severity)"></clr-icon>
                     </div>
 
                     <div class="alert-text">
-                        {{ alert.message }}
+                        {{ _alert.message }}
                     </div>
 
                     <div class="alert-actions">
-                        <button class="btn alert-action" (click)="emitAction(alert)">{{ alert.action }}</button>
+                        <button class="btn alert-action" (click)="emitAction(_alert)">{{ _alert.action }}</button>
                     </div>
                 </div>
             </div>
@@ -49,25 +49,24 @@ import { State as AlertState } from '../../state/reducers/alert';
     ],
 })
 export class AlertComponent {
-
     @Input()
-    public alert: AlertState;
+    public alert: Alert | null = null;
 
     @Output()
-    public close: EventEmitter<any> = new EventEmitter();
+    public close: EventEmitter<void> = new EventEmitter();
 
     @Output()
     public action: EventEmitter<Action[]> = new EventEmitter();
 
     public closeAlert(): void {
-        this.close.emit(null);
+        this.close.emit();
     }
 
-    public emitAction(alert: AlertState): void {
+    public emitAction(alert: Alert): void {
         this.action.emit(alert.actions);
     }
 
-    public iconInfoFromType(type: string, classOrShape: string = 'shape'): string {
+    public iconInfoFromType(type: string): string {
         let shape: string;
         switch (type) {
             case 'warning':
