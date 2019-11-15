@@ -4,18 +4,11 @@ import { select, Store } from '@ngrx/store';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 
-import { ResultItem } from '../models/table';
+import { ColumnDef, ResultItem } from '../models/table';
 import { AppState, selectAllIntermediates } from '../state/reducers';
 
 import { Config } from './providers/config';
 import { DatagridState } from './providers/datagrid-state';
-
-export interface ColumnDef {
-    id: string;
-    name: string;
-    sortBy: string;
-    key: number;
-}
 
 @Component({
     selector: 'app-table',
@@ -72,7 +65,7 @@ export class DatagridComponent {
                 return {
                     id: 'inter' + inter.key,
                     sortBy: 'marks.' + inter.key + '.value',
-                    name: inter.distance + ' KM',
+                    name: inter.short,
                     key: inter.key
                 };
             })));

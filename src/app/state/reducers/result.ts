@@ -6,8 +6,8 @@ import { filter, map } from 'rxjs/operators';
 import { View } from '../../datagrid/providers/config';
 import { maxVal } from '../../fis/fis-constants';
 import { Intermediate } from '../../models/intermediate';
-import { Event, Prop, RacerData, Standing } from '../../models/racer';
-import { ResultItem } from '../../models/table';
+import { Event, RacerData, Standing } from '../../models/racer';
+import { Prop, ResultItem } from '../../models/table';
 import { RaceActions } from '../actions';
 
 import { getValidDiff, registerResult, updateResult } from './helpers';
@@ -36,7 +36,7 @@ const resultReducer = createReducer(
         id: racer.bib,
         status: '',
         racer: racer,
-        results: [{time: 0, status: '', rank: null, diffs: [0]}],
+        marks: [{time: 0, status: '', rank: null, diffs: [0]}],
         notes: []
     }, state)),
     on(RaceActions.addNote, (state, { note }) => adapter.updateOne({
@@ -53,13 +53,13 @@ const resultReducer = createReducer(
                 id: entry.racer,
                 changes: {
                     status: entry.status,
-                    results: [{time: 0, status: entry.status, rank: entry.order, diffs: [0]}]
+                    marks: [{time: 0, status: entry.status, rank: entry.order, diffs: [0]}]
                 }
             }, state),
             standings: {...state.standings, [0]: standings}};
     }),
     on(RaceActions.setStartTime, (state, { time }) => {
-        const results = [...state.entities[time.racer]!.results];
+        const results = [...state.entities[time.racer]!.marks];
         results[0] = {...results[0], time: time.time, diffs: [time.time]};
 
         const standings: {[id: number]: Standing} = {[0]: {...state.standings[0]}};
@@ -87,7 +87,7 @@ const resultReducer = createReducer(
         }
 
         return {
-            ...adapter.updateOne({id: time.racer, changes: {results: results}}, state),
+            ...adapter.updateOne({id: time.racer, changes: {marks: results}}, state),
             standings: {...state.standings, ...standings}
         };
     }),
@@ -113,7 +113,7 @@ const resultReducer = createReducer(
             interId: inter
         };
 
-        if (state.entities[racer]!.results.length > inter) {
+        if (state.entities[racer]!.marks.length > inter) {
             changes = updateResult(state, racer, time, inter);
         } else {
             changes = registerResult(state, racer, time, inter);
@@ -223,12 +223,12 @@ export const createViewSelector = (view: View): OperatorFunction<State, ResultIt
                 for (let i = 0; i < length; i++) {
                     const id = state.standings[view.inter.key].ids[i];
                     const row = state.entities[id]!;
-                    const time = row.results[view.inter.key].time;
-                    const _state = row.results[view.inter.key].rank !== null && view.inter.key !== 0 && length - i < 4 ? 'new' : 'normal';
+                    const time = row.marks[view.inter.key].time;
+                    const _state = row.marks[view.inter.key].rank !== null && view.inter.key !== 0 && length - i < 4 ? 'new' : 'normal';
 
                     let diff: Prop<number>;
                     if (view.diff !== null) {
-                        const d = row.results[view.inter.key].diffs[view.diff.key] || maxVal;
+                        const d = row.marks[view.inter.key].diffs[view.diff.key] || maxVal;
 
                         diff = {
                             display: d < maxVal ? formatTime(d, state.standings[view.inter.key].bestDiff[view.diff.key]) : '',
@@ -241,10 +241,10 @@ export const createViewSelector = (view: View): OperatorFunction<State, ResultIt
                         };
                     }
 
-                    const classes = [row.racer.nationality.toLowerCase(), _state];
-                    if (row.results[view.inter.key].rank === 1 && view.inter.key > 0) {
+                    const classes = [row.racer.nsa.toLowerCase(), _state];
+                    if (row.marks[view.inter.key].rank === 1 && view.inter.key > 0) {
                         classes.push('leader');
-                    } else if (row.results[view.inter.key].rank == null) {
+                    } else if (row.marks[view.inter.key].rank == null) {
                         classes.push('disabled');
                     }
 
@@ -260,13 +260,13 @@ export const createViewSelector = (view: View): OperatorFunction<State, ResultIt
                         state: _state,
                         id: row.racer.id,
                         bib: row.racer.bib,
-                        nationality: row.racer.nationality,
+                        nsa: row.racer.nsa,
                         time: view.inter.key === 0 ? {display: row.status, value: row.status} : {
                             display: time < maxVal ?
-                                formatTime(time, state.standings[view.inter.key].leader) : row.results[view.inter.key].status,
+                                formatTime(time, state.standings[view.inter.key].leader) : row.marks[view.inter.key].status,
                             value: time
                         },
-                        rank: row.results[view.inter.key].rank,
+                        rank: row.marks[view.inter.key].rank,
                         diff: diff,
                         name: {
                             display: row.racer.firstName + ' ' + row.racer.lastName,
@@ -290,11 +290,11 @@ export const createViewSelector = (view: View): OperatorFunction<State, ResultIt
                     }
                 } else {
                     for (const { key } of state.intermediates) {
-                        if (state.entities[view.zero]!.results[key] !== undefined) {
+                        if (state.entities[view.zero]!.marks[key] !== undefined) {
                             if (view.display === 'total') {
-                                zeroes[key] = state.entities[view.zero]!.results[key].time;
+                                zeroes[key] = state.entities[view.zero]!.marks[key].time;
                             } else {
-                                zeroes[key] = key > 0 ? state.entities[view.zero]!.results[key].diffs[key - 1] : 0;
+                                zeroes[key] = key > 0 ? state.entities[view.zero]!.marks[key].diffs[key - 1] : 0;
                             }
                         } else {
                             zeroes[key] = null;
@@ -327,13 +327,13 @@ export const createViewSelector = (view: View): OperatorFunction<State, ResultIt
                     for (const { key } of state.intermediates) {
                         let time: number | null;
                         if (view.display === 'total') {
-                            time = row.results[key] != null ? row.results[key].time : null;
+                            time = row.marks[key] != null ? row.marks[key].time : null;
                         } else {
-                            time =  row.results[key] != null ?
-                                (key === 0 ? row.results[0].diffs[0] : row.results[key].diffs[key - 1]) : null;
+                            time =  row.marks[key] != null ?
+                                (key === 0 ? row.marks[0].diffs[0] : row.marks[key].diffs[key - 1]) : null;
                         }
 
-                        const display = (time !== null) ?  (time < maxVal ? formatTime(time, zeroes[key]) : row.results[key].status) : '';
+                        const display = (time !== null) ?  (time < maxVal ? formatTime(time, zeroes[key]) : row.marks[key].status) : '';
                         const value = (time !== null) ?  time : maxVal * 6;
 
                         marks[key] = {
@@ -346,7 +346,7 @@ export const createViewSelector = (view: View): OperatorFunction<State, ResultIt
                         state: _state,
                         id: row.racer.id,
                         bib: row.racer.bib,
-                        nationality: row.racer.nationality,
+                        nsa: row.racer.nsa,
                         time: {display: '', value: 0},
                         rank: 1,
                         diff: {display: '', value: 0},

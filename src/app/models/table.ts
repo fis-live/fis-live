@@ -1,4 +1,7 @@
-import { Prop } from './racer';
+export interface Prop<T> {
+    value: T;
+    display: T | string;
+}
 
 export interface Columns {
     bib: boolean;
@@ -6,10 +9,17 @@ export interface Columns {
     diff: boolean;
 }
 
+export interface ColumnDef {
+    id: string;
+    name: string;
+    sortBy: string;
+    key: number;
+}
+
 export interface ResultItem {
     id: number;
     bib: number;
-    nationality: string;
+    nsa: string;
     time: Prop<number> | Prop<string>;
     diff: Prop<number>;
     rank: number | null;
@@ -18,9 +28,4 @@ export interface ResultItem {
     notes: string[];
     classes: string[];
     marks: (Prop<number> | Prop<string>)[];
-}
-
-export interface TableConfiguration {
-    isStartList: boolean;
-    rows: ResultItem[];
 }

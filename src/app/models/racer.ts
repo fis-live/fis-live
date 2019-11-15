@@ -3,14 +3,9 @@ export interface Racer {
     bib: number;
     lastName: string;
     firstName: string;
-    nationality: string;
+    nsa: string;
     color: string;
     isFavorite: boolean;
-}
-
-export interface Prop<T> {
-    value: T;
-    display: T | string;
 }
 
 export interface Standing {
@@ -20,7 +15,7 @@ export interface Standing {
     bestDiff: number[];
 }
 
-export interface Result {
+export interface Mark {
     time: number;
     status: string;
     rank: number | null;
@@ -31,7 +26,7 @@ export interface RacerData {
     id: number;
     racer: Racer;
     status: string;
-    results: Result[];
+    marks: Mark[];
     notes: string[];
 }
 

@@ -20,7 +20,7 @@ export function registerResult(state: State,
                                time: number, inter: number): {changes: Update<RacerData>[]; standings: {[id: number]: Standing}} {
     const changes: Update<RacerData>[] = [];
     const standings: {[id: number]: Standing} = {};
-    const results = [...state.entities[racer]!.results];
+    const results = [...state.entities[racer]!.marks];
 
     if (results.length < inter) {
         const t = (time < maxVal) ? maxVal * 6 : time;
@@ -45,16 +45,16 @@ export function registerResult(state: State,
 
     if (time < maxVal) {
         for (const id of state.standings[inter].ids) {
-            if (state.entities[id]!.results[inter].time < maxVal) {
-                if (time < state.entities[id]!.results[inter].time) {
-                    const res = [...state.entities[id]!.results];
+            if (state.entities[id]!.marks[inter].time < maxVal) {
+                if (time < state.entities[id]!.marks[inter].time) {
+                    const res = [...state.entities[id]!.marks];
                     const _rank = res[inter].rank;
                     res[inter] = {...res[inter], rank: _rank !== null ? _rank + 1 : null};
                     changes.push({
                         id: id,
-                        changes: {results: res}
+                        changes: {marks: res}
                     });
-                } else if (time > state.entities[id]!.results[inter].time) {
+                } else if (time > state.entities[id]!.marks[inter].time) {
                     rank += 1;
                 }
             }
@@ -85,7 +85,7 @@ export function registerResult(state: State,
     results[inter] = {time: time, status: timeToStatusMap[time], rank, diffs: diffs};
     changes.push({
         id: racer,
-        changes: {results: results}
+        changes: {marks: results}
     });
 
     return { changes, standings };
@@ -97,7 +97,7 @@ export function updateResult(state: State,
     const changes: Update<RacerData>[] = [];
     const standings: {[id: number]: Standing} = {};
 
-    const results = [...state.entities[racer]!.results];
+    const results = [...state.entities[racer]!.marks];
     const prev = results[inter].time;
     const prevDiffs = results[inter].diffs;
 
@@ -118,15 +118,15 @@ export function updateResult(state: State,
     let rank: number | null = 1;
     for (const id of state.standings[inter].ids) {
         let rankAdj = 0;
-        const t = state.entities[id]!.results[inter].time;
+        const t = state.entities[id]!.marks[inter].time;
 
         if (racer === id || t > maxVal) {
             continue;
         }
 
         for (const i of checkDiffs) {
-            if (state.entities[id]!.results[inter].diffs[i] < bestDiffs[i]) {
-                bestDiffs[i] = state.entities[id]!.results[inter].diffs[i];
+            if (state.entities[id]!.marks[inter].diffs[i] < bestDiffs[i]) {
+                bestDiffs[i] = state.entities[id]!.marks[inter].diffs[i];
             }
         }
 
@@ -143,12 +143,12 @@ export function updateResult(state: State,
         }
 
         if (rankAdj !== 0) {
-            const res = [...state.entities[id]!.results];
+            const res = [...state.entities[id]!.marks];
             const _rank = res[inter].rank;
             res[inter] = {...res[inter], rank: _rank !== null ? _rank + rankAdj : null};
             changes.push({
                 id: id,
-                changes: {results: res}
+                changes: {marks: res}
             });
         }
     }
@@ -169,8 +169,8 @@ export function updateResult(state: State,
                     continue;
                 }
 
-                if (state.entities[id]!.results[i].diffs[inter] < bestDiff[inter]) {
-                    bestDiff[inter] = state.entities[id]!.results[i].diffs[inter];
+                if (state.entities[id]!.marks[i].diffs[inter] < bestDiff[inter]) {
+                    bestDiff[inter] = state.entities[id]!.marks[i].diffs[inter];
                 }
             }
         }
@@ -197,7 +197,7 @@ export function updateResult(state: State,
 
     changes.push({
         id: racer,
-        changes: {results: results}
+        changes: {marks: results}
     });
 
     return { changes, standings };

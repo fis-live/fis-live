@@ -8,7 +8,7 @@
 
         <app-select *ngIf="config.displayedColumns.indexOf('diff') > -1" class="btn-success" key="diff">
             Diff...
-            <ng-template let-item>{{ item.distance }} KM</ng-template>
+            <ng-template let-item>{{ item.short }}</ng-template>
         </app-select>
     </ng-container>
 

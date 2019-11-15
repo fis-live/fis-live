@@ -29,7 +29,7 @@ export function parseMain(data: Main): Action[] {
         raceInfo.temperatureUnit = '°' + raceInfo.temperatureUnit;
     }
     if (raceInfo.lengthUnit == null) {
-        raceInfo.lengthUnit = 'meters';
+        raceInfo.lengthUnit = 'm';
     }
     if (raceInfo.speedUnit == null) {
         raceInfo.speedUnit = 'kmh';
@@ -47,20 +47,31 @@ export function parseMain(data: Main): Action[] {
     actions.push(updateRaceInfo({raceInfo}));
     actions.push(setRaceMessage({message: data.message}));
     actions.push(updateMeteo({meteo}));
-    actions.push(addIntermediate({intermediate: {key: 0, id: 0, distance: 0, name: 'Start list'}}));
+    actions.push(addIntermediate({intermediate: {key: 0, id: 0, distance: 0, name: 'Start list', short: '0 ' + raceInfo.lengthUnit}}));
 
     data.racedef.forEach((def, index) => {
         let name = 'Finish';
+        let short = 'Finish';
         if (def[0] === 'inter') {
             name = '';
+            short = '';
         }
 
         if (def[2] && def[2] > 0) {
-            name += ' ' + def[2] + ' ' + raceInfo.lengthUnit.toUpperCase();
+            name += ' ' + def[2] + ' ' + raceInfo.lengthUnit;
             name = name.trim();
+            short = def[2] + ' ' + raceInfo.lengthUnit;
+        } else {
+            if (def[0] === 'inter') {
+                name = 'Inter ' + (index + 1);
+                short = name;
+            } else {
+                name = 'Finish';
+                short = name;
+            }
         }
 
-        actions.push(addIntermediate({intermediate: {key: index + 1, id: def[1], distance: def[2], name: name}}));
+        actions.push(addIntermediate({intermediate: {key: index + 1, id: def[1], distance: def[2], name: name, short: short}}));
     });
 
     for ( let i = 0; i < data.racers.length; i++ ) {
@@ -71,7 +82,7 @@ export function parseMain(data: Main): Action[] {
                     bib: racer[1],
                     firstName: racer[3].trim(),
                     lastName: racer[2].trim().split(' ').map((char) => char[0] + char.substr(1).toLowerCase()).join(' '),
-                    nationality:  nationalities[racer[4]] || racer[4],
+                    nsa:  nationalities[racer[4]] || racer[4],
                     isFavorite: false,
                     color: racer[5]
                 }})

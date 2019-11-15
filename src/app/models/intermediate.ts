@@ -3,4 +3,5 @@ export interface Intermediate {
     distance: number;
     name: string;
     id: number;
+    short: string;
 }
