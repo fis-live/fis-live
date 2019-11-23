@@ -9,6 +9,14 @@ import { addIntermediate, addRacer, addStartList, registerResult, setStatus } fr
 import { nationalities, statusMap, statusToTimeMap } from './fis-constants';
 import { Main, Update } from './models';
 
+function fixEncoding(str: string) {
+    try {
+        return decodeURIComponent(escape(str));
+    } catch (e) {
+        return str;
+    }
+}
+
 export function parseMain(data: Main): Action[] {
     const actions: Action[] = [];
     const raceInfo: RaceInfo = {
@@ -69,8 +77,8 @@ export function parseMain(data: Main): Action[] {
             actions.push(addRacer({racer: {
                     id: racer[0],
                     bib: racer[1],
-                    firstName: racer[3].trim(),
-                    lastName: racer[2].trim().split(' ').map((char) => char[0] + char.substr(1).toLowerCase()).join(' '),
+                    firstName: fixEncoding(racer[3].trim()),
+                    lastName: fixEncoding(racer[2].trim()).split(' ').map((char) => char[0] + char.substr(1).toLowerCase()).join(' '),
                     nationality:  nationalities[racer[4]] || racer[4],
                     isFavorite: false,
                     color: racer[5]
