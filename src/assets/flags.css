@@ -2,6 +2,10 @@
     display: none;
 }
 
+.analysis .small_only::before {
+    display: inline-block !important;
+}
+
 .flag::before {
     display: inline-block;
     content: '';

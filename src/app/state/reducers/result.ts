@@ -312,7 +312,7 @@ export const createViewSelector = (view: View): OperatorFunction<State, ResultIt
                 for (const id of state.ids) {
                     const row = state.entities[id]!;
                     const _state = 'normal';
-                    const classes: string[] = [];
+                    const classes: string[] = [row.racer.nationality.toLowerCase(), 'analysis'];
 
                     if (row.racer.isFavorite) {
                         classes.push('favorite');
