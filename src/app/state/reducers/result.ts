@@ -228,7 +228,8 @@ export const createViewSelector = (view: View): OperatorFunction<State, ResultIt
 
                     let diff: Prop<number>;
                     if (view.diff !== null) {
-                        const d = row.results[view.inter.key].diffs[view.diff.key] || maxVal;
+                        const temp = row.results[view.inter.key].diffs[view.diff.key];
+                        const d = temp === null ? maxVal : temp;
 
                         diff = {
                             display: d < maxVal ? formatTime(d, state.standings[view.inter.key].bestDiff[view.diff.key]) : '',
