@@ -7,10 +7,16 @@ export interface Race {
     codex: number;
     discipline: string;
     gender: string;
+    nation: string;
 }
 
 export interface RacesByPlace {
     liveCount: number;
     date: string;
     places: [{place: string; races: Race[]}];
+}
+
+export interface RacesByDate {
+    date: string;
+    races: Race[];
 }

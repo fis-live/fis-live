@@ -70,6 +70,8 @@ export const selectAllIntermediates = createSelector(getResultState, Result.getI
 
 export const selectRacesByPlace = createSelector(getCalendarState, Calendar.getRacesByPlace);
 
+export const selectRacesByDate = createSelector(getCalendarState, Calendar.getRacesByDate);
+
 export const getDelayState = createSelector(getSettingsState, Settings.getDelay);
 
 export const selectEvents = createSelector(getResultState, Result.getEvents);

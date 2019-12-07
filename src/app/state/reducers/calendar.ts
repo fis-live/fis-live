@@ -1,6 +1,6 @@
 import { Action, createReducer, on } from '@ngrx/store';
 
-import { Race, RacesByPlace } from '../../models/race';
+import { Race, RacesByDate, RacesByPlace } from '../../models/race';
 import { ConnectionActions } from '../actions';
 
 export type State = Race[];
@@ -38,6 +38,24 @@ export const getRacesByPlace = (state: State) => {
                 ret[i].places[j].races.push(race);
             }
             ret[i].liveCount += race.status === 'Live' ? 1 : 0;
+        }
+    });
+
+    return ret;
+};
+
+
+export const getRacesByDate = (state: State) => {
+    const ret: RacesByDate[] = [];
+    state.forEach((race) => {
+        const i = ret.findIndex((row) => row.date === race.date);
+        if (i === -1) {
+            ret.push({
+                date: race.date,
+                races: [race]
+            });
+        } else {
+            ret[i].races.push(race);
         }
     });
 
