@@ -1,10 +1,19 @@
 .dropdown-menu {
     visibility: visible;
     transform-origin: top center;
+    top: initial;
+    left: initial;
+    max-height: 75%;
+    overflow: auto;
+}
+
+.dropdown-item {
+    overflow: unset !important;
 }
 
 .btn-group {
     app-select {
+        position: unset;
         &:not(:first-child) .btn {
             border-radius: 0 $clr-btn-border-radius $clr-btn-border-radius 0;
         }

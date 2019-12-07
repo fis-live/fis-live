@@ -3,6 +3,10 @@ table {
     border-spacing: 0;
 }
 
+.ps__rail-x, .ps__rail-y {
+    z-index: 2;
+}
+
 .datagrid {
     font-size: 0.9em;
     width: 100%;
@@ -12,8 +16,20 @@ table {
     text-align: left;
     color: $clr-h6-color;
 
+    .cdk-column-name {
+        white-space: nowrap;
+    }
+    
+    tr {
+        td {
+            background-color: #FFFFFF;
+        }
+    }
+    
     tr:nth-child(2n) {
-        background-color: $app-thead-bgcolor;
+        td {
+            background-color: $app-thead-bgcolor;
+        }
     }
 
     td {
