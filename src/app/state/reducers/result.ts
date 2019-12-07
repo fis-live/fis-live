@@ -228,7 +228,8 @@ export const createViewSelector = (view: View): OperatorFunction<State, ResultIt
 
                     let diff: Prop<number>;
                     if (view.diff !== null) {
-                        const d = row.marks[view.inter.key].diffs[view.diff.key] || maxVal;
+                        const temp = row.marks[view.inter.key].diffs[view.diff.key];
+                        const d = temp === null ? maxVal : temp;
 
                         diff = {
                             display: d < maxVal ? formatTime(d, state.standings[view.inter.key].bestDiff[view.diff.key]) : '',
@@ -312,7 +313,7 @@ export const createViewSelector = (view: View): OperatorFunction<State, ResultIt
                 for (const id of state.ids) {
                     const row = state.entities[id]!;
                     const _state = 'normal';
-                    const classes: string[] = [];
+                    const classes: string[] = [row.racer.nsa.toLowerCase(), 'analysis'];
 
                     if (row.racer.isFavorite) {
                         classes.push('favorite');
