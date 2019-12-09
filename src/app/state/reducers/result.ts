@@ -101,6 +101,7 @@ const resultReducer = createReducer(
         const inter = result.intermediate === 99 ? state.intermediates.length - 1 : result.intermediate;
         const time = result.time || maxVal * 6;
         const racer = result.racer;
+        const isBonus = state.intermediates[inter].type === 'bonus_points';
 
         let changes;
         const event = {
@@ -114,14 +115,14 @@ const resultReducer = createReducer(
         };
 
         if (state.entities[racer]!.marks.length > inter) {
-            changes = updateResult(state, racer, time, inter);
+            changes = updateResult(state, racer, time, inter, isBonus);
         } else {
-            changes = registerResult(state, racer, time, inter);
+            changes = registerResult(state, racer, time, inter, isBonus);
         }
 
         let events = [...state.events];
 
-        if (isEvent && time < maxVal) {
+        if (!isBonus && isEvent && time < maxVal) {
             events = [...events.slice(Math.max(events.length - 30, 0)), event];
         }
 
@@ -226,6 +227,24 @@ export const createViewSelector = (view: View): OperatorFunction<State, ResultIt
                     const time = row.marks[view.inter.key].time;
                     const _state = row.marks[view.inter.key].rank !== null && view.inter.key !== 0 && length - i < 4 ? 'new' : 'normal';
 
+                    let timeProp: Prop<number> | Prop<string>;
+                    if (view.inter.type === 'bonus_points') {
+                        if (time < maxVal) {
+                            timeProp = {
+                                value: time,
+                                display: time
+                            };
+                        } else {
+                            continue;
+                        }
+                    } else {
+                        timeProp = view.inter.key === 0 ? {display: row.status, value: row.status} : {
+                            display: time < maxVal ?
+                                formatTime(time, state.standings[view.inter.key].leader) : row.marks[view.inter.key].status,
+                            value: time
+                        };
+                    }
+
                     let diff: Prop<number>;
                     if (view.diff !== null) {
                         const temp = row.marks[view.inter.key].diffs[view.diff.key];
@@ -262,11 +281,7 @@ export const createViewSelector = (view: View): OperatorFunction<State, ResultIt
                         id: row.racer.id,
                         bib: row.racer.bib,
                         nsa: row.racer.nsa,
-                        time: view.inter.key === 0 ? {display: row.status, value: row.status} : {
-                            display: time < maxVal ?
-                                formatTime(time, state.standings[view.inter.key].leader) : row.marks[view.inter.key].status,
-                            value: time
-                        },
+                        time: timeProp,
                         rank: row.marks[view.inter.key].rank,
                         diff: diff,
                         name: {
@@ -286,7 +301,8 @@ export const createViewSelector = (view: View): OperatorFunction<State, ResultIt
                         if (view.display === 'total') {
                             zeroes[key] = state.standings[key].leader;
                         } else {
-                            zeroes[key] = key > 0 ? state.standings[key].bestDiff[key - 1] : 0;
+                            const prevKey = key > 0 && state.intermediates[key - 1].type === 'bonus_points' ? key - 2 : key - 1;
+                            zeroes[key] = key > 0 ? state.standings[key].bestDiff[prevKey] : 0;
                         }
                     }
                 } else {
@@ -295,7 +311,8 @@ export const createViewSelector = (view: View): OperatorFunction<State, ResultIt
                             if (view.display === 'total') {
                                 zeroes[key] = state.entities[view.zero]!.marks[key].time;
                             } else {
-                                zeroes[key] = key > 0 ? state.entities[view.zero]!.marks[key].diffs[key - 1] : 0;
+                                const prevKey = key > 0 && state.intermediates[key - 1].type === 'bonus_points' ? key - 2 : key - 1;
+                                zeroes[key] = key > 0 ? state.entities[view.zero]!.marks[key].diffs[prevKey] : 0;
                             }
                         } else {
                             zeroes[key] = null;
@@ -330,8 +347,9 @@ export const createViewSelector = (view: View): OperatorFunction<State, ResultIt
                         if (view.display === 'total') {
                             time = row.marks[key] != null ? row.marks[key].time : null;
                         } else {
+                            const prevKey = key > 0 && state.intermediates[key - 1].type === 'bonus_points' ? key - 2 : key - 1;
                             time =  row.marks[key] != null ?
-                                (key === 0 ? row.marks[0].diffs[0] : row.marks[key].diffs[key - 1]) : null;
+                                (key === 0 ? row.marks[0].diffs[0] : row.marks[key].diffs[prevKey]) : null;
                         }
 
                         const display = (time !== null) ?  (time < maxVal ? formatTime(time, zeroes[key]) : row.marks[key].status) : '';

@@ -284,7 +284,7 @@ export const statusMap: {[status: string]: string} = {
     'ral': 'RAL',
     'dnf': 'DNF',
     'dq': 'DQ',
-    'dsq': 'DSQ',
+    'dsq': 'DQ',
     'dns': 'DNS'
 };
 

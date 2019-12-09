@@ -3,9 +3,9 @@ import { select, Store } from '@ngrx/store';
 import { BehaviorSubject, Observable, Subscription } from 'rxjs';
 import { map } from 'rxjs/operators';
 
+import { KeysOfType, Option, OptionSelector } from '../../core/select/option-selector';
 import { Intermediate } from '../../models/intermediate';
 import { AppState, selectAllIntermediates } from '../../state/reducers';
-import { KeysOfType, Option, OptionSelector } from '../../core/select/option-selector';
 
 export interface View {
     mode: 'normal' | 'analysis';
@@ -53,7 +53,7 @@ export class DatagridConfig implements OptionSelector<View, Intermediate>, OnDes
 
         this._subscription = this._source.subscribe((values) => {
             const view = {...this._internalConfig.view};
-            this._dynamicColumns = values.map((inter) => 'inter' + inter.key);
+            this._dynamicColumns = values.filter(inter => inter.type !== 'bonus_points').map((inter) => 'inter' + inter.key);
 
             if (view.mode === 'normal') {
                 if (values.length > 0 && view.inter !== null) {
@@ -136,7 +136,7 @@ export class DatagridConfig implements OptionSelector<View, Intermediate>, OnDes
     }
 
     public setBreakpoint(breakpoint: string) {
-        if (breakpoint === this._internalConfig.breakpoint) return;
+        if (breakpoint === this._internalConfig.breakpoint) { return; }
 
         if (this._internalConfig.view.mode === 'normal') {
             let columns = [];
@@ -164,11 +164,24 @@ export class DatagridConfig implements OptionSelector<View, Intermediate>, OnDes
     }
 
     getOptions(key: KeysOfType<View, Intermediate | null>): Observable<Option<Intermediate>[]> {
+        if (key === 'diff') {
+            return this._source.pipe(
+                map((options) => options.filter(inter => inter.type !== 'bonus_points').map((option) => {
+                        const inter = this._internalConfig.view.inter;
+                        const curr = this._internalConfig.view[key];
+                        const disabled = inter === null || inter.type === 'bonus_points' || (option.key !== 0 && option.key >= inter.key);
+                        const selected = curr === option;
+
+                        return { value: option, selected, disabled };
+                    })
+                )
+            );
+        }
+
         return this._source.pipe(
             map((options) => options.map((option) => {
-                    const inter = this._internalConfig.view.inter;
                     const curr = this._internalConfig.view[key];
-                    const disabled = (key === 'diff') ? inter === null || (option.key !== 0 && option.key >= inter.key) : false;
+                    const disabled = false;
                     const selected = curr === option;
 
                     return { value: option, selected, disabled };
@@ -199,7 +212,7 @@ export class DatagridConfig implements OptionSelector<View, Intermediate>, OnDes
         }
 
         view[key] = value;
-        if (key === 'inter' && (value === null || (view.diff != null && value.key <= view.diff.key))) {
+        if (key === 'inter' && (value === null || value.type === 'bonus_points' || (view.diff != null && value.key <= view.diff.key))) {
             view.diff = null;
         }
 

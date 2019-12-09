@@ -61,7 +61,7 @@ export class DatagridComponent {
     constructor(public dataSource: DatagridState, store: Store<AppState>) {
         this.intermediates$ = store.pipe(
             select(selectAllIntermediates),
-            map(values => values.map(inter => {
+            map(values => values.filter(inter => inter.type !== 'bonus_points').map(inter => {
                 return {
                     id: 'inter' + inter.key,
                     sortBy: 'marks.' + inter.key + '.value',

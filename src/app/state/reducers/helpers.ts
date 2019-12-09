@@ -17,7 +17,8 @@ export function getValidDiff(time: number | null, zero: number | null): number {
 
 export function registerResult(state: State,
                                racer: number,
-                               time: number, inter: number): {changes: Update<RacerData>[]; standings: {[id: number]: Standing}} {
+                               time: number, inter: number,
+                               isBonus: boolean): {changes: Update<RacerData>[]; standings: {[id: number]: Standing}} {
     const changes: Update<RacerData>[] = [];
     const standings: {[id: number]: Standing} = {};
     const results = [...state.entities[racer]!.marks];
@@ -46,16 +47,30 @@ export function registerResult(state: State,
     if (time < maxVal) {
         for (const id of state.standings[inter].ids) {
             if (state.entities[id]!.marks[inter].time < maxVal) {
-                if (time < state.entities[id]!.marks[inter].time) {
-                    const res = [...state.entities[id]!.marks];
-                    const _rank = res[inter].rank;
-                    res[inter] = {...res[inter], rank: _rank !== null ? _rank + 1 : null};
-                    changes.push({
-                        id: id,
-                        changes: {marks: res}
-                    });
-                } else if (time > state.entities[id]!.marks[inter].time) {
-                    rank += 1;
+                if (!isBonus) {
+                    if (time < state.entities[id]!.marks[inter].time) {
+                        const res = [...state.entities[id]!.marks];
+                        const _rank = res[inter].rank;
+                        res[inter] = {...res[inter], rank: _rank !== null ? _rank + 1 : null};
+                        changes.push({
+                            id: id,
+                            changes: {marks: res}
+                        });
+                    } else if (time > state.entities[id]!.marks[inter].time) {
+                        rank += 1;
+                    }
+                } else {
+                    if (time > state.entities[id]!.marks[inter].time) {
+                        const res = [...state.entities[id]!.marks];
+                        const _rank = res[inter].rank;
+                        res[inter] = {...res[inter], rank: _rank !== null ? _rank + 1 : null};
+                        changes.push({
+                            id: id,
+                            changes: {marks: res}
+                        });
+                    } else if (time < state.entities[id]!.marks[inter].time) {
+                        rank += 1;
+                    }
                 }
             }
         }
@@ -93,7 +108,8 @@ export function registerResult(state: State,
 
 export function updateResult(state: State,
                              racer: number,
-                             time: number, inter: number): {changes: Update<RacerData>[]; standings: {[id: number]: Standing}} {
+                             time: number, inter: number,
+                             isBonus: boolean): {changes: Update<RacerData>[]; standings: {[id: number]: Standing}} {
     const changes: Update<RacerData>[] = [];
     const standings: {[id: number]: Standing} = {};
 
@@ -132,14 +148,26 @@ export function updateResult(state: State,
 
         leader = t < leader ? t : leader;
 
-        if (time < t) {
-            rankAdj += 1;
-        } else if (time > t) {
-            rank += 1;
-        }
+        if (!isBonus) {
+            if (time < t) {
+                rankAdj += 1;
+            } else if (time > t) {
+                rank += 1;
+            }
 
-        if (t > prev) {
-            rankAdj -= 1;
+            if (t > prev) {
+                rankAdj -= 1;
+            }
+        } else {
+            if (time > t) {
+                rankAdj += 1;
+            } else if (time < t) {
+                rank += 1;
+            }
+
+            if (t < prev && prev < maxVal) {
+                rankAdj -= 1;
+            }
         }
 
         if (rankAdj !== 0) {
