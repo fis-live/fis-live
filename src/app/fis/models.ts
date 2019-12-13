@@ -42,3 +42,8 @@ export interface Update {
 export interface ServerList {
     servers: [string, number, number][];
 }
+
+export interface FisEvent {
+    type: string;
+    payload: Result | Status;
+}

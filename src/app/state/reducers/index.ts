@@ -1,4 +1,4 @@
-import { Action, ActionReducer, ActionReducerMap, createReducer, createSelector, MetaReducer, on, select } from '@ngrx/store';
+import { Action, ActionReducer, ActionReducerMap, createSelector, MetaReducer, on, select } from '@ngrx/store';
 import { localStorageSync } from 'ngrx-store-localstorage';
 import { OperatorFunction, pipe } from 'rxjs';
 
@@ -31,7 +31,6 @@ export interface AppState {
     calendar: Calendar.State;
 }
 
-
 export function enableBatching(reducer: ActionReducer<AppState>): ActionReducer<AppState> {
     return function batchingReducer(state, action: Action): AppState {
         const r = on(ConnectionActions.batch, (_state: AppState, { actions }) => actions.reduce(batchingReducer, _state));
@@ -43,21 +42,11 @@ export function enableBatching(reducer: ActionReducer<AppState>): ActionReducer<
     };
 }
 
-export function resetState(reducer: ActionReducer<AppState>): ActionReducer<AppState> {
-    return function(state, action) {
-        if (state !== undefined && action.type === ConnectionActions.reset.type) {
-            return {...reducer(undefined, action), settings: state.settings, calendar: state.calendar};
-        }
-
-        return reducer(state, action);
-    };
-}
-
 export function localStorageSyncReducer(reducer: ActionReducer<AppState>): ActionReducer<AppState> {
     return localStorageSync({keys: ['settings'], removeOnUndefined: true, rehydrate: true})(reducer);
 }
 
-export const metaReducers: MetaReducer<AppState>[] = [enableBatching, resetState, localStorageSyncReducer];
+export const metaReducers: MetaReducer<AppState>[] = [enableBatching, localStorageSyncReducer];
 
 export const getAlertState = (state: AppState) => state.alert;
 export const getCalendarState = (state: AppState) => state.calendar;
@@ -84,5 +73,3 @@ export const selectView = (view: View): OperatorFunction<AppState, ResultItem[]>
         Result.createViewSelector(view)
     );
 };
-
-export const { selectAll: selectAllResults } = Result.adapter.getSelectors(getResultState);

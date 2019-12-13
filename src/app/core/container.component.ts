@@ -5,7 +5,7 @@ import { Observable, Subscription } from 'rxjs';
 import { map, pluck } from 'rxjs/operators';
 
 import { Racer } from '../models/racer';
-import { loadMain, stopUpdate } from '../state/actions/connection';
+import { loadMain } from '../state/actions/connection';
 import { AppState, getLoadingState, getRaceInfoState, getSettingsState } from '../state/reducers/';
 import { State as LoadingState } from '../state/reducers/loading';
 import { State as RaceInfoState } from '../state/reducers/race-info';
@@ -136,7 +136,6 @@ export class ContainerComponent implements OnInit, OnDestroy {
 
     private reload(): void {
         if (this.codex) {
-            this._store.dispatch(stopUpdate());
             this._store.dispatch(loadMain({codex: this.codex}));
         }
     }

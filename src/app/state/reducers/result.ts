@@ -1,142 +1,168 @@
-import { createEntityAdapter, EntityAdapter, EntityState } from '@ngrx/entity';
-import { Action, createReducer, createSelector, on, select } from '@ngrx/store';
+import { Action, createReducer, createSelector, on } from '@ngrx/store';
+import produce from 'immer';
 import { OperatorFunction, pipe } from 'rxjs';
 import { filter, map } from 'rxjs/operators';
 
 import { View } from '../../datagrid/providers/config';
 import { maxVal } from '../../fis/fis-constants';
+import { Result, Status } from '../../fis/models';
 import { Intermediate } from '../../models/intermediate';
 import { Event, RacerData, Standing } from '../../models/racer';
 import { Prop, ResultItem } from '../../models/table';
 import { RaceActions } from '../actions';
 
-import { getValidDiff, registerResult, updateResult } from './helpers';
+import { getValidDiff, registerResultMutably, updateResultMutably } from './helpers';
 
-export interface State extends EntityState<RacerData> {
+export interface State {
+    ids: number[];
+    entities: {[id: number]: RacerData};
     intermediates: Intermediate[];
     standings: {[id: number]: Standing};
     events: Event[];
 }
 
-export const adapter: EntityAdapter<RacerData> = createEntityAdapter<RacerData>();
-
-export const initialState: State = adapter.getInitialState({intermediates: [], standings: {}, events: []});
+export const initialState: State = {
+    ids: [],
+    entities: {},
+    intermediates: [],
+    standings: {},
+    events: []
+};
 
 const resultReducer = createReducer(
     initialState,
-    on(RaceActions.addIntermediate, (state, { intermediate }) => ({
-        ...state,
-        intermediates: [...state.intermediates, intermediate],
-        standings: {
-            ...state.standings,
-            [intermediate.key]: {version: 0, ids: [], leader: maxVal, bestDiff: (new Array(intermediate.key)).fill(maxVal)}
-        }
-    })),
-    on(RaceActions.addRacer, (state, { racer }) => adapter.addOne({
-        id: racer.bib,
-        status: '',
-        racer: racer,
-        marks: [{time: 0, status: '', rank: null, diffs: [0]}],
-        notes: []
-    }, state)),
-    on(RaceActions.addNote, (state, { note }) => adapter.updateOne({
-        id: note.racer,
-        changes: {
-            notes: [...state.entities[note.racer]!.notes, 'W']
-        }
-    }, state)),
-    on(RaceActions.addStartList, (state, { entry }) => {
-        const standings = {...state.standings[0]};
-        standings.ids = standings.ids.concat(entry.racer);
-        standings.version += 1;
-        return {...adapter.updateOne({
-                id: entry.racer,
-                changes: {
-                    status: entry.status,
-                    marks: [{time: 0, status: entry.status, rank: entry.order, diffs: [0]}]
-                }
-            }, state),
-            standings: {...state.standings, [0]: standings}};
-    }),
-    on(RaceActions.setStartTime, (state, { time }) => {
-        const results = [...state.entities[time.racer]!.marks];
-        results[0] = {...results[0], time: time.time, diffs: [time.time]};
+    on(RaceActions.initialize, (_, action) => {
+        const state: State = {
+            ids: [],
+            entities: {},
+            intermediates: action.intermediates,
+            standings: {},
+            events: []
+        };
 
-        const standings: {[id: number]: Standing} = {[0]: {...state.standings[0]}};
-        standings[0].version += 1;
-        standings[0].leader = time.time < standings[0].leader ? time.time : standings[0].leader;
-        standings[0].bestDiff = [standings[0].leader];
+        action.intermediates.forEach(intermediate => {
+            state.standings[intermediate.key] = {
+                version: 0,
+                ids: [],
+                leader: maxVal,
+                bestDiff: (new Array(Math.max(intermediate.key, 1))).fill(maxVal)
+            };
+        });
 
-        for (let i = 1; i < results.length; i++) {
-            const diffs = [...results[i].diffs];
-            diffs[0] = getValidDiff(results[i].time, time.time);
-            if (diffs[0] < state.standings[i].bestDiff[0]) {
-                standings[i] = {
-                    ...state.standings[i],
-                    version: state.standings[i].version + 1,
-                    bestDiff: [diffs[0], ...state.standings[i].bestDiff.slice(1)]
+        for (const racer of action.racers) {
+            state.ids.push(racer.bib);
+            const entry = action.startList[racer.bib];
+            if (entry != null) {
+                state.standings[0].ids.push(racer.bib);
+                state.entities[racer.bib] = {
+                    id: racer.bib,
+                    status: entry.status || '',
+                    racer: racer,
+                    marks: [{time: 0, status: entry.status || '', rank: entry.order || null, diffs: [0]}],
+                    notes: []
                 };
             } else {
-                standings[i] = {
-                    ...state.standings[i],
-                    version: state.standings[i].version + 1
+                state.entities[racer.bib] = {
+                    id: racer.bib,
+                    status: '',
+                    racer: racer,
+                    marks: [],
+                    notes: []
                 };
             }
-
-            results[i] = {...results[i], diffs};
         }
 
-        return {
-            ...adapter.updateOne({id: time.racer, changes: {marks: results}}, state),
-            standings: {...state.standings, ...standings}
-        };
+        for (const result of action.results) {
+            const inter = result.intermediate === 99 ? state.intermediates.length - 1 : result.intermediate;
+            const time = result.time || maxVal * 6;
+            const racer = result.racer;
+            const isBonus = state.intermediates[inter].type === 'bonus_points';
+            if (state.entities[racer].marks.length > inter) {
+                updateResultMutably(state, racer, time, inter, isBonus);
+            } else {
+                registerResultMutably(state, state, racer, time, inter, isBonus);
+            }
+        }
+
+        return state;
     }),
-    on(RaceActions.setStatus, (state, { status }) => {
-        return {
-            ...adapter.updateOne({id: status.id, changes: {status: status.status}}, state),
-            standings: {...state.standings, [0]: {...state.standings[0], version: state.standings[0].version + 1}}
-        };
-    }),
-    on(RaceActions.registerResult, (state, { result, timestamp, isEvent }) => {
-        const inter = result.intermediate === 99 ? state.intermediates.length - 1 : result.intermediate;
-        const time = result.time || maxVal * 6;
-        const racer = result.racer;
-        const isBonus = state.intermediates[inter].type === 'bonus_points';
-
-        let changes;
-        const event = {
-            racer: state.entities[racer]!.racer.firstName[0] + '. ' + state.entities[racer]!.racer.lastName,
-            inter: state.intermediates[inter].name,
-            status: '',
-            rank: 0,
-            diff: formatTime(time, state.standings[inter].leader),
-            timestamp: timestamp,
-            interId: inter
-        };
-
-        if (state.entities[racer]!.marks.length > inter) {
-            changes = updateResult(state, racer, time, inter, isBonus);
-        } else {
-            changes = registerResult(state, racer, time, inter, isBonus);
+    on(RaceActions.setPursuitTimes, (state, { times }) => produce(state, draft => {
+        let leader = maxVal;
+        const bestDiffs: number[] = [];
+        for (const time of times) {
+            const marks = draft.entities[time.racer].marks;
+            marks[0].time = time.time;
+            marks[0].diffs = [time.time];
+            leader = Math.min(leader, time.time);
+            const l = state.entities[time.racer].marks.length;
+            for (let i = 1; i < l; i++) {
+                const t = getValidDiff(marks[i].time, time.time);
+                marks[i].diffs[0] = t;
+                bestDiffs[i] = Math.min(bestDiffs[i] || maxVal, t);
+            }
         }
 
-        let events = [...state.events];
-
-        if (!isBonus && isEvent && time < maxVal) {
-            events = [...events.slice(Math.max(events.length - 30, 0)), event];
+        for (let i = 1; i < state.intermediates.length; i++) {
+            if (bestDiffs[i] !== undefined) {
+                draft.standings[i].bestDiff[0] = bestDiffs[i];
+                draft.standings[i].version += 1;
+            }
         }
+        const standing = draft.standings[0];
+        standing.version += 1;
+        standing.leader = leader;
+        standing.bestDiff = [leader];
+    })),
+    on(RaceActions.update, (state, action) => produce(state, draft => {
+        const { timestamp, isEvent } = action;
 
-        return {
-            ...adapter.updateMany(changes.changes, state),
-            standings: {...state.standings, ...changes.standings},
-            events: events
-        };
-    })
+        for (const event of action.events) {
+            switch (event.type) {
+                case 'register_result': {
+                    const result = event.payload as Result;
+                    const inter = result.intermediate === 99 ? state.intermediates.length - 1 : result.intermediate;
+                    const time = result.time || maxVal * 6;
+                    const racer = result.racer;
+                    const isBonus = state.intermediates[inter].type === 'bonus_points';
+
+                    const _event = {
+                        racer: state.entities[racer].racer.firstName[0] + '. ' + state.entities[racer].racer.lastName,
+                        inter: state.intermediates[inter].name,
+                        status: '',
+                        rank: 0,
+                        diff: formatTime(time, state.standings[inter].leader),
+                        timestamp: timestamp,
+                        interId: inter
+                    };
+
+                    if (state.entities[racer].marks.length > inter) {
+                        updateResultMutably(draft, racer, time, inter, isBonus);
+                    } else {
+                        registerResultMutably(state, draft, racer, time, inter, isBonus);
+                    }
+
+                    if (!isBonus && isEvent && time < maxVal) {
+                        draft.events = [...draft.events.slice(Math.max(draft.events.length - 30, 0)), _event];
+                    }
+                }
+                break;
+                case 'set_status':
+                    const e = event.payload as Status;
+                    draft.entities[e.id].status = e.status;
+                    draft.standings[0].version += 1;
+                    break;
+            }
+        }
+    }))
 );
 
 export function reducer(state: State | undefined, action: Action) {
     return resultReducer(state, action);
 }
+
+export const getEvents = (state: State) => state.events;
+
+export const getIntermediates = (state: State) => state.intermediates;
 
 export const getRacerIds = (state: State) => state.ids;
 
@@ -148,7 +174,7 @@ export const getAllRacers = createSelector(
     (ids, entities) => {
         const racers = [];
         for (const id of ids) {
-            racers.push(entities[id]!.racer);
+            racers.push(entities[id].racer);
         }
 
         return racers;
@@ -196,10 +222,6 @@ const formatTime = (value: number | string, zero: number | null): string => {
     return timeStr;
 };
 
-export const getEvents = (state: State) => state.events;
-
-export const getIntermediates = (state: State) => state.intermediates;
-
 export const createViewSelector = (view: View): OperatorFunction<State, ResultItem[]> => {
     let version: number;
     return pipe(
@@ -223,7 +245,7 @@ export const createViewSelector = (view: View): OperatorFunction<State, ResultIt
                 const length = state.standings[view.inter.key].ids.length;
                 for (let i = 0; i < length; i++) {
                     const id = state.standings[view.inter.key].ids[i];
-                    const row = state.entities[id]!;
+                    const row = state.entities[id];
                     const time = row.marks[view.inter.key].time;
                     const _state = row.marks[view.inter.key].rank !== null && view.inter.key !== 0 && length - i < 4 ? 'new' : 'normal';
 
@@ -307,12 +329,12 @@ export const createViewSelector = (view: View): OperatorFunction<State, ResultIt
                     }
                 } else {
                     for (const { key } of state.intermediates) {
-                        if (state.entities[view.zero]!.marks[key] !== undefined) {
+                        if (state.entities[view.zero].marks[key] !== undefined) {
                             if (view.display === 'total') {
-                                zeroes[key] = state.entities[view.zero]!.marks[key].time;
+                                zeroes[key] = state.entities[view.zero].marks[key].time;
                             } else {
                                 const prevKey = key > 0 && state.intermediates[key - 1].type === 'bonus_points' ? key - 2 : key - 1;
-                                zeroes[key] = key > 0 ? state.entities[view.zero]!.marks[key].diffs[prevKey] : 0;
+                                zeroes[key] = key > 0 ? state.entities[view.zero].marks[key].diffs[prevKey] : 0;
                             }
                         } else {
                             zeroes[key] = null;
@@ -328,7 +350,7 @@ export const createViewSelector = (view: View): OperatorFunction<State, ResultIt
                 const rows = [];
                 const length = state.ids.length;
                 for (const id of state.ids) {
-                    const row = state.entities[id]!;
+                    const row = state.entities[id];
                     const _state = 'normal';
                     const classes: string[] = [row.racer.nsa.toLowerCase(), 'analysis'];
 

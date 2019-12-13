@@ -1,37 +1,49 @@
 import { HttpClient, HttpErrorResponse, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Action } from '@ngrx/store';
-import { defer, Observable, of, throwError, timer } from 'rxjs';
+import { EMPTY, Observable, of, throwError, timer } from 'rxjs';
 import { catchError, map, repeat, retry, switchMap, timeout } from 'rxjs/operators';
 
 import { FisServer } from '../models/fis-server';
+import { Intermediate } from '../models/intermediate';
+import { Meteo } from '../models/meteo';
 import { Race } from '../models/race';
+import { RaceInfo } from '../models/race-info';
+import { RaceActions } from '../state/actions';
+import { batch } from '../state/actions/connection';
+import { setRaceMessage, updateMeteo, updateRaceInfo } from '../state/actions/info';
+import { initialize, update } from '../state/actions/race';
+import { DelayBehavior } from '../utils/queue';
 import { unserialize } from '../utils/unserialize';
 
-import { Main, ServerList, Update } from './models';
+import { nationalities, statusMap, statusToTimeMap } from './fis-constants';
+import { fixEncoding, toTitleCase } from './fis-parser';
+import { FisEvent, Main, ServerList, StartListEntry, Update } from './models';
 
 @Injectable({
     providedIn: 'root'
 })
 export class FisConnectionService {
     private readonly signature: string;
-    private updateCount: number = 0;
-    private errorCount: number = 0;
-    private interval: number = 0;
-    private delay: number = 0;
-    private startRequest: number = 0;
+    private updateCount = 0;
+    private errorCount = 0;
+    private interval = 0;
+    private delay = 0;
+    private startRequest = 0;
 
     private codex: number | null = null;
     private version: number = 0;
+    private initialized = false;
+    private doc: 'main' | 'update' | 'pdf' = 'main';
 
-    private baseURL: string = 'http://live.fis-ski.com/mobile/';
+    private baseURL: string = 'http://live.fis-ski.com/';
     private proxy: string = 'https://fislive-cors.herokuapp.com/';
 
     private server_list: FisServer[] = [];
 
 
-    private SERVER_LIST_URL: string = 'http://live.fis-ski.com/general/serverList.json';
-    private TIMEOUT: number = 10000;
+    private readonly serverListUrl = 'http://live.fis-ski.com/general/serverList.json';
+    private readonly timeout = 10000;
 
     constructor(private _http: HttpClient) {
         const d = new Date();
@@ -40,14 +52,12 @@ export class FisConnectionService {
 
     public initialize(codex: number | null): void {
         this.codex = codex || this.codex;
+        this.doc = 'main';
+        this.initialized = false;
         this.version = 0;
         this.delay = 0;
         this.updateCount = 0;
         this.errorCount = 0;
-    }
-
-    public setProxy(proxy: string) {
-        this.proxy = proxy;
     }
 
     private getQueryString(): string {
@@ -57,76 +67,100 @@ export class FisConnectionService {
     }
 
     public getServerList(): Observable<FisServer[]> {
-        return this._http.get<ServerList>(this.proxy + this.SERVER_LIST_URL, {
+        return this._http.get<ServerList>(this.proxy + this.serverListUrl, {
             params: new HttpParams().set('i', this.getQueryString())
         }).pipe(map(res => this.parseServerList(res)));
     }
 
-    public poll(): Observable<Update> {
+    public poll(codex: number | null) {
+        this.initialize(codex);
+
         return of(null).pipe(
             switchMap(() => timer(this.delay)),
             switchMap(() => this.getHttpRequest()),
-            timeout(this.TIMEOUT),
-            map(result => (<Update> this.parse(result))),
+            timeout(this.timeout),
             catchError(error => this.handleError(error)),
             retry(10),
             repeat()
         );
     }
 
-    public loadMain(codex: number | null): Observable<Main> {
-        this.initialize(codex);
-
-        return defer(() => timer(this.delay)).pipe(
-            switchMap(() => this.getHttpRequest()),
-            timeout(this.TIMEOUT),
-            map(result => (<Main> this.parse(result))),
-            catchError(error => this.handleError(error)),
-            retry(10),
-        );
-    }
-
-    private getHttpRequest(): Observable<string> {
+    private getHttpRequest() {
         let url: string;
-        if (this.version === 0) {
-            url = `${this.baseURL}mobile/cc-${this.codex}/main.xml`;
-        } else {
-            url = `${this.baseURL}mobile/cc-${this.codex}/updt${this.version}.xml`;
+        switch (this.doc) {
+            case 'main':
+                url = `${this.baseURL}mobile/cc-${this.codex}/main.xml`;
+                break;
+            case 'update':
+                url = `${this.baseURL}mobile/cc-${this.codex}/updt${this.version}.xml`;
+                break;
+            case 'pdf':
+                return this.loadPdf();
         }
+
+        // @ts-ignore
         return this._http.get(this.proxy + url, {
             responseType: 'text',
             params: new HttpParams().set('i', this.getQueryString())
-        });
+        }).pipe(
+            map(result => this.parse(result))
+        );
     }
 
-    private parse(result: string): Main | Update {
+    private parse(result: string) {
         this.interval = Date.now() - this.startRequest;
         const data = unserialize(result.slice(4, -5)) as Main | Update;
         if (!data.live || isNaN(data.live[1]) || isNaN(data.live[0])) {
             throw new Error('No live information');
         }
 
-        this.delay = data.live[0] * 1000;
-        this.version = data.live[1];
-        this.updateCount++;
-        this.errorCount = 0;
-
-        return data;
+        if (this.doc === 'main') {
+            this.doc = 'pdf';
+            this.version = data.live[1];
+            this.updateCount++;
+            this.errorCount = 0;
+            const shouldDelay = this.initialized;
+            return batch({
+                actions: this.parseMain(<Main> data),
+                shouldDelay: shouldDelay ? DelayBehavior.Delay : DelayBehavior.Clear
+            });
+        } else {
+            this.delay = data.live[0] * 1000;
+            this.version = data.live[1];
+            this.updateCount++;
+            this.errorCount = 0;
+            return batch({
+                actions: this.parseUpdate(<Update> data),
+                shouldDelay: DelayBehavior.Delay
+            });
+        }
     }
 
     private parseServerList(result: ServerList): FisServer[] {
         this.interval = Date.now() - this.startRequest;
 
         for (const server of result.servers) {
-            this.server_list.push({url: server[0], weight: server[1], index: server[2]});
+            if (server[0] !== 'l6.novius.net') {
+                this.server_list.push({url: server[0], weight: server[1], index: server[2]});
+            }
         }
 
+        this.selectServer();
         return this.server_list;
     }
 
     private handleError(error: HttpErrorResponse) {
+        if (this.doc === 'pdf' && error.status === 404) {
+            this.doc = 'update';
+            return EMPTY;
+        }
+
         this.errorCount++;
         this.interval = Date.now() - this.startRequest;
+        if (this.errorCount >= 5) {
+            this.selectServer();
+            this.doc = 'main';
+        }
 
         this.delay = (this.delay > 0) ? this.delay : 1000;
 
@@ -144,6 +178,260 @@ export class FisConnectionService {
                     return throwError(errMsg);
                 })
             );
+    }
+
+    private parseMain(data: Main): Action[] {
+        const actions: Action[] = [];
+        const raceInfo: RaceInfo = {
+            eventName: fixEncoding(data.raceinfo[0]),
+            raceName: fixEncoding(data.raceinfo[1]),
+            slopeName: fixEncoding(data.raceinfo[2]),
+            discipline: data.raceinfo[3].toUpperCase(),
+            gender: data.raceinfo[4].toUpperCase(),
+            category: data.raceinfo[5].toUpperCase(),
+            place: fixEncoding(data.raceinfo[6]),
+            temperatureUnit: data.raceinfo[7],
+            lengthUnit: data.raceinfo[8],
+            speedUnit: data.raceinfo[9],
+            team: data.raceinfo[13],
+            tds: data.raceinfo[14]
+        };
+        if (raceInfo.temperatureUnit.length === 1) {
+            raceInfo.temperatureUnit = '°' + raceInfo.temperatureUnit;
+        }
+        if (raceInfo.lengthUnit == null) {
+            raceInfo.lengthUnit = 'm';
+        }
+        if (raceInfo.speedUnit == null) {
+            raceInfo.speedUnit = 'kmh';
+        }
+
+        const meteo: Meteo = {
+            air_temperature: data.meteo[0],
+            wind: data.meteo[1],
+            weather: data.meteo[2],
+            snow_temperature: data.meteo[3],
+            humidity: data.meteo[4],
+            snow_condition: data.meteo[5]
+        };
+
+        actions.push(updateRaceInfo({raceInfo}));
+        actions.push(setRaceMessage({message: data.message}));
+        actions.push(updateMeteo({meteo}));
+
+        const intermediates: Intermediate[] = [];
+        intermediates.push({type: 'start_list', key: 0, id: 0, distance: 0, name: 'Start list', short: '0 ' + raceInfo.lengthUnit});
+
+        data.racedef.forEach((def, index) => {
+            let name: string;
+            let type: 'start_list' | 'inter' | 'finish' | 'bonus_points';
+            let short: string;
+            switch (def[0]) {
+                case 'inter':
+                    type = 'inter';
+                    if (def[2] && def[2] > 0) {
+                        name = short = def[2] + ' ' + raceInfo.lengthUnit;
+                    } else {
+                        name = short = 'Inter ' + (index + 1);
+                    }
+                    break;
+                case 'bonuspoint':
+                    type = 'bonus_points';
+                    if (def[2] && def[2] > 0) {
+                        name = 'Bonus points at ' + def[2] + ' ' + raceInfo.lengthUnit;
+                        short = 'Bonus ' + def[2] + ' ' + raceInfo.lengthUnit;
+                    } else {
+                        name = short = 'Bonus points';
+                    }
+                    break;
+                case 'finish':
+                    type = 'finish';
+                    if (def[2] && def[2] > 0) {
+                        name = 'Finish ' + def[2] + ' ' + raceInfo.lengthUnit;
+                        short = def[2] + ' ' + raceInfo.lengthUnit;
+                    } else {
+                        name = short = 'Finish';
+                    }
+                    break;
+                default:
+                    type = 'inter';
+                    if (def[2] && def[2] > 0) {
+                        name = short = def[2] + ' ' + raceInfo.lengthUnit;
+                    } else {
+                        name = short = 'Inter ' + (index + 1);
+                    }
+                    break;
+            }
+
+            intermediates.push({key: index + 1, id: def[1], distance: def[2], name, short, type});
+        });
+
+        const racers = [];
+        const startList: { [bib: number]: StartListEntry } = {};
+        for (let i = 0; i < data.racers.length; i++) {
+            const racer = data.racers[i];
+            if (racer !== null) {
+                racers.push({
+                    id: racer[0],
+                    bib: racer[1],
+                    firstName: fixEncoding(racer[3].trim()),
+                    lastName: toTitleCase(fixEncoding(racer[2].trim())),
+                    nsa:  nationalities[racer[4]] || racer[4],
+                    isFavorite: false,
+                    color: racer[5]
+                });
+            }
+        }
+
+        const results = [];
+
+        for (let i = 0; i < data.startlist.length; i++) {
+            if (data.startlist[i] !== null) {
+                startList[data.startlist[i][0]] = {
+                    racer: data.startlist[i][0],
+                    status: statusMap[data.startlist[i][1]] || data.startlist[i][1] || '',
+                    order: i + 1
+                };
+                switch (data.startlist[i][1]) {
+                    case 'ral':
+                    case 'lapped':
+                    case 'dnf':
+                    case 'dq':
+                    case 'dsq':
+                    case 'dns':
+                        results.push({
+                                status: statusMap[data.startlist[i][1]] || data.startlist[i][1] || '',
+                                intermediate: 99,
+                                racer: data.startlist[i][0],
+                                time: statusToTimeMap[data.startlist[i][1]]
+                            }
+                        );
+                        break;
+                }
+            }
+        }
+
+        for (let i = 0; i < data.result.length; i++) {
+            const res = data.result[i];
+            if (res !== null) {
+                for (let j = 0; j < res.length; j++) {
+                    if (res[j]) {
+                        results.push({status: '', intermediate: data.racedef[j][1], racer: i, time: res[j]});
+                    }
+                }
+            }
+        }
+
+        actions.push(initialize({
+            intermediates,
+            racers,
+            startList,
+            results
+        }));
+
+        this.initialized = true;
+
+        return actions;
+    }
+
+    private parseUpdate(data: Update): Action[] {
+        const actions: Action[] = [];
+        const events: FisEvent[] = [];
+        let reload = false;
+        let stopUpdating = false;
+
+        if (data.events) {
+            data.events.forEach((event) => {
+                switch (event[0]) {
+                    case 'inter':
+                    case 'bonuspoint':
+                        events.push({
+                            type: 'register_result',
+                            payload: {status: '', intermediate: event[3], racer: event[2], time: event[4]}
+                        });
+                        break;
+                    case 'finish':
+                        events.push({
+                            type: 'register_result',
+                            payload: {status: '', intermediate: event[3], racer: event[2], time: event[4]}
+                        });
+                        events.push({
+                            type: 'set_status',
+                            payload: {id: event[2], status: statusMap[event[0]]}
+                        });
+                        break;
+                    case 'dnf':
+                    case 'dns':
+                    case 'dq':
+                    case 'ral':
+                    case 'lapped':
+                        events.push({
+                            type: 'register_result',
+                            payload: {
+                                status: statusMap[event[0]],
+                                intermediate: 99,
+                                racer: event[2],
+                                time: statusToTimeMap[event[0]]
+                            }
+                        });
+                        events.push({
+                            type: 'set_status',
+                            payload: {id: event[2], status: statusMap[event[0]]}
+                        });
+                        break;
+                    case 'q':
+                    case 'nq':
+                    case 'lucky':
+                    case 'ff':
+                    case 'start':
+                    case 'nextstart':
+                        events.push({
+                            type: 'set_status',
+                            payload: {id: event[2], status: statusMap[event[0]]}
+                        });
+                        break;
+                    case 'meteo':
+                        actions.push(updateMeteo({meteo: {
+                                air_temperature: event[1],
+                                wind: event[2],
+                                weather: event[3],
+                                snow_condition: event[4],
+                                snow_temperature: event[5],
+                                humidity: event[6]
+                            }}));
+                        break;
+                    case 'message':
+                        actions.push(setRaceMessage({message: event[1]}));
+                        break;
+                    case 'reloadmain':
+                        reload = true;
+                        break;
+                    case 'official_result':
+                        stopUpdating = true;
+                        break;
+
+                    case 'palmier':
+                    case 'tds':
+                    case 'falsestart':
+                    case 'activeheat':
+                    default:
+                        console.log('Unknown event:', event);
+                        break;
+                }
+            });
+        }
+
+        if (events.length > 0) {
+            actions.push(update({
+                events, isEvent: true, timestamp: Date.now()
+            }));
+        }
+
+        if (reload) {
+            this.doc = 'main';
+        }
+
+        return actions;
     }
 
     public selectServer(): void {
@@ -171,7 +459,22 @@ export class FisConnectionService {
         this.baseURL = `http://${urlServer}/`;
     }
 
-    public loadPdf(doc: string): Observable<Action[]> {
-        return this._http.get<Action[]>(`${this.proxy}pdf.json?codex=${this.codex}&doc=${doc}`).pipe(timeout(this.TIMEOUT));
+    public loadPdf() {
+        return this._http.get<Action[]>(`${this.proxy}pdf.json?codex=${this.codex}&doc=SL`).pipe(
+            map((actions) => {
+                this.doc = 'update';
+                const times: any[] = [];
+                for (const ac of actions) {
+                    if (ac.type === '[Result] Register start times') {
+                        times.push((<any>ac).time);
+                    }
+                }
+
+                return batch({
+                    actions: [RaceActions.setPursuitTimes({times})],
+                    shouldDelay: DelayBehavior.NoDelay
+                });
+            })
+        );
     }
 }
