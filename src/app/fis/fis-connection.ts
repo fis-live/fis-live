@@ -13,7 +13,7 @@ import { RaceActions } from '../state/actions';
 import { batch } from '../state/actions/connection';
 import { setRaceMessage, updateMeteo, updateRaceInfo } from '../state/actions/info';
 import { initialize, update } from '../state/actions/race';
-import { DelayBehavior } from '../utils/queue';
+import { DelayBehavior } from '../utils/delayBy';
 import { unserialize } from '../utils/unserialize';
 
 import { nationalities, statusMap, statusToTimeMap } from './fis-constants';

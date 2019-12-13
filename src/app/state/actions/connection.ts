@@ -2,7 +2,7 @@ import { Action, createAction, props } from '@ngrx/store';
 
 import { Alert } from '../../models/alert';
 import { Race } from '../../models/race';
-import { DelayBehavior } from '../../utils/queue';
+import { DelayBehavior } from '../../utils/delayBy';
 
 export const loadServers = createAction(
     '[Connection] Load servers'
