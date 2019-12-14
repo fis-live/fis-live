@@ -58,7 +58,7 @@ const resultReducer = createReducer(
                     id: racer.bib,
                     status: entry.status || '',
                     racer: racer,
-                    marks: [{time: 0, status: entry.status || '', rank: entry.order || null, diffs: [0]}],
+                    marks: [{time: 0, status: entry.status || '', rank: entry.order || null, diffs: [maxVal]}],
                     notes: []
                 };
             } else {
@@ -271,6 +271,7 @@ export const createViewSelector = (view: View): OperatorFunction<State, ResultIt
                     if (view.diff !== null) {
                         const temp = row.marks[view.inter.key].diffs[view.diff.key];
                         const d = temp === null ? maxVal : temp;
+                        console.log(view, temp, state.standings[view.inter.key].bestDiff[view.diff.key]);
 
                         diff = {
                             display: d < maxVal ? formatTime(d, state.standings[view.inter.key].bestDiff[view.diff.key]) : '',
@@ -308,7 +309,7 @@ export const createViewSelector = (view: View): OperatorFunction<State, ResultIt
                         diff: diff,
                         name: {
                             display: row.racer.firstName + ' ' + row.racer.lastName,
-                            value: row.racer.lastName + ', ' + row.racer.firstName
+                            value: (row.racer.lastName + ', ' + row.racer.firstName).toLowerCase()
                         },
                         notes: row.notes,
                         classes: classes,
@@ -393,7 +394,7 @@ export const createViewSelector = (view: View): OperatorFunction<State, ResultIt
                         diff: {display: '', value: 0},
                         name: {
                             display: row.racer.firstName + ' ' + row.racer.lastName,
-                            value: row.racer.lastName + ', ' + row.racer.firstName
+                            value: (row.racer.lastName + ', ' + row.racer.firstName).toLowerCase()
                         },
                         notes: row.notes,
                         classes: classes,

@@ -315,8 +315,8 @@ export function updateResultMutably(state: State,
             state.standings[i].bestDiff[inter] = best;
         } else {
             entity.marks[i].diffs[inter] = getValidDiff(entity.marks[i].time, mark.time);
-            if (time < state.standings[i].bestDiff[inter]) {
-                state.standings[i].bestDiff[inter] = time;
+            if (entity.marks[i].diffs[inter] < state.standings[i].bestDiff[inter]) {
+                state.standings[i].bestDiff[inter] = entity.marks[i].diffs[inter];
             }
         }
 
