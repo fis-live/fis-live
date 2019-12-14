@@ -211,27 +211,27 @@ export function updateResultImmutably(
     };
 }
 
-export function registerResultMutably(state: State, draft: State,
+export function registerResultMutably(state: State,
                                       racer: number,
                                       time: number, inter: number,
                                       isBonus: boolean) {
-    const marks = draft.entities[racer].marks;
+    const marks = state.entities[racer].marks;
     const mark: Mark = {
         time,
         status: timeToStatusMap[time],
         rank: null,
         diffs: (new Array(inter)).fill(maxVal)
     };
-    const standing = draft.standings[inter];
+    const standing = state.standings[inter];
 
     if (marks.length < inter) {
         const t = (time < maxVal) ? maxVal * 6 : time;
 
         for (let i = 0; i < inter; i++) {
             if (marks[i] === undefined) {
-                marks[i] = {time: t, status: timeToStatusMap[time], rank: null, diffs: (new Array(i)).fill(maxVal)};
-                draft.standings[i].ids.push(racer);
-                draft.standings[i].version += 1;
+                marks[i] = {time: t, status: timeToStatusMap[t], rank: null, diffs: (new Array(i)).fill(maxVal)};
+                state.standings[i].ids.push(racer);
+                state.standings[i].version += 1;
             }
         }
     }
@@ -242,7 +242,7 @@ export function registerResultMutably(state: State, draft: State,
             const t = state.entities[id].marks[inter].time;
             if (t < maxVal) {
                 if ((time < t && !isBonus) || (time > t && isBonus)) {
-                    draft.entities[id].marks[inter].rank! += 1;
+                    state.entities[id].marks[inter].rank! += 1;
                 } else if ((time > t && !isBonus) || (time < t && isBonus)) {
                     rank += 1;
                 }

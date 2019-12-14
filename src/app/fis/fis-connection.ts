@@ -2,7 +2,7 @@ import { HttpClient, HttpErrorResponse, HttpParams } from '@angular/common/http'
 import { Injectable } from '@angular/core';
 import { Action } from '@ngrx/store';
 import { EMPTY, Observable, of, throwError, timer } from 'rxjs';
-import { catchError, map, repeat, retry, switchMap, timeout } from 'rxjs/operators';
+import { catchError, filter, map, repeat, retry, switchMap, timeout } from 'rxjs/operators';
 
 import { FisServer } from '../models/fis-server';
 import { Intermediate } from '../models/intermediate';
@@ -103,7 +103,8 @@ export class FisConnectionService {
             responseType: 'text',
             params: new HttpParams().set('i', this.getQueryString())
         }).pipe(
-            map(result => this.parse(result))
+            map(result => this.parse(result)),
+            filter(action => action.actions.length > 0)
         );
     }
 

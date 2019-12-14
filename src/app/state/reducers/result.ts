@@ -80,7 +80,7 @@ const resultReducer = createReducer(
             if (state.entities[racer].marks.length > inter) {
                 updateResultMutably(state, racer, time, inter, isBonus);
             } else {
-                registerResultMutably(state, state, racer, time, inter, isBonus);
+                registerResultMutably(state, racer, time, inter, isBonus);
             }
         }
 
@@ -138,7 +138,7 @@ const resultReducer = createReducer(
                     if (state.entities[racer].marks.length > inter) {
                         updateResultMutably(draft, racer, time, inter, isBonus);
                     } else {
-                        registerResultMutably(state, draft, racer, time, inter, isBonus);
+                        registerResultMutably(draft, racer, time, inter, isBonus);
                     }
 
                     if (!isBonus && isEvent && time < maxVal) {
@@ -271,7 +271,6 @@ export const createViewSelector = (view: View): OperatorFunction<State, ResultIt
                     if (view.diff !== null) {
                         const temp = row.marks[view.inter.key].diffs[view.diff.key];
                         const d = temp === null ? maxVal : temp;
-                        console.log(view, temp, state.standings[view.inter.key].bestDiff[view.diff.key]);
 
                         diff = {
                             display: d < maxVal ? formatTime(d, state.standings[view.inter.key].bestDiff[view.diff.key]) : '',
