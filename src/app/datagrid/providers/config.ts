@@ -5,6 +5,7 @@ import { map } from 'rxjs/operators';
 
 import { KeysOfType, Option, OptionSelector } from '../../core/select/option-selector';
 import { Intermediate } from '../../models/intermediate';
+import { ColumnDef } from '../../models/table';
 import { AppState, selectAllIntermediates } from '../../state/reducers';
 
 export interface View {
@@ -20,6 +21,7 @@ export interface Config {
     isStartList: boolean;
     displayedColumns: string[];
     breakpoint: string;
+    dynamicColumns: ColumnDef[];
 }
 
 const defaultConfig: Config = {
@@ -32,7 +34,8 @@ const defaultConfig: Config = {
     },
     isStartList: true,
     displayedColumns: ['rank', 'bib', 'name', 'time', 'nsa', 'diff'],
-    breakpoint: 'large'
+    breakpoint: 'large',
+    dynamicColumns: []
 };
 
 @Injectable()
@@ -53,7 +56,21 @@ export class DatagridConfig implements OptionSelector<View, Intermediate>, OnDes
 
         this._subscription = this._source.subscribe((values) => {
             const view = {...this._internalConfig.view};
-            this._dynamicColumns = values.filter(inter => inter.type !== 'bonus_points').map((inter) => 'inter' + inter.key);
+            const dynamicColumns = [];
+            this._dynamicColumns = [];
+            for (const intermediate of values) {
+                if (intermediate.type === 'bonus_points') {
+                    continue;
+                }
+
+                dynamicColumns.push({
+                    id: 'inter' + intermediate.key,
+                    sortBy: 'marks.' + intermediate.key + '.value',
+                    name: intermediate.short,
+                    key: intermediate.key
+                });
+                this._dynamicColumns.push('inter' + intermediate.key);
+            }
 
             if (view.mode === 'normal') {
                 if (values.length > 0 && view.inter !== null) {
@@ -72,6 +89,7 @@ export class DatagridConfig implements OptionSelector<View, Intermediate>, OnDes
                 this._internalConfig = {
                     ...this._internalConfig,
                     view,
+                    dynamicColumns,
                     isStartList: view.inter == null || view.inter.key === 0
                 };
                 this._config.next(this._internalConfig);
@@ -79,6 +97,7 @@ export class DatagridConfig implements OptionSelector<View, Intermediate>, OnDes
             } else {
                 this._internalConfig = {
                     ...this._internalConfig,
+                    dynamicColumns,
                     displayedColumns: ['order', 'bib', 'name'].concat(this._dynamicColumns.slice(1))
                 };
 

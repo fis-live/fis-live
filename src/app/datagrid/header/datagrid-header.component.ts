@@ -6,6 +6,7 @@ import { map } from 'rxjs/operators';
 import { Racer } from '../../models/racer';
 import { ResultItem } from '../../models/table';
 import { AppState, selectAllRacers } from '../../state/reducers';
+import { guid } from '../../utils/utils';
 import { Config, DatagridConfig } from '../providers/config';
 
 @Component({
@@ -14,7 +15,7 @@ import { Config, DatagridConfig } from '../providers/config';
     changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class DatagridHeader {
-    @Input() public dgId: string = '';
+    public readonly guid = guid();
 
     public readonly racers$: Observable<Racer[]>;
     public readonly config$: Observable<Config> = this._config.getConfig();
@@ -25,8 +26,8 @@ export class DatagridHeader {
         return self.indexOf(value) === index;
     }
 
-    public filterByName = (data: ResultItem) => data.name.value;
-    public filterByNsa = (data: ResultItem) => data.nsa;
+    public filterByName = (data: ResultItem) => data.racer.value;
+    public filterByNsa = (data: ResultItem) => data.racer.nsa;
 
     constructor(private _config: DatagridConfig, store: Store<AppState>) {
         this.racers$ = store.pipe(select(selectAllRacers));

@@ -1,3 +1,5 @@
+import { Racer } from './racer';
+
 export interface Prop<T> {
     value: T;
     display: T | string;
@@ -17,14 +19,11 @@ export interface ColumnDef {
 }
 
 export interface ResultItem {
-    id: number;
-    bib: number;
-    nsa: string;
+    racer: Racer;
     time: Prop<number> | Prop<string>;
     diff: Prop<number>;
     rank: number | null;
     state: string;
-    name: Prop<string>;
     notes: string[];
     classes: string[];
     marks: (Prop<number> | Prop<string>)[];

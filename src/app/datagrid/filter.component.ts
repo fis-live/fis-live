@@ -63,7 +63,7 @@ export class FilterComponent extends AbstractPopover implements Filter, AfterVie
     }
 
     public accepts(item: any): boolean {
-        return this.input === null || item.name.value.toLowerCase().indexOf(this.input.toLowerCase()) >= 0;
+        return this.input === null || item.racer.value.indexOf(this.input.toLowerCase()) >= 0;
     }
 
     isActive(): boolean {

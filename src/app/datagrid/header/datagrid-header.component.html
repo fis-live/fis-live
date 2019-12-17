@@ -14,15 +14,15 @@
 
     <ng-template #analysis>
         <div class="radio btn">
-                <input type="radio" name="btn-group-zero-{{ dgId }}" id="btn-total-{{ dgId }}" value="total"
+                <input type="radio" name="btn-group-zero-{{ guid }}" id="btn-total-{{ guid }}" value="total"
                        [ngModel]="config.view.display" (ngModelChange)="setDisplayMode('total')">
-            <label for="btn-total-{{ dgId }}" style="min-height: 0;">Total</label>
+            <label for="btn-total-{{ guid }}" style="min-height: 0;">Total</label>
         </div>
 
         <div class="radio btn">
-                <input type="radio" name="btn-group-zero-{{ dgId }}" id="btn-diff-{{ dgId }}" value="diff"
+                <input type="radio" name="btn-group-zero-{{ guid }}" id="btn-diff-{{ guid }}" value="diff"
                        [ngModel]="config.view.display" (ngModelChange)="setDisplayMode('diff')">
-            <label for="btn-diff-{{ dgId }}" style="min-height: 0;">Diff</label>
+            <label for="btn-diff-{{ guid }}" style="min-height: 0;">Diff</label>
         </div>
     </ng-template>
 </div>
@@ -47,9 +47,9 @@
 
 <div style="justify-content: end;flex: 0 0 auto;">
     <div class="clr-toggle-wrapper" *ngIf="config.breakpoint === 'large'">
-    	<input type="checkbox" id="toggle-{{ dgId }}" name="toggle-basic" class="clr-toggle"
-    		[ngModel]="config.view.mode === 'analysis'" (ngModelChange)="toggleMode($event)">
-        <label for="toggle-{{ dgId }}">All</label>
+    	<input type="checkbox" id="toggle-{{ guid }}" name="toggle-basic" class="clr-toggle"
+               [ngModel]="config.view.mode === 'analysis'" (ngModelChange)="toggleMode($event)">
+        <label for="toggle-{{ guid }}">All</label>
     </div>
 </div>
 <!--app-dg-settings class="column-switch-wrapper"></app-dg-settings-->

@@ -1,11 +1,8 @@
 import { animate, group, keyframes, query, style, transition, trigger } from '@angular/animations';
 import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
-import { select, Store } from '@ngrx/store';
 import { Observable } from 'rxjs';
-import { map } from 'rxjs/operators';
 
-import { ColumnDef, ResultItem } from '../models/table';
-import { AppState, selectAllIntermediates } from '../state/reducers';
+import { ResultItem } from '../models/table';
 
 import { Config } from './providers/config';
 import { DatagridState } from './providers/datagrid-state';
@@ -55,23 +52,13 @@ import { DatagridState } from './providers/datagrid-state';
 })
 export class DatagridComponent {
     @Input() public config!: Config;
+    public readonly rows$: Observable<ResultItem[]>;
 
-    public readonly intermediates$: Observable<ColumnDef[]>;
-
-    constructor(public dataSource: DatagridState, store: Store<AppState>) {
-        this.intermediates$ = store.pipe(
-            select(selectAllIntermediates),
-            map(values => values.filter(inter => inter.type !== 'bonus_points').map(inter => {
-                return {
-                    id: 'inter' + inter.key,
-                    sortBy: 'marks.' + inter.key + '.value',
-                    name: inter.short,
-                    key: inter.key
-                };
-            })));
+    constructor(dataSource: DatagridState) {
+        this.rows$ = dataSource.connect();
     }
 
     public track(index: number, item: ResultItem): number {
-        return item.bib;
+        return item.racer.bib;
     }
 }

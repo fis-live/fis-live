@@ -1,3 +1,5 @@
+import { Status } from '../fis/fis-constants';
+
 export interface Racer {
     id: number;
     bib: number;
@@ -6,6 +8,9 @@ export interface Racer {
     nsa: string;
     color: string;
     isFavorite: boolean;
+    hasYellowCard: boolean;
+    display: string;
+    value: string;
 }
 
 export interface Standing {
@@ -13,13 +18,23 @@ export interface Standing {
     ids: number[];
     leader: number;
     bestDiff: number[];
+    latestBibs: number[];
 }
 
 export interface Mark {
     time: number;
-    status: string;
+    status: Status;
     rank: number | null;
     diffs: number[];
+}
+
+export enum Note {
+    Qualified,
+    NotQualified,
+    LuckyLoser,
+    WaveStart,
+    PhotoFinish,
+    YellowCard
 }
 
 export interface RacerData {

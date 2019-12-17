@@ -50,7 +50,7 @@
     <!--</tbody>-->
 <!--</table>-->
 
-<table class="datagrid {{ config.breakpoint }}" cdk-table [dataSource]="dataSource.connect() | async" [trackBy]="track">
+<table class="datagrid {{ config.breakpoint }}" cdk-table [dataSource]="rows$ | async" [trackBy]="track">
 
     <!-- Order Definition -->
     <ng-container cdkColumnDef="order">
@@ -71,22 +71,23 @@
     <!-- Bib Definition -->
     <ng-container cdkColumnDef="bib">
         <th cdk-header-cell *cdkHeaderCellDef>
-            <div appSort="bib">Bib</div>
+            <div appSort="racer.bib">Bib</div>
         </th>
-        <td class="bib" cdk-cell *cdkCellDef="let row"><div><span class="badge">{{ row.bib }}</span></div></td>
+        <td class="bib" cdk-cell *cdkCellDef="let row"><div><span class="badge">{{ row.racer.bib }}</span></div></td>
     </ng-container>
 
     <!-- Name Definition -->
     <ng-container cdkColumnDef="name">
         <th class="filterable" cdk-header-cell *cdkHeaderCellDef>
-            <div appSort="name.value">Name</div>
+            <div appSort="racer.value">Name</div>
             <app-filter></app-filter>
         </th>
         <td cdk-cell *cdkCellDef="let row">
             <div class="small_only flag">
-                <a style="color: inherit" target="_blank" href="https://www.fis-ski.com/DB/general/athlete-biography.html?sectorcode=CC&fiscode={{ row.id }}">
-                    {{ row.name.display }}
+                <a style="color: inherit" target="_blank" href="https://www.fis-ski.com/DB/general/athlete-biography.html?sectorcode=CC&fiscode={{ row.racer.id }}">
+                    {{ row.racer.display }}
                 </a>
+                <clr-icon *ngIf="row.racer.hasYellowCard" class="yellow-card" shape="yc"></clr-icon>
             </div>
         </td>
     </ng-container>
@@ -102,9 +103,9 @@
     <!-- Nsa Definition -->
     <ng-container cdkColumnDef="nsa">
         <th cdk-header-cell *cdkHeaderCellDef>
-            <div appSort="nsa">NSA</div>
+            <div appSort="racer.nsa">NSA</div>
         </th>
-        <td cdk-cell *cdkCellDef="let row"><div class="flag">{{ row.nsa }}</div></td>
+        <td cdk-cell *cdkCellDef="let row"><div class="flag">{{ row.racer.nsa }}</div></td>
     </ng-container>
 
     <!-- Diff Definition -->
@@ -117,9 +118,9 @@
 
 
     <!-- Dynamic definitions -->
-    <ng-container [cdkColumnDef]="col.id" *ngFor="let col of intermediates$ | async">
+    <ng-container [cdkColumnDef]="col.id" *ngFor="let col of config.dynamicColumns">
         <th cdk-header-cell *cdkHeaderCellDef><div [appSort]="col.sortBy">{{ col.name }}</div></th>
-        <td class="time" cdk-cell *cdkCellDef="let row"><div>{{ row.marks[col.key].display }}</div> </td>
+        <td class="time" cdk-cell *cdkCellDef="let row"><div>{{ row.marks[col.key]?.display }}</div> </td>
     </ng-container>
 
     <thead>

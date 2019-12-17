@@ -276,33 +276,42 @@ export const SnowConditions: {[short: string]: string} = {
 
 export const maxVal = 1000000000;
 
-export const statusMap: {[status: string]: string} = {
-    'start': 'Started',
-    'finish': 'Finished',
-    'lapped': 'Lapped',
-    'nextstart': 'Next to start',
-    'ral': 'RAL',
-    'dnf': 'DNF',
-    'dq': 'DQ',
-    'dsq': 'DQ',
-    'dns': 'DNS'
+export enum Status {
+    Default = 'Default',
+    Started = 'Started',
+    NextStart = 'Next to start',
+    Finished = 'Finished',
+    RAL = 'RAL',
+    Lapped = 'Lapped',
+    DNF = 'DNF',
+    DQ = 'DQ',
+    DNS = 'DNS',
+    NA = 'N/A'
+}
+
+export const timePenalty = {
+    [Status.Default]: 0,
+    [Status.Started]: 0,
+    [Status.NextStart]: 0,
+    [Status.Finished]: 0,
+    [Status.RAL]: maxVal,
+    [Status.Lapped]: maxVal * 2,
+    [Status.DNF]: maxVal * 3,
+    [Status.DQ]: maxVal * 4,
+    [Status.DNS]: maxVal * 5,
+    [Status.NA]: maxVal * 6
 };
 
-export const timeToStatusMap: {[time: number]: string} = {
-    [maxVal + 1]: 'RAL',
-    [maxVal * 2]: 'Lapped',
-    [maxVal * 3]: 'DNF',
-    [maxVal * 4]: 'DQ',
-    [maxVal * 5]: 'DNS',
-    [maxVal * 6]: 'N/A'
-};
+export const isRanked = (status: Status) => timePenalty[status] <= maxVal;
 
-export const statusToTimeMap: {[status: string]: number} = {
-    'ral':      maxVal + 1,
-    'lapped':   maxVal * 2,
-    'dnf':      maxVal * 3,
-    'dq':       maxVal * 4,
-    'dsq':      maxVal * 4,
-    'dns':      maxVal * 5,
-    'N/A':      maxVal * 6
+export const statusMap: {[status: string]: Status} = {
+    'start': Status.Started,
+    'finish': Status.Finished,
+    'lapped': Status.Lapped,
+    'nextstart': Status.NextStart,
+    'ral': Status.RAL,
+    'dnf': Status.DNF,
+    'dq': Status.DQ,
+    'dsq': Status.DQ,
+    'dns': Status.DNS
 };

@@ -1,8 +1,8 @@
 import { HttpClient, HttpErrorResponse, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Action } from '@ngrx/store';
-import { EMPTY, Observable, of, throwError, timer } from 'rxjs';
-import { catchError, filter, map, repeat, retry, switchMap, timeout } from 'rxjs/operators';
+import { defer, EMPTY, Observable, of, throwError, timer } from 'rxjs';
+import { catchError, map, mergeMap, repeat, retry, switchMap } from 'rxjs/operators';
 
 import { FisServer } from '../models/fis-server';
 import { Intermediate } from '../models/intermediate';
@@ -15,9 +15,9 @@ import { setRaceMessage, updateMeteo, updateRaceInfo } from '../state/actions/in
 import { initialize, update } from '../state/actions/race';
 import { DelayBehavior } from '../utils/delayBy';
 import { unserialize } from '../utils/unserialize';
+import { fixEncoding, toTitleCase } from '../utils/utils';
 
-import { nationalities, statusMap, statusToTimeMap } from './fis-constants';
-import { fixEncoding, toTitleCase } from './fis-parser';
+import { nationalities, Status, statusMap } from './fis-constants';
 import { FisEvent, Main, ServerList, StartListEntry, Update } from './models';
 
 @Injectable({
@@ -41,9 +41,7 @@ export class FisConnectionService {
 
     private server_list: FisServer[] = [];
 
-
     private readonly serverListUrl = 'http://live.fis-ski.com/general/serverList.json';
-    private readonly timeout = 10000;
 
     constructor(private _http: HttpClient) {
         const d = new Date();
@@ -75,10 +73,9 @@ export class FisConnectionService {
     public poll(codex: number | null) {
         this.initialize(codex);
 
-        return of(null).pipe(
-            switchMap(() => timer(this.delay)),
+        return defer(() => timer(this.delay)).pipe(
             switchMap(() => this.getHttpRequest()),
-            timeout(this.timeout),
+            mergeMap((result) => this.parse(result)),
             catchError(error => this.handleError(error)),
             retry(10),
             repeat()
@@ -95,46 +92,47 @@ export class FisConnectionService {
                 url = `${this.baseURL}mobile/cc-${this.codex}/updt${this.version}.xml`;
                 break;
             case 'pdf':
-                return this.loadPdf();
+                return this._http.get<Action[]>(`${this.proxy}pdf.json?codex=${this.codex}&doc=SL`);
         }
 
         // @ts-ignore
         return this._http.get(this.proxy + url, {
             responseType: 'text',
             params: new HttpParams().set('i', this.getQueryString())
-        }).pipe(
-            map(result => this.parse(result)),
-            filter(action => action.actions.length > 0)
-        );
+        });
     }
 
-    private parse(result: string) {
-        this.interval = Date.now() - this.startRequest;
-        const data = unserialize(result.slice(4, -5)) as Main | Update;
-        if (!data.live || isNaN(data.live[1]) || isNaN(data.live[0])) {
-            throw new Error('No live information');
+    private parse(result: string | Action[]) {
+        let shouldDelay = DelayBehavior.Delay;
+        let actions: Action[] = [];
+        if (typeof result === 'string') {
+            this.interval = Date.now() - this.startRequest;
+            const data = unserialize(result.slice(4, -5)) as Main | Update;
+            if (!data.live || isNaN(data.live[1]) || isNaN(data.live[0])) {
+                throw new Error('No live information');
+            }
+
+            if (this.doc === 'main') {
+                this.doc = 'pdf';
+                this.version = data.live[1];
+                this.updateCount++;
+                this.errorCount = 0;
+                shouldDelay = this.initialized ? DelayBehavior.Delay : DelayBehavior.Clear;
+                actions = this.parseMain(<Main> data);
+            } else {
+                this.delay = data.live[0] * 1000;
+                this.version = data.live[1];
+                this.updateCount++;
+                this.errorCount = 0;
+                actions = this.parseUpdate(<Update> data);
+            }
+        } else {
+            this.doc = 'update';
+            shouldDelay = DelayBehavior.NoDelay;
+            actions = this.parsePdf(result);
         }
 
-        if (this.doc === 'main') {
-            this.doc = 'pdf';
-            this.version = data.live[1];
-            this.updateCount++;
-            this.errorCount = 0;
-            const shouldDelay = this.initialized;
-            return batch({
-                actions: this.parseMain(<Main> data),
-                shouldDelay: shouldDelay ? DelayBehavior.Delay : DelayBehavior.Clear
-            });
-        } else {
-            this.delay = data.live[0] * 1000;
-            this.version = data.live[1];
-            this.updateCount++;
-            this.errorCount = 0;
-            return batch({
-                actions: this.parseUpdate(<Update> data),
-                shouldDelay: DelayBehavior.Delay
-            });
-        }
+        return actions.length > 0 ? of(batch({ actions, shouldDelay })) : EMPTY;
     }
 
     private parseServerList(result: ServerList): FisServer[] {
@@ -179,6 +177,17 @@ export class FisConnectionService {
                     return throwError(errMsg);
                 })
             );
+    }
+
+    private parsePdf(actions: Action[]): Action[] {
+        const times: any[] = [];
+        for (const ac of actions) {
+            if (ac.type === '[Result] Register start time') {
+                times.push((<any>ac).time);
+            }
+        }
+
+        return times.length > 0 ? [RaceActions.setPursuitTimes({times})] : [];
     }
 
     private parseMain(data: Main): Action[] {
@@ -272,13 +281,19 @@ export class FisConnectionService {
         for (let i = 0; i < data.racers.length; i++) {
             const racer = data.racers[i];
             if (racer !== null) {
+                const firstName = fixEncoding(racer[3].trim());
+                const lastName = toTitleCase(fixEncoding(racer[2].trim()));
+
                 racers.push({
                     id: racer[0],
                     bib: racer[1],
-                    firstName: fixEncoding(racer[3].trim()),
-                    lastName: toTitleCase(fixEncoding(racer[2].trim())),
+                    firstName,
+                    lastName,
+                    display: firstName + ' ' + lastName,
+                    value: (lastName + ', ' + firstName).toLowerCase(),
                     nsa:  nationalities[racer[4]] || racer[4],
                     isFavorite: false,
+                    hasYellowCard: racer[6] === 'yc',
                     color: racer[5]
                 });
             }
@@ -301,10 +316,10 @@ export class FisConnectionService {
                     case 'dsq':
                     case 'dns':
                         results.push({
-                                status: statusMap[data.startlist[i][1]] || data.startlist[i][1] || '',
+                                status: statusMap[data.startlist[i][1]],
                                 intermediate: 99,
                                 racer: data.startlist[i][0],
-                                time: statusToTimeMap[data.startlist[i][1]]
+                                time: 0
                             }
                         );
                         break;
@@ -317,7 +332,7 @@ export class FisConnectionService {
             if (res !== null) {
                 for (let j = 0; j < res.length; j++) {
                     if (res[j]) {
-                        results.push({status: '', intermediate: data.racedef[j][1], racer: i, time: res[j]});
+                        results.push({status: Status.Default, intermediate: data.racedef[j][1], racer: i, time: res[j]});
                     }
                 }
             }
@@ -348,13 +363,13 @@ export class FisConnectionService {
                     case 'bonuspoint':
                         events.push({
                             type: 'register_result',
-                            payload: {status: '', intermediate: event[3], racer: event[2], time: event[4]}
+                            payload: {status: Status.Default, intermediate: event[3], racer: event[2], time: event[4]}
                         });
                         break;
                     case 'finish':
                         events.push({
                             type: 'register_result',
-                            payload: {status: '', intermediate: event[3], racer: event[2], time: event[4]}
+                            payload: {status: Status.Finished, intermediate: event[3], racer: event[2], time: event[4]}
                         });
                         events.push({
                             type: 'set_status',
@@ -372,7 +387,7 @@ export class FisConnectionService {
                                 status: statusMap[event[0]],
                                 intermediate: 99,
                                 racer: event[2],
-                                time: statusToTimeMap[event[0]]
+                                time: 0
                             }
                         });
                         events.push({
@@ -405,6 +420,7 @@ export class FisConnectionService {
                         actions.push(setRaceMessage({message: event[1]}));
                         break;
                     case 'reloadmain':
+                    case 'reloadflash':
                         reload = true;
                         break;
                     case 'official_result':
@@ -458,24 +474,5 @@ export class FisConnectionService {
         }
 
         this.baseURL = `http://${urlServer}/`;
-    }
-
-    public loadPdf() {
-        return this._http.get<Action[]>(`${this.proxy}pdf.json?codex=${this.codex}&doc=SL`).pipe(
-            map((actions) => {
-                this.doc = 'update';
-                const times: any[] = [];
-                for (const ac of actions) {
-                    if (ac.type === '[Result] Register start times') {
-                        times.push((<any>ac).time);
-                    }
-                }
-
-                return batch({
-                    actions: [RaceActions.setPursuitTimes({times})],
-                    shouldDelay: DelayBehavior.NoDelay
-                });
-            })
-        );
     }
 }

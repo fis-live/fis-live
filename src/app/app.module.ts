@@ -58,7 +58,7 @@ import { ScrollbarDirective } from './utils/scrollbar.directive';
                 strictStateImmutability: true,
                 strictActionImmutability: true,
                 strictStateSerializability: true,
-                strictActionSerializability: true,
+                strictActionSerializability: true
             },
             metaReducers: metaReducers
         }),

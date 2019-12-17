@@ -7,6 +7,12 @@ table {
     z-index: 2;
 }
 
+.yellow-card {
+    float: right;
+    margin-top: 4px;
+    width: 20px;
+}
+
 .datagrid {
     font-size: 0.9em;
     width: 100%;
@@ -106,9 +112,9 @@ table {
         background-color: #FFE5BC;
     }
 
-    tr.new > td {
-        transition: background-color 2s ease;
-    }
+    //tr.new > td {
+    //    transition: background-color 2s ease;
+    //}
 
     tr.leader .time {
         font-weight: 700;
@@ -222,7 +228,7 @@ table {
                 box-shadow: 0 1px 3px rgba($clr-dark-gray, 0.25);
                 border-radius: $clr-default-borderradius;
                 font-weight: normal;
-                z-index: map-get($clr-layers, dropdown-menu);
+                z-index: 3;
 
                 .datagrid-filter-close-wrapper {
                     text-align: right;

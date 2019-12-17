@@ -4,16 +4,18 @@ import { OperatorFunction, pipe } from 'rxjs';
 import { filter, map } from 'rxjs/operators';
 
 import { View } from '../../datagrid/providers/config';
-import { maxVal } from '../../fis/fis-constants';
+import { isRanked, maxVal, Status as StatusEnum, timePenalty } from '../../fis/fis-constants';
 import { Result, Status } from '../../fis/models';
 import { Intermediate } from '../../models/intermediate';
 import { Event, RacerData, Standing } from '../../models/racer';
 import { Prop, ResultItem } from '../../models/table';
+import { formatTime, guid } from '../../utils/utils';
 import { RaceActions } from '../actions';
 
 import { getValidDiff, registerResultMutably, updateResultMutably } from './helpers';
 
 export interface State {
+    id: string;
     ids: number[];
     entities: {[id: number]: RacerData};
     intermediates: Intermediate[];
@@ -22,6 +24,7 @@ export interface State {
 }
 
 export const initialState: State = {
+    id: '',
     ids: [],
     entities: {},
     intermediates: [],
@@ -33,6 +36,7 @@ const resultReducer = createReducer(
     initialState,
     on(RaceActions.initialize, (_, action) => {
         const state: State = {
+            id: guid(),
             ids: [],
             entities: {},
             intermediates: action.intermediates,
@@ -45,6 +49,7 @@ const resultReducer = createReducer(
                 version: 0,
                 ids: [],
                 leader: maxVal,
+                latestBibs: [],
                 bestDiff: (new Array(Math.max(intermediate.key, 1))).fill(maxVal)
             };
         });
@@ -58,7 +63,7 @@ const resultReducer = createReducer(
                     id: racer.bib,
                     status: entry.status || '',
                     racer: racer,
-                    marks: [{time: 0, status: entry.status || '', rank: entry.order || null, diffs: [maxVal]}],
+                    marks: [{time: 0, status: StatusEnum.Default, rank: entry.order || null, diffs: [maxVal]}],
                     notes: []
                 };
             } else {
@@ -73,14 +78,10 @@ const resultReducer = createReducer(
         }
 
         for (const result of action.results) {
-            const inter = result.intermediate === 99 ? state.intermediates.length - 1 : result.intermediate;
-            const time = result.time || maxVal * 6;
-            const racer = result.racer;
-            const isBonus = state.intermediates[inter].type === 'bonus_points';
-            if (state.entities[racer].marks.length > inter) {
-                updateResultMutably(state, racer, time, inter, isBonus);
+            if (state.entities[result.racer].marks.length > result.intermediate) {
+                updateResultMutably(state, result);
             } else {
-                registerResultMutably(state, racer, time, inter, isBonus);
+                registerResultMutably(state, result);
             }
         }
 
@@ -96,7 +97,7 @@ const resultReducer = createReducer(
             leader = Math.min(leader, time.time);
             const l = state.entities[time.racer].marks.length;
             for (let i = 1; i < l; i++) {
-                const t = getValidDiff(marks[i].time, time.time);
+                const t = getValidDiff(marks[i], marks[0]);
                 marks[i].diffs[0] = t;
                 bestDiffs[i] = Math.min(bestDiffs[i] || maxVal, t);
             }
@@ -114,34 +115,32 @@ const resultReducer = createReducer(
         standing.bestDiff = [leader];
     })),
     on(RaceActions.update, (state, action) => produce(state, draft => {
-        const { timestamp, isEvent } = action;
+        const { timestamp } = action;
 
         for (const event of action.events) {
             switch (event.type) {
                 case 'register_result': {
                     const result = event.payload as Result;
                     const inter = result.intermediate === 99 ? state.intermediates.length - 1 : result.intermediate;
-                    const time = result.time || maxVal * 6;
-                    const racer = result.racer;
                     const isBonus = state.intermediates[inter].type === 'bonus_points';
 
                     const _event = {
-                        racer: state.entities[racer].racer.firstName[0] + '. ' + state.entities[racer].racer.lastName,
+                        racer: state.entities[result.racer].racer.firstName[0] + '. ' + state.entities[result.racer].racer.lastName,
                         inter: state.intermediates[inter].name,
                         status: '',
                         rank: 0,
-                        diff: formatTime(time, state.standings[inter].leader),
+                        diff: formatTime(result.time, state.standings[inter].leader),
                         timestamp: timestamp,
                         interId: inter
                     };
 
-                    if (state.entities[racer].marks.length > inter) {
-                        updateResultMutably(draft, racer, time, inter, isBonus);
+                    if (state.entities[result.racer].marks.length > inter) {
+                        updateResultMutably(draft, result);
                     } else {
-                        registerResultMutably(draft, racer, time, inter, isBonus);
+                        registerResultMutably(draft, result);
                     }
 
-                    if (!isBonus && isEvent && time < maxVal) {
+                    if (!isBonus && isRanked(result.status)) {
                         draft.events = [...draft.events.slice(Math.max(draft.events.length - 30, 0)), _event];
                     }
                 }
@@ -181,59 +180,206 @@ export const getAllRacers = createSelector(
     }
 );
 
-const formatTime = (value: number | string, zero: number | null): string => {
-    if (typeof value === 'string') {
-        return value;
+function prepareStartList(state: State): ResultItem[] {
+    const standing = state.standings[0];
+    const rows = [];
+    for (const id of standing.ids) {
+        const entity = state.entities[id];
+        const mark = entity.marks[0];
+        const time = mark.diffs[0];
+
+        const classes = [entity.racer.nsa.toLowerCase(), 'normal'];
+
+        if (entity.racer.isFavorite) {
+            classes.push('favorite');
+        }
+
+        if (entity.racer.color) {
+            classes.push(entity.racer.color);
+        }
+
+        rows.push({
+            state: 'normal',
+            racer: entity.racer,
+            time: { display: entity.status, value: entity.status },
+            rank: mark.rank,
+            diff: {
+                display: time < maxVal ? formatTime(time, standing.bestDiff[0]) : '',
+                value: time
+            },
+            notes: entity.notes,
+            classes: classes,
+            marks: []
+        });
     }
 
-    if (value == null) {
-        return '';
+    return rows;
+}
+
+function prepareInter(state: State, intermediate: Intermediate, diff: number | null): ResultItem[] {
+    const standing = state.standings[intermediate.key];
+
+    const rows = [];
+    for (const id of standing.ids) {
+        const entity = state.entities[id];
+        const mark = entity.marks[intermediate.key];
+        const time = mark.time;
+        const _state = standing.latestBibs.find((bib) => bib === id) ? 'new' : 'normal';
+
+        let timeProp: Prop<number> | Prop<string>;
+        if (intermediate.type === 'bonus_points') {
+            if (isRanked(mark.status)) {
+                timeProp = {
+                    value: time,
+                    display: time
+                };
+            } else {
+                continue;
+            }
+        } else {
+            timeProp = {
+                display: isRanked(mark.status) ? formatTime(time, standing.leader) : mark.status,
+                value: time
+            };
+        }
+
+        let diffProp = {
+            display: '',
+            value: maxVal
+        };
+
+        if (diff !== null) {
+            const d = mark.diffs[diff];
+
+            diffProp = {
+                display: d < maxVal ? formatTime(d, standing.bestDiff[diff]) : '',
+                value: d
+            };
+        }
+
+        const classes = [entity.racer.nsa.toLowerCase(), _state];
+        if (mark.rank === 1) {
+            classes.push('leader');
+        } else if (mark.rank == null) {
+            classes.push('disabled');
+        }
+
+        if (entity.racer.isFavorite) {
+            classes.push('favorite');
+        }
+
+        if (entity.racer.color) {
+            classes.push(entity.racer.color);
+        }
+
+        rows.push({
+            state: _state,
+            racer: entity.racer,
+            time: timeProp,
+            rank: mark.rank,
+            diff: diffProp,
+            notes: entity.notes,
+            classes: classes,
+            marks: []
+        });
     }
 
-    if (zero === null) {
-        zero = value;
-    }
+    return rows;
+}
 
-    let timeStr = (value === zero) ? '' : (value < zero ? '-' : '+');
-    const time = (value === zero) ? value : (value < zero ? zero - value : value - zero);
-
-    const hours = Math.floor(time / (1000 * 60 * 60));
-    const minutes = Math.floor((time - hours * 1000 * 60 * 60) / (1000 * 60));
-    const seconds = Math.floor((time - hours * 1000 * 60 * 60 - minutes * 1000 * 60) / 1000);
-    const tenths = Math.floor((time - hours * 1000 * 60 * 60 - minutes * 1000 * 60 - seconds * 1000) / 100);
-    const hundreds = Math.floor((time - hours * 1000 * 60 * 60 - minutes * 1000 * 60 - seconds * 1000 - tenths * 100) / 10);
-
-    if (hours > 0 || minutes > 0) {
-        if (hours > 0) {
-            timeStr += hours + ':';
-            if (minutes < 10) {
-                timeStr += '0';
+function prepareAnalysis(state: State, view: View): ResultItem[] {
+    const zeroes: (number | null)[] = [];
+    const previousSector: number[] = [];
+    if (view.zero === -1) {
+        for (const { key } of state.intermediates) {
+            const prevKey = key > 0 && state.intermediates[key - 1].type === 'bonus_points' ? Math.max(key - 2, 0) : Math.max(key - 1, 0);
+            previousSector[key] = prevKey;
+            if (view.display === 'total') {
+                zeroes[key] = state.standings[key].leader;
+            } else {
+                zeroes[key] = key > 0 ? state.standings[key].bestDiff[prevKey] : 0;
             }
         }
-        timeStr += minutes + ':';
-        if (seconds < 10) {
-            timeStr += '0';
+    } else {
+        for (const { key } of state.intermediates) {
+            const prevKey = key > 0 && state.intermediates[key - 1].type === 'bonus_points' ? Math.max(key - 2, 0) : Math.max(key - 1, 0);
+            previousSector[key] = prevKey;
+            if (state.entities[view.zero].marks[key] !== undefined) {
+                if (view.display === 'total') {
+                    zeroes[key] = state.entities[view.zero].marks[key].time;
+                } else {
+                    zeroes[key] = key > 0 ? state.entities[view.zero].marks[key].diffs[prevKey] : 0;
+                }
+            } else {
+                zeroes[key] = null;
+            }
         }
     }
 
-    timeStr += seconds + '.' + tenths;
-    timeStr += (hundreds > 0) ? hundreds : '';
+    const rows = [];
+    for (const id of state.ids) {
+        const row = state.entities[id];
+        const _state = 'normal';
+        const classes: string[] = [row.racer.nsa.toLowerCase(), 'analysis'];
 
-    return timeStr;
-};
+        if (row.racer.isFavorite) {
+            classes.push('favorite');
+        }
+
+        if (row.racer.color) {
+            classes.push(row.racer.color);
+        }
+
+        const marks: (Prop<number> | Prop<string>)[] = [];
+
+        for (let i = 0; i < row.marks.length; i++) {
+            const prevKey = previousSector[i];
+            const mark = row.marks[i];
+
+            if (view.display === 'total') {
+                marks[i] = {
+                    display: isRanked(mark.status) ? formatTime(mark.time, zeroes[i]) : mark.status,
+                    value: mark.time + timePenalty[mark.status]
+                };
+            } else {
+                const time =  mark.diffs[prevKey];
+                marks[i] = {
+                    display: time < maxVal ? formatTime(time, zeroes[i]) : (isRanked(mark.status) ? 'N/A' : mark.status),
+                    value: time
+                };
+            }
+        }
+
+        rows.push({
+            state: _state,
+            racer: row.racer,
+            time: {display: '', value: 0},
+            rank: 1,
+            diff: {display: '', value: 0},
+            notes: row.notes,
+            classes: classes,
+            marks: marks
+        });
+    }
+
+    return rows;
+}
 
 export const createViewSelector = (view: View): OperatorFunction<State, ResultItem[]> => {
     let version: number;
+    let id: string;
     return pipe(
         filter((state) => {
+            const b1 = id !== state.id;
+            const b2 = view.mode === 'analysis';
             const inter = view.inter ? view.inter.key : null;
-            return view.mode === 'analysis' || (
-                inter === null ||
-                state.standings[inter] === undefined ||
-                state.standings[inter].version !== version
-            );
+            const b3 = inter === null || state.standings[inter] === undefined || state.standings[inter].version !== version;
+
+            return b1 || b2 || b3;
         }),
         map((state: State) => {
+            id = state.id;
+
             if (view.mode === 'normal') {
                 if (view.inter === null || state.standings[view.inter.key] === undefined) {
                     version = 0;
@@ -241,167 +387,13 @@ export const createViewSelector = (view: View): OperatorFunction<State, ResultIt
                 }
 
                 version = state.standings[view.inter.key].version;
-                const rows = [];
-                const length = state.standings[view.inter.key].ids.length;
-                for (let i = 0; i < length; i++) {
-                    const id = state.standings[view.inter.key].ids[i];
-                    const row = state.entities[id];
-                    const time = row.marks[view.inter.key].time;
-                    const _state = row.marks[view.inter.key].rank !== null && view.inter.key !== 0 && length - i < 4 ? 'new' : 'normal';
-
-                    let timeProp: Prop<number> | Prop<string>;
-                    if (view.inter.type === 'bonus_points') {
-                        if (time < maxVal) {
-                            timeProp = {
-                                value: time,
-                                display: time
-                            };
-                        } else {
-                            continue;
-                        }
-                    } else {
-                        timeProp = view.inter.key === 0 ? {display: row.status, value: row.status} : {
-                            display: time < maxVal ?
-                                formatTime(time, state.standings[view.inter.key].leader) : row.marks[view.inter.key].status,
-                            value: time
-                        };
-                    }
-
-                    let diff: Prop<number>;
-                    if (view.diff !== null) {
-                        const temp = row.marks[view.inter.key].diffs[view.diff.key];
-                        const d = temp === null ? maxVal : temp;
-
-                        diff = {
-                            display: d < maxVal ? formatTime(d, state.standings[view.inter.key].bestDiff[view.diff.key]) : '',
-                            value: d
-                        };
-                    } else {
-                        diff = {
-                            display: '',
-                            value: maxVal
-                        };
-                    }
-
-                    const classes = [row.racer.nsa.toLowerCase(), _state];
-                    if (row.marks[view.inter.key].rank === 1 && view.inter.key > 0) {
-                        classes.push('leader');
-                    } else if (row.marks[view.inter.key].rank == null) {
-                        classes.push('disabled');
-                    }
-
-                    if (row.racer.isFavorite) {
-                        classes.push('favorite');
-                    }
-
-                    if (row.racer.color) {
-                        classes.push(row.racer.color);
-                    }
-
-                    rows.push({
-                        state: _state,
-                        id: row.racer.id,
-                        bib: row.racer.bib,
-                        nsa: row.racer.nsa,
-                        time: timeProp,
-                        rank: row.marks[view.inter.key].rank,
-                        diff: diff,
-                        name: {
-                            display: row.racer.firstName + ' ' + row.racer.lastName,
-                            value: (row.racer.lastName + ', ' + row.racer.firstName).toLowerCase()
-                        },
-                        notes: row.notes,
-                        classes: classes,
-                        marks: []
-                    });
+                if (view.inter.id === 0) {
+                    return prepareStartList(state);
                 }
-                return rows;
+
+                return prepareInter(state, view.inter, view.diff ? view.diff.key : null);
             } else {
-                const zeroes: (number | null)[] = [];
-                if (view.zero === -1) {
-                    for (const { key } of state.intermediates) {
-                        if (view.display === 'total') {
-                            zeroes[key] = state.standings[key].leader;
-                        } else {
-                            const prevKey = key > 0 && state.intermediates[key - 1].type === 'bonus_points' ? key - 2 : key - 1;
-                            zeroes[key] = key > 0 ? state.standings[key].bestDiff[prevKey] : 0;
-                        }
-                    }
-                } else {
-                    for (const { key } of state.intermediates) {
-                        if (state.entities[view.zero].marks[key] !== undefined) {
-                            if (view.display === 'total') {
-                                zeroes[key] = state.entities[view.zero].marks[key].time;
-                            } else {
-                                const prevKey = key > 0 && state.intermediates[key - 1].type === 'bonus_points' ? key - 2 : key - 1;
-                                zeroes[key] = key > 0 ? state.entities[view.zero].marks[key].diffs[prevKey] : 0;
-                            }
-                        } else {
-                            zeroes[key] = null;
-                        }
-                    }
-                }
-
-                if (view.inter === null || state.standings[view.inter.key] === undefined) {
-                    version = 0;
-                    return [];
-                }
-
-                const rows = [];
-                const length = state.ids.length;
-                for (const id of state.ids) {
-                    const row = state.entities[id];
-                    const _state = 'normal';
-                    const classes: string[] = [row.racer.nsa.toLowerCase(), 'analysis'];
-
-                    if (row.racer.isFavorite) {
-                        classes.push('favorite');
-                    }
-
-                    if (row.racer.color) {
-                        classes.push(row.racer.color);
-                    }
-
-                    const marks: (Prop<number> | Prop<string>)[] = [];
-
-                    for (const { key } of state.intermediates) {
-                        let time: number | null;
-                        if (view.display === 'total') {
-                            time = row.marks[key] != null ? row.marks[key].time : null;
-                        } else {
-                            const prevKey = key > 0 && state.intermediates[key - 1].type === 'bonus_points' ? key - 2 : key - 1;
-                            time =  row.marks[key] != null ?
-                                (key === 0 ? row.marks[0].diffs[0] : row.marks[key].diffs[prevKey]) : null;
-                        }
-
-                        const display = (time !== null) ?  (time < maxVal ? formatTime(time, zeroes[key]) : row.marks[key].status) : '';
-                        const value = (time !== null) ?  time : maxVal * 6;
-
-                        marks[key] = {
-                            display,
-                            value
-                        };
-                    }
-
-                    rows.push({
-                        state: _state,
-                        id: row.racer.id,
-                        bib: row.racer.bib,
-                        nsa: row.racer.nsa,
-                        time: {display: '', value: 0},
-                        rank: 1,
-                        diff: {display: '', value: 0},
-                        name: {
-                            display: row.racer.firstName + ' ' + row.racer.lastName,
-                            value: (row.racer.lastName + ', ' + row.racer.firstName).toLowerCase()
-                        },
-                        notes: row.notes,
-                        classes: classes,
-                        marks: marks
-                    });
-                }
-
-                return rows;
+                return prepareAnalysis(state, view);
             }
         })
     );

@@ -1,5 +1,7 @@
+import { Status as StatusEnum } from './fis-constants';
+
 export interface Result {
-    status: string;
+    status: StatusEnum;
     intermediate: number;
     racer: number;
     time: number;
