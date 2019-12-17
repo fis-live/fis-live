@@ -275,7 +275,7 @@ table {
     }
 
 
-    tr.disabled {
+    tr.disabled > td {
         opacity: 0.7;
     }
 }
