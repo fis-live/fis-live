@@ -4,7 +4,7 @@ table {
 }
 
 .ps__rail-x, .ps__rail-y {
-    z-index: 2;
+    z-index: 102;
 }
 
 .yellow-card {
@@ -66,7 +66,7 @@ table {
             background: #f2f2f2;
         }
 
-        > div {
+        > div, > div.filterable > div {
             box-sizing: border-box;
             border-bottom: 2px solid $app-table-bordercolor;
             padding: 0 4px 0 8px;
@@ -81,6 +81,143 @@ table {
             transition: background .3s ease;
             &:hover {
                 background: rgba(0,0,0,0.04);
+            }
+        }
+
+        > div.filterable {
+            display: flex;
+            padding: 0;
+            border: none;
+            > div {
+                flex: 1 0 auto;
+            }
+
+            > app-filter {
+                display: flex;
+
+                height: 100%;
+                color: #bfbfbf;
+                font-size: 12px;
+                text-align: center;
+                cursor: pointer;
+                transition: all .3s;
+                border-bottom: 1px solid #e8e8e8;
+                width: 24px;
+
+                &:hover {
+                    background: rgba(0,0,0,0.04);
+                }
+
+                //.filter-toggle {
+                //    width: 16px;
+                //    height: 16px;
+                //    background-size: contain;
+                //    cursor: pointer;
+                //    vertical-align: middle;
+                //    margin: auto 0;
+                //    background: generateFilterIcon($clr-dark-midtone-gray) no-repeat;
+                //
+                //    &:hover, &.filter-open {
+                //        background-image: generateFilterIcon($clr-action-blue-dark-midtone);
+                //    }
+                //
+                //    &.filtered {
+                //        background-image: generateFilterIcon($clr-action-blue-dark-midtone),
+                //        generateCircleIcon($clr-action-blue-dark-midtone);
+                //    }
+                //}
+
+                .datagrid-filter-toggle {
+                    @include clr-no-styles-button();
+                    cursor: pointer;
+                    float: right;
+                    vertical-align: middle;
+                    //width: $clr-datagrid-icon-size;
+                    //height: $clr-datagrid-icon-size;
+                    margin: auto 0;
+                    background-repeat: no-repeat;
+                    background-size: contain;
+                    color: $clr-color-neutral-500;
+                    width: 24px;
+
+                    &:focus {
+                        outline: none;
+                    }
+
+                    > clr-icon {
+                        margin-top: -2px;
+                    }
+
+                    &:hover {
+                        color: $clr-color-action-600;
+                    }
+
+                    &.datagrid-filter-open {
+                        color: $clr-color-action-600;
+                    }
+
+                    &.datagrid-filtered {
+                        color: $clr-color-action-600;
+                    }
+                }
+
+                .datagrid-filter {
+                    position: absolute;
+                    top: 100%;
+                    left: 0;
+                    margin-top: 0.2rem;
+                    background: $clr-datagrid-popover-bg-color;
+                    padding: 0.75rem;
+                    border: $clr-default-borderwidth solid $clr-datagrid-popover-border-color;
+                    box-shadow: 0 1px 3px rgba($clr-dark-gray, 0.25);
+                    border-radius: $clr-default-borderradius;
+                    font-weight: normal;
+                    z-index: 3;
+
+                    .datagrid-filter-close-wrapper {
+                        text-align: right;
+
+                        .close {
+                            float: none;
+                        }
+                    }
+                }
+            }
+        }
+
+        > div.sorting, > div.filterable > div.sorting {
+            cursor: pointer;
+            transition: border-bottom-color 0.3s ease;
+            &:hover {
+                color: $clr-h6-color;
+            }
+
+            &::after {
+                margin: 0 0 0 4px;
+                content: '';
+                height: 8px;
+                width: 8px;
+                vertical-align: middle;
+                display: inline-block;
+                background-repeat: no-repeat;
+                background-size: contain;
+            }
+
+            &.asc, &.desc {
+                color: $app-header-sort-color;
+                border-color: $app-header-sort-color;
+                + app-filter {
+                    color: $app-header-sort-color;
+                    border-color: $app-header-sort-color;
+                }
+
+                &::after {
+                    background-image: generateCaretIcon($app-header-sort-color);
+                }
+            }
+
+            &.desc::after {
+                transform: rotate(180deg);
             }
         }
 
@@ -108,7 +245,7 @@ table {
         background-color: #D8E1FF;
     }
 
-    tr.new > td {
+    tr.new > td, tr > td.new {
         background-color: #FFE5BC;
     }
 
@@ -141,141 +278,6 @@ table {
     tr.disabled {
         opacity: 0.7;
     }
-
-    th.filterable {
-        display: flex;
-        > div {
-            flex: 1 0 auto;
-        }
-
-        > app-filter {
-            display: flex;
-
-            height: 100%;
-            color: #bfbfbf;
-            font-size: 12px;
-            text-align: center;
-            cursor: pointer;
-            transition: all .3s;
-            border-bottom: 1px solid #e8e8e8;
-            width: 24px;
-
-            &:hover {
-                background: rgba(0,0,0,0.04);
-            }
-
-            //.filter-toggle {
-            //    width: 16px;
-            //    height: 16px;
-            //    background-size: contain;
-            //    cursor: pointer;
-            //    vertical-align: middle;
-            //    margin: auto 0;
-            //    background: generateFilterIcon($clr-dark-midtone-gray) no-repeat;
-            //
-            //    &:hover, &.filter-open {
-            //        background-image: generateFilterIcon($clr-action-blue-dark-midtone);
-            //    }
-            //
-            //    &.filtered {
-            //        background-image: generateFilterIcon($clr-action-blue-dark-midtone),
-            //        generateCircleIcon($clr-action-blue-dark-midtone);
-            //    }
-            //}
-
-            .datagrid-filter-toggle {
-                @include clr-no-styles-button();
-                cursor: pointer;
-                float: right;
-                vertical-align: middle;
-                //width: $clr-datagrid-icon-size;
-                //height: $clr-datagrid-icon-size;
-                margin: auto 0;
-                background-repeat: no-repeat;
-                background-size: contain;
-                color: $clr-color-neutral-500;
-                width: 24px;
-
-                &:focus {
-                    outline: none;
-                }
-
-                > clr-icon {
-                    margin-top: -2px;
-                }
-
-                &:hover {
-                    color: $clr-color-action-600;
-                }
-
-                &.datagrid-filter-open {
-                    color: $clr-color-action-600;
-                }
-
-                &.datagrid-filtered {
-                    color: $clr-color-action-600;
-                }
-            }
-
-            .datagrid-filter {
-                position: absolute;
-                top: 100%;
-                left: 0;
-                margin-top: 0.2rem;
-                background: $clr-datagrid-popover-bg-color;
-                padding: 0.75rem;
-                border: $clr-default-borderwidth solid $clr-datagrid-popover-border-color;
-                box-shadow: 0 1px 3px rgba($clr-dark-gray, 0.25);
-                border-radius: $clr-default-borderradius;
-                font-weight: normal;
-                z-index: 3;
-
-                .datagrid-filter-close-wrapper {
-                    text-align: right;
-
-                    .close {
-                        float: none;
-                    }
-                }
-            }
-        }
-    }
-
-    th > div.sorting {
-        cursor: pointer;
-        transition: border-bottom-color 0.3s ease;
-        &:hover {
-            color: $clr-h6-color;
-        }
-
-        &::after {
-            margin: 0 0 0 4px;
-            content: '';
-            height: 8px;
-            width: 8px;
-            vertical-align: middle;
-            display: inline-block;
-            background-repeat: no-repeat;
-            background-size: contain;
-        }
-
-        &.asc, &.desc {
-            color: $app-header-sort-color;
-            border-color: $app-header-sort-color;
-            + app-filter {
-                color: $app-header-sort-color;
-                border-color: $app-header-sort-color;
-            }
-
-            &::after {
-                background-image: generateCaretIcon($app-header-sort-color);
-            }
-        }
-
-        &.desc::after {
-            transform: rotate(180deg);
-        }
-    }
 }
 
 .datagrid-spinner {
@@ -285,15 +287,12 @@ table {
     left: 0;
     right: 0;
     background: rgba($app-table-bgcolor, 0.6);
-    z-index: 99;
+    z-index: 103;
 
     .spinner {
         position: absolute;
-        top: 0;
-        bottom: 0;
-        left: 0;
-        right: 0;
-        margin: auto;
+        top: calc(50% - 1.5rem);
+        left: calc(50% - 1.5rem);
     }
 }
 

@@ -26,5 +26,5 @@ export interface ResultItem {
     state: string;
     notes: string[];
     classes: string[];
-    marks: (Prop<number> | Prop<string>)[];
+    marks: ((Prop<number> | Prop<string>) & { state: string })[];
 }

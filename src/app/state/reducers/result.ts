@@ -330,7 +330,7 @@ function prepareAnalysis(state: State, view: View): ResultItem[] {
             classes.push(row.racer.color);
         }
 
-        const marks: (Prop<number> | Prop<string>)[] = [];
+        const marks: ((Prop<number> | Prop<string>) & { state: string })[] = [];
 
         for (let i = 0; i < row.marks.length; i++) {
             const prevKey = previousSector[i];
@@ -339,13 +339,15 @@ function prepareAnalysis(state: State, view: View): ResultItem[] {
             if (view.display === 'total') {
                 marks[i] = {
                     display: isRanked(mark.status) ? formatTime(mark.time, zeroes[i]) : mark.status,
-                    value: mark.time + timePenalty[mark.status]
+                    value: mark.time + timePenalty[mark.status],
+                    state: state.standings[i].latestBibs.find((bib) => bib === id) ? 'new' : 'normal'
                 };
             } else {
                 const time =  mark.diffs[prevKey];
                 marks[i] = {
                     display: time < maxVal ? formatTime(time, zeroes[i]) : (isRanked(mark.status) ? 'N/A' : mark.status),
-                    value: time
+                    value: time,
+                    state: state.standings[i].latestBibs.find((bib) => bib === id) ? 'new' : 'normal'
                 };
             }
         }
