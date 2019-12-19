@@ -1,11 +1,11 @@
 import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
 import { select, Store } from '@ngrx/store';
-import { Observable } from 'rxjs';
-import { map } from 'rxjs/operators';
+import { Observable, of } from 'rxjs';
+import { map, switchMap } from 'rxjs/operators';
 
 import { Racer } from '../../models/racer';
 import { ResultItem } from '../../models/table';
-import { AppState, selectAllRacers } from '../../state/reducers';
+import { AppState, getResultState, selectAllRacers } from '../../state/reducers';
 import { guid } from '../../utils/utils';
 import { Config, DatagridConfig } from '../providers/config';
 
@@ -18,6 +18,7 @@ export class DatagridHeader {
     public readonly guid = guid();
 
     public readonly racers$: Observable<Racer[]>;
+    public readonly progress$: Observable<{ current: number; of: number; } | null>;
     public readonly config$: Observable<Config> = this._config.getConfig();
     public readonly racerNames$: Observable<string[]>;
     public readonly nations$: Observable<string[]>;
@@ -29,13 +30,32 @@ export class DatagridHeader {
     public filterByName = (data: ResultItem) => data.racer.value;
     public filterByNsa = (data: ResultItem) => data.racer.nsa;
 
-    constructor(private _config: DatagridConfig, store: Store<AppState>) {
+    constructor(private _config: DatagridConfig, private store: Store<AppState>) {
         this.racers$ = store.pipe(select(selectAllRacers));
         this.racerNames$ = this.racers$.pipe(
             map((racers) => racers.map((racer) => racer.lastName + ', ' + racer.firstName))
         );
         this.nations$ = this.racers$.pipe(
             map((racers) => racers.map((racer) => racer.nsa).filter(DatagridHeader.onlyUnique))
+        );
+
+        this.progress$ = this._config.getConfig().pipe(
+            select('view'),
+            switchMap((view) => {
+                if (view.mode === 'normal' && view.inter !== null && view.inter.type !== 'start_list') {
+                    return store.pipe(
+                        select(getResultState),
+                        map((state) => {
+                            return {
+                                current: state.standings[view.inter!.key].ids.length,
+                                of: state.ids.length
+                            };
+                        })
+                    );
+                }
+
+                return of(null);
+            })
         );
     }
 

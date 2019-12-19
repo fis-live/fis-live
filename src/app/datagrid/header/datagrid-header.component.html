@@ -45,6 +45,10 @@
         </div-->
     </div>
 
+    <div style="flex: 0 0 auto;" *ngIf="progress$ | async as progress">
+        {{ progress.current }} / {{ progress.of }}
+    </div>
+
     <div style="flex: 0 0 auto;">
         <div class="clr-toggle-wrapper" *ngIf="config.breakpoint === 'large'">
             <input type="checkbox" id="toggle-{{ guid }}" name="toggle-basic" class="clr-toggle"
