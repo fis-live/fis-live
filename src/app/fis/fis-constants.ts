@@ -158,6 +158,7 @@ export const nationalities: {[short: string]: string} = {
     'NER': 'Niger',
     'NFK': 'Norfolk Island',
     'NGA': 'Nigeria',
+    'NGR': 'Nigeria',
     'NIC': 'Nicaragua',
     'NIU': 'Niue',
     'NOR': 'Norway',

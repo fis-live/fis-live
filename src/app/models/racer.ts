@@ -10,6 +10,7 @@ export interface Racer {
     isFavorite: boolean;
     hasYellowCard: boolean;
     display: string;
+    short: string;
     value: string;
 }
 
@@ -26,6 +27,7 @@ export interface Mark {
     status: Status;
     rank: number | null;
     diffs: number[];
+    version: number;
 }
 
 export enum Note {

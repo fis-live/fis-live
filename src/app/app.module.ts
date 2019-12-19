@@ -1,3 +1,4 @@
+import { DragDropModule } from '@angular/cdk/drag-drop';
 import { CdkTableModule } from '@angular/cdk/table';
 import { HttpClientModule } from '@angular/common/http';
 import { NgModule } from '@angular/core';
@@ -50,6 +51,7 @@ import { ScrollbarDirective } from './utils/scrollbar.directive';
         BrowserAnimationsModule,
         BrowserModule,
         CdkTableModule,
+        DragDropModule,
         FormsModule,
         HttpClientModule,
         RouterModule.forRoot(appRoutes, { useHash: true }),

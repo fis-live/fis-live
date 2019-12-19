@@ -1,72 +1,45 @@
+import { CdkDragDrop } from '@angular/cdk/drag-drop';
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, Renderer2 } from '@angular/core';
-import { Observable, of } from 'rxjs';
+import { select } from '@ngrx/store';
+import { Observable } from 'rxjs';
 
-import { Columns } from '../models/table';
+import { Column } from '../models/table';
 import { AbstractPopover } from '../utils/abstract-popover';
 
-import { DatagridState } from './providers/datagrid-state';
+import { DatagridConfig } from './providers/config';
 
 @Component({
     selector: 'app-dg-settings',
-    template: `
-        <button (click)="toggle()" [class.active]="open" class="btn btn-sm btn-link column-toggle--action" type="button">
-            <clr-icon shape="view-columns"></clr-icon>
-        </button>
-
-        <div class="column-switch" *ngIf="open">
-            <div class="switch-header">
-                Show Columns
-                <button (click)="toggle()" class="btn btn-sm btn-link" type="button">
-                    <clr-icon shape="times"></clr-icon>
-                </button>
-            </div>
-            <ul class="switch-content list-unstyled" *ngIf="columns$ | async as columns">
-                <li class="checkbox">
-                    <input type="checkbox"
-                           [checked]="columns.bib" id="bib" (change)="toggleColumn('bib')">
-                    <label for="bib">Bib</label>
-                </li>
-                <li class="checkbox">
-                    <input type="checkbox"
-                           [checked]="columns.nationality" id="nation" (change)="toggleColumn('nationality')">
-                    <label for="nation">Nationality</label>
-                </li>
-                <li class="checkbox">
-                    <input type="checkbox"
-                           [checked]="columns.diff" id="diff" (change)="toggleColumn('diff')">
-                    <label for="diff">Diff</label>
-                </li>
-            </ul>
-            <div class="switch-footer">
-                <div>
-                    <button
-                            class="btn btn-sm btn-link p6 text-uppercase"
-                            type="button">Select All
-                    </button>
-                </div>
-                <div class="action-right">
-                    <button (click)="toggle()"
-                            class="btn btn-primary"
-                            type="button">
-                        Ok
-                    </button>
-                </div>
-            </div>
-        </div>
-    `,
+    templateUrl: './datagrid-settings.component.html',
     changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class DatagridSettingsComponent extends AbstractPopover {
-    public columns$: Observable<Columns> = of();
+    public columns$: Observable<Column[]>;
 
-    constructor(private _state: DatagridState, el: ElementRef, renderer: Renderer2, cdr: ChangeDetectorRef) {
+    constructor(private _config: DatagridConfig, el: ElementRef, renderer: Renderer2, cdr: ChangeDetectorRef) {
         super(el, renderer, cdr);
 
-        // this.columns$ = this._state.getVisibleColumns();
+        this.columns$ = this._config.getConfig().pipe(
+            select((state) => {
+                if (state.view.mode === 'normal') {
+                    return state.columns.filter((col) => !col.isDynamic);
+                }
+
+                return state.columns;
+            })
+        );
     }
 
 
-    public toggleColumn(column: keyof Columns) {
-        // this._state.toggleColumn(column);
+    public toggleColumn(column: string) {
+        this._config.toggleColumn(column);
+    }
+
+    public onDrop(event: CdkDragDrop<string[]>) {
+        this._config.reorderColumn(event);
+    }
+
+    public trackBy(index: number, column: Column) {
+        return column.id;
     }
 }

@@ -20,7 +20,8 @@ export function registerResultMutably(state: State, result: Result) {
         time: result.time,
         status: result.status,
         rank: null,
-        diffs: (new Array(intermediate)).fill(maxVal)
+        diffs: (new Array(intermediate)).fill(maxVal),
+        version: 0
     };
     const standing = state.standings[intermediate];
 
@@ -31,7 +32,8 @@ export function registerResultMutably(state: State, result: Result) {
                     time: 0,
                     status: isRanked(result.status) ? Status.NA : result.status,
                     rank: null,
-                    diffs: (new Array(i)).fill(maxVal)
+                    diffs: (new Array(i)).fill(maxVal),
+                    version: 0
                 };
 
                 state.standings[i].ids.push(result.racer);
@@ -90,7 +92,8 @@ export function updateResultMutably(state: State, result: Result) {
         time: result.time,
         rank: 0,
         status: result.status,
-        diffs: []
+        diffs: [],
+        version: 0
     };
 
     let leader = mark.time + timePenalty[result.status];

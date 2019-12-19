@@ -45,12 +45,14 @@
     </div-->
 </div>
 
-<div style="justify-content: end;flex: 0 0 auto;">
-    <div class="clr-toggle-wrapper" *ngIf="config.breakpoint === 'large'">
-    	<input type="checkbox" id="toggle-{{ guid }}" name="toggle-basic" class="clr-toggle"
-               [ngModel]="config.view.mode === 'analysis'" (ngModelChange)="toggleMode($event)">
-        <label for="toggle-{{ guid }}">All</label>
+    <div style="flex: 0 0 auto;">
+        <div class="clr-toggle-wrapper" *ngIf="config.breakpoint === 'large'">
+            <input type="checkbox" id="toggle-{{ guid }}" name="toggle-basic" class="clr-toggle"
+                   [ngModel]="config.view.mode === 'analysis'" (ngModelChange)="toggleMode($event)">
+            <label for="toggle-{{ guid }}">All</label>
+        </div>
     </div>
-</div>
-<!--app-dg-settings class="column-switch-wrapper"></app-dg-settings-->
+<!--    <div style="flex: 0 0 auto; display: inline-flex">-->
+<!--    <app-dg-settings class="column-switch-wrapper"></app-dg-settings>-->
+<!--</div>-->
 </ng-container>

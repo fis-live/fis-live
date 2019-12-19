@@ -291,6 +291,7 @@ export class FisConnectionService {
                     lastName,
                     display: firstName + ' ' + lastName,
                     value: (lastName + ', ' + firstName).toLowerCase(),
+                    short: firstName[0] + '. ' + lastName,
                     nsa:  nationalities[racer[4]] || racer[4],
                     isFavorite: false,
                     hasYellowCard: racer[6] === 'yc',
@@ -361,10 +362,12 @@ export class FisConnectionService {
                 switch (event[0]) {
                     case 'inter':
                     case 'bonuspoint':
-                        events.push({
-                            type: 'register_result',
-                            payload: {status: Status.Default, intermediate: event[3], racer: event[2], time: event[4]}
-                        });
+                        if (event[4]) {
+                            events.push({
+                                type: 'register_result',
+                                payload: {status: Status.Default, intermediate: event[3], racer: event[2], time: event[4]}
+                            });
+                        }
                         break;
                     case 'finish':
                         events.push({

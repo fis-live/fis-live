@@ -1,0 +1,31 @@
+<button (click)="toggle()" [class.active]="open" class="btn btn-sm btn-link column-toggle--action" type="button">
+    <clr-icon shape="view-columns"></clr-icon>
+</button>
+
+<div class="column-switch" *ngIf="open">
+    <div class="switch-header">
+        Show Columns
+        <button (click)="toggle()" class="btn btn-sm btn-link" type="button">
+            <clr-icon shape="times"></clr-icon>
+        </button>
+    </div>
+    <ul class="switch-content list-unstyled" cdkDropList (cdkDropListDropped)="onDrop($event)">
+        <li class="clr-checkbox-wrapper" *ngFor="let col of columns$ | async; trackBy: trackBy" cdkDrag>
+            <input type="checkbox" [checked]="col.toggled" [id]="col.id" (change)="toggleColumn(col.id)">
+            <label [for]="col.id">{{ col.name }}</label>
+            <clr-icon class="column-drag-handle" cdkDragHandle shape="drag-handle"></clr-icon>
+        </li>
+    </ul>
+    <div class="switch-footer">
+        <div>
+            <button class="btn btn-sm btn-link p6 text-uppercase" type="button">Select All</button>
+        </div>
+        <div class="action-right">
+            <button (click)="toggle()"
+                    class="btn btn-primary"
+                    type="button">
+                Ok
+            </button>
+        </div>
+    </div>
+</div>

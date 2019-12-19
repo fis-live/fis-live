@@ -20,7 +20,7 @@ export abstract class AbstractPopover implements OnDestroy {
         this.documentListener = this.renderer.listen('document', 'click', event => {
             const target = event.target;
 
-            if (target === this.host.nativeElement || this.host.nativeElement.contains(target)) {
+            if (target.localName === 'body' || target === this.host.nativeElement || this.host.nativeElement.contains(target)) {
                 return;
             }
 

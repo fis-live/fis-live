@@ -122,7 +122,7 @@
     <!-- Dynamic definitions -->
     <ng-container [cdkColumnDef]="col.id" *ngFor="let col of config.dynamicColumns">
         <th cdk-header-cell *cdkHeaderCellDef><div [appSort]="col.sortBy">{{ col.name }}</div></th>
-        <td [@newRow]="row.marks[col.key]?.state" class="time {{ row.marks[col.key]?.state }}" cdk-cell *cdkCellDef="let row"><div>{{ row.marks[col.key]?.display }}</div> </td>
+        <td class="time {{ row.marks[col.key]?.state }}" cdk-cell *cdkCellDef="let row"><div>{{ row.marks[col.key]?.display }}</div> </td>
     </ng-container>
 
     <thead>
@@ -130,7 +130,7 @@
     </thead>
 
     <tbody>
-        <tr [@newRow]="row.state" [ngClass]="row.classes" cdk-row *cdkRowDef="let row; columns: config.displayedColumns"></tr>
+        <tr [@update]="row.version" [@newRow]="row.state" [ngClass]="row.classes" cdk-row *cdkRowDef="let row; columns: config.displayedColumns"></tr>
     </tbody>
 
 </table>

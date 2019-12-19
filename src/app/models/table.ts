@@ -5,10 +5,11 @@ export interface Prop<T> {
     display: T | string;
 }
 
-export interface Columns {
-    bib: boolean;
-    nationality: boolean;
-    diff: boolean;
+export interface Column {
+    id: string;
+    name: string;
+    toggled: boolean;
+    isDynamic: boolean;
 }
 
 export interface ColumnDef {
@@ -22,6 +23,7 @@ export interface ResultItem {
     racer: Racer;
     time: Prop<number> | Prop<string>;
     diff: Prop<number>;
+    version: number;
     rank: number | null;
     state: string;
     notes: string[];

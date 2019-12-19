@@ -63,7 +63,7 @@ const resultReducer = createReducer(
                     id: racer.bib,
                     status: entry.status || '',
                     racer: racer,
-                    marks: [{time: 0, status: StatusEnum.Default, rank: entry.order || null, diffs: [maxVal]}],
+                    marks: [{time: 0, status: StatusEnum.Default, rank: entry.order || null, diffs: [maxVal], version: 0}],
                     notes: []
                 };
             } else {
@@ -148,6 +148,7 @@ const resultReducer = createReducer(
                 case 'set_status':
                     const e = event.payload as Status;
                     draft.entities[e.id].status = e.status;
+                    draft.entities[e.id].marks[0].version += 1;
                     draft.standings[0].version += 1;
                     break;
             }
@@ -209,7 +210,8 @@ function prepareStartList(state: State): ResultItem[] {
             },
             notes: entity.notes,
             classes: classes,
-            marks: []
+            marks: [],
+            version: mark.version
         });
     }
 
@@ -280,7 +282,8 @@ function prepareInter(state: State, intermediate: Intermediate, diff: number | n
             diff: diffProp,
             notes: entity.notes,
             classes: classes,
-            marks: []
+            marks: [],
+            version: 0
         });
     }
 
@@ -360,7 +363,8 @@ function prepareAnalysis(state: State, view: View): ResultItem[] {
             diff: {display: '', value: 0},
             notes: row.notes,
             classes: classes,
-            marks: marks
+            marks: marks,
+            version: 0
         });
     }
 

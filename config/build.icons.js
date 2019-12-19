@@ -15,7 +15,8 @@ const icons = [
     'view-columns',
     'caret',
     'filter-grid-circle',
-    'filter-grid'
+    'filter-grid',
+    'drag-handle'
 ];
 
 var template = '';

@@ -1,3 +1,4 @@
+import { CdkDragDrop } from '@angular/cdk/drag-drop';
 import { Injectable, OnDestroy } from '@angular/core';
 import { select, Store } from '@ngrx/store';
 import { BehaviorSubject, Observable, Subscription } from 'rxjs';
@@ -5,7 +6,7 @@ import { map } from 'rxjs/operators';
 
 import { KeysOfType, Option, OptionSelector } from '../../core/select/option-selector';
 import { Intermediate } from '../../models/intermediate';
-import { ColumnDef } from '../../models/table';
+import { Column, ColumnDef } from '../../models/table';
 import { AppState, selectAllIntermediates } from '../../state/reducers';
 
 export interface View {
@@ -22,7 +23,52 @@ export interface Config {
     displayedColumns: string[];
     breakpoint: string;
     dynamicColumns: ColumnDef[];
+    columns: Column[];
 }
+
+function clamp(value: number, max: number): number {
+    return Math.max(0, Math.min(max, value));
+}
+
+const defaultColumns = [
+    { id: 'order', name: '#', toggled: false, isDynamic: false },
+    { id: 'rank', name: 'Rank', toggled: true, isDynamic: false },
+    { id: 'bib', name: 'Bib', toggled: true, isDynamic: false },
+    { id: 'name', name: 'Name', toggled: true, isDynamic: false },
+    { id: 'time', name: 'Time', toggled: true, isDynamic: false },
+    { id: 'nsa', name: 'NSA', toggled: true, isDynamic: false },
+    { id: 'diff', name: 'Diff.', toggled: true, isDynamic: false }
+];
+
+const defaultColumnsSmall = [
+    { id: 'order', name: '#', toggled: false, isDynamic: false },
+    { id: 'rank', name: 'Rank', toggled: true, isDynamic: false },
+    { id: 'bib', name: 'Bib', toggled: true, isDynamic: false },
+    { id: 'name', name: 'Name', toggled: true, isDynamic: false },
+    { id: 'time', name: 'Time', toggled: true, isDynamic: false },
+    { id: 'nsa', name: 'NSA', toggled: false, isDynamic: false },
+    { id: 'diff', name: 'Diff.', toggled: true, isDynamic: false }
+];
+
+const defaultColumnsMini = [
+    { id: 'order', name: '#', toggled: false, isDynamic: false },
+    { id: 'rank', name: 'Rank', toggled: true, isDynamic: false },
+    { id: 'bib', name: 'Bib', toggled: false, isDynamic: false },
+    { id: 'name', name: 'Name', toggled: true, isDynamic: false },
+    { id: 'time', name: 'Time', toggled: true, isDynamic: false },
+    { id: 'nsa', name: 'NSA', toggled: false, isDynamic: false },
+    { id: 'diff', name: 'Diff.', toggled: false, isDynamic: false }
+];
+
+const defaultAnalysisColumns = [
+    { id: 'order', name: '#', toggled: true, isDynamic: false },
+    { id: 'rank', name: 'Rank', toggled: false, isDynamic: false },
+    { id: 'bib', name: 'Bib', toggled: true, isDynamic: false },
+    { id: 'name', name: 'Name', toggled: true, isDynamic: false },
+    { id: 'time', name: 'Time', toggled: false, isDynamic: false },
+    { id: 'nsa', name: 'NSA', toggled: false, isDynamic: false },
+    { id: 'diff', name: 'Diff.', toggled: false, isDynamic: false }
+];
 
 const defaultConfig: Config = {
     view: {
@@ -35,7 +81,8 @@ const defaultConfig: Config = {
     isStartList: true,
     displayedColumns: ['rank', 'bib', 'name', 'time', 'nsa', 'diff'],
     breakpoint: 'large',
-    dynamicColumns: []
+    dynamicColumns: [],
+    columns: defaultColumns
 };
 
 @Injectable()
@@ -46,8 +93,6 @@ export class DatagridConfig implements OptionSelector<View, Intermediate>, OnDes
     private _valueChanged = new BehaviorSubject<View>(this._internalConfig.view);
     private _renderSelectionChanged = new BehaviorSubject<View>(this._internalConfig.view);
     private _source: Observable<Intermediate[]>;
-    private _dynamicColumns: string[] = [];
-
 
     constructor(private store: Store<AppState>) {
         this._source = store.pipe(
@@ -56,8 +101,8 @@ export class DatagridConfig implements OptionSelector<View, Intermediate>, OnDes
 
         this._subscription = this._source.subscribe((values) => {
             const view = {...this._internalConfig.view};
+            const columns = this._internalConfig.columns.filter((column) => !column.isDynamic);
             const dynamicColumns = [];
-            this._dynamicColumns = [];
             for (const intermediate of values) {
                 if (intermediate.type === 'bonus_points') {
                     continue;
@@ -69,7 +114,13 @@ export class DatagridConfig implements OptionSelector<View, Intermediate>, OnDes
                     name: intermediate.short,
                     key: intermediate.key
                 });
-                this._dynamicColumns.push('inter' + intermediate.key);
+
+                columns.push({
+                    id: 'inter' + intermediate.key,
+                    name: intermediate.short,
+                    toggled: intermediate.type !== 'start_list' && view.mode === 'analysis',
+                    isDynamic: true
+                });
             }
 
             if (view.mode === 'normal') {
@@ -90,6 +141,7 @@ export class DatagridConfig implements OptionSelector<View, Intermediate>, OnDes
                     ...this._internalConfig,
                     view,
                     dynamicColumns,
+                    columns,
                     isStartList: view.inter == null || view.inter.key === 0
                 };
                 this._config.next(this._internalConfig);
@@ -98,7 +150,8 @@ export class DatagridConfig implements OptionSelector<View, Intermediate>, OnDes
                 this._internalConfig = {
                     ...this._internalConfig,
                     dynamicColumns,
-                    displayedColumns: ['order', 'bib', 'name'].concat(this._dynamicColumns.slice(1))
+                    columns,
+                    displayedColumns: this.buildColumnList(columns)
                 };
 
                 this._config.next(this._internalConfig);
@@ -106,9 +159,22 @@ export class DatagridConfig implements OptionSelector<View, Intermediate>, OnDes
         });
     }
 
+    private resetColumns(mode: 'normal' | 'analysis') {
+        const columns = mode === 'normal' ? [...defaultColumns] : [...defaultAnalysisColumns];
+        for (const col of this._internalConfig.dynamicColumns) {
+            columns.push({
+                id: col.id,
+                name: col.name,
+                isDynamic: true,
+                toggled: col.id !== 'inter0' && mode === 'analysis'
+            });
+        }
+
+        return columns;
+    }
+
     public setMode(mode: 'normal' | 'analysis') {
-        const displayedColumns = mode === 'normal' ? defaultConfig.displayedColumns :
-            ['order', 'bib', 'name'].concat(this._dynamicColumns.slice(1));
+        const columns = this.resetColumns(mode);
 
         this._internalConfig = {
             ...this._internalConfig,
@@ -116,7 +182,8 @@ export class DatagridConfig implements OptionSelector<View, Intermediate>, OnDes
                 ...this._internalConfig.view,
                 mode
             },
-            displayedColumns
+            columns,
+            displayedColumns: this.buildColumnList(columns)
         };
 
         this._config.next(this._internalConfig);
@@ -151,25 +218,81 @@ export class DatagridConfig implements OptionSelector<View, Intermediate>, OnDes
         return this._config.asObservable();
     }
 
-    public toggleColumn(column: string) {
+    private buildColumnList(columns: Column[]) {
+        return columns.reduce((cols, col) => {
+            if (col.toggled) {
+                cols.push(col.id);
+            }
+
+            return cols;
+        }, [] as string[]);
+    }
+
+    public toggleColumn(columnId: string) {
+        const colIdx = this._internalConfig.columns.findIndex((column) => column.id === columnId);
+        const columns = this._internalConfig.columns.slice();
+        if (colIdx > -1) {
+            const col = {
+                ...columns[colIdx],
+                toggled: !columns[colIdx].toggled
+            };
+
+            columns[colIdx] = col;
+
+            this._internalConfig = {
+                ...this._internalConfig,
+                columns: columns,
+                displayedColumns: this.buildColumnList(columns)
+            };
+
+            this._config.next(this._internalConfig);
+        }
+    }
+
+    public reorderColumn(event: CdkDragDrop<string[]>) {
+        const array = this._internalConfig.columns.slice();
+        const from = clamp(event.previousIndex, array.length - 1);
+        const to = clamp(event.currentIndex, array.length - 1);
+
+        if (from === to) {
+            return;
+        }
+
+        const target = array[from];
+        const delta = to < from ? -1 : 1;
+
+        for (let i = from; i !== to; i += delta) {
+            array[i] = array[i + delta];
+        }
+
+        array[to] = target;
+
+        this._internalConfig = {
+            ...this._internalConfig,
+            columns: array,
+            displayedColumns: this.buildColumnList(array)
+        };
+
+        this._config.next(this._internalConfig);
     }
 
     public setBreakpoint(breakpoint: string) {
         if (breakpoint === this._internalConfig.breakpoint) { return; }
 
         if (this._internalConfig.view.mode === 'normal') {
-            let columns = [];
+            let columns;
             if (breakpoint === 'large') {
-                columns = defaultConfig.displayedColumns;
+                columns = [...defaultColumns];
             } else if (breakpoint === 'small') {
-                columns = ['rank', 'bib', 'name', 'time', 'diff'];
+                columns = [...defaultColumnsSmall];
             } else {
-                columns = ['rank', 'name', 'time'];
+                columns = [...defaultColumnsMini];
             }
 
             this._internalConfig = {
                 ...this._internalConfig,
-                displayedColumns: columns,
+                columns,
+                displayedColumns: this.buildColumnList(columns),
                 breakpoint
             };
         } else {
