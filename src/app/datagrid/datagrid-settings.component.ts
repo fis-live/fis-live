@@ -15,10 +15,12 @@ import { DatagridConfig } from './providers/config';
 })
 export class DatagridSettingsComponent extends AbstractPopover {
     public columns$: Observable<Column[]>;
+    public tickerEnabled$: Observable<boolean>;
 
     constructor(private _config: DatagridConfig, el: ElementRef, renderer: Renderer2, cdr: ChangeDetectorRef) {
         super(el, renderer, cdr);
 
+        this.tickerEnabled$ = this._config.getConfig().pipe(select('tickerEnabled'));
         this.columns$ = this._config.getConfig().pipe(
             select((state) => {
                 if (state.view.mode === 'normal') {
@@ -30,6 +32,9 @@ export class DatagridSettingsComponent extends AbstractPopover {
         );
     }
 
+    public toggleTicker(checked: boolean) {
+        this._config.setTicker(checked);
+    }
 
     public toggleColumn(column: string) {
         this._config.toggleColumn(column);

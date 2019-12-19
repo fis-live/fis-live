@@ -1,0 +1,72 @@
+.ticker {
+  flex: 0 0 auto;
+  overflow: hidden;
+  height: 72px;
+
+  background-color: $app-table-bgcolor;
+  border-bottom-left-radius: 4px;
+  border-bottom-right-radius: 4px;
+  border: 1px solid $app-table-bordercolor;
+  position: relative;
+}
+
+@media only screen and (max-width : 360px) {
+  .ticker {
+    border: none;
+    border-top: 2px solid $app-table-bordercolor;
+  }
+}
+
+.ticker-table {
+  font-size: 0.9em;
+  width: 100%;
+  background: $app-table-bgcolor;
+  border: none;
+  margin: 0;
+  text-align: left;
+  color: $clr-h6-color;
+
+  tr {
+    background-color: #FFFFFF;
+  }
+
+  tr:nth-child(2n) {
+    background-color: $app-thead-bgcolor;
+  }
+
+  td {
+    border: none;
+    padding: 0;
+
+    > div {
+      box-sizing: border-box;
+      overflow: hidden;
+      padding: 0 8px;
+    }
+  }
+
+  .green {
+    color: green;
+  }
+
+  .red {
+    color: red;
+  }
+
+  tr.red .bib .badge {
+    background: $clr-red-dark-midtone;
+    font-weight: 700;
+  }
+
+  tr.yellow .bib .badge {
+    background: $clr-yellow;
+    color: $clr-black;
+    font-weight: 700;
+  }
+
+  tr.turquoise .bib .badge {
+    background: #40e0d0;
+    color: $clr-black;
+    font-weight: 700;
+  }
+}

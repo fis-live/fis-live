@@ -10,7 +10,7 @@ import { Intermediate } from '../../models/intermediate';
 import { RacesByPlace } from '../../models/race';
 import { Event, Racer } from '../../models/racer';
 import { setDelay, toggleFavorite } from '../../state/actions/settings';
-import { AppState, getDelayState, selectAllIntermediates, selectEvents, selectRacesByPlace } from '../../state/reducers';
+import { AppState, getDelayState, getResultState, selectAllIntermediates, selectRacesByPlace } from '../../state/reducers';
 
 @Component({
     selector: 'app-sidebar',
@@ -40,8 +40,8 @@ export class SidebarComponent {
     constructor(private store: Store<AppState>) {
         this.upcomingRaces$ = store.select(selectRacesByPlace);
         this.delay$ = store.select(getDelayState);
-        this.events$ = combineLatest([this.selectedInter, store.select(selectEvents)]).pipe(
-            map(([inter, events]) => events.filter(event => event.interId === inter))
+        this.events$ = combineLatest([this.selectedInter, store.select(getResultState)]).pipe(
+            map(([inter, _state]) => _state.standings[inter].events.slice().reverse())
         );
         this.intermediates$ = store.pipe(select(selectAllIntermediates));
     }

@@ -1,13 +1,20 @@
 <button (click)="toggle()" [class.active]="open" class="btn btn-sm btn-link column-toggle--action" type="button">
-    <clr-icon shape="view-columns"></clr-icon>
+    <clr-icon shape="cog" size="20" class="is-solid"></clr-icon>
 </button>
 
 <div class="column-switch" *ngIf="open">
     <div class="switch-header">
-        Show Columns
+        Settings
         <button (click)="toggle()" class="btn btn-sm btn-link" type="button">
-            <clr-icon shape="times"></clr-icon>
+            <clr-icon size="24" shape="times"></clr-icon>
         </button>
+    </div>
+    <div class="clr-toggle-wrapper">
+        <input type="checkbox" id="toggle-ticker" name="toggle-basic" class="clr-toggle" [ngModel]="tickerEnabled$ | async" (ngModelChange)="toggleTicker($event)">
+        <label for="toggle-ticker">Ticker</label>
+    </div>
+    <div class="switch-header">
+        Columns
     </div>
     <ul class="switch-content list-unstyled" cdkDropList (cdkDropListDropped)="onDrop($event)">
         <li class="clr-checkbox-wrapper" *ngFor="let col of columns$ | async; trackBy: trackBy" cdkDrag>
@@ -16,16 +23,16 @@
             <clr-icon class="column-drag-handle" cdkDragHandle shape="drag-handle"></clr-icon>
         </li>
     </ul>
-    <div class="switch-footer">
-        <div>
-            <button class="btn btn-sm btn-link p6 text-uppercase" type="button">Select All</button>
-        </div>
-        <div class="action-right">
-            <button (click)="toggle()"
-                    class="btn btn-primary"
-                    type="button">
-                Ok
-            </button>
-        </div>
-    </div>
+<!--    <div class="switch-footer">-->
+<!--        <div>-->
+<!--            <button class="btn btn-sm btn-link p6 text-uppercase" type="button">Select All</button>-->
+<!--        </div>-->
+<!--        <div class="action-right">-->
+<!--            <button (click)="toggle()"-->
+<!--                    class="btn btn-primary"-->
+<!--                    type="button">-->
+<!--                Ok-->
+<!--            </button>-->
+<!--        </div>-->
+<!--    </div>-->
 </div>

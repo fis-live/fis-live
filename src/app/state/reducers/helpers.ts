@@ -174,5 +174,6 @@ export function updateResultMutably(state: State, result: Result) {
 
     mark.rank = isRanked(result.status) ? rank : null;
     entity.marks[intermediate] = mark;
+    standing.leader = leader;
     standing.version += 1;
 }

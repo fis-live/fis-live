@@ -3,3 +3,5 @@
 <div class="segment" appScrollbar>
     <app-table [config]="(config$ | async)!"></app-table>
 </div>
+
+<app-dg-ticker *ngIf="tickerEnabled$ | async" class="ticker"></app-dg-ticker>

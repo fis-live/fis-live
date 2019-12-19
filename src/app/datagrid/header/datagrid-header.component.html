@@ -1,49 +1,49 @@
 <ng-container *ngIf="config$ | async as config">
-<div class="btn-group btn-sm">
-    <ng-container *ngIf="config.view.mode === 'normal'; else analysis">
-        <app-select class="btn-primary" key="inter">
-            Intermediate...
-            <ng-template let-item>{{ item.name }}</ng-template>
-        </app-select>
+    <div class="btn-group btn-sm">
+        <ng-container *ngIf="config.view.mode === 'normal'; else analysis">
+            <app-select class="btn-primary" key="inter">
+                Intermediate...
+                <ng-template let-item>{{ item.name }}</ng-template>
+            </app-select>
 
-        <app-select *ngIf="config.displayedColumns.indexOf('diff') > -1" class="btn-success" key="diff">
-            Diff...
-            <ng-template let-item>{{ item.short }}</ng-template>
-        </app-select>
-    </ng-container>
+            <app-select *ngIf="config.displayedColumns.indexOf('diff') > -1" class="btn-success" key="diff">
+                Diff...
+                <ng-template let-item>{{ item.short }}</ng-template>
+            </app-select>
+        </ng-container>
 
-    <ng-template #analysis>
-        <div class="radio btn">
-                <input type="radio" name="btn-group-zero-{{ guid }}" id="btn-total-{{ guid }}" value="total"
-                       [ngModel]="config.view.display" (ngModelChange)="setDisplayMode('total')">
-            <label for="btn-total-{{ guid }}" style="min-height: 0;">Total</label>
-        </div>
+        <ng-template #analysis>
+            <div class="radio btn">
+                    <input type="radio" name="btn-group-zero-{{ guid }}" id="btn-total-{{ guid }}" value="total"
+                           [ngModel]="config.view.display" (ngModelChange)="setDisplayMode('total')">
+                <label for="btn-total-{{ guid }}" style="min-height: 0;">Total</label>
+            </div>
 
-        <div class="radio btn">
-                <input type="radio" name="btn-group-zero-{{ guid }}" id="btn-diff-{{ guid }}" value="diff"
-                       [ngModel]="config.view.display" (ngModelChange)="setDisplayMode('diff')">
-            <label for="btn-diff-{{ guid }}" style="min-height: 0;">Diff</label>
-        </div>
-    </ng-template>
-</div>
-
-<div *ngIf="config.view.mode === 'analysis'">
-    <div class="clr-select-wrapper">
-            <select id="select-basic" class="clr-select" style="height: 22px" [ngModel]="config.view.zero"
-                    (ngModelChange)="setZero($event)">
-                <option value="-1">Leader</option>
-                <option *ngFor="let racer of racers$ | async"
-                        [value]="racer.bib">{{ racer.firstName }} {{ racer.lastName }}</option>
-
-        </select>
+            <div class="radio btn">
+                    <input type="radio" name="btn-group-zero-{{ guid }}" id="btn-diff-{{ guid }}" value="diff"
+                           [ngModel]="config.view.display" (ngModelChange)="setDisplayMode('diff')">
+                <label for="btn-diff-{{ guid }}" style="min-height: 0;">Diff</label>
+            </div>
+        </ng-template>
     </div>
-</div>
 
-<div style="flex: 1 0 auto">
-    <!--div class="clr-input-wrapper">
-        <input class="clr-input" type="text" placeholder="Filter" style="height: 19px" />
-    </div-->
-</div>
+    <div *ngIf="config.view.mode === 'analysis'">
+        <div class="clr-select-wrapper">
+                <select id="select-basic" class="clr-select" style="height: 22px" [ngModel]="config.view.zero"
+                        (ngModelChange)="setZero($event)">
+                    <option value="-1">Leader</option>
+                    <option *ngFor="let racer of racers$ | async"
+                            [value]="racer.bib">{{ racer.firstName }} {{ racer.lastName }}</option>
+
+            </select>
+        </div>
+    </div>
+
+    <div style="flex: 1 0 auto">
+        <!--div class="clr-input-wrapper">
+            <input class="clr-input" type="text" placeholder="Filter" style="height: 19px" />
+        </div-->
+    </div>
 
     <div style="flex: 0 0 auto;">
         <div class="clr-toggle-wrapper" *ngIf="config.breakpoint === 'large'">
@@ -52,7 +52,8 @@
             <label for="toggle-{{ guid }}">All</label>
         </div>
     </div>
-<!--    <div style="flex: 0 0 auto; display: inline-flex">-->
-<!--    <app-dg-settings class="column-switch-wrapper"></app-dg-settings>-->
-<!--</div>-->
+
+    <div style="flex: 0 0 auto; display: inline-flex">
+        <app-dg-settings class="column-switch-wrapper"></app-dg-settings>
+    </div>
 </ng-container>

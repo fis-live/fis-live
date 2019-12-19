@@ -20,7 +20,6 @@ export interface State {
     entities: {[id: number]: RacerData};
     intermediates: Intermediate[];
     standings: {[id: number]: Standing};
-    events: Event[];
 }
 
 export const initialState: State = {
@@ -28,8 +27,7 @@ export const initialState: State = {
     ids: [],
     entities: {},
     intermediates: [],
-    standings: {},
-    events: []
+    standings: {}
 };
 
 const resultReducer = createReducer(
@@ -40,8 +38,7 @@ const resultReducer = createReducer(
             ids: [],
             entities: {},
             intermediates: action.intermediates,
-            standings: {},
-            events: []
+            standings: {}
         };
 
         action.intermediates.forEach(intermediate => {
@@ -50,7 +47,8 @@ const resultReducer = createReducer(
                 ids: [],
                 leader: maxVal,
                 latestBibs: [],
-                bestDiff: (new Array(Math.max(intermediate.key, 1))).fill(maxVal)
+                bestDiff: (new Array(Math.max(intermediate.key, 1))).fill(maxVal),
+                events: []
             };
         });
 
@@ -123,25 +121,23 @@ const resultReducer = createReducer(
                     const result = event.payload as Result;
                     const inter = result.intermediate === 99 ? state.intermediates.length - 1 : result.intermediate;
                     const isBonus = state.intermediates[inter].type === 'bonus_points';
+                    const leader = draft.standings[inter].leader;
 
-                    const _event = {
-                        racer: state.entities[result.racer].racer.firstName[0] + '. ' + state.entities[result.racer].racer.lastName,
-                        inter: state.intermediates[inter].name,
-                        status: '',
-                        rank: 0,
-                        diff: formatTime(result.time, state.standings[inter].leader),
-                        timestamp: timestamp,
-                        interId: inter
-                    };
-
-                    if (state.entities[result.racer].marks.length > inter) {
+                    if (draft.entities[result.racer].marks.length > inter) {
                         updateResultMutably(draft, result);
                     } else {
                         registerResultMutably(draft, result);
-                    }
 
-                    if (!isBonus && isRanked(result.status)) {
-                        draft.events = [...draft.events.slice(Math.max(draft.events.length - 30, 0)), _event];
+                        const _event = {
+                            racer: state.entities[result.racer].racer,
+                            rank: draft.entities[result.racer].marks[inter].rank,
+                            diff: formatTime(result.time, (leader < maxVal) ? leader : result.time),
+                            timestamp: timestamp
+                        };
+
+                        if (!isBonus && isRanked(result.status)) {
+                            draft.standings[inter].events = [_event, ...draft.standings[inter].events.slice(0, 20)];
+                        }
                     }
                 }
                 break;
@@ -159,8 +155,6 @@ const resultReducer = createReducer(
 export function reducer(state: State | undefined, action: Action) {
     return resultReducer(state, action);
 }
-
-export const getEvents = (state: State) => state.events;
 
 export const getIntermediates = (state: State) => state.intermediates;
 

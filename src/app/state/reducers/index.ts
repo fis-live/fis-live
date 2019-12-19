@@ -63,8 +63,6 @@ export const selectRacesByDate = createSelector(getCalendarState, Calendar.getRa
 
 export const getDelayState = createSelector(getSettingsState, Settings.getDelay);
 
-export const selectEvents = createSelector(getResultState, Result.getEvents);
-
 export const selectAllRacers = createSelector(getResultState, Result.getAllRacers);
 
 export const selectView = (view: View): OperatorFunction<AppState, ResultItem[]> => {

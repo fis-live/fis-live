@@ -75,8 +75,8 @@
 
                 <div *ngFor="let event of events$ | async" class="item">
                     <div style="flex: 1">
-                        <div style="line-height: 20px; font-weight: bold;">{{ event.racer }}</div>
-                        <div style="line-height: 16px; font-size: 10px;">{{ event.inter }} {{ event.diff }}s</div>
+                        <div style="line-height: 20px; font-weight: bold;">{{ event.racer.display }}</div>
+                        <div style="line-height: 16px; font-size: 10px;">{{ event.diff }}s</div>
                     </div>
                     <div>
                         <button type="button" class="btn btn-sm btn-link" aria-label="Sync" (click)="sync(event.timestamp)">

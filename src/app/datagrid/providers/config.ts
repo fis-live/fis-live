@@ -24,6 +24,7 @@ export interface Config {
     breakpoint: string;
     dynamicColumns: ColumnDef[];
     columns: Column[];
+    tickerEnabled: boolean;
 }
 
 function clamp(value: number, max: number): number {
@@ -82,7 +83,8 @@ const defaultConfig: Config = {
     displayedColumns: ['rank', 'bib', 'name', 'time', 'nsa', 'diff'],
     breakpoint: 'large',
     dynamicColumns: [],
-    columns: defaultColumns
+    columns: defaultColumns,
+    tickerEnabled: false
 };
 
 @Injectable()
@@ -369,5 +371,14 @@ export class DatagridConfig implements OptionSelector<View, Intermediate>, OnDes
 
     ngOnDestroy() {
         this._subscription.unsubscribe();
+    }
+
+    setTicker(checked: boolean) {
+        this._internalConfig = {
+            ...this._internalConfig,
+            tickerEnabled: checked
+        };
+
+        this._config.next(this._internalConfig);
     }
 }

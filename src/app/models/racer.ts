@@ -20,6 +20,7 @@ export interface Standing {
     leader: number;
     bestDiff: number[];
     latestBibs: number[];
+    events: Event[];
 }
 
 export interface Mark {
@@ -48,11 +49,8 @@ export interface RacerData {
 }
 
 export interface Event {
-    racer: string;
+    racer: Racer;
     diff: string;
-    rank: number;
-    inter: string;
-    status: string;
+    rank: number | null;
     timestamp: number;
-    interId: number;
 }

@@ -281,7 +281,7 @@ export class FisConnectionService {
         for (let i = 0; i < data.racers.length; i++) {
             const racer = data.racers[i];
             if (racer !== null) {
-                const firstName = fixEncoding(racer[3].trim());
+                const firstName = toTitleCase(fixEncoding(racer[3].trim()));
                 const lastName = toTitleCase(fixEncoding(racer[2].trim()));
 
                 racers.push({

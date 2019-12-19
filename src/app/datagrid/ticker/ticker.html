@@ -1,0 +1,12 @@
+<table class="ticker-table">
+    <tr [@animation]="i" *ngFor="let event of events$ | async; let i = index">
+        <td style="width: 24px; text-align: center; background-color: unset">{{ event.rank }}</td>
+        <td>
+            <div class="flag {{ event.racer.nsa | lowercase }}">
+                <a style="color: inherit" target="_blank" href="https://www.fis-ski.com/DB/general/athlete-biography.html?sectorcode=CC&fiscode={{ event.racer.id }}">
+                    {{ event.racer.short }}
+                </a>
+        </div></td>
+        <td [ngClass]="{'green': event.diff[0] === '-', 'red': event.diff[0] === '+'}"><div style="font-weight: 700; text-align: right">{{ event.diff }}</div></td>
+    </tr>
+</table>

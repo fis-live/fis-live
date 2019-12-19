@@ -22,6 +22,7 @@ import { DatagridComponent } from './datagrid/datagrid.component';
 import { FilterComponent } from './datagrid/filter.component';
 import { DatagridHeader } from './datagrid/header/datagrid-header.component';
 import { SortDirective } from './datagrid/sort.directive';
+import { DatagridTickerComponent } from './datagrid/ticker/ticker';
 import { DatagridWrapper } from './datagrid/wrapper/datagrid-wrapper';
 import { appRoutes } from './routes';
 import { ConnectionEffects } from './state/connection-effects';
@@ -37,6 +38,7 @@ import { ScrollbarDirective } from './utils/scrollbar.directive';
         DatagridComponent,
         DatagridHeader,
         DatagridSettingsComponent,
+        DatagridTickerComponent,
         DatagridWrapper,
         FilterComponent,
         FocusDirective,

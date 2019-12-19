@@ -1,4 +1,5 @@
 import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
+import { select } from '@ngrx/store';
 import { Observable } from 'rxjs';
 
 import { APP_OPTIONS } from '../../core/select/select';
@@ -15,6 +16,7 @@ import { Sort } from '../providers/sort';
 })
 export class DatagridWrapper {
     public config$: Observable<Config>;
+    public tickerEnabled$: Observable<boolean>;
 
     @Input() set breakpoint(breakpoint: string) {
         this._config.setBreakpoint(breakpoint);
@@ -22,5 +24,6 @@ export class DatagridWrapper {
 
     constructor(private _config: DatagridConfig) {
         this.config$ = this._config.getConfig();
+        this.tickerEnabled$ = this.config$.pipe(select('tickerEnabled'));
     }
 }
