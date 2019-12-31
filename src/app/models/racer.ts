@@ -46,6 +46,7 @@ export interface RacerData {
     status: string;
     marks: Mark[];
     notes: string[];
+    tourStanding: number | null;
 }
 
 export interface Event {

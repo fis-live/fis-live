@@ -27,3 +27,10 @@ export const setPursuitTimes = createAction(
         times: { racer: number; time: number }[]
     }>()
 );
+
+export const setTourStanding = createAction(
+    '[Result] Set tour standing',
+    props<{
+        times: { bib: number; time: string }[]
+    }>()
+);

@@ -7,7 +7,7 @@ import { View } from '../../datagrid/providers/config';
 import { isRanked, maxVal, Status as StatusEnum, timePenalty } from '../../fis/fis-constants';
 import { Result, Status } from '../../fis/models';
 import { Intermediate } from '../../models/intermediate';
-import { Event, RacerData, Standing } from '../../models/racer';
+import { RacerData, Standing } from '../../models/racer';
 import { Prop, ResultItem } from '../../models/table';
 import { formatTime, guid } from '../../utils/utils';
 import { RaceActions } from '../actions';
@@ -62,7 +62,8 @@ const resultReducer = createReducer(
                     status: entry.status || '',
                     racer: racer,
                     marks: [{time: 0, status: StatusEnum.Default, rank: entry.order || null, diffs: [maxVal], version: 0}],
-                    notes: []
+                    notes: [],
+                    tourStanding: null
                 };
             } else {
                 state.entities[racer.bib] = {
@@ -70,13 +71,15 @@ const resultReducer = createReducer(
                     status: '',
                     racer: racer,
                     marks: [],
-                    notes: []
+                    notes: [],
+                    tourStanding: null
                 };
             }
         }
 
         for (const result of action.results) {
-            if (state.entities[result.racer].marks.length > result.intermediate) {
+            const inter = result.intermediate === 99 ? state.intermediates.length - 1 : result.intermediate;
+            if (state.entities[result.racer].marks.length > inter) {
                 updateResultMutably(state, result);
             } else {
                 registerResultMutably(state, result);
@@ -111,6 +114,34 @@ const resultReducer = createReducer(
         standing.version += 1;
         standing.leader = leader;
         standing.bestDiff = [leader];
+    })),
+    on(RaceActions.setTourStanding, (state, { times }) => produce(state, draft => {
+        let zero = 0;
+        for (const time of times) {
+            if (time.time[0] !== '+') {
+                const timeArray = time.time.split(':');
+                zero = (timeArray.length === 3) ?
+                    (Number(timeArray[0]) * 3600 + Number(timeArray[1]) * 60 + Number(timeArray[2])) * 1000 :
+                    (Number(timeArray[0]) * 60 + Number(timeArray[1])) * 1000;
+            }
+        }
+
+        for (const time of times) {
+            const entity = draft.entities[time.bib];
+            if (time.time[0] !== '+') {
+                entity.tourStanding = zero;
+            } else {
+                const timeArray = time.time.split(':');
+                const t = (timeArray.length === 3) ?
+                    (Number(timeArray[0]) * 3600 + Number(timeArray[1]) * 60 + Number(timeArray[2])) * 1000 :
+                    (Number(timeArray[0]) * 60 + Number(timeArray[1])) * 1000;
+                entity.tourStanding = zero + t;
+            }
+        }
+
+        for (const inter of state.intermediates) {
+            draft.standings[inter.key].version += 1;
+        }
     })),
     on(RaceActions.update, (state, action) => produce(state, draft => {
         const { timestamp } = action;
@@ -178,6 +209,12 @@ export const getAllRacers = createSelector(
 function prepareStartList(state: State): ResultItem[] {
     const standing = state.standings[0];
     const rows = [];
+    let bestTourStanding = maxVal;
+    for (const id of standing.ids) {
+        const entity = state.entities[id];
+        bestTourStanding = Math.min(bestTourStanding, entity.tourStanding || maxVal);
+    }
+
     for (const id of standing.ids) {
         const entity = state.entities[id];
         const mark = entity.marks[0];
@@ -202,6 +239,10 @@ function prepareStartList(state: State): ResultItem[] {
                 display: time < maxVal ? formatTime(time, standing.bestDiff[0]) : '',
                 value: time
             },
+            tourStanding: {
+                display: entity.tourStanding !== null ? formatTime(entity.tourStanding, bestTourStanding) : '',
+                value: entity.tourStanding || 0
+            },
             notes: entity.notes,
             classes: classes,
             marks: [],
@@ -214,6 +255,15 @@ function prepareStartList(state: State): ResultItem[] {
 
 function prepareInter(state: State, intermediate: Intermediate, diff: number | null): ResultItem[] {
     const standing = state.standings[intermediate.key];
+    let bestTourStanding = maxVal;
+
+    for (const id of standing.ids) {
+        const entity = state.entities[id];
+        const mark = entity.marks[intermediate.key];
+        if (isRanked(mark.status) && entity.tourStanding !== null) {
+            bestTourStanding = Math.min(bestTourStanding, entity.tourStanding + mark.time);
+        }
+    }
 
     const rows = [];
     for (const id of standing.ids) {
@@ -223,11 +273,17 @@ function prepareInter(state: State, intermediate: Intermediate, diff: number | n
         const _state = standing.latestBibs.find((bib) => bib === id) ? 'new' : 'normal';
 
         let timeProp: Prop<number> | Prop<string>;
+        let tourStandingProp: Prop<number>;
         if (intermediate.type === 'bonus_points') {
             if (isRanked(mark.status)) {
                 timeProp = {
                     value: time,
                     display: time
+                };
+
+                tourStandingProp = {
+                    display: '',
+                    value: 0
                 };
             } else {
                 continue;
@@ -236,6 +292,11 @@ function prepareInter(state: State, intermediate: Intermediate, diff: number | n
             timeProp = {
                 display: isRanked(mark.status) ? formatTime(time, standing.leader) : mark.status,
                 value: time
+            };
+
+            tourStandingProp = {
+                value: (entity.tourStanding || maxVal) + timeProp.value,
+                display: isRanked(mark.status) ? formatTime((entity.tourStanding || maxVal) + timeProp.value, bestTourStanding) : ''
             };
         }
 
@@ -272,6 +333,7 @@ function prepareInter(state: State, intermediate: Intermediate, diff: number | n
             state: _state,
             racer: entity.racer,
             time: timeProp,
+            tourStanding: tourStandingProp,
             rank: mark.rank,
             diff: diffProp,
             notes: entity.notes,
@@ -353,6 +415,7 @@ function prepareAnalysis(state: State, view: View): ResultItem[] {
             state: _state,
             racer: row.racer,
             time: {display: '', value: 0},
+            tourStanding: {display: '', value: 0},
             rank: 1,
             diff: {display: '', value: 0},
             notes: row.notes,

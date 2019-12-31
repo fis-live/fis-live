@@ -38,7 +38,8 @@ const defaultColumns = [
     { id: 'name', name: 'Name', toggled: true, isDynamic: false },
     { id: 'time', name: 'Time', toggled: true, isDynamic: false },
     { id: 'nsa', name: 'NSA', toggled: true, isDynamic: false },
-    { id: 'diff', name: 'Diff.', toggled: true, isDynamic: false }
+    { id: 'diff', name: 'Diff.', toggled: true, isDynamic: false },
+    { id: 'tour', name: 'Tour Std.', toggled: false, isDynamic: false }
 ];
 
 const defaultColumnsSmall = [
@@ -48,7 +49,8 @@ const defaultColumnsSmall = [
     { id: 'name', name: 'Name', toggled: true, isDynamic: false },
     { id: 'time', name: 'Time', toggled: true, isDynamic: false },
     { id: 'nsa', name: 'NSA', toggled: false, isDynamic: false },
-    { id: 'diff', name: 'Diff.', toggled: true, isDynamic: false }
+    { id: 'diff', name: 'Diff.', toggled: true, isDynamic: false },
+    { id: 'tour', name: 'Tour Std.', toggled: false, isDynamic: false }
 ];
 
 const defaultColumnsMini = [
@@ -58,7 +60,8 @@ const defaultColumnsMini = [
     { id: 'name', name: 'Name', toggled: true, isDynamic: false },
     { id: 'time', name: 'Time', toggled: true, isDynamic: false },
     { id: 'nsa', name: 'NSA', toggled: false, isDynamic: false },
-    { id: 'diff', name: 'Diff.', toggled: false, isDynamic: false }
+    { id: 'diff', name: 'Diff.', toggled: false, isDynamic: false },
+    { id: 'tour', name: 'Tour Std.', toggled: false, isDynamic: false }
 ];
 
 const defaultAnalysisColumns = [
@@ -68,7 +71,8 @@ const defaultAnalysisColumns = [
     { id: 'name', name: 'Name', toggled: true, isDynamic: false },
     { id: 'time', name: 'Time', toggled: false, isDynamic: false },
     { id: 'nsa', name: 'NSA', toggled: false, isDynamic: false },
-    { id: 'diff', name: 'Diff.', toggled: false, isDynamic: false }
+    { id: 'diff', name: 'Diff.', toggled: false, isDynamic: false },
+    { id: 'tour', name: 'Tour Std.', toggled: false, isDynamic: false }
 ];
 
 const defaultConfig: Config = {

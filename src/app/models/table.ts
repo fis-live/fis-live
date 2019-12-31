@@ -23,6 +23,7 @@ export interface ResultItem {
     racer: Racer;
     time: Prop<number> | Prop<string>;
     diff: Prop<number>;
+    tourStanding: Prop<number>;
     version: number;
     rank: number | null;
     state: string;

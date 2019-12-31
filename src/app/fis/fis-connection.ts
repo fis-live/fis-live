@@ -181,13 +181,24 @@ export class FisConnectionService {
 
     private parsePdf(actions: Action[]): Action[] {
         const times: any[] = [];
+        const tourStandings: any[] = [];
+        const _actions: Action[] = [];
         for (const ac of actions) {
             if (ac.type === '[Result] Register start time') {
                 times.push((<any>ac).time);
+            } else if (ac.type === '[Result] Set tour standing') {
+                tourStandings.push((<any>ac).data);
             }
         }
 
-        return times.length > 0 ? [RaceActions.setPursuitTimes({times})] : [];
+        if (times.length > 0) {
+            _actions.push(RaceActions.setPursuitTimes({times}));
+        }
+        if (tourStandings.length > 0) {
+            _actions.push(RaceActions.setTourStanding({times: tourStandings}));
+        }
+
+        return _actions;
     }
 
     private parseMain(data: Main): Action[] {

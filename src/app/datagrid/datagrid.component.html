@@ -118,6 +118,13 @@
         <td cdk-cell *cdkCellDef="let row"><div>{{ row.diff.display || '&nbsp;' }}</div></td>
     </ng-container>
 
+    <!-- Tour standing Definition -->
+    <ng-container cdkColumnDef="tour">
+        <th cdk-header-cell *cdkHeaderCellDef>
+            <div appSort="tourStanding.value">Tour Std.</div>
+        </th>
+        <td cdk-cell *cdkCellDef="let row"><div>{{ row.tourStanding.display || '&nbsp;' }}</div></td>
+    </ng-container>
 
     <!-- Dynamic definitions -->
     <ng-container [cdkColumnDef]="col.id" *ngFor="let col of config.dynamicColumns">
