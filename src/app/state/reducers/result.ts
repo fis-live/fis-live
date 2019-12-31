@@ -261,7 +261,7 @@ function prepareInter(state: State, intermediate: Intermediate, diff: number | n
         const entity = state.entities[id];
         const mark = entity.marks[intermediate.key];
         if (isRanked(mark.status) && entity.tourStanding !== null) {
-            bestTourStanding = Math.min(bestTourStanding, entity.tourStanding + mark.time);
+            bestTourStanding = Math.min(bestTourStanding, entity.tourStanding + mark.diffs[0]);
         }
     }
 
@@ -295,8 +295,8 @@ function prepareInter(state: State, intermediate: Intermediate, diff: number | n
             };
 
             tourStandingProp = {
-                value: (entity.tourStanding || maxVal) + timeProp.value,
-                display: isRanked(mark.status) ? formatTime((entity.tourStanding || maxVal) + timeProp.value, bestTourStanding) : ''
+                value: isRanked(mark.status) ? (entity.tourStanding || maxVal) + mark.diffs[0] : timePenalty[mark.status],
+                display: isRanked(mark.status) ? formatTime((entity.tourStanding || maxVal) + mark.diffs[0], bestTourStanding) : ''
             };
         }
 
@@ -375,6 +375,17 @@ function prepareAnalysis(state: State, view: View): ResultItem[] {
         }
     }
 
+    let bestTourStanding = maxVal;
+    const finishKey = state.intermediates.length - 1;
+
+    for (const id of state.standings[finishKey].ids) {
+        const entity = state.entities[id];
+        const mark = entity.marks[finishKey];
+        if (isRanked(mark.status) && entity.tourStanding !== null) {
+            bestTourStanding = Math.min(bestTourStanding, entity.tourStanding + mark.diffs[0]);
+        }
+    }
+
     const rows = [];
     for (const id of state.ids) {
         const row = state.entities[id];
@@ -390,6 +401,18 @@ function prepareAnalysis(state: State, view: View): ResultItem[] {
         }
 
         const marks: ((Prop<number> | Prop<string>) & { state: string })[] = [];
+        let tourStandingProp = {
+            value: maxVal,
+            display: ''
+        };
+
+        if (row.marks[finishKey] != null) {
+            const mark = row.marks[finishKey];
+            tourStandingProp = {
+                value: isRanked(mark.status) ? (row.tourStanding || maxVal) + mark.diffs[0] : timePenalty[mark.status],
+                display: isRanked(mark.status) ? formatTime((row.tourStanding || maxVal) + mark.diffs[0], bestTourStanding) : ''
+            };
+        }
 
         for (let i = 0; i < row.marks.length; i++) {
             const prevKey = previousSector[i];
@@ -415,7 +438,7 @@ function prepareAnalysis(state: State, view: View): ResultItem[] {
             state: _state,
             racer: row.racer,
             time: {display: '', value: 0},
-            tourStanding: {display: '', value: 0},
+            tourStanding: tourStandingProp,
             rank: 1,
             diff: {display: '', value: 0},
             notes: row.notes,
