@@ -245,7 +245,7 @@ export class FisConnectionService {
 
         data.racedef.forEach((def, index) => {
             let name: string;
-            let type: 'start_list' | 'inter' | 'finish' | 'bonus_points';
+            let type: 'start_list' | 'inter' | 'finish' | 'bonus_points' | 'bonus_time';
             let short: string;
             switch (def[0]) {
                 case 'inter':
@@ -263,6 +263,15 @@ export class FisConnectionService {
                         short = 'Bonus ' + def[2] + ' ' + raceInfo.lengthUnit;
                     } else {
                         name = short = 'Bonus points';
+                    }
+                    break;
+                case 'bonustime':
+                    type = 'bonus_time';
+                    if (def[2] && def[2] > 0) {
+                        name = 'Bonus time at ' + def[2] + ' ' + raceInfo.lengthUnit;
+                        short = 'Bonus ' + def[2] + ' ' + raceInfo.lengthUnit;
+                    } else {
+                        name = short = 'Bonus time';
                     }
                     break;
                 case 'finish':

@@ -110,7 +110,7 @@ export class DatagridConfig implements OptionSelector<View, Intermediate>, OnDes
             const columns = this._internalConfig.columns.filter((column) => !column.isDynamic);
             const dynamicColumns = [];
             for (const intermediate of values) {
-                if (intermediate.type === 'bonus_points') {
+                if (intermediate.type === 'bonus_points' || intermediate.type === 'bonus_time') {
                     continue;
                 }
 
@@ -314,10 +314,15 @@ export class DatagridConfig implements OptionSelector<View, Intermediate>, OnDes
     getOptions(key: KeysOfType<View, Intermediate | null>): Observable<Option<Intermediate>[]> {
         if (key === 'diff') {
             return this._source.pipe(
-                map((options) => options.filter(inter => inter.type !== 'bonus_points').map((option) => {
+                map((options) => options
+                    .filter(inter => inter.type !== 'bonus_points' && inter.type !== 'bonus_time')
+                    .map((option) => {
                         const inter = this._internalConfig.view.inter;
                         const curr = this._internalConfig.view[key];
-                        const disabled = inter === null || inter.type === 'bonus_points' || (option.key !== 0 && option.key >= inter.key);
+                        const disabled = inter === null
+                            || inter.type === 'bonus_points'
+                            || inter.type === 'bonus_time'
+                            || (option.key !== 0 && option.key >= inter.key);
                         const selected = curr === option;
 
                         return { value: option, selected, disabled };

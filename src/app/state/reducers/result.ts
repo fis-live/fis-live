@@ -274,7 +274,7 @@ function prepareInter(state: State, intermediate: Intermediate, diff: number | n
 
         let timeProp: Prop<number> | Prop<string>;
         let tourStandingProp: Prop<number>;
-        if (intermediate.type === 'bonus_points') {
+        if (intermediate.type === 'bonus_points' || intermediate.type === 'bonus_time') {
             if (isRanked(mark.status)) {
                 timeProp = {
                     value: time,
@@ -351,7 +351,9 @@ function prepareAnalysis(state: State, view: View): ResultItem[] {
     const previousSector: number[] = [];
     if (view.zero === -1) {
         for (const { key } of state.intermediates) {
-            const prevKey = key > 0 && state.intermediates[key - 1].type === 'bonus_points' ? Math.max(key - 2, 0) : Math.max(key - 1, 0);
+            const prevKey = key > 0
+            && (state.intermediates[key - 1].type === 'bonus_points' || state.intermediates[key - 1].type === 'bonus_time')
+                ? Math.max(key - 2, 0) : Math.max(key - 1, 0);
             previousSector[key] = prevKey;
             if (view.display === 'total') {
                 zeroes[key] = state.standings[key].leader;
@@ -361,7 +363,9 @@ function prepareAnalysis(state: State, view: View): ResultItem[] {
         }
     } else {
         for (const { key } of state.intermediates) {
-            const prevKey = key > 0 && state.intermediates[key - 1].type === 'bonus_points' ? Math.max(key - 2, 0) : Math.max(key - 1, 0);
+            const prevKey = key > 0
+            && (state.intermediates[key - 1].type === 'bonus_points' || state.intermediates[key - 1].type === 'bonus_time')
+                ? Math.max(key - 2, 0) : Math.max(key - 1, 0);
             previousSector[key] = prevKey;
             if (state.entities[view.zero].marks[key] !== undefined) {
                 if (view.display === 'total') {
