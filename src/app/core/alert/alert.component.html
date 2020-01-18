@@ -1,16 +1,16 @@
-<div *ngIf="alert as _alert" [@translate] [ngClass]="'alert alert-app-level alert-' + _alert.severity" >
+<div *ngIf="alert !== null" [@translate] [ngClass]="'alert alert-app-level alert-' + alert.severity" >
     <div class="alert-items">
         <div class="alert-item">
             <div class="alert-icon-wrapper">
-                <clr-icon class="alert-icon" [shape]="iconInfoFromType(_alert.severity)"></clr-icon>
+                <clr-icon class="alert-icon" [shape]="iconInfoFromType(alert.severity)"></clr-icon>
             </div>
 
             <div class="alert-text">
-                {{ _alert.message }}
+                {{ alert.message }}
             </div>
 
             <div class="alert-actions">
-                <button class="btn alert-action" (click)="emitAction(_alert)">{{ _alert.action }}</button>
+                <button class="btn alert-action" (click)="emitAction(alert!)">{{ alert.action }}</button>
             </div>
         </div>
     </div>

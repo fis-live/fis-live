@@ -1,12 +1,12 @@
 <button (click)="toggle()" [class.active]="open" class="btn btn-sm btn-link column-toggle--action" type="button">
-    <clr-icon shape="cog" size="20" class="is-solid"></clr-icon>
+    <clr-icon shape="cog" [size]="20" class="is-solid"></clr-icon>
 </button>
 
 <div class="column-switch" *ngIf="open">
     <div class="switch-header">
         Settings
         <button (click)="toggle()" class="btn btn-sm btn-link" type="button">
-            <clr-icon size="24" shape="times"></clr-icon>
+            <clr-icon [size]="24" shape="times"></clr-icon>
         </button>
     </div>
     <div class="clr-toggle-wrapper">

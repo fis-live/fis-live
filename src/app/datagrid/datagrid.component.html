@@ -50,7 +50,7 @@
     <!--</tbody>-->
 <!--</table>-->
 
-<table class="datagrid {{ config.breakpoint }}" cdk-table [dataSource]="rows$ | async" [trackBy]="track">
+<table class="datagrid {{ config.breakpoint }}" cdk-table [dataSource]="(rows$ | async)!" [trackBy]="track">
 
     <!-- Order Definition -->
     <ng-container cdkColumnDef="order">
