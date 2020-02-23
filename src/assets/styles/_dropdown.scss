@@ -8,7 +8,8 @@
 }
 
 .dropdown-item {
-    overflow: unset !important;
+    overflow: visible !important;
+    flex: 0 0 30px;
 }
 
 .btn-group {
