@@ -15,7 +15,7 @@ export class ScrollbarDirective implements OnInit, OnDestroy {
         e.style.width = '100px';
         e.style.height = '100px';
         e.style.overflow = 'scroll';
-        e.style.msOverflowStyle = 'scrollbar';
+        (e.style as any).msOverflowStyle = 'scrollbar';
 
         document.body.appendChild(e);
         const width = (e.offsetWidth - e.clientWidth);

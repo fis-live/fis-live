@@ -45,25 +45,18 @@ export class AlertComponent {
     }
 
     public iconInfoFromType(type: string): string {
-        let shape: string;
         switch (type) {
             case 'warning':
             case 'alert-warning':
-                shape = 'exclamation-triangle';
-                break;
+                return 'exclamation-triangle';
             case 'danger':
             case 'alert-danger':
-                shape = 'exclamation-circle';
-                break;
+                return 'exclamation-circle';
             case 'success':
             case 'alert-success':
-                shape = 'check-circle';
-                break;
+                return 'check-circle';
             default:
-                shape = 'info-circle';
-                break;
+                return 'info-circle';
         }
-
-        return shape;
     }
 }

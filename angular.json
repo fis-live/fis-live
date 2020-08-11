@@ -8,6 +8,9 @@
       "schematics": {
         "@schematics/angular:component": {
           "style": "scss"
+        },
+        "@schematics/angular:application": {
+          "strict": true
         }
       },
       "root": "",
@@ -21,7 +24,7 @@
             "index": "src/index.html",
             "main": "src/main.ts",
             "polyfills": "src/polyfills.ts",
-            "tsConfig": "tsconfig.json",
+            "tsConfig": "tsconfig.base.json",
             "aot": true,
             "assets": [
               "src/favicon.ico"
@@ -73,6 +76,17 @@
             "production": {
               "browserTarget": "fis-live:build:production"
             }
+          }
+        },
+        "lint": {
+          "builder": "@angular-devkit/build-angular:tslint",
+          "options": {
+            "tsConfig": [
+              "tsconfig.base.json"
+            ],
+            "exclude": [
+              "**/node_modules/**"
+            ]
           }
         },
         "extract-i18n": {

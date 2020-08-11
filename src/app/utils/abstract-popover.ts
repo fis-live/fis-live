@@ -1,5 +1,6 @@
-import { ChangeDetectorRef, ElementRef, OnDestroy, Renderer2 } from '@angular/core';
+import { ChangeDetectorRef, Directive, ElementRef, OnDestroy, Renderer2 } from '@angular/core';
 
+@Directive()
 export abstract class AbstractPopover implements OnDestroy {
 
     public open: boolean = false;
