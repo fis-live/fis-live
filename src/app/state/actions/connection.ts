@@ -2,7 +2,6 @@ import { Action, createAction, props } from '@ngrx/store';
 
 import { Alert } from '../../models/alert';
 import { Race } from '../../models/race';
-import { DelayBehavior } from '../../utils/delayBy';
 
 export const loadServers = createAction(
     '[Connection] Load servers'
@@ -37,5 +36,5 @@ export const closeAlert = createAction(
 
 export const batch = createAction(
     '[Connection] Batch action',
-    props<{actions: Action[], shouldDelay?: DelayBehavior}>()
+    props<{actions: Action[]}>()
 );

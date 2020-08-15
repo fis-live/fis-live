@@ -41,6 +41,14 @@ export interface Update {
     events: any[][];
 }
 
+export interface PdfData {
+    bib: number;
+    time: number | null;
+    isWave: boolean | null;
+    shirt: string | null;
+    tourStanding: string | null;
+}
+
 export interface ServerList {
     servers: [string, number, number][];
 }

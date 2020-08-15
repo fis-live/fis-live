@@ -19,6 +19,7 @@ export interface Standing {
     ids: number[];
     leader: number;
     bestDiff: number[];
+    tourLeader?: number;
     latestBibs: number[];
     events: Event[];
 }
@@ -29,6 +30,7 @@ export interface Mark {
     rank: number | null;
     diffs: number[];
     version: number;
+    tourStanding?: number;
 }
 
 export enum Note {
@@ -47,6 +49,7 @@ export interface RacerData {
     marks: Mark[];
     notes: string[];
     tourStanding: number | null;
+    bonusSeconds: number;
 }
 
 export interface Event {

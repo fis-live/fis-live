@@ -13,12 +13,17 @@ import { RaceActions } from '../state/actions';
 import { batch } from '../state/actions/connection';
 import { setRaceMessage, updateMeteo, updateRaceInfo } from '../state/actions/info';
 import { initialize, update } from '../state/actions/race';
-import { DelayBehavior } from '../utils/delayBy';
 import { unserialize } from '../utils/unserialize';
 import { fixEncoding, toTitleCase } from '../utils/utils';
 
 import { nationalities, Status, statusMap } from './fis-constants';
-import { FisEvent, Main, ServerList, StartListEntry, Update } from './models';
+import { FisEvent, Main, PdfData, ServerList, StartListEntry, Update } from './models';
+
+export interface ActionWithTimestamp {
+    timestamp: number;
+    shouldDelay: boolean;
+    action: Action;
+}
 
 @Injectable({
     providedIn: 'root'
@@ -70,7 +75,7 @@ export class FisConnectionService {
         }).pipe(map(res => this.parseServerList(res)));
     }
 
-    public poll(codex: number | null) {
+    public poll(codex: number | null): Observable<ActionWithTimestamp> {
         this.initialize(codex);
 
         return defer(() => timer(this.delay)).pipe(
@@ -92,7 +97,7 @@ export class FisConnectionService {
                 url = `${this.baseURL}mobile/cc-${this.codex}/updt${this.version}.xml`;
                 break;
             case 'pdf':
-                return this._http.get<Action[]>(`${this.proxy}pdf.json?codex=${this.codex}&doc=SL`);
+                return this._http.get<PdfData[]>(`${this.proxy}pdf.json?codex=${this.codex}&doc=SL`);
         }
 
         // @ts-ignore
@@ -102,8 +107,8 @@ export class FisConnectionService {
         });
     }
 
-    private parse(result: string | Action[]) {
-        let shouldDelay = DelayBehavior.Delay;
+    private parse(result: string | PdfData[]) {
+        let shouldDelay = true;
         let actions: Action[] = [];
         if (typeof result === 'string') {
             this.interval = Date.now() - this.startRequest;
@@ -117,7 +122,7 @@ export class FisConnectionService {
                 this.version = data.live[1];
                 this.updateCount++;
                 this.errorCount = 0;
-                shouldDelay = this.initialized ? DelayBehavior.Delay : DelayBehavior.Clear;
+                shouldDelay = this.initialized;
                 actions = this.parseMain(<Main> data);
             } else {
                 this.delay = data.live[0] * 1000;
@@ -128,11 +133,15 @@ export class FisConnectionService {
             }
         } else {
             this.doc = 'update';
-            shouldDelay = DelayBehavior.NoDelay;
+            shouldDelay = false;
             actions = this.parsePdf(result);
         }
 
-        return actions.length > 0 ? of(batch({ actions, shouldDelay })) : EMPTY;
+        return actions.length > 0 ? of({
+            shouldDelay,
+            timestamp: Date.now(),
+            action: batch({ actions })
+        }) : EMPTY;
     }
 
     private parseServerList(result: ServerList): FisServer[] {
@@ -179,26 +188,8 @@ export class FisConnectionService {
             );
     }
 
-    private parsePdf(actions: Action[]): Action[] {
-        const times: any[] = [];
-        const tourStandings: any[] = [];
-        const _actions: Action[] = [];
-        for (const ac of actions) {
-            if (ac.type === '[Result] Register start time') {
-                times.push((<any>ac).time);
-            } else if (ac.type === '[Result] Set tour standing') {
-                tourStandings.push((<any>ac).data);
-            }
-        }
-
-        if (times.length > 0) {
-            _actions.push(RaceActions.setPursuitTimes({times}));
-        }
-        if (tourStandings.length > 0) {
-            _actions.push(RaceActions.setTourStanding({times: tourStandings}));
-        }
-
-        return _actions;
+    private parsePdf(data: PdfData[]): Action[] {
+        return [RaceActions.parsePdf({ racers: data })];
     }
 
     private parseMain(data: Main): Action[] {
@@ -382,6 +373,7 @@ export class FisConnectionService {
                 switch (event[0]) {
                     case 'inter':
                     case 'bonuspoint':
+                    case 'bonustime':
                         if (event[4]) {
                             events.push({
                                 type: 'register_result',

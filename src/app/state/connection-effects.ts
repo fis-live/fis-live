@@ -2,10 +2,9 @@ import { Injectable } from '@angular/core';
 import { Actions, createEffect, ofType } from '@ngrx/effects';
 import { Store } from '@ngrx/store';
 import { EMPTY, of } from 'rxjs';
-import { catchError, map, mapTo, startWith, switchMap } from 'rxjs/operators';
+import { catchError, concatMap, delay, map, mapTo, startWith, switchMap, take } from 'rxjs/operators';
 
 import { FisConnectionService } from '../fis/fis-connection';
-import { DelayBehavior, delayBy } from '../utils/delayBy';
 
 import { ConnectionActions, LoadingActions } from './actions';
 import { AppState, getDelayState } from './reducers';
@@ -37,7 +36,16 @@ export class ConnectionEffects {
         ofType(ConnectionActions.loadMain),
         switchMap((action) =>
             this.api.poll(action.codex).pipe(
-                delayBy(this.store.select(getDelayState), (value) => value.shouldDelay ? value.shouldDelay : DelayBehavior.Delay),
+                concatMap((value) => {
+                    if (!value.shouldDelay) {
+                        return of(value.action);
+                    }
+
+                    return this.store.select(getDelayState).pipe(
+                        switchMap((delayValue) => of(value.action).pipe(delay((value.timestamp + delayValue) - Date.now()))),
+                        take(1)
+                    );
+                }),
                 catchError(() => [
                     LoadingActions.hideLoading(),
                     ConnectionActions.showAlert({
@@ -45,7 +53,7 @@ export class ConnectionEffects {
                             severity: 'danger',
                             message: 'Could not find live data. Check the codex and try again.',
                             action: 'Retry',
-                            actions: [ConnectionActions.loadMain({ codex: null })]
+                            actions: [ConnectionActions.loadMain({ codex: action.codex })]
                         }
                     })
                 ])

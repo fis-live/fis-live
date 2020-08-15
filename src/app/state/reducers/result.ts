@@ -12,7 +12,7 @@ import { Prop, ResultItem } from '../../models/table';
 import { formatTime, guid } from '../../utils/utils';
 import { RaceActions } from '../actions';
 
-import { getValidDiff, registerResultMutably, updateResultMutably } from './helpers';
+import { getValidDiff, isBonus, parseTimeString, registerResultMutably, updateResultMutably } from './helpers';
 
 export interface State {
     id: string;
@@ -63,7 +63,8 @@ const resultReducer = createReducer(
                     racer: racer,
                     marks: [{time: 0, status: StatusEnum.Default, rank: entry.order || null, diffs: [maxVal], version: 0}],
                     notes: [],
-                    tourStanding: null
+                    tourStanding: null,
+                    bonusSeconds: 0
                 };
             } else {
                 state.entities[racer.bib] = {
@@ -72,7 +73,8 @@ const resultReducer = createReducer(
                     racer: racer,
                     marks: [],
                     notes: [],
-                    tourStanding: null
+                    tourStanding: null,
+                    bonusSeconds: 0
                 };
             }
         }
@@ -88,19 +90,63 @@ const resultReducer = createReducer(
 
         return state;
     }),
-    on(RaceActions.setPursuitTimes, (state, { times }) => produce(state, draft => {
+    on(RaceActions.parsePdf, (state, { racers }) => produce(state, draft => {
         let leader = maxVal;
+        let tourLeader = maxVal;
         const bestDiffs: number[] = [];
-        for (const time of times) {
-            const marks = draft.entities[time.racer].marks;
-            marks[0].time = time.time;
-            marks[0].diffs = [time.time];
-            leader = Math.min(leader, time.time);
-            const l = state.entities[time.racer].marks.length;
-            for (let i = 1; i < l; i++) {
-                const t = getValidDiff(marks[i], marks[0]);
-                marks[i].diffs[0] = t;
-                bestDiffs[i] = Math.min(bestDiffs[i] || maxVal, t);
+        const bestTour: number[] = [];
+
+        for (const data of racers) {
+            if (data.time !== null) {
+                leader = Math.min(leader, data.time);
+            }
+
+            if (data.tourStanding !== null) {
+                if (data.tourStanding[0] !== '+') {
+                    tourLeader = Math.min(tourLeader, parseTimeString(data.tourStanding));
+                    bestTour[0] = tourLeader;
+                }
+            }
+        }
+
+        for (const data of racers) {
+            const marks = draft.entities[data.bib].marks;
+
+            if (data.time !== null) {
+                marks[0].time = data.time;
+                marks[0].diffs = [data.time];
+
+                const l = state.entities[data.bib].marks.length;
+                for (let i = 1; i < l; i++) {
+                    if (!isBonus(state.intermediates[i])) {
+                        const t = getValidDiff(marks[i], marks[0]);
+                        marks[i].diffs[0] = t;
+                        bestDiffs[i] = Math.min(bestDiffs[i] || maxVal, t);
+                    }
+                }
+            }
+
+            if (data.tourStanding !== null) {
+                const entity = draft.entities[data.bib];
+                if (data.tourStanding[0] !== '+') {
+                    entity.tourStanding = parseTimeString(data.tourStanding);
+                } else {
+                    entity.tourStanding = tourLeader + parseTimeString(data.tourStanding);
+                }
+
+                entity.marks[0].tourStanding = entity.tourStanding;
+                for (let i = 1; i < entity.marks.length; i++) {
+                    entity.marks[i].tourStanding =
+                        (entity.marks[i].diffs[0] < maxVal) ? entity.tourStanding + entity.marks[i].diffs[0] : maxVal;
+                    bestTour[i] = Math.min(bestTour[i] || maxVal, entity.marks[i].tourStanding!);
+                }
+            }
+        }
+
+        if (tourLeader < maxVal) {
+            for (const inter of state.intermediates) {
+                draft.standings[inter.key].version += 1;
+                draft.standings[inter.key].tourLeader = bestTour[inter.key] ?? maxVal;
             }
         }
 
@@ -115,34 +161,6 @@ const resultReducer = createReducer(
         standing.leader = leader;
         standing.bestDiff = [leader];
     })),
-    on(RaceActions.setTourStanding, (state, { times }) => produce(state, draft => {
-        let zero = 0;
-        for (const time of times) {
-            if (time.time[0] !== '+') {
-                const timeArray = time.time.split(':');
-                zero = (timeArray.length === 3) ?
-                    (Number(timeArray[0]) * 3600 + Number(timeArray[1]) * 60 + Number(timeArray[2])) * 1000 :
-                    (Number(timeArray[0]) * 60 + Number(timeArray[1])) * 1000;
-            }
-        }
-
-        for (const time of times) {
-            const entity = draft.entities[time.bib];
-            if (time.time[0] !== '+') {
-                entity.tourStanding = zero;
-            } else {
-                const timeArray = time.time.split(':');
-                const t = (timeArray.length === 3) ?
-                    (Number(timeArray[0]) * 3600 + Number(timeArray[1]) * 60 + Number(timeArray[2])) * 1000 :
-                    (Number(timeArray[0]) * 60 + Number(timeArray[1])) * 1000;
-                entity.tourStanding = zero + t;
-            }
-        }
-
-        for (const inter of state.intermediates) {
-            draft.standings[inter.key].version += 1;
-        }
-    })),
     on(RaceActions.update, (state, action) => produce(state, draft => {
         const { timestamp } = action;
 
@@ -151,7 +169,6 @@ const resultReducer = createReducer(
                 case 'register_result': {
                     const result = event.payload as Result;
                     const inter = result.intermediate === 99 ? state.intermediates.length - 1 : result.intermediate;
-                    const isBonus = state.intermediates[inter].type === 'bonus_points';
                     const leader = draft.standings[inter].leader;
 
                     if (draft.entities[result.racer].marks.length > inter) {
@@ -166,7 +183,7 @@ const resultReducer = createReducer(
                             timestamp: timestamp
                         };
 
-                        if (!isBonus && isRanked(result.status)) {
+                        if (!isBonus(state.intermediates[inter]) && isRanked(result.status)) {
                             draft.standings[inter].events = [_event, ...draft.standings[inter].events.slice(0, 20)];
                         }
                     }
@@ -209,11 +226,7 @@ export const getAllRacers = createSelector(
 function prepareStartList(state: State): ResultItem[] {
     const standing = state.standings[0];
     const rows = [];
-    let bestTourStanding = maxVal;
-    for (const id of standing.ids) {
-        const entity = state.entities[id];
-        bestTourStanding = Math.min(bestTourStanding, entity.tourStanding || maxVal);
-    }
+    const bestTourStanding = standing.tourLeader ?? maxVal;
 
     for (const id of standing.ids) {
         const entity = state.entities[id];
@@ -240,8 +253,9 @@ function prepareStartList(state: State): ResultItem[] {
                 value: time
             },
             tourStanding: {
-                display: entity.tourStanding !== null ? formatTime(entity.tourStanding, bestTourStanding) : '',
-                value: entity.tourStanding || 0
+                display: (entity.tourStanding !== null && entity.tourStanding < maxVal) ?
+                    formatTime(entity.tourStanding, bestTourStanding) : '',
+                value: entity.tourStanding || maxVal
             },
             notes: entity.notes,
             classes: classes,
@@ -255,15 +269,7 @@ function prepareStartList(state: State): ResultItem[] {
 
 function prepareInter(state: State, intermediate: Intermediate, diff: number | null): ResultItem[] {
     const standing = state.standings[intermediate.key];
-    let bestTourStanding = maxVal;
-
-    for (const id of standing.ids) {
-        const entity = state.entities[id];
-        const mark = entity.marks[intermediate.key];
-        if (isRanked(mark.status) && entity.tourStanding !== null) {
-            bestTourStanding = Math.min(bestTourStanding, entity.tourStanding + mark.diffs[0]);
-        }
-    }
+    const bestTourStanding = standing.tourLeader ?? maxVal;
 
     const rows = [];
     for (const id of standing.ids) {
@@ -295,8 +301,8 @@ function prepareInter(state: State, intermediate: Intermediate, diff: number | n
             };
 
             tourStandingProp = {
-                value: isRanked(mark.status) ? (entity.tourStanding || maxVal) + mark.diffs[0] : timePenalty[mark.status],
-                display: isRanked(mark.status) ? formatTime((entity.tourStanding || maxVal) + mark.diffs[0], bestTourStanding) : ''
+                value: mark.tourStanding ?? timePenalty[mark.status],
+                display: (mark.tourStanding && mark.tourStanding < maxVal) ? formatTime(mark.tourStanding, bestTourStanding) : ''
             };
         }
 
@@ -349,46 +355,22 @@ function prepareInter(state: State, intermediate: Intermediate, diff: number | n
 function prepareAnalysis(state: State, view: View): ResultItem[] {
     const zeroes: (number | null)[] = [];
     const previousSector: number[] = [];
-    if (view.zero === -1) {
-        for (const { key } of state.intermediates) {
-            const prevKey = key > 0
-            && (state.intermediates[key - 1].type === 'bonus_points' || state.intermediates[key - 1].type === 'bonus_time')
-                ? Math.max(key - 2, 0) : Math.max(key - 1, 0);
-            previousSector[key] = prevKey;
-            if (view.display === 'total') {
-                zeroes[key] = state.standings[key].leader;
-            } else {
-                zeroes[key] = key > 0 ? state.standings[key].bestDiff[prevKey] : 0;
-            }
+
+    for (const { key } of state.intermediates) {
+        const prevKey = isBonus(state.intermediates[key - 1]) ? Math.max(key - 2, 0) : Math.max(key - 1, 0);
+        previousSector[key] = prevKey;
+        let zero: number;
+        if (view.display === 'total') {
+            zero = (view.zero === -1) ? state.standings[key].leader : (state.entities[view.zero].marks[key]?.time ?? null);
+        } else {
+            zero = (view.zero === -1) ?
+                state.standings[key].bestDiff[prevKey] : (state.entities[view.zero].marks[key]?.diffs[prevKey] ?? null);
         }
-    } else {
-        for (const { key } of state.intermediates) {
-            const prevKey = key > 0
-            && (state.intermediates[key - 1].type === 'bonus_points' || state.intermediates[key - 1].type === 'bonus_time')
-                ? Math.max(key - 2, 0) : Math.max(key - 1, 0);
-            previousSector[key] = prevKey;
-            if (state.entities[view.zero].marks[key] !== undefined) {
-                if (view.display === 'total') {
-                    zeroes[key] = state.entities[view.zero].marks[key].time;
-                } else {
-                    zeroes[key] = key > 0 ? state.entities[view.zero].marks[key].diffs[prevKey] : 0;
-                }
-            } else {
-                zeroes[key] = null;
-            }
-        }
+        zeroes[key] = zero < maxVal ? zero : null;
     }
 
-    let bestTourStanding = maxVal;
+    const bestTourStanding = state.standings[state.intermediates.length - 1].tourLeader;
     const finishKey = state.intermediates.length - 1;
-
-    for (const id of state.standings[finishKey].ids) {
-        const entity = state.entities[id];
-        const mark = entity.marks[finishKey];
-        if (isRanked(mark.status) && entity.tourStanding !== null) {
-            bestTourStanding = Math.min(bestTourStanding, entity.tourStanding + mark.diffs[0]);
-        }
-    }
 
     const rows = [];
     for (const id of state.ids) {
@@ -413,8 +395,8 @@ function prepareAnalysis(state: State, view: View): ResultItem[] {
         if (row.marks[finishKey] != null) {
             const mark = row.marks[finishKey];
             tourStandingProp = {
-                value: isRanked(mark.status) ? (row.tourStanding || maxVal) + mark.diffs[0] : timePenalty[mark.status],
-                display: isRanked(mark.status) ? formatTime((row.tourStanding || maxVal) + mark.diffs[0], bestTourStanding) : ''
+                value: mark.tourStanding ?? timePenalty[mark.status],
+                display: (mark.tourStanding && mark.tourStanding < maxVal) ? formatTime(mark.tourStanding, bestTourStanding ?? 0) : ''
             };
         }
 
@@ -462,8 +444,7 @@ export const createViewSelector = (view: View): OperatorFunction<State, ResultIt
         filter((state) => {
             const b1 = id !== state.id;
             const b2 = view.mode === 'analysis';
-            const inter = view.inter ? view.inter.key : null;
-            const b3 = inter === null || state.standings[inter] === undefined || state.standings[inter].version !== version;
+            const b3 = view.inter?.key === undefined || state.standings[view.inter.key]?.version !== version;
 
             return b1 || b2 || b3;
         }),
@@ -481,7 +462,7 @@ export const createViewSelector = (view: View): OperatorFunction<State, ResultIt
                     return prepareStartList(state);
                 }
 
-                return prepareInter(state, view.inter, view.diff ? view.diff.key : null);
+                return prepareInter(state, view.inter, view.diff?.key ?? null);
             } else {
                 return prepareAnalysis(state, view);
             }

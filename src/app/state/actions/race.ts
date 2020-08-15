@@ -1,6 +1,6 @@
 import { createAction, props } from '@ngrx/store';
 
-import { FisEvent, Result, StartListEntry } from '../../fis/models';
+import { FisEvent, PdfData, Result, StartListEntry } from '../../fis/models';
 import { Intermediate } from '../../models/intermediate';
 import { Racer } from '../../models/racer';
 
@@ -21,16 +21,9 @@ export const initialize = createAction(
     }>()
 );
 
-export const setPursuitTimes = createAction(
-    '[Result] Set pursuit times',
+export const parsePdf = createAction(
+    '[Result] Handle pdf data',
     props<{
-        times: { racer: number; time: number }[]
-    }>()
-);
-
-export const setTourStanding = createAction(
-    '[Result] Set tour standing',
-    props<{
-        times: { bib: number; time: string }[]
+        racers: PdfData[]
     }>()
 );
