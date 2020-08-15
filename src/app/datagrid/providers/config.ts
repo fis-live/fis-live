@@ -4,10 +4,11 @@ import { select, Store } from '@ngrx/store';
 import { BehaviorSubject, Observable, Subscription } from 'rxjs';
 import { map } from 'rxjs/operators';
 
-import { KeysOfType, Option, OptionSelector } from '../../core/select/option-selector';
+import { Option, OptionSelector } from '../../core/select/option-selector';
 import { Intermediate } from '../../models/intermediate';
 import { Column, ColumnDef } from '../../models/table';
 import { AppState, selectAllIntermediates } from '../../state/reducers';
+import { isBonus } from '../../state/reducers/helpers';
 
 export interface View {
     mode: 'normal' | 'analysis';
@@ -96,7 +97,6 @@ export class DatagridConfig implements OptionSelector<View, Intermediate>, OnDes
     private _internalConfig: Config = defaultConfig;
     private _config: BehaviorSubject<Config> = new BehaviorSubject(defaultConfig);
     private _subscription: Subscription;
-    private _valueChanged = new BehaviorSubject<View>(this._internalConfig.view);
     private _renderSelectionChanged = new BehaviorSubject<View>(this._internalConfig.view);
     private _source: Observable<Intermediate[]>;
 
@@ -311,61 +311,42 @@ export class DatagridConfig implements OptionSelector<View, Intermediate>, OnDes
         this._config.next(this._internalConfig);
     }
 
-    getOptions(key: KeysOfType<View, Intermediate | null>): Observable<Option<Intermediate>[]> {
-        if (key === 'diff') {
-            return this._source.pipe(
-                map((options) => options
-                    .filter(inter => inter.type !== 'bonus_points' && inter.type !== 'bonus_time')
-                    .map((option) => {
-                        const inter = this._internalConfig.view.inter;
-                        const curr = this._internalConfig.view[key];
-                        const disabled = inter === null
-                            || inter.type === 'bonus_points'
-                            || inter.type === 'bonus_time'
-                            || (option.key !== 0 && option.key >= inter.key);
-                        const selected = curr === option;
-
-                        return { value: option, selected, disabled };
-                    })
-                )
-            );
-        }
-
+    getOptions() {
         return this._source.pipe(
-            map((options) => options.map((option) => {
-                    const curr = this._internalConfig.view[key];
-                    const disabled = false;
-                    const selected = curr === option;
+            map((options) => {
+                const inter: Option<Intermediate>[] = [];
+                const diff: Option<Intermediate>[] = [];
 
-                    return { value: option, selected, disabled };
-                })
-            )
+                options.forEach((option) => {
+                    const curr = this._internalConfig.view.inter;
+                    inter.push({ value: option, selected: curr === option, disabled: false });
+
+                    if (!isBonus(option)) {
+                        const currDiff = this._internalConfig.view.diff;
+                        const disabled = isBonus(curr) || curr == null || (option.key !== 0 && option.key >= curr.key);
+                        const selected = currDiff === option;
+
+                        diff.push({value: option, selected, disabled});
+                    }
+                });
+
+                return { diff, inter };
+            })
         );
     }
 
-    getRenderSelectionChanged(key: KeysOfType<View, Intermediate | null>): Observable<Intermediate | null> {
-        return this._renderSelectionChanged.asObservable().pipe(
-            map(view => view[key])
-        );
+    getRenderSelectionChanged() {
+        return this._renderSelectionChanged.asObservable();
     }
 
-    getValueChanged(): Observable<View> {
-        return this._valueChanged.asObservable();
-    }
-
-    setSelected(value: View): void {
-        // this.currentValue = value;
-        // this._renderSelectionChanged.next(this.currentValue);
-    }
-
-    updateSelection(value: Intermediate, key: KeysOfType<View, Intermediate | null>): void {
+    updateSelection(value: Intermediate, key: 'inter' | 'diff'): void {
         const view = {...this._internalConfig.view};
         if (view[key] && view[key] === value) {
             return;
         }
 
         view[key] = value;
-        if (key === 'inter' && (value === null || value.type === 'bonus_points' || (view.diff != null && value.key <= view.diff.key))) {
+        if (key === 'inter' && (value === null || isBonus(value) || (view.diff != null && value.key <= view.diff.key))) {
             view.diff = null;
         }
 

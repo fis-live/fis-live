@@ -13,6 +13,7 @@ import {
     TemplateRef
 } from '@angular/core';
 import { Observable } from 'rxjs';
+import { pluck } from 'rxjs/operators';
 
 import { AbstractPopover } from '../../utils/abstract-popover';
 
@@ -40,7 +41,7 @@ export const APP_OPTIONS = new InjectionToken<OptionSelector<any, any>>('app.opt
     ]
 })
 export class SelectComponent<T, V> extends AbstractPopover implements OnInit {
-    @Input() key!: KeysOfType<T, V | null>;
+    @Input() key!: KeysOfType<T, V>;
 
     @ContentChild(TemplateRef, {static: true}) template!: TemplateRef<{$implicit: V}>;
     options!: Observable<Option<V>[]>;
@@ -51,8 +52,8 @@ export class SelectComponent<T, V> extends AbstractPopover implements OnInit {
     }
 
     ngOnInit() {
-        this.options = this.provider.getOptions(this.key);
-        this.render = this.provider.getRenderSelectionChanged(this.key);
+        this.options = this.provider.getOptions().pipe(pluck(this.key));
+        this.render = this.provider.getRenderSelectionChanged().pipe(pluck(this.key));
     }
 
     public select(item: Option<V>) {
