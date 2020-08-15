@@ -4,17 +4,8 @@
   height: 72px;
 
   background-color: $app-table-bgcolor;
-  border-bottom-left-radius: 4px;
-  border-bottom-right-radius: 4px;
-  border: 1px solid $app-table-bordercolor;
+  border-top: 2px solid $app-table-bordercolor;
   position: relative;
-}
-
-@media only screen and (max-width : 360px) {
-  .ticker {
-    border: none;
-    border-top: 2px solid $app-table-bordercolor;
-  }
 }
 
 .ticker-table {

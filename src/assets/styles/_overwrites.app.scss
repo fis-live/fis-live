@@ -2,11 +2,15 @@
     position: fixed;
     bottom: 0;
     width: 100%;
-    z-index: 100;
+    z-index: 105;
 
     .close:focus {
         box-shadow: none;
     }
+}
+
+.alert-app-level .alert-item > span, .alert-app-level .alert-text {
+    flex: 0 1 auto;
 }
 
 .spinner-centered {
