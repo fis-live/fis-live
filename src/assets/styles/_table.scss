@@ -1,8 +1,3 @@
-table {
-    border-collapse: collapse;
-    border-spacing: 0;
-}
-
 .ps__rail-x, .ps__rail-y {
     z-index: 102;
 }
@@ -21,19 +16,56 @@ table {
     margin: 0;
     text-align: left;
     color: $clr-h6-color;
+    white-space: nowrap;
 
-    .cdk-column-name, .cdk-column-nsa {
-        white-space: nowrap;
-    }
-    
     tr {
+        &.last_finish > td {
+            background-color: #FFE5BC;
+        }
+
+        &.favorite > td {
+            background-color: #D8E1FF;
+        }
+
+        &.new > td > div, > td.new {
+            background-color: #FFE5BC;
+        }
+
+        //> td > div {
+        //    transition: background-color 2s ease;
+        //}
+
+        &.leader .time {
+            font-weight: 700;
+        }
+
+        &.red .bib .badge {
+            background: $clr-red-dark-midtone;
+            font-weight: 700;
+        }
+
+        &.yellow .bib .badge {
+            background: $clr-yellow;
+            color: $clr-black;
+            font-weight: 700;
+        }
+
+        &.turquoise .bib .badge {
+            background: #40e0d0;
+            color: $clr-black;
+            font-weight: 700;
+        }
+
+
+        &.disabled > td {
+            opacity: 0.7;
+        }
+
         td {
             background-color: #FFFFFF;
         }
-    }
-    
-    tr:nth-child(2n) {
-        td {
+
+        &:nth-child(2n) td {
             background-color: $app-thead-bgcolor;
         }
     }
@@ -43,8 +75,6 @@ table {
         padding: 0;
 
         > div {
-            box-sizing: border-box;
-            overflow: hidden;
             padding: 0 8px;
         }
     }
@@ -59,12 +89,7 @@ table {
         //background: $app-thead-bgcolor;
 
         background: #fafafa;
-
-        transition: background .3s ease;
-
-        &:hover {
-            background: #f2f2f2;
-        }
+        font-weight: 500;
 
         > div, > div.filterable > div {
             box-sizing: border-box;
@@ -187,9 +212,10 @@ table {
 
         > div.sorting, > div.filterable > div.sorting {
             cursor: pointer;
-            transition: border-bottom-color 0.3s ease;
+            transition: background .3s ease, border-bottom-color 0.3s ease;
             &:hover {
                 color: $clr-h6-color;
+                background: #e8e8e8;
             }
 
             &::after {
@@ -236,48 +262,6 @@ table {
     .badge {
         margin-top: -2px;
     }
-
-    tr.last_finish > td {
-        background-color: #FFE5BC;
-    }
-
-    tr.favorite > td {
-        background-color: #D8E1FF;
-    }
-
-    tr.new > td, tr > td.new {
-        background-color: #FFE5BC;
-    }
-
-    //tr.new > td {
-    //    transition: background-color 2s ease;
-    //}
-
-    tr.leader .time {
-        font-weight: 700;
-    }
-
-    tr.red .bib .badge {
-        background: $clr-red-dark-midtone;
-        font-weight: 700;
-    }
-
-    tr.yellow .bib .badge {
-        background: $clr-yellow;
-        color: $clr-black;
-        font-weight: 700;
-    }
-
-    tr.turquoise .bib .badge {
-        background: #40e0d0;
-        color: $clr-black;
-        font-weight: 700;
-    }
-
-
-    tr.disabled > td {
-        opacity: 0.7;
-    }
 }
 
 .datagrid-spinner {
@@ -316,7 +300,6 @@ table {
 }
 
 .column-switch-wrapper {
-    position: relative;
     flex: 0 0 auto;
 
     &.active {
@@ -347,10 +330,11 @@ table {
     width: 10.416667rem;
     display: flex;
     position: absolute;
-    right: 0;
+    right: 0.5rem;
     margin-top: 10px;
+    max-height: calc(100% - 45px );
     flex-direction: column;
-    z-index: map-get($clr-layers, column-switch); // Keeps the popup above the datagrid header.
+    z-index: 103; // Keeps the popup above the datagrid header.
 
     .switch-header {
         display: flex;
@@ -393,6 +377,19 @@ table {
             display: flex;
             justify-content: flex-end;
         }
+    }
+}
+
+@media only screen and (max-width : 360px) {
+    .column-switch {
+        border: none;
+        box-shadow: none;
+        width: 100%;
+        height: 100%;
+        max-height: 100%;
+        top: 0;
+        left: 0;
+        margin: 0;
     }
 }
 

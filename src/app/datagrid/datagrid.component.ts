@@ -15,9 +15,9 @@ import { DatagridState } from './providers/datagrid-state';
             transition('void => new', group([
                 style({transform: 'translateX(30px)', opacity: 0}),
                 query('td > div', [
-                    style({backgroundColor: '#F7D57F', maxHeight: '0px'}),
+                    style({backgroundColor: '#F7D57F', height: '0px'}),
                     group([
-                        animate('300ms ease', style({ maxHeight: '24px' })),
+                        animate('300ms ease', style({ height: '*' })),
                         animate('600ms 5000ms ease', style({ backgroundColor: '*' }))
                     ])
                 ]),
