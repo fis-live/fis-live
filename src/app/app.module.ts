@@ -8,8 +8,9 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { RouterModule } from '@angular/router';
 import { EffectsModule } from '@ngrx/effects';
 import { StoreModule } from '@ngrx/store';
-// import { StoreDevtoolsModule } from '@ngrx/store-devtools';
 import { NgScrollbarModule } from 'ngx-scrollbar';
+
+import { devModules } from '../environments/environment';
 
 import { AppComponent } from './app.component';
 import { AlertComponent } from './core/alert/alert.component';
@@ -65,12 +66,12 @@ import { FocusDirective } from './utils/focus.directive';
             },
             metaReducers: metaReducers
         }),
-        // StoreDevtoolsModule.instrument(),
         EffectsModule.forRoot([ConnectionEffects]),
         NgScrollbarModule.withConfig({
             track: 'all',
             visibility: 'hover'
-        })
+        }),
+        devModules
     ],
     bootstrap: [ AppComponent ]
 })
