@@ -57,3 +57,9 @@ export interface FisEvent {
     type: string;
     payload: Result | Status;
 }
+
+export interface FisServer {
+    url: string;
+    weight: number;
+    index: number;
+}

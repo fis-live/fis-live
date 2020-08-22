@@ -4,11 +4,11 @@ import { Observable, of } from 'rxjs';
 import { map, switchMap } from 'rxjs/operators';
 
 import { Racer } from '../../models/racer';
-import { ResultItem } from '../../models/table';
 import { AppState, getResultState, selectAllRacers } from '../../state/reducers';
 import { isBonus } from '../../state/reducers/helpers';
 import { guid } from '../../utils/utils';
-import { Config, DatagridStore } from '../providers/config';
+import { DatagridStore } from '../state/datagrid-store';
+import { DatagridState, ResultItem } from '../state/model';
 
 @Component({
     selector: 'app-dg-header',

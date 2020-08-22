@@ -2,8 +2,7 @@ import { Action, ActionReducer, ActionReducerMap, createSelector, MetaReducer, o
 import { localStorageSync } from 'ngrx-store-localstorage';
 import { OperatorFunction, pipe } from 'rxjs';
 
-import { View } from '../../datagrid/providers/config';
-import { ResultItem } from '../../models/table';
+import { ResultItem, View } from '../../datagrid/state/model';
 import { ConnectionActions } from '../actions';
 
 import * as Alert from './alert';

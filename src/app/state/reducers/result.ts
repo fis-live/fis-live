@@ -3,12 +3,11 @@ import produce from 'immer';
 import { OperatorFunction, pipe } from 'rxjs';
 import { filter, map } from 'rxjs/operators';
 
-import { View } from '../../datagrid/providers/config';
+import { Prop, ResultItem, View } from '../../datagrid/state/model';
 import { isRanked, maxVal, Status as StatusEnum, timePenalty } from '../../fis/fis-constants';
 import { Result, Status } from '../../fis/models';
 import { Intermediate } from '../../models/intermediate';
 import { RacerData, Standing } from '../../models/racer';
-import { Prop, ResultItem } from '../../models/table';
 import { formatTime, guid } from '../../utils/utils';
 import { RaceActions } from '../actions';
 

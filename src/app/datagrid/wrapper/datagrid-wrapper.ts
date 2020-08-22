@@ -3,19 +3,20 @@ import { select } from '@ngrx/store';
 import { Observable } from 'rxjs';
 
 import { APP_OPTIONS } from '../../core/select/select';
-import { Config, DatagridStore } from '../providers/config';
-import { DatagridState } from '../providers/datagrid-state';
 import { Filters } from '../providers/filter';
 import { Sort } from '../providers/sort';
+import { TableDataSource } from '../state/table-data-source';
+import { DatagridStore } from '../state/datagrid-store';
+import { DatagridState } from '../state/model';
 
 @Component({
     selector: 'app-dg-wrapper',
     templateUrl: './datagrid-wrapper.html',
-    providers: [DatagridStore, DatagridState, Filters, Sort, { provide: APP_OPTIONS, useExisting: DatagridStore }],
+    providers: [DatagridStore, TableDataSource, Filters, Sort, { provide: APP_OPTIONS, useExisting: DatagridStore }],
     changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class DatagridWrapper {
-    public config$: Observable<Config>;
+    public config$: Observable<DatagridState>;
     public tickerEnabled$: Observable<boolean>;
     public readonly scrollbarDisabled: boolean = true;
 

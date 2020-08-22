@@ -7,26 +7,10 @@ import { tap } from 'rxjs/operators';
 
 import { Option, OptionSelector } from '../../core/select/option-selector';
 import { Intermediate } from '../../models/intermediate';
-import { Column, ColumnDef } from '../../models/table';
 import { AppState, selectAllIntermediates } from '../../state/reducers';
 import { isBonus } from '../../state/reducers/helpers';
 
-export interface View {
-    mode: 'normal' | 'analysis';
-    inter: Intermediate | null;
-    diff: Intermediate | null;
-    zero: number;
-    display: 'total' | 'diff';
-}
-
-export interface Config {
-    view: View;
-    isStartList: boolean;
-    breakpoint: string;
-    dynamicColumns: ColumnDef[];
-    columns: Column[];
-    tickerEnabled: boolean;
-}
+import { DatagridState, View } from './model';
 
 function clamp(value: number, max: number): number {
     return Math.max(0, Math.min(max, value));
@@ -76,7 +60,7 @@ const defaultAnalysisColumns = [
     { id: 'tour', name: 'Tour Std.', toggled: false, isDynamic: false }
 ];
 
-const initialState: Config = {
+const initialState: DatagridState = {
     view: {
         mode: 'normal',
         inter: null,
@@ -92,7 +76,7 @@ const initialState: Config = {
 };
 
 @Injectable()
-export class DatagridStore extends ComponentStore<Config> implements OptionSelector<View, Intermediate> {
+export class DatagridStore extends ComponentStore<DatagridState> implements OptionSelector<View, Intermediate> {
     private readonly _source: Observable<Intermediate[]> = this.store.pipe(
         select(selectAllIntermediates)
     );

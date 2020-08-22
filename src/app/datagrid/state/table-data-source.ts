@@ -3,31 +3,32 @@ import { DataSource } from '@angular/cdk/table';
 import { Injectable } from '@angular/core';
 import { Store } from '@ngrx/store';
 import { combineLatest, Observable } from 'rxjs';
-import { distinctUntilChanged, map, switchMap } from 'rxjs/operators';
+import { map, switchMap } from 'rxjs/operators';
 
-import { ResultItem } from '../../models/table';
 import { AppState, selectView } from '../../state/reducers';
+import { Filters } from '../providers/filter';
+import { Sort } from '../providers/sort';
 
-import { DatagridStore } from './config';
-import { Filters } from './filter';
-import { Sort } from './sort';
+import { DatagridStore } from './datagrid-store';
+import { ResultItem } from './model';
 
 @Injectable()
-export class DatagridState implements DataSource<ResultItem> {
+export class TableDataSource extends DataSource<ResultItem> {
 
-    private readonly view: Observable<ResultItem[]>;
+    private readonly _data: Observable<ResultItem[]>;
 
     constructor(private _sort: Sort, private _filters: Filters, private store: Store<AppState>, private _config: DatagridStore) {
+        super();
         this._sort.comparator = 'rank';
 
-        this.view = this._config.view$.pipe(
+        this._data = this._config.view$.pipe(
             switchMap(view => store.pipe(selectView(view)))
         );
     }
 
     public connect(): Observable<ResultItem[]> {
         return combineLatest([
-            this.view,
+            this._data,
             this._sort.change,
             this._filters.change
         ]).pipe(

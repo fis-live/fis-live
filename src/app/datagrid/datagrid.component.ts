@@ -2,10 +2,9 @@ import { animate, group, keyframes, query, style, transition, trigger } from '@a
 import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
 import { Observable } from 'rxjs';
 
-import { ResultItem } from '../models/table';
-
-import { Config, DatagridStore } from './providers/config';
-import { DatagridState } from './providers/datagrid-state';
+import { DatagridStore } from './state/datagrid-store';
+import { DatagridState, ResultItem } from './state/model';
+import { TableDataSource } from './state/table-data-source';
 
 @Component({
     selector: 'app-table',
@@ -41,10 +40,10 @@ import { DatagridState } from './providers/datagrid-state';
     changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class DatagridComponent {
-    @Input() public config!: Config;
+    @Input() public config!: DatagridState;
     public readonly rows$: Observable<ResultItem[]>;
 
-    constructor(public store: DatagridStore, dataSource: DatagridState) {
+    constructor(public store: DatagridStore, dataSource: TableDataSource) {
         this.rows$ = dataSource.connect();
     }
 

@@ -5,7 +5,7 @@ import { Observable } from 'rxjs';
 
 import { Event } from '../../models/racer';
 import { AppState, getResultState } from '../../state/reducers';
-import { DatagridStore } from '../providers/config';
+import { DatagridStore } from '../state/datagrid-store';
 
 @Component({
     selector: 'app-dg-ticker',

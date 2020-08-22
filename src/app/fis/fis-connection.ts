@@ -4,7 +4,6 @@ import { Action } from '@ngrx/store';
 import { defer, EMPTY, Observable, of, throwError, timer } from 'rxjs';
 import { catchError, map, mergeMap, repeat, retry, switchMap } from 'rxjs/operators';
 
-import { FisServer } from '../models/fis-server';
 import { Intermediate } from '../models/intermediate';
 import { Meteo } from '../models/meteo';
 import { Race } from '../models/race';
@@ -17,7 +16,7 @@ import { unserialize } from '../utils/unserialize';
 import { fixEncoding, toTitleCase } from '../utils/utils';
 
 import { nationalities, Status, statusMap } from './fis-constants';
-import { FisEvent, Main, PdfData, ServerList, StartListEntry, Update } from './models';
+import { FisEvent, FisServer, Main, PdfData, ServerList, StartListEntry, Update } from './models';
 
 export interface ActionWithTimestamp {
     timestamp: number;

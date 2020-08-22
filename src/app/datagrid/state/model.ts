@@ -1,4 +1,13 @@
-import { Racer } from './racer';
+import { Intermediate } from '../../models/intermediate';
+import { Racer } from '../../models/racer';
+
+export interface View {
+    mode: 'normal' | 'analysis';
+    inter: Intermediate | null;
+    diff: Intermediate | null;
+    zero: number;
+    display: 'total' | 'diff';
+}
 
 export interface Prop<T> {
     value: T;
@@ -30,4 +39,13 @@ export interface ResultItem {
     notes: string[];
     classes: string[];
     marks: ((Prop<number> | Prop<string>) & { state: string })[];
+}
+
+export interface DatagridState {
+    view: View;
+    isStartList: boolean;
+    breakpoint: string;
+    dynamicColumns: ColumnDef[];
+    columns: Column[];
+    tickerEnabled: boolean;
 }

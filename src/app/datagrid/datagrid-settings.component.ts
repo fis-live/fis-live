@@ -3,10 +3,10 @@ import { ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, Rend
 import { select } from '@ngrx/store';
 import { Observable } from 'rxjs';
 
-import { Column } from '../models/table';
 import { AbstractPopover } from '../utils/abstract-popover';
 
-import { DatagridStore } from './providers/config';
+import { DatagridStore } from './state/datagrid-store';
+import { Column } from './state/model';
 
 @Component({
     selector: 'app-dg-settings',
