@@ -42,7 +42,7 @@ export class ConnectionEffects {
                     }
 
                     return this.store.select(getDelayState).pipe(
-                        switchMap((delayValue) => of(value.action).pipe(delay((value.timestamp + delayValue) - Date.now()))),
+                        switchMap((delayValue) => of(value.action).pipe(delay(Math.max(0, (value.timestamp + delayValue) - Date.now())))),
                         take(1)
                     );
                 }),
