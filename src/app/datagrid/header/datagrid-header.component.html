@@ -1,12 +1,12 @@
-<ng-container *ngIf="config$ | async as config">
+<ng-container *ngIf="view$ | async as view">
     <div class="btn-group btn-sm">
-        <ng-container *ngIf="config.view.mode === 'normal'; else analysis">
+        <ng-container *ngIf="view.mode === 'normal'; else analysis">
             <app-select class="btn-primary" key="inter">
                 Intermediate...
                 <ng-template let-item>{{ item.name }}</ng-template>
             </app-select>
 
-            <app-select *ngIf="config.displayedColumns.indexOf('diff') > -1" class="btn-success" key="diff">
+            <app-select *ngIf="hasDiff$ | async" class="btn-success" key="diff">
                 Diff...
                 <ng-template let-item>{{ item.short }}</ng-template>
             </app-select>
@@ -15,21 +15,21 @@
         <ng-template #analysis>
             <div class="radio btn">
                     <input type="radio" name="btn-group-zero-{{ guid }}" id="btn-total-{{ guid }}" value="total"
-                           [ngModel]="config.view.display" (ngModelChange)="setDisplayMode('total')">
+                           [ngModel]="view.display" (ngModelChange)="setDisplayMode('total')">
                 <label for="btn-total-{{ guid }}" style="min-height: 0;">Total</label>
             </div>
 
             <div class="radio btn">
                     <input type="radio" name="btn-group-zero-{{ guid }}" id="btn-diff-{{ guid }}" value="diff"
-                           [ngModel]="config.view.display" (ngModelChange)="setDisplayMode('diff')">
+                           [ngModel]="view.display" (ngModelChange)="setDisplayMode('diff')">
                 <label for="btn-diff-{{ guid }}" style="min-height: 0;">Diff</label>
             </div>
         </ng-template>
     </div>
 
-    <div *ngIf="config.view.mode === 'analysis'">
+    <div *ngIf="view.mode === 'analysis'">
         <div class="clr-select-wrapper">
-                <select id="select-basic" class="clr-select" style="height: 22px" [ngModel]="config.view.zero"
+                <select id="select-basic" class="clr-select" style="height: 22px" [ngModel]="view.zero"
                         (ngModelChange)="setZero($event)">
                     <option value="-1">Leader</option>
                     <option *ngFor="let racer of racers$ | async"
@@ -50,9 +50,9 @@
     </div>
 
     <div style="flex: 0 0 auto;">
-        <div class="clr-toggle-wrapper" *ngIf="config.breakpoint === 'large'">
+        <div class="clr-toggle-wrapper">
             <input type="checkbox" id="toggle-{{ guid }}" name="toggle-basic" class="clr-toggle"
-                   [ngModel]="config.view.mode === 'analysis'" (ngModelChange)="toggleMode($event)">
+                   [ngModel]="view.mode === 'analysis'" (ngModelChange)="toggleMode($event)">
             <label for="toggle-{{ guid }}">All</label>
         </div>
     </div>

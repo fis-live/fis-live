@@ -6,8 +6,9 @@ import { map, switchMap } from 'rxjs/operators';
 import { Racer } from '../../models/racer';
 import { ResultItem } from '../../models/table';
 import { AppState, getResultState, selectAllRacers } from '../../state/reducers';
+import { isBonus } from '../../state/reducers/helpers';
 import { guid } from '../../utils/utils';
-import { Config, DatagridConfig } from '../providers/config';
+import { Config, DatagridStore } from '../providers/config';
 
 @Component({
     selector: 'app-dg-header',
@@ -19,7 +20,8 @@ export class DatagridHeader {
 
     public readonly racers$: Observable<Racer[]>;
     public readonly progress$: Observable<{ current: number; of: number; } | null>;
-    public readonly config$: Observable<Config> = this._config.getConfig();
+    public readonly view$ = this._config.view$;
+    public readonly hasDiff$ = this._config.select(this._config.displayedColumns$, (columns) => columns.indexOf('diff') > -1);
     public readonly racerNames$: Observable<string[]>;
     public readonly nations$: Observable<string[]>;
 
@@ -30,7 +32,7 @@ export class DatagridHeader {
     public filterByName = (data: ResultItem) => data.racer.value;
     public filterByNsa = (data: ResultItem) => data.racer.nsa;
 
-    constructor(private _config: DatagridConfig, private store: Store<AppState>) {
+    constructor(public _config: DatagridStore, private store: Store<AppState>) {
         this.racers$ = store.pipe(select(selectAllRacers));
         this.racerNames$ = this.racers$.pipe(
             map((racers) => racers.map((racer) => racer.lastName + ', ' + racer.firstName))
@@ -39,10 +41,9 @@ export class DatagridHeader {
             map((racers) => racers.map((racer) => racer.nsa).filter(DatagridHeader.onlyUnique))
         );
 
-        this.progress$ = this._config.getConfig().pipe(
-            select('view'),
+        this.progress$ = this._config.view$.pipe(
             switchMap((view) => {
-                if (view.mode === 'normal' && view.inter !== null && view.inter.type !== 'start_list') {
+                if (view.mode === 'normal' && view.inter !== null && view.inter.type !== 'start_list' && !isBonus(view.inter)) {
                     return store.pipe(
                         select(getResultState),
                         map((state) => {

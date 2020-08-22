@@ -1,8 +1,9 @@
 import { CdkDragDrop } from '@angular/cdk/drag-drop';
-import { Injectable, OnDestroy } from '@angular/core';
+import { Injectable } from '@angular/core';
+import { ComponentStore } from '@ngrx/component-store';
 import { select, Store } from '@ngrx/store';
-import { BehaviorSubject, Observable, Subscription } from 'rxjs';
-import { map } from 'rxjs/operators';
+import { Observable } from 'rxjs';
+import { tap } from 'rxjs/operators';
 
 import { Option, OptionSelector } from '../../core/select/option-selector';
 import { Intermediate } from '../../models/intermediate';
@@ -21,7 +22,6 @@ export interface View {
 export interface Config {
     view: View;
     isStartList: boolean;
-    displayedColumns: string[];
     breakpoint: string;
     dynamicColumns: ColumnDef[];
     columns: Column[];
@@ -76,7 +76,7 @@ const defaultAnalysisColumns = [
     { id: 'tour', name: 'Tour Std.', toggled: false, isDynamic: false }
 ];
 
-const defaultConfig: Config = {
+const initialState: Config = {
     view: {
         mode: 'normal',
         inter: null,
@@ -85,7 +85,6 @@ const defaultConfig: Config = {
         display: 'total'
     },
     isStartList: true,
-    displayedColumns: ['rank', 'bib', 'name', 'time', 'nsa', 'diff'],
     breakpoint: 'large',
     dynamicColumns: [],
     columns: defaultColumns,
@@ -93,81 +92,20 @@ const defaultConfig: Config = {
 };
 
 @Injectable()
-export class DatagridConfig implements OptionSelector<View, Intermediate>, OnDestroy {
-    private _internalConfig: Config = defaultConfig;
-    private _config: BehaviorSubject<Config> = new BehaviorSubject(defaultConfig);
-    private _subscription: Subscription;
-    private _renderSelectionChanged = new BehaviorSubject<View>(this._internalConfig.view);
-    private _source: Observable<Intermediate[]>;
+export class DatagridStore extends ComponentStore<Config> implements OptionSelector<View, Intermediate> {
+    private readonly _source: Observable<Intermediate[]> = this.store.pipe(
+        select(selectAllIntermediates)
+    );
 
     constructor(private store: Store<AppState>) {
-        this._source = store.pipe(
-            select(selectAllIntermediates)
-        );
+        super(initialState);
 
-        this._subscription = this._source.subscribe((values) => {
-            const view = {...this._internalConfig.view};
-            const columns = this._internalConfig.columns.filter((column) => !column.isDynamic);
-            const dynamicColumns = [];
-            for (const intermediate of values) {
-                if (intermediate.type === 'bonus_points' || intermediate.type === 'bonus_time') {
-                    continue;
-                }
-
-                dynamicColumns.push({
-                    id: 'inter' + intermediate.key,
-                    sortBy: 'marks.' + intermediate.key + '.value',
-                    name: intermediate.short,
-                    key: intermediate.key
-                });
-
-                columns.push({
-                    id: 'inter' + intermediate.key,
-                    name: intermediate.short,
-                    toggled: intermediate.type !== 'start_list' && view.mode === 'analysis',
-                    isDynamic: true
-                });
-            }
-
-            if (view.mode === 'normal') {
-                if (values.length > 0 && view.inter !== null) {
-                    if (view.inter.key >= values.length) {
-                        view.inter = values[0];
-                        view.diff = null;
-                    } else {
-                        view.inter = values[view.inter.key];
-                        view.diff = view.diff !== null ? values[view.diff.key] : null;
-                    }
-                } else {
-                    view.inter = values.length > 0 ? values[0] : null;
-                    view.diff = null;
-                }
-
-                this._internalConfig = {
-                    ...this._internalConfig,
-                    view,
-                    dynamicColumns,
-                    columns,
-                    isStartList: view.inter == null || view.inter.key === 0
-                };
-                this._config.next(this._internalConfig);
-                this._renderSelectionChanged.next(view);
-            } else {
-                this._internalConfig = {
-                    ...this._internalConfig,
-                    dynamicColumns,
-                    columns,
-                    displayedColumns: this.buildColumnList(columns)
-                };
-
-                this._config.next(this._internalConfig);
-            }
-        });
+        this.updateIntermediates(this._source);
     }
 
     private resetColumns(mode: 'normal' | 'analysis') {
         const columns = mode === 'normal' ? [...defaultColumns] : [...defaultAnalysisColumns];
-        for (const col of this._internalConfig.dynamicColumns) {
+        for (const col of this.get().dynamicColumns) {
             columns.push({
                 id: col.id,
                 name: col.name,
@@ -179,89 +117,119 @@ export class DatagridConfig implements OptionSelector<View, Intermediate>, OnDes
         return columns;
     }
 
-    public setMode(mode: 'normal' | 'analysis') {
-        const columns = this.resetColumns(mode);
+    private readonly updateIntermediates = this.effect((inter$: Observable<Intermediate[]>) => inter$.pipe(
+        tap(intermediates => this.setIntermediates(intermediates))
+    ));
 
-        this._internalConfig = {
-            ...this._internalConfig,
-            view: {
-                ...this._internalConfig.view,
-                mode
-            },
-            columns,
-            displayedColumns: this.buildColumnList(columns)
-        };
-
-        this._config.next(this._internalConfig);
-    }
-
-    public setDisplayMode(display: 'total' | 'diff') {
-        this._internalConfig = {
-            ...this._internalConfig,
-            view: {
-                ...this._internalConfig.view,
-                display
-            }
-        };
-
-        this._config.next(this._internalConfig);
-    }
-
-    public setZero(bib: number) {
-        this._internalConfig = {
-            ...this._internalConfig,
-            view: {
-                ...this._internalConfig.view,
-                zero: bib
-            }
-        };
-
-        this._config.next(this._internalConfig);
-    }
-
-
-    public getConfig(): Observable<Config> {
-        return this._config.asObservable();
-    }
-
-    private buildColumnList(columns: Column[]) {
-        return columns.reduce((cols, col) => {
-            if (col.toggled) {
-                cols.push(col.id);
+    private readonly setIntermediates = this.updater((state, values: Intermediate[]) => {
+        const view = {...state.view};
+        const columns = state.columns.filter((column) => !column.isDynamic);
+        const dynamicColumns = [];
+        for (const intermediate of values) {
+            if (isBonus(intermediate)) {
+                continue;
             }
 
-            return cols;
-        }, [] as string[]);
-    }
+            dynamicColumns.push({
+                id: 'inter' + intermediate.key,
+                sortBy: 'marks.' + intermediate.key + '.value',
+                name: intermediate.short,
+                key: intermediate.key
+            });
 
-    public toggleColumn(columnId: string) {
-        const colIdx = this._internalConfig.columns.findIndex((column) => column.id === columnId);
-        const columns = this._internalConfig.columns.slice();
+            columns.push({
+                id: 'inter' + intermediate.key,
+                name: intermediate.short,
+                toggled: intermediate.type !== 'start_list' && view.mode === 'analysis',
+                isDynamic: true
+            });
+        }
+
+        if (view.mode === 'normal') {
+            if (values.length > 0 && view.inter !== null) {
+                if (view.inter.key >= values.length) {
+                    view.inter = values[0];
+                    view.diff = null;
+                } else {
+                    view.inter = values[view.inter.key];
+                    view.diff = view.diff !== null ? values[view.diff.key] : null;
+                }
+            } else {
+                view.inter = values.length > 0 ? values[0] : null;
+                view.diff = null;
+            }
+
+            return {
+                ...state,
+                view,
+                dynamicColumns,
+                columns,
+                isStartList: view.inter == null || view.inter.key === 0
+            };
+        } else {
+            return {
+                ...state,
+                dynamicColumns,
+                columns
+            };
+        }
+    });
+
+    public readonly setMode = this.updater((state, mode: 'normal' | 'analysis') => ({
+        ...state,
+        view: {
+            ...state.view,
+            mode
+        },
+        columns: this.resetColumns(mode)
+    }));
+
+    public readonly setDisplayMode = this.updater((state, display: 'total' | 'diff') => ({
+        ...state,
+        view: {
+            ...state.view,
+            display
+        }
+    }));
+
+    public readonly setZero = this.updater((state, bib: number) => ({
+        ...state,
+        view: {
+            ...state.view,
+            zero: bib
+        }
+    }));
+
+    public readonly setTicker = this.updater((state, checked: boolean) => ({
+        ...state,
+        tickerEnabled: checked
+    }));
+
+    public readonly toggleColumn = this.updater((state, columnId: string) => {
+        const colIdx = state.columns.findIndex((column) => column.id === columnId);
+        const columns = state.columns.slice();
         if (colIdx > -1) {
-            const col = {
+            columns[colIdx] = {
                 ...columns[colIdx],
                 toggled: !columns[colIdx].toggled
             };
 
-            columns[colIdx] = col;
-
-            this._internalConfig = {
-                ...this._internalConfig,
-                columns: columns,
-                displayedColumns: this.buildColumnList(columns)
+            return {
+                ...state,
+                columns: columns
             };
-
-            this._config.next(this._internalConfig);
         }
-    }
 
-    public reorderColumn(event: CdkDragDrop<string[]>) {
-        const array = this._internalConfig.columns.slice();
+        return state;
+    });
+
+    public readonly reorderColumn = this.updater((state, event: CdkDragDrop<string[]>) => {
+        const array = state.columns.slice();
         const from = clamp(event.previousIndex, array.length - 1);
         const to = clamp(event.currentIndex, array.length - 1);
 
         if (from === to) {
-            return;
+            return state;
         }
 
         const target = array[from];
@@ -273,19 +241,16 @@ export class DatagridConfig implements OptionSelector<View, Intermediate>, OnDes
 
         array[to] = target;
 
-        this._internalConfig = {
-            ...this._internalConfig,
-            columns: array,
-            displayedColumns: this.buildColumnList(array)
+        return {
+            ...state,
+            columns: array
         };
+    });
 
-        this._config.next(this._internalConfig);
-    }
+    public readonly setBreakpoint = this.updater((state, breakpoint: string) => {
+        if (breakpoint === state.breakpoint) { return state; }
 
-    public setBreakpoint(breakpoint: string) {
-        if (breakpoint === this._internalConfig.breakpoint) { return; }
-
-        if (this._internalConfig.view.mode === 'normal') {
+        if (state.view.mode === 'normal') {
             let columns;
             if (breakpoint === 'large') {
                 columns = [...defaultColumns];
@@ -295,80 +260,78 @@ export class DatagridConfig implements OptionSelector<View, Intermediate>, OnDes
                 columns = [...defaultColumnsMini];
             }
 
-            this._internalConfig = {
-                ...this._internalConfig,
+            return {
+                ...state,
                 columns,
-                displayedColumns: this.buildColumnList(columns),
                 breakpoint
             };
         } else {
-            this._internalConfig = {
-                ...this._internalConfig,
+            return {
+                ...state,
                 breakpoint
             };
         }
+    });
 
-        this._config.next(this._internalConfig);
-    }
+    public readonly view$ = this.select((state) => state.view);
+
+    public readonly columns$ = this.select((state) => state.columns);
+
+    public readonly displayedColumns$ = this.select(this.columns$, (columns) => {
+        return columns.reduce((cols, col) => {
+            if (col.toggled) {
+                cols.push(col.id);
+            }
+
+            return cols;
+        }, [] as string[]);
+    });
+
+    private readonly options$ = this.select(this._source, this.view$, (options, view) => {
+        const inter: Option<Intermediate>[] = [];
+        const diff: Option<Intermediate>[] = [];
+
+        options.forEach((option) => {
+            const curr = view.inter;
+            inter.push({ value: option, selected: curr === option, disabled: false });
+
+            if (!isBonus(option)) {
+                const currDiff = view.diff;
+                const disabled = isBonus(curr) || curr == null || (option.key !== 0 && option.key >= curr.key);
+                const selected = currDiff === option;
+
+                diff.push({value: option, selected, disabled});
+            }
+        });
+
+        return { diff, inter };
+    });
 
     getOptions() {
-        return this._source.pipe(
-            map((options) => {
-                const inter: Option<Intermediate>[] = [];
-                const diff: Option<Intermediate>[] = [];
-
-                options.forEach((option) => {
-                    const curr = this._internalConfig.view.inter;
-                    inter.push({ value: option, selected: curr === option, disabled: false });
-
-                    if (!isBonus(option)) {
-                        const currDiff = this._internalConfig.view.diff;
-                        const disabled = isBonus(curr) || curr == null || (option.key !== 0 && option.key >= curr.key);
-                        const selected = currDiff === option;
-
-                        diff.push({value: option, selected, disabled});
-                    }
-                });
-
-                return { diff, inter };
-            })
-        );
+        return this.options$;
     }
 
     getRenderSelectionChanged() {
-        return this._renderSelectionChanged.asObservable();
+        return this.view$;
     }
 
     updateSelection(value: Intermediate, key: 'inter' | 'diff'): void {
-        const view = {...this._internalConfig.view};
-        if (view[key] && view[key] === value) {
-            return;
-        }
+        this.setState((state) => {
+            const view = {...state.view};
+            if (view[key] && view[key] === value) {
+                return state;
+            }
 
-        view[key] = value;
-        if (key === 'inter' && (value === null || isBonus(value) || (view.diff != null && value.key <= view.diff.key))) {
-            view.diff = null;
-        }
+            view[key] = value;
+            if (key === 'inter' && (value === null || isBonus(value) || (view.diff != null && value.key <= view.diff.key))) {
+                view.diff = null;
+            }
 
-        this._internalConfig = {
-            ...this._internalConfig,
-            view,
-            isStartList: view.inter == null || view.inter.key === 0
-        };
-        this._config.next(this._internalConfig);
-        this._renderSelectionChanged.next(view);
-    }
-
-    ngOnDestroy() {
-        this._subscription.unsubscribe();
-    }
-
-    setTicker(checked: boolean) {
-        this._internalConfig = {
-            ...this._internalConfig,
-            tickerEnabled: checked
-        };
-
-        this._config.next(this._internalConfig);
+            return {
+                ...state,
+                view,
+                isStartList: view.inter == null || view.inter.key === 0
+            };
+        });
     }
 }

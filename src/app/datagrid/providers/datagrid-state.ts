@@ -8,7 +8,7 @@ import { distinctUntilChanged, map, switchMap } from 'rxjs/operators';
 import { ResultItem } from '../../models/table';
 import { AppState, selectView } from '../../state/reducers';
 
-import { DatagridConfig } from './config';
+import { DatagridStore } from './config';
 import { Filters } from './filter';
 import { Sort } from './sort';
 
@@ -17,12 +17,10 @@ export class DatagridState implements DataSource<ResultItem> {
 
     private readonly view: Observable<ResultItem[]>;
 
-    constructor(private _sort: Sort, private _filters: Filters, private store: Store<AppState>, private _config: DatagridConfig) {
+    constructor(private _sort: Sort, private _filters: Filters, private store: Store<AppState>, private _config: DatagridStore) {
         this._sort.comparator = 'rank';
 
-        this.view = this._config.getConfig().pipe(
-            map (config => config.view),
-            distinctUntilChanged(),
+        this.view = this._config.view$.pipe(
             switchMap(view => store.pipe(selectView(view)))
         );
     }

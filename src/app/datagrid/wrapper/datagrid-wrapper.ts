@@ -3,7 +3,7 @@ import { select } from '@ngrx/store';
 import { Observable } from 'rxjs';
 
 import { APP_OPTIONS } from '../../core/select/select';
-import { Config, DatagridConfig } from '../providers/config';
+import { Config, DatagridStore } from '../providers/config';
 import { DatagridState } from '../providers/datagrid-state';
 import { Filters } from '../providers/filter';
 import { Sort } from '../providers/sort';
@@ -11,7 +11,7 @@ import { Sort } from '../providers/sort';
 @Component({
     selector: 'app-dg-wrapper',
     templateUrl: './datagrid-wrapper.html',
-    providers: [DatagridConfig, DatagridState, Filters, Sort, { provide: APP_OPTIONS, useExisting: DatagridConfig }],
+    providers: [DatagridStore, DatagridState, Filters, Sort, { provide: APP_OPTIONS, useExisting: DatagridStore }],
     changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class DatagridWrapper {
@@ -39,12 +39,12 @@ export class DatagridWrapper {
         return width;
     }
 
-    constructor(private _config: DatagridConfig) {
+    constructor(private _config: DatagridStore) {
         if (DatagridWrapper.getScrollbarWidth() > 0) {
             this.scrollbarDisabled = false;
         }
 
-        this.config$ = this._config.getConfig();
+        this.config$ = this._config.state$;
         this.tickerEnabled$ = this.config$.pipe(select('tickerEnabled'));
     }
 }

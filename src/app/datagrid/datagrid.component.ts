@@ -4,7 +4,7 @@ import { Observable } from 'rxjs';
 
 import { ResultItem } from '../models/table';
 
-import { Config } from './providers/config';
+import { Config, DatagridStore } from './providers/config';
 import { DatagridState } from './providers/datagrid-state';
 
 @Component({
@@ -44,7 +44,7 @@ export class DatagridComponent {
     @Input() public config!: Config;
     public readonly rows$: Observable<ResultItem[]>;
 
-    constructor(dataSource: DatagridState) {
+    constructor(public store: DatagridStore, dataSource: DatagridState) {
         this.rows$ = dataSource.connect();
     }
 

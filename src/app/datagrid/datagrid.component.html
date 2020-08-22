@@ -133,11 +133,11 @@
     </ng-container>
 
     <thead>
-        <tr cdk-header-row *cdkHeaderRowDef="config.displayedColumns; sticky: true"></tr>
+        <tr cdk-header-row *cdkHeaderRowDef="(store.displayedColumns$ | async)!; sticky: true"></tr>
     </thead>
 
     <tbody>
-        <tr [@update]="row.version" [@newRow]="row.state" [ngClass]="row.classes" cdk-row *cdkRowDef="let row; columns: config.displayedColumns"></tr>
+        <tr [@update]="row.version" [@newRow]="row.state" [ngClass]="row.classes" cdk-row *cdkRowDef="let row; columns: (store.displayedColumns$ | async)!"></tr>
     </tbody>
 
 </table>

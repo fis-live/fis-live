@@ -6,7 +6,7 @@ import { Observable } from 'rxjs';
 import { Column } from '../models/table';
 import { AbstractPopover } from '../utils/abstract-popover';
 
-import { DatagridConfig } from './providers/config';
+import { DatagridStore } from './providers/config';
 
 @Component({
     selector: 'app-dg-settings',
@@ -17,11 +17,11 @@ export class DatagridSettingsComponent extends AbstractPopover {
     public columns$: Observable<Column[]>;
     public tickerEnabled$: Observable<boolean>;
 
-    constructor(private _config: DatagridConfig, el: ElementRef, renderer: Renderer2, cdr: ChangeDetectorRef) {
+    constructor(private _config: DatagridStore, el: ElementRef, renderer: Renderer2, cdr: ChangeDetectorRef) {
         super(el, renderer, cdr);
 
-        this.tickerEnabled$ = this._config.getConfig().pipe(select('tickerEnabled'));
-        this.columns$ = this._config.getConfig().pipe(
+        this.tickerEnabled$ = this._config.select(state => state.tickerEnabled);
+        this.columns$ = this._config.state$.pipe(
             select((state) => {
                 if (state.view.mode === 'normal') {
                     return state.columns.filter((col) => !col.isDynamic);
