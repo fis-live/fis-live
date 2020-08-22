@@ -48,6 +48,7 @@ const resultReducer = createReducer(
                 leader: maxVal,
                 latestBibs: [],
                 bestDiff: (new Array(Math.max(intermediate.key, 1))).fill(maxVal),
+                tourLeader: maxVal,
                 events: []
             };
         });
@@ -63,7 +64,6 @@ const resultReducer = createReducer(
                     racer: racer,
                     marks: [{time: 0, status: StatusEnum.Default, rank: entry.order || null, diffs: [maxVal], version: 0}],
                     notes: [],
-                    tourStanding: null,
                     bonusSeconds: 0
                 };
             } else {
@@ -73,7 +73,6 @@ const resultReducer = createReducer(
                     racer: racer,
                     marks: [],
                     notes: [],
-                    tourStanding: null,
                     bonusSeconds: 0
                 };
             }
@@ -111,6 +110,9 @@ const resultReducer = createReducer(
 
         for (const data of racers) {
             const marks = draft.entities[data.bib].marks;
+            if (data.isWave) {
+                draft.entities[data.bib].notes.push('W');
+            }
 
             if (data.time !== null) {
                 marks[0].time = data.time;
@@ -129,15 +131,14 @@ const resultReducer = createReducer(
             if (data.tourStanding !== null) {
                 const entity = draft.entities[data.bib];
                 if (data.tourStanding[0] !== '+') {
-                    entity.tourStanding = parseTimeString(data.tourStanding);
+                    entity.marks[0].tourStanding = parseTimeString(data.tourStanding);
                 } else {
-                    entity.tourStanding = tourLeader + parseTimeString(data.tourStanding);
+                    entity.marks[0].tourStanding = tourLeader + parseTimeString(data.tourStanding);
                 }
 
-                entity.marks[0].tourStanding = entity.tourStanding;
                 for (let i = 1; i < entity.marks.length; i++) {
                     entity.marks[i].tourStanding =
-                        (entity.marks[i].diffs[0] < maxVal) ? entity.tourStanding + entity.marks[i].diffs[0] : maxVal;
+                        (entity.marks[i].diffs[0] < maxVal) ? entity.marks[0].tourStanding + entity.marks[i].diffs[0] : maxVal;
                     bestTour[i] = Math.min(bestTour[i] || maxVal, entity.marks[i].tourStanding!);
                 }
             }
@@ -179,7 +180,7 @@ const resultReducer = createReducer(
                         const _event = {
                             racer: state.entities[result.racer].racer,
                             rank: draft.entities[result.racer].marks[inter].rank,
-                            diff: formatTime(result.time, (leader < maxVal) ? leader : result.time),
+                            diff: formatTime(result.time, leader),
                             timestamp: timestamp
                         };
 
@@ -249,13 +250,12 @@ function prepareStartList(state: State): ResultItem[] {
             time: { display: entity.status, value: entity.status },
             rank: mark.rank,
             diff: {
-                display: time < maxVal ? formatTime(time, standing.bestDiff[0]) : '',
+                display: formatTime(time, standing.bestDiff[0]),
                 value: time
             },
             tourStanding: {
-                display: (entity.tourStanding !== null && entity.tourStanding < maxVal) ?
-                    formatTime(entity.tourStanding, bestTourStanding) : '',
-                value: entity.tourStanding || maxVal
+                display: formatTime(mark.tourStanding, bestTourStanding),
+                value: mark.tourStanding ?? maxVal
             },
             notes: entity.notes,
             classes: classes,
@@ -302,7 +302,7 @@ function prepareInter(state: State, intermediate: Intermediate, diff: number | n
 
             tourStandingProp = {
                 value: mark.tourStanding ?? timePenalty[mark.status],
-                display: (mark.tourStanding && mark.tourStanding < maxVal) ? formatTime(mark.tourStanding, bestTourStanding) : ''
+                display: formatTime(mark.tourStanding, bestTourStanding)
             };
         }
 
@@ -315,7 +315,7 @@ function prepareInter(state: State, intermediate: Intermediate, diff: number | n
             const d = mark.diffs[diff];
 
             diffProp = {
-                display: d < maxVal ? formatTime(d, standing.bestDiff[diff]) : '',
+                display: formatTime(d, standing.bestDiff[diff]),
                 value: d
             };
         }
@@ -396,7 +396,7 @@ function prepareAnalysis(state: State, view: View): ResultItem[] {
             const mark = row.marks[finishKey];
             tourStandingProp = {
                 value: mark.tourStanding ?? timePenalty[mark.status],
-                display: (mark.tourStanding && mark.tourStanding < maxVal) ? formatTime(mark.tourStanding, bestTourStanding ?? 0) : ''
+                display: formatTime(mark.tourStanding, bestTourStanding)
             };
         }
 

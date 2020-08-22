@@ -1,3 +1,5 @@
+import { maxVal } from '../fis/fis-constants';
+
 export function guid() {
     return 'xxxxxx4xyx'.replace(/[xy]/g, c => {
         // tslint:disable-next-line:no-bitwise
@@ -6,16 +8,16 @@ export function guid() {
     });
 }
 
-export function formatTime(value: number | string, zero: number | null) {
+export function formatTime(value: number | string | null | undefined, zero: number | null | undefined): string {
     if (typeof value === 'string') {
         return value;
     }
 
-    if (value == null) {
+    if (value === null || value === undefined || value >= maxVal) {
         return '';
     }
 
-    if (zero === null) {
+    if (zero === null || zero === undefined || zero >= maxVal) {
         zero = value;
     }
 

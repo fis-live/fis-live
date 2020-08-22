@@ -19,7 +19,7 @@ export interface Standing {
     ids: number[];
     leader: number;
     bestDiff: number[];
-    tourLeader?: number;
+    tourLeader: number;
     latestBibs: number[];
     events: Event[];
 }
@@ -48,7 +48,6 @@ export interface RacerData {
     status: string;
     marks: Mark[];
     notes: string[];
-    tourStanding: number | null;
     bonusSeconds: number;
 }
 

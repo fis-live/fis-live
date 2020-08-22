@@ -1,7 +1,7 @@
 import { isRanked, maxVal, Status, timePenalty } from '../../fis/fis-constants';
 import { Result } from '../../fis/models';
 import { Intermediate } from '../../models/intermediate';
-import { Mark, RacerData } from '../../models/racer';
+import { Mark } from '../../models/racer';
 
 import { State } from './result';
 
@@ -94,9 +94,9 @@ export function registerResultMutably(state: State, result: Result) {
         standing.latestBibs = [result.racer, ...standing.latestBibs.slice(0, 2)];
     }
 
-    if (entity.tourStanding !== null) {
-        mark.tourStanding = mark.diffs[0] < maxVal ? entity.tourStanding + mark.diffs[0] : maxVal;
-        if (mark.tourStanding < (standing.tourLeader ?? maxVal)) {
+    if (marks[0].tourStanding !== undefined) {
+        mark.tourStanding = mark.diffs[0] < maxVal ? marks[0].tourStanding + mark.diffs[0] : maxVal;
+        if (mark.tourStanding < standing.tourLeader) {
             standing.tourLeader = mark.tourStanding;
         }
     }
@@ -168,8 +168,8 @@ export function updateResultMutably(state: State, result: Result) {
         }
     }
 
-    if (entity.tourStanding !== null) {
-        mark.tourStanding = mark.diffs[0] < maxVal ? entity.tourStanding + mark.diffs[0] : maxVal;
+    if (entity.marks[0].tourStanding !== undefined) {
+        mark.tourStanding = mark.diffs[0] < maxVal ? entity.marks[0].tourStanding + mark.diffs[0] : maxVal;
         tourLeader = Math.min(tourLeader, mark.tourStanding);
     }
 
@@ -214,8 +214,6 @@ export function updateResultMutably(state: State, result: Result) {
     mark.rank = isRanked(result.status) ? rank : null;
     entity.marks[intermediate] = mark;
     standing.leader = leader;
-    if (standing.tourLeader !== undefined) {
-        standing.tourLeader = tourLeader;
-    }
+    standing.tourLeader = tourLeader;
     standing.version += 1;
 }
