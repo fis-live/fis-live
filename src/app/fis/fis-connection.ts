@@ -189,7 +189,7 @@ export class FisConnectionService {
     }
 
     private parsePdf(data: PdfData[]): Action[] {
-        return [RaceActions.parsePdf({ racers: data })];
+        return data.length > 0 ? [RaceActions.parsePdf({ racers: data })] : [];
     }
 
     private parseMain(data: Main): Action[] {
