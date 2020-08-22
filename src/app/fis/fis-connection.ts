@@ -40,6 +40,7 @@ export class FisConnectionService {
     private version: number = 0;
     private initialized = false;
     private doc: 'main' | 'update' | 'pdf' = 'main';
+    private pdfDoc: 'SL' | 'QUA' = 'SL';
 
     private baseURL: string = 'http://live.fis-ski.com/';
     private proxy: string = 'https://fislive-cors.herokuapp.com/';
@@ -97,7 +98,7 @@ export class FisConnectionService {
                 url = `${this.baseURL}mobile/cc-${this.codex}/updt${this.version}.xml`;
                 break;
             case 'pdf':
-                return this._http.get<PdfData[]>(`${this.proxy}pdf.json?codex=${this.codex}&doc=SL`);
+                return this._http.get<PdfData[]>(`${this.proxy}pdf.json?codex=${this.codex}&doc=${this.pdfDoc}`);
         }
 
         // @ts-ignore
@@ -357,6 +358,7 @@ export class FisConnectionService {
             results
         }));
 
+        this.pdfDoc = data.runinfo[1] === 'Q' ? 'QUA' : 'SL';
         this.initialized = true;
 
         return actions;
