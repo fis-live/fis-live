@@ -9,6 +9,7 @@ import { RouterModule } from '@angular/router';
 import { EffectsModule } from '@ngrx/effects';
 import { StoreModule } from '@ngrx/store';
 // import { StoreDevtoolsModule } from '@ngrx/store-devtools';
+import { NgScrollbarModule } from 'ngx-scrollbar';
 
 import { AppComponent } from './app.component';
 import { AlertComponent } from './core/alert/alert.component';
@@ -28,7 +29,6 @@ import { appRoutes } from './routes';
 import { ConnectionEffects } from './state/connection-effects';
 import { metaReducers, reducers } from './state/reducers';
 import { FocusDirective } from './utils/focus.directive';
-import { ScrollbarDirective } from './utils/scrollbar.directive';
 
 @NgModule({
     declarations: [
@@ -44,7 +44,6 @@ import { ScrollbarDirective } from './utils/scrollbar.directive';
         FocusDirective,
         HeaderComponent,
         IconComponent,
-        ScrollbarDirective,
         SelectComponent,
         SidebarComponent,
         SortDirective
@@ -67,7 +66,11 @@ import { ScrollbarDirective } from './utils/scrollbar.directive';
             metaReducers: metaReducers
         }),
         // StoreDevtoolsModule.instrument(),
-        EffectsModule.forRoot([ConnectionEffects])
+        EffectsModule.forRoot([ConnectionEffects]),
+        NgScrollbarModule.withConfig({
+            track: 'all',
+            visibility: 'hover'
+        })
     ],
     bootstrap: [ AppComponent ]
 })

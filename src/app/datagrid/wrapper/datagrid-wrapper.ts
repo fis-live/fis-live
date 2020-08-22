@@ -17,12 +17,33 @@ import { Sort } from '../providers/sort';
 export class DatagridWrapper {
     public config$: Observable<Config>;
     public tickerEnabled$: Observable<boolean>;
+    public readonly scrollbarDisabled: boolean = true;
 
     @Input() set breakpoint(breakpoint: string) {
         this._config.setBreakpoint(breakpoint);
     }
 
+    private static getScrollbarWidth() {
+        const e = document.createElement('div');
+        e.style.position = 'absolute';
+        e.style.top = '-9999px';
+        e.style.width = '100px';
+        e.style.height = '100px';
+        e.style.overflow = 'scroll';
+        (e.style as any).msOverflowStyle = 'scrollbar';
+
+        document.body.appendChild(e);
+        const width = (e.offsetWidth - e.clientWidth);
+        document.body.removeChild(e);
+
+        return width;
+    }
+
     constructor(private _config: DatagridConfig) {
+        if (DatagridWrapper.getScrollbarWidth() > 0) {
+            this.scrollbarDisabled = false;
+        }
+
         this.config$ = this._config.getConfig();
         this.tickerEnabled$ = this.config$.pipe(select('tickerEnabled'));
     }

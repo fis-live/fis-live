@@ -1,7 +1,7 @@
 <app-dg-header class="action-bar"></app-dg-header>
 
-<div class="segment" appScrollbar>
+<ng-scrollbar class="segment" [disabled]="scrollbarDisabled">
     <app-table [config]="(config$ | async)!"></app-table>
-</div>
+</ng-scrollbar>
 
 <app-dg-ticker *ngIf="tickerEnabled$ | async" class="ticker"></app-dg-ticker>
