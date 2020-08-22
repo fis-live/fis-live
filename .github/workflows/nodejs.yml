@@ -13,22 +13,22 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v2
-      with:
-        persist-credentials: false
+      - uses: actions/checkout@v2
+        with:
+          persist-credentials: false
 
-    - uses: actions/setup-node@v1
+      - uses: actions/setup-node@v1
 
-    - run: npm ci
-    - run: npm run build --if-present -- --baseHref "/fis-live/"
+      - run: npm ci
+      - run: npm run build --if-present -- --baseHref "/fis-live/"
 
-    - name: Deploy to GitHub Pages
-      uses: JamesIves/github-pages-deploy-action@3.5.9
-      with:
-        ACCESS_TOKEN: ${{ secrets.ACCESS_TOKEN }}
-        BRANCH: gh-pages # The branch the action should deploy to.
-        FOLDER: dist # The folder the action should deploy.
-        CLEAN: true
+      - name: Deploy to GitHub Pages
+        uses: JamesIves/github-pages-deploy-action@3.5.9
+        with:
+          ACCESS_TOKEN: ${{ secrets.ACCESS_TOKEN }}
+          BRANCH: gh-pages # The branch the action should deploy to.
+          FOLDER: dist # The folder the action should deploy.
+          CLEAN: true
 #    - run: npm test
 #      env:
 #        CI: true
