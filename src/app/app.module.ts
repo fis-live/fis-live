@@ -21,7 +21,7 @@ import { SelectComponent } from './core/select/select';
 import { SidebarComponent } from './core/sidebar/sidebar.component';
 import { DatagridSettingsComponent } from './datagrid/datagrid-settings.component';
 import { DatagridComponent } from './datagrid/datagrid.component';
-import { FilterComponent } from './datagrid/filter.component';
+import { DatagridFilter } from './datagrid/filter/datagrid-filter';
 import { DatagridHeader } from './datagrid/header/datagrid-header.component';
 import { SortDirective } from './datagrid/sort.directive';
 import { DatagridTickerComponent } from './datagrid/ticker/ticker';
@@ -41,7 +41,7 @@ import { FocusDirective } from './utils/focus.directive';
         DatagridSettingsComponent,
         DatagridTickerComponent,
         DatagridWrapper,
-        FilterComponent,
+        DatagridFilter,
         FocusDirective,
         HeaderComponent,
         IconComponent,

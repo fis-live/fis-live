@@ -16,7 +16,8 @@ const icons = [
     'caret',
     'filter-grid-circle',
     'filter-grid',
-    'drag-handle'
+    'drag-handle',
+    'search'
 ];
 
 var template = '';

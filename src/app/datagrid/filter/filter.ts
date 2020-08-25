@@ -1,41 +1,54 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable } from 'rxjs';
 
-export interface ExactFilter<T> {
-    filterBy: (option: T) => string;
-    term: string;
-    isExact: boolean;
-}
-
 @Injectable()
-export class NewFilter<T> {
+export class Filter<T> {
     private readonly _change = new BehaviorSubject<void>(undefined);
-    public filters: ExactFilter<T>[] = [];
+    public terms: string[] = [];
 
     public get change(): Observable<void> {
         return this._change.asObservable();
     }
 
-    public toggle(filter: ExactFilter<T>) {
-        const idx = this.filters.findIndex((flt) => flt.term === filter.term);
-        if (idx >= 0) {
-            this.filters.splice(idx, 1);
-        } else {
-            this.filters.push(filter);
+    public addTerm(term: string) {
+        const idx = this.terms.indexOf(term);
+        if (idx === -1) {
+            this.terms.push(term);
+            this._change.next();
         }
-        console.log(this.filters);
-
-        this._change.next();
     }
 
-    /**
-     * Accepts an item if it is accepted by all currently active filters
-     */
-    public accepts(item: T): boolean {
-        for (const filter of this.filters) {
-            const data = filter.filterBy(item);
-            console.log(data);
-            if ((filter.isExact && data === filter.term) || data.toLowerCase().indexOf(filter.term.toLowerCase()) >= 0) {
+    public removeTerm(term: string) {
+        const idx = this.terms.indexOf(term);
+        if (idx >= 0) {
+            this.terms.splice(idx, 1);
+            this._change.next();
+        }
+    }
+
+    private getData(item: any, property: string): any {
+        let value = item;
+        for (const nestedProp of property.split('.')) {
+            if (value == null || typeof value === 'undefined' || typeof value[nestedProp] === 'undefined') {
+                return undefined;
+            }
+
+            value = (nestedProp === '') ? value : value[nestedProp];
+        }
+
+        return value;
+    }
+
+    public accepts(data: T, keys: string[]): boolean {
+        // Transform the data into a lowercase string of all property values.
+        const dataStr = keys.reduce((currentTerm: string, key: string) => {
+            return currentTerm + this.getData(data, key) + '◬';
+            }, '').toLowerCase();
+
+        for (const term of this.terms) {
+            const transformedFilter = term.trim().toLowerCase();
+
+            if (dataStr.indexOf(transformedFilter) !== -1) {
                 return true;
             }
         }
@@ -43,7 +56,7 @@ export class NewFilter<T> {
         return false;
     }
 
-    hasActiveFilters() {
-        return this.filters.length > 0;
+    public hasActiveFilters() {
+        return this.terms.length > 0;
     }
 }

@@ -1,0 +1,48 @@
+$clr-combobox-min-height: $clr_baselineRem_1 !default;
+$clr-combobox-min-width: $clr_baselineRem_7 !default;
+$clr-ng-multiselect-min-width: $clr_baselineRem_15 !default;
+
+$clr-combobox-trigger-color: $clr-color-neutral-500 !default;
+$clr-combobox-trigger-dimensions: $clr_baselineRem_1 !default;
+$clr-combobox-trigger-left-padding: $clr_baselineRem_0_25 !default;
+$clr-combobox-trigger-right-padding: $clr_baselineRem_1 !default;
+
+$clr-combobox-font-size: $clr-p2-font-size !default;
+
+$clr-combobox-input-background-color: hsl(201, 10%, 96%) !default;
+$clr-combobox-pill-background-color: hsl(201, 80%, 95%) !default;
+$clr-combobox-pill-border-color: hsl(201, 55%, 81%) !default;
+$clr-combobox-pill-font-color: $clr-label-font-color-light !default;
+$clr-combobox-filter-highlight: hsl(198, 0%, 34%) !default;
+
+.btn.btn-link.btn-sm.search-toggle {
+    margin: 0;
+    margin-right: 6px;
+    padding: 0;
+    min-width: 0;
+}
+
+.label-combobox-pill {
+    margin: $clr_baselineRem_0_125 0 0 $clr_baselineRem_0_125;
+    border-width: $clr_baselineRem_1px;
+    border-style: solid;
+    background-color: $clr-combobox-pill-background-color;
+    border-color: $clr-combobox-pill-border-color;
+
+    padding: 0 $clr_baselineRem_4px;
+
+    .clr-combobox-pill-content {
+        color: $clr-combobox-pill-font-color;
+        font-size: $clr-typography-xxsmalltext;
+        font-weight: $clr-font-weight-regular;
+        padding: 0 $clr_baselineRem_8px 0 $clr_baselineRem_4px;
+    }
+}
+
+.clr-combobox-remove-btn {
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    padding: $clr_baselineRem_4px $clr_baselineRem_4px;
+    color: $clr-combobox-pill-font-color;
+}

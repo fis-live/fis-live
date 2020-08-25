@@ -1,0 +1,23 @@
+<button type="button" (click)="toggle()" class="btn btn-sm btn-link search-toggle"><clr-icon shape="search"></clr-icon></button>
+
+<input @animate appFocusOnInit *ngIf="open" placeholder="Search..." type="text" class="clr-input"
+           [(ngModel)]="input"
+           (keyup)="filterChanged()"
+           (blur)="enter()"
+           (keyup.enter)="enter()"
+           (keyup.escape)="reset()">
+
+
+<span *ngFor="let term of filter.terms" class="label label-combobox-pill">
+    <span>
+        <span class="clr-combobox-pill-content">
+          {{ term }}
+        </span>
+    </span>
+
+    <span>
+        <button type="button" class="clr-combobox-remove-btn" (click)="filter.removeTerm(term)">
+            <clr-icon shape="times" [size]="12"></clr-icon>
+        </button>
+    </span>
+</span>

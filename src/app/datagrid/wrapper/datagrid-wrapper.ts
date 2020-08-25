@@ -3,16 +3,16 @@ import { select } from '@ngrx/store';
 import { Observable } from 'rxjs';
 
 import { APP_OPTIONS } from '../../core/select/select';
-import { Filters } from '../providers/filter';
+import { Filter } from '../filter/filter';
 import { Sort } from '../providers/sort';
-import { TableDataSource } from '../state/table-data-source';
 import { DatagridStore } from '../state/datagrid-store';
 import { DatagridState } from '../state/model';
+import { TableDataSource } from '../state/table-data-source';
 
 @Component({
     selector: 'app-dg-wrapper',
     templateUrl: './datagrid-wrapper.html',
-    providers: [DatagridStore, TableDataSource, Filters, Sort, { provide: APP_OPTIONS, useExisting: DatagridStore }],
+    providers: [DatagridStore, TableDataSource, Filter, Sort, { provide: APP_OPTIONS, useExisting: DatagridStore }],
     changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class DatagridWrapper {

@@ -6,7 +6,7 @@ import { combineLatest, Observable } from 'rxjs';
 import { map, switchMap } from 'rxjs/operators';
 
 import { AppState, selectView } from '../../state/reducers';
-import { Filters } from '../providers/filter';
+import { Filter } from '../filter/filter';
 import { Sort } from '../providers/sort';
 
 import { DatagridStore } from './datagrid-store';
@@ -17,7 +17,7 @@ export class TableDataSource extends DataSource<ResultItem> {
 
     private readonly _data: Observable<ResultItem[]>;
 
-    constructor(private _sort: Sort, private _filters: Filters, private store: Store<AppState>, private _config: DatagridStore) {
+    constructor(private _sort: Sort, private _filter: Filter<ResultItem>, private store: Store<AppState>, private _config: DatagridStore) {
         super();
         this._sort.comparator = 'rank';
 
@@ -30,11 +30,11 @@ export class TableDataSource extends DataSource<ResultItem> {
         return combineLatest([
             this._data,
             this._sort.change,
-            this._filters.change
+            this._filter.change
         ]).pipe(
             map(([rows]) => {
-                if (this._filters.hasActiveFilters()) {
-                    rows = rows.filter((row) => this._filters.accepts(row));
+                if (this._filter.hasActiveFilters()) {
+                    rows = rows.filter((row) => this._filter.accepts(row, ['racer.nsa', 'racer.value']));
                 }
 
                 if (rows != null && this._sort.comparator) {

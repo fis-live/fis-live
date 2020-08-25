@@ -53,3 +53,9 @@
 @import "styles/ticker";
 @import "styles/menu";
 @import "styles/sidebar";
+
+@import "../app/datagrid/filter/datagrid-filter";
+
+.ng-scroll-content {
+    display: block !important;
+}
