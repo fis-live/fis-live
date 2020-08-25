@@ -2,7 +2,6 @@
 
 <input @animate appFocusOnInit *ngIf="open" placeholder="Search..." type="text" class="clr-input"
            [(ngModel)]="input"
-           (keyup)="filterChanged()"
            (blur)="enter()"
            (keyup.enter)="enter()"
            (keyup.escape)="reset()">
