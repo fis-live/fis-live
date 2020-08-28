@@ -7,8 +7,8 @@ import { DatagridState, ResultItem } from './state/model';
 import { TableDataSource } from './state/table-data-source';
 
 @Component({
-    selector: 'app-table',
-    templateUrl: 'datagrid.component.html',
+    selector: 'app-datagrid',
+    templateUrl: 'datagrid.html',
     animations: [
         trigger('newRow', [
             transition('void => new', group([
@@ -39,7 +39,7 @@ import { TableDataSource } from './state/table-data-source';
     ],
     changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class DatagridComponent {
+export class Datagrid {
     @Input() public config!: DatagridState;
     public readonly rows$: Observable<ResultItem[]>;
 

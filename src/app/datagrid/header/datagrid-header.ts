@@ -12,7 +12,7 @@ import { DatagridState, ResultItem } from '../state/model';
 
 @Component({
     selector: 'app-dg-header',
-    templateUrl: './datagrid-header.component.html',
+    templateUrl: './datagrid-header.html',
     changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class DatagridHeader {

@@ -4,7 +4,7 @@ import { Observable } from 'rxjs';
 
 import { APP_OPTIONS } from '../../core/select/select';
 import { Filter } from '../filter/filter';
-import { Sort } from '../providers/sort';
+import { Sort } from '../sort/sort';
 import { DatagridStore } from '../state/datagrid-store';
 import { DatagridState } from '../state/model';
 import { TableDataSource } from '../state/table-data-source';

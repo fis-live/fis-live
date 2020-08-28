@@ -1,12 +1,12 @@
 import { Directive, HostBinding, HostListener, Input } from '@angular/core';
 
-import { Sort } from './providers/sort';
+import { Sort } from './sort';
 
 @Directive({
-    selector : '[appSort]'
+    selector : '[appDgSort]'
 })
-export class SortDirective {
-    @Input('appSort')
+export class DatagridSort {
+    @Input('appDgSort')
     public sortBy: string = '';
 
     @HostBinding('class.sorting') sorting = true;

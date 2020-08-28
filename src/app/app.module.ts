@@ -19,12 +19,12 @@ import { HeaderComponent } from './core/header/header.component';
 import { IconComponent } from './core/icon/icon.component';
 import { SelectComponent } from './core/select/select';
 import { SidebarComponent } from './core/sidebar/sidebar.component';
-import { DatagridSettingsComponent } from './datagrid/datagrid-settings.component';
-import { DatagridComponent } from './datagrid/datagrid.component';
+import { Datagrid } from './datagrid/datagrid';
+import { DatagridSettings } from './datagrid/datagrid-settings';
 import { DatagridFilter } from './datagrid/filter/datagrid-filter';
-import { DatagridHeader } from './datagrid/header/datagrid-header.component';
-import { SortDirective } from './datagrid/sort.directive';
-import { DatagridTickerComponent } from './datagrid/ticker/ticker';
+import { DatagridHeader } from './datagrid/header/datagrid-header';
+import { DatagridSort } from './datagrid/sort/datagrid-sort';
+import { DatagridTicker } from './datagrid/ticker/datagrid-ticker';
 import { DatagridWrapper } from './datagrid/wrapper/datagrid-wrapper';
 import { appRoutes } from './routes';
 import { ConnectionEffects } from './state/connection-effects';
@@ -36,18 +36,18 @@ import { FocusDirective } from './utils/focus.directive';
         AlertComponent,
         AppComponent,
         ContainerComponent,
-        DatagridComponent,
-        DatagridHeader,
-        DatagridSettingsComponent,
-        DatagridTickerComponent,
-        DatagridWrapper,
+        Datagrid,
         DatagridFilter,
+        DatagridHeader,
+        DatagridSettings,
+        DatagridSort,
+        DatagridTicker,
+        DatagridWrapper,
         FocusDirective,
         HeaderComponent,
         IconComponent,
         SelectComponent,
-        SidebarComponent,
-        SortDirective
+        SidebarComponent
     ],
     imports: [
         BrowserAnimationsModule,

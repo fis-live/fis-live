@@ -7,7 +7,7 @@ import { map, switchMap } from 'rxjs/operators';
 
 import { AppState, selectView } from '../../state/reducers';
 import { Filter } from '../filter/filter';
-import { Sort } from '../providers/sort';
+import { Sort } from '../sort/sort';
 
 import { DatagridStore } from './datagrid-store';
 import { ResultItem } from './model';

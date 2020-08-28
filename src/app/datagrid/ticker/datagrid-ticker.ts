@@ -9,7 +9,7 @@ import { DatagridStore } from '../state/datagrid-store';
 
 @Component({
     selector: 'app-dg-ticker',
-    templateUrl: './ticker.html',
+    templateUrl: './datagrid-ticker.html',
     animations: [
         trigger('animation', [
             transition(':enter', group([
@@ -30,7 +30,7 @@ import { DatagridStore } from '../state/datagrid-store';
     ],
     changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class DatagridTickerComponent {
+export class DatagridTicker {
     public readonly events$: Observable<Event[]>;
 
     constructor(private _config: DatagridStore, private _store: Store<AppState>) {

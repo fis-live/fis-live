@@ -10,10 +10,10 @@ import { Column } from './state/model';
 
 @Component({
     selector: 'app-dg-settings',
-    templateUrl: './datagrid-settings.component.html',
+    templateUrl: './datagrid-settings.html',
     changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class DatagridSettingsComponent extends AbstractPopover {
+export class DatagridSettings extends AbstractPopover {
     public columns$: Observable<Column[]>;
     public tickerEnabled$: Observable<boolean>;
 
