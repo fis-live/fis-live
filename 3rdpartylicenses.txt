@@ -246,6 +246,9 @@ Apache-2.0
    limitations under the License.
 
 
+@ngrx/component-store
+MIT
+
 @ngrx/effects
 MIT
 
