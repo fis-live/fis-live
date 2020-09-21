@@ -30,7 +30,7 @@
     "@ngrx/effects": "^10.0.0",
     "@ngrx/store": "^10.0.0",
     "immer": "^7.0.7",
-    "ngrx-store-localstorage": "^9.0.0",
+    "ngrx-store-localstorage": "^10.0.0",
     "ngx-scrollbar": "^7.3.0",
     "rxjs": "^6.6.2",
     "semantic-ui-css": "^2.4.1",

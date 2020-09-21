@@ -1,4 +1,4 @@
-import { animate, state, style, transition, trigger } from '@angular/animations';
+import { animate, style, transition, trigger } from '@angular/animations';
 import {
     ChangeDetectionStrategy, Component, EventEmitter, Input, Output
 } from '@angular/core';
@@ -18,9 +18,13 @@ import { AppState, getDelayState, getResultState, selectAllIntermediates, select
     changeDetection: ChangeDetectionStrategy.OnPush,
     animations: [
         trigger('animate', [
-            state('hidden', style({transform: 'translateX(-100%)'})),
-            state('visible', style({transform: 'translateX(0)'})),
-            transition('hidden <=> visible', animate('200ms ease-out'))
+            transition(':enter', [
+                style({transform: 'translateX(-100%)'}),
+                animate('200ms ease-out', style({transform: 'translateX(0)'}))
+            ]),
+            transition(':leave', [
+                animate('200ms ease-out', style({transform: 'translateX(-100%)'}))
+            ])
         ])
     ],
 })

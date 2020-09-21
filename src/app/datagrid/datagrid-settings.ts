@@ -1,6 +1,5 @@
 import { CdkDragDrop } from '@angular/cdk/drag-drop';
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, Renderer2 } from '@angular/core';
-import { select } from '@ngrx/store';
 import { Observable } from 'rxjs';
 
 import { AbstractPopover } from '../utils/abstract-popover';
@@ -17,31 +16,29 @@ export class DatagridSettings extends AbstractPopover {
     public columns$: Observable<Column[]>;
     public tickerEnabled$: Observable<boolean>;
 
-    constructor(private _config: DatagridStore, el: ElementRef, renderer: Renderer2, cdr: ChangeDetectorRef) {
+    constructor(private store: DatagridStore, el: ElementRef, renderer: Renderer2, cdr: ChangeDetectorRef) {
         super(el, renderer, cdr);
 
-        this.tickerEnabled$ = this._config.select(state => state.tickerEnabled);
-        this.columns$ = this._config.state$.pipe(
-            select((state) => {
-                if (state.view.mode === 'normal') {
-                    return state.columns.filter((col) => !col.isDynamic);
-                }
+        this.tickerEnabled$ = this.store.select(state => state.tickerEnabled);
+        this.columns$ = this.store.select((state) => {
+            if (state.view.mode === 'normal') {
+                return state.columns.filter((col) => !col.isDynamic);
+            }
 
-                return state.columns;
-            })
-        );
+            return state.columns;
+        });
     }
 
     public toggleTicker(checked: boolean) {
-        this._config.setTicker(checked);
+        this.store.setTicker(checked);
     }
 
     public toggleColumn(column: string) {
-        this._config.toggleColumn(column);
+        this.store.toggleColumn(column);
     }
 
     public onDrop(event: CdkDragDrop<string[]>) {
-        this._config.reorderColumn(event);
+        this.store.reorderColumn(event);
     }
 
     public trackBy(index: number, column: Column) {

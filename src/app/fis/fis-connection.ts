@@ -294,6 +294,7 @@ export class FisConnectionService {
             if (racer !== null) {
                 const firstName = toTitleCase(fixEncoding(racer[3].trim()));
                 const lastName = toTitleCase(fixEncoding(racer[2].trim()));
+                const initials = firstName.split(/([ -])/).map(str => str[0]).join('').replace(' ', '.');
 
                 racers.push({
                     id: racer[0],
@@ -302,7 +303,7 @@ export class FisConnectionService {
                     lastName,
                     display: firstName + ' ' + lastName,
                     value: (lastName + ', ' + firstName).toLowerCase(),
-                    short: firstName[0] + '. ' + lastName,
+                    short: initials + '. ' + lastName,
                     nsa:  nationalities[racer[4]] || racer[4],
                     isFavorite: false,
                     hasYellowCard: racer[6] === 'yc',

@@ -1,4 +1,4 @@
-<div [@animate]="isOpen ? 'visible' : 'hidden'" [style.display]="isOpen ? 'initial' : 'hidden'" class="sidebar">
+<div @animate *ngIf="isOpen" class="sidebar">
 
     <div style="padding: 5px;">
             <input class="clr-input" style="font-size: 11px;" (keyup.enter)="go(codex.value)" #codex placeholder="Enter codex..." type="text">&nbsp;
@@ -20,8 +20,7 @@
             </button>
         </li>
         <li role="presentation" class="nav-item">
-            <button (click)="tab = 'settings'" [class.active]="tab === 'settings'" class="btn btn-link nav-link"
-                    type="button">
+            <button (click)="tab = 'settings'" [class.active]="tab === 'settings'" class="btn btn-link nav-link" type="button">
                 Settings
             </button>
         </li>
@@ -30,8 +29,8 @@
 
     <ng-container *ngIf="tab === 'live'">
         <nav class="sidenav">
-            <section class="sidenav-content">
-                <section *ngFor="let races of upcomingRaces$ | async" class="nav-group collapsible">
+            <section *ngIf="upcomingRaces$ | async as upcoming" class="sidenav-content">
+                <section *ngFor="let races of upcoming" class="nav-group collapsible">
                     <input [checked]="!races.date.startsWith('Today')" [attr.id]="'races' + races.date" type="checkbox">
                     <label [attr.for]="'races' + races.date">{{ races.date }}<span *ngIf="races.liveCount > 0" class="badge badge-success">{{ races.liveCount }}</span></label>
                     <ul class="nav-list">
@@ -46,6 +45,7 @@
                         </ng-container>
                     </ul>
                 </section>
+                <section style="line-height: 48px; text-align: center" *ngIf="upcoming?.length === 0">No events live</section>
             </section>
         </nav>
     </ng-container>
@@ -85,18 +85,6 @@
                     </div>
                 </div>
             </div>
-
-            <!--div class="ui divided list">
-                <div *ngFor="let racer of favoriteRacers" class="item">
-                    <div class="right floated content">
-                        <button type="button" class="close" aria-label="Close" (click)="toggleFavorite(racer)">
-                            <clr-icon shape="trash" size="24"></clr-icon>
-                        </button>
-                    </div>
-                    <div class="header">{{ racer.firstName }} {{ racer.lastName }}</div>
-                    {{ FLAGS[racer.nationality] || racer.nationality }}
-                </div>
-            </div-->
         </div>
     </ng-container>
 
