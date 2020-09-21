@@ -24,7 +24,7 @@
             "index": "src/index.html",
             "main": "src/main.ts",
             "polyfills": "src/polyfills.ts",
-            "tsConfig": "tsconfig.base.json",
+            "tsConfig": "tsconfig.json",
             "aot": true,
             "assets": [
               "src/favicon.ico"
@@ -82,7 +82,7 @@
           "builder": "@angular-devkit/build-angular:tslint",
           "options": {
             "tsConfig": [
-              "tsconfig.base.json"
+              "tsconfig.json"
             ],
             "exclude": [
               "**/node_modules/**"
