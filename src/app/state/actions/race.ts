@@ -6,7 +6,7 @@ import { Racer } from '../../models/racer';
 
 export const update = createAction(
     '[Result] Parse update',
-    props<{ events: FisEvent[], isEvent: boolean, timestamp: number }>()
+    props<{ events: FisEvent[], timestamp: number }>()
 );
 
 export const initialize = createAction(

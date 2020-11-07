@@ -31,16 +31,16 @@ export const initialState: State = {
 
 const resultReducer = createReducer(
     initialState,
-    on(RaceActions.initialize, (_, action) => {
+    on(RaceActions.initialize, (_, { intermediates, racers, results, startList }) => {
         const state: State = {
             id: guid(),
             ids: [],
             entities: {},
-            intermediates: action.intermediates,
+            intermediates: intermediates,
             standings: {}
         };
 
-        action.intermediates.forEach(intermediate => {
+        intermediates.forEach(intermediate => {
             state.standings[intermediate.key] = {
                 version: 0,
                 ids: [],
@@ -52,9 +52,9 @@ const resultReducer = createReducer(
             };
         });
 
-        for (const racer of action.racers) {
+        for (const racer of racers) {
             state.ids.push(racer.bib);
-            const entry = action.startList[racer.bib];
+            const entry = startList[racer.bib];
             if (entry != null) {
                 state.standings[0].ids.push(racer.bib);
                 state.entities[racer.bib] = {
@@ -77,7 +77,7 @@ const resultReducer = createReducer(
             }
         }
 
-        for (const result of action.results) {
+        for (const result of results) {
             const inter = result.intermediate === 99 ? state.intermediates.length - 1 : result.intermediate;
             if (state.entities[result.racer].marks.length > inter) {
                 updateResultMutably(state, result);
@@ -161,10 +161,8 @@ const resultReducer = createReducer(
         standing.leader = leader;
         standing.bestDiff = [leader];
     })),
-    on(RaceActions.update, (state, action) => produce(state, draft => {
-        const { timestamp } = action;
-
-        for (const event of action.events) {
+    on(RaceActions.update, (state, { events, timestamp}) => produce(state, draft => {
+        for (const event of events) {
             switch (event.type) {
                 case 'register_result': {
                     const result = event.payload as Result;

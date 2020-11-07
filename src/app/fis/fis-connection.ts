@@ -457,7 +457,7 @@ export class FisConnectionService {
 
         if (events.length > 0) {
             actions.push(update({
-                events, isEvent: true, timestamp: Date.now()
+                events, timestamp: Date.now()
             }));
         }
 
