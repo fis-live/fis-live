@@ -1,8 +1,8 @@
 import { Injectable } from '@angular/core';
 import { Actions, createEffect, ofType } from '@ngrx/effects';
 import { Store } from '@ngrx/store';
-import { EMPTY, of } from 'rxjs';
-import { catchError, concatMap, delay, map, mapTo, startWith, switchMap, take } from 'rxjs/operators';
+import { EMPTY, Observable, of, timer } from 'rxjs';
+import { catchError, concatMap, map, mapTo, mergeMapTo, startWith, switchMap, take } from 'rxjs/operators';
 
 import { FisConnectionService } from '../fis/fis-connection';
 
@@ -38,12 +38,13 @@ export class ConnectionEffects {
             this.api.poll(action.codex).pipe(
                 concatMap((value) => {
                     if (!value.shouldDelay) {
-                        return of(value.action);
+                        return of(...value.actions);
                     }
 
-                    return this.store.select(getDelayState).pipe(
-                        switchMap((delayValue) => of(value.action).pipe(delay(Math.max(0, (value.timestamp + delayValue) - Date.now())))),
-                        take(1)
+                    return this.delay$.pipe(
+                        switchMap((delay) => timer(Math.max(0, value.timestamp + delay - Date.now()))),
+                        take(1),
+                        mergeMapTo(value.actions)
                     );
                 }),
                 catchError(() => [
@@ -87,5 +88,9 @@ export class ConnectionEffects {
         mapTo(LoadingActions.showLoading())
     ));
 
-    constructor(private actions$: Actions, private api: FisConnectionService, private store: Store<AppState>) { }
+    private delay$: Observable<number>;
+
+    constructor(private actions$: Actions, private api: FisConnectionService, store: Store<AppState>) {
+        this.delay$ = store.select(getDelayState);
+    }
 }

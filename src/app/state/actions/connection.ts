@@ -1,4 +1,4 @@
-import { Action, createAction, props } from '@ngrx/store';
+import { createAction, props } from '@ngrx/store';
 
 import { Alert } from '../../models/alert';
 import { Race } from '../../models/race';
@@ -12,13 +12,9 @@ export const showAlert = createAction(
     props<{alert: Alert}>()
 );
 
-export const reset = createAction(
-    '[Connection] Reset state'
-);
-
 export const loadMain = createAction(
     '[Connection] Load main',
-    props<{codex: number | null}>()
+    props<{codex: number}>()
 );
 
 export const loadCalendar = createAction(
@@ -32,9 +28,4 @@ export const setCalendar = createAction(
 
 export const closeAlert = createAction(
     '[Alert] Close alert'
-);
-
-export const batch = createAction(
-    '[Connection] Batch action',
-    props<{actions: Action[]}>()
 );

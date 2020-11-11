@@ -9,7 +9,6 @@ import { Meteo } from '../models/meteo';
 import { Race } from '../models/race';
 import { RaceInfo } from '../models/race-info';
 import { RaceActions } from '../state/actions';
-import { batch } from '../state/actions/connection';
 import { setRaceMessage, updateMeteo, updateRaceInfo } from '../state/actions/info';
 import { initialize, update } from '../state/actions/race';
 import { unserialize } from '../utils/unserialize';
@@ -21,7 +20,7 @@ import { FisEvent, FisServer, Main, PdfData, ServerList, StartListEntry, Update 
 export interface ActionWithTimestamp {
     timestamp: number;
     shouldDelay: boolean;
-    action: Action;
+    actions: Action[];
 }
 
 @Injectable({
@@ -53,8 +52,8 @@ export class FisConnectionService {
         this.signature = d.getSeconds().toString() + d.getMilliseconds().toString() + '-fis';
     }
 
-    public initialize(codex: number | null): void {
-        this.codex = codex || this.codex;
+    public initialize(codex: number): void {
+        this.codex = codex;
         this.doc = 'main';
         this.initialized = false;
         this.version = 0;
@@ -75,7 +74,7 @@ export class FisConnectionService {
         }).pipe(map(res => this.parseServerList(res)));
     }
 
-    public poll(codex: number | null): Observable<ActionWithTimestamp> {
+    public poll(codex: number): Observable<ActionWithTimestamp> {
         this.initialize(codex);
 
         return defer(() => timer(this.delay)).pipe(
@@ -140,7 +139,7 @@ export class FisConnectionService {
         return actions.length > 0 ? of({
             shouldDelay,
             timestamp: Date.now(),
-            action: batch({ actions })
+            actions
         }) : EMPTY;
     }
 

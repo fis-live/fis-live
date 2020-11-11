@@ -1,9 +1,8 @@
-import { Action, ActionReducer, ActionReducerMap, createSelector, MetaReducer, on, select } from '@ngrx/store';
+import { ActionReducer, ActionReducerMap, createSelector, MetaReducer, select } from '@ngrx/store';
 import { localStorageSync } from 'ngrx-store-localstorage';
 import { OperatorFunction, pipe } from 'rxjs';
 
 import { ResultItem, View } from '../../datagrid/state/model';
-import { ConnectionActions } from '../actions';
 
 import * as Alert from './alert';
 import * as Calendar from './calendar';
@@ -30,22 +29,11 @@ export interface AppState {
     calendar: Calendar.State;
 }
 
-export function enableBatching(reducer: ActionReducer<AppState>): ActionReducer<AppState> {
-    return function batchingReducer(state, action: Action): AppState {
-        const r = on(ConnectionActions.batch, (_state: AppState, { actions }) => actions.reduce(batchingReducer, _state));
-        if (action.type === ConnectionActions.batch.type) {
-            return r.reducer(state, action);
-        } else {
-            return reducer(state, action);
-        }
-    };
-}
-
 export function localStorageSyncReducer(reducer: ActionReducer<AppState>): ActionReducer<AppState> {
     return localStorageSync({keys: ['settings'], removeOnUndefined: true, rehydrate: true})(reducer);
 }
 
-export const metaReducers: MetaReducer<AppState>[] = [enableBatching, localStorageSyncReducer];
+export const metaReducers: MetaReducer<AppState>[] = [localStorageSyncReducer];
 
 export const getAlertState = (state: AppState) => state.alert;
 export const getCalendarState = (state: AppState) => state.calendar;
