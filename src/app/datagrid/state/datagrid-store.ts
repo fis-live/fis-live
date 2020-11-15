@@ -1,9 +1,7 @@
 import { CdkDragDrop } from '@angular/cdk/drag-drop';
 import { Injectable } from '@angular/core';
 import { ComponentStore } from '@ngrx/component-store';
-import { select, Store } from '@ngrx/store';
-import { Observable } from 'rxjs';
-import { tap } from 'rxjs/operators';
+import { Store } from '@ngrx/store';
 
 import { Option, OptionSelector } from '../../core/select/option-selector';
 import { Intermediate } from '../../models/intermediate';
@@ -77,14 +75,12 @@ const initialState: DatagridState = {
 
 @Injectable()
 export class DatagridStore extends ComponentStore<DatagridState> implements OptionSelector<View, Intermediate> {
-    private readonly _source: Observable<Intermediate[]> = this.store.pipe(
-        select(selectAllIntermediates)
-    );
+    private readonly _source = this.store.select(selectAllIntermediates);
 
     constructor(private store: Store<AppState>) {
         super(initialState);
 
-        this.updateIntermediates(this._source);
+        this.setIntermediates(this._source);
     }
 
     private resetColumns(mode: 'normal' | 'analysis') {
@@ -100,10 +96,6 @@ export class DatagridStore extends ComponentStore<DatagridState> implements Opti
 
         return columns;
     }
-
-    private readonly updateIntermediates = this.effect((inter$: Observable<Intermediate[]>) => inter$.pipe(
-        tap(intermediates => this.setIntermediates(intermediates))
-    ));
 
     private readonly setIntermediates = this.updater((state, values: Intermediate[]) => {
         const view = {...state.view};

@@ -277,11 +277,11 @@ function prepareInter(state: State, intermediate: Intermediate, diff: number | n
 
         let timeProp: Prop<number> | Prop<string>;
         let tourStandingProp: Prop<number>;
-        if (intermediate.type === 'bonus_points' || intermediate.type === 'bonus_time') {
+        if (isBonus(intermediate)) {
             if (isRanked(mark.status)) {
                 timeProp = {
                     value: time,
-                    display: time
+                    display: intermediate.type === 'bonus_time' ? time / 1000 : time
                 };
 
                 tourStandingProp = {
