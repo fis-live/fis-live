@@ -9,7 +9,7 @@
     border-radius: 0 !important;
     margin: 0 !important;
     overflow-y: auto !important;
-    z-index: 1039;
+    z-index: 239;
     background-color: $clr-wizard-sidenav-bgcolor;
 }
 
@@ -50,6 +50,13 @@
     }
 }
 
+.form-label {
+    color: #454545;
+    font-size: 0.541667rem;
+    font-weight: 600;
+    line-height: 0.75rem;
+}
+
 .nav-link-tag {
     color: #0094d2;
     display: inline-block;
@@ -67,7 +74,7 @@
     right: 0;
     background: rgba(0,0,0,.85);
     cursor: pointer;
-    z-index: 1038;
+    z-index: 238;
 }
 
 ul.nav {

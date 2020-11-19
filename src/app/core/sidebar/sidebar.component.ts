@@ -1,4 +1,5 @@
 import { animate, style, transition, trigger } from '@angular/animations';
+import { CdkDragDrop } from '@angular/cdk/drag-drop';
 import {
     ChangeDetectionStrategy, Component, EventEmitter, Input, Output
 } from '@angular/core';
@@ -6,10 +7,11 @@ import { select, Store } from '@ngrx/store';
 import { BehaviorSubject, combineLatest, Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 
+import { Column } from '../../datagrid/state/model';
 import { Intermediate } from '../../models/intermediate';
 import { RacesByPlace } from '../../models/race';
 import { Event, Racer } from '../../models/racer';
-import { setDelay, toggleFavorite } from '../../state/actions/settings';
+import { reorderColumn, setDelay, toggleColumn, toggleFavorite } from '../../state/actions/settings';
 import { AppState, getDelayState, getResultState, selectAllIntermediates, selectRacesByPlace } from '../../state/reducers';
 
 @Component({
@@ -40,14 +42,19 @@ export class SidebarComponent {
     public events$: Observable<Event[]>;
     public intermediates$: Observable<Intermediate[]>;
     public selectedInter = new BehaviorSubject<number>(0);
+    public columns$: Observable<Column[]>;
 
     constructor(private store: Store<AppState>) {
         this.upcomingRaces$ = store.select(selectRacesByPlace);
         this.delay$ = store.select(getDelayState);
         this.events$ = combineLatest([this.selectedInter, store.select(getResultState)]).pipe(
-            map(([inter, _state]) => _state.standings[inter].events.slice().reverse())
+            map(([inter, _state]) => _state.standings[inter]?.events.slice().reverse() ?? [])
         );
         this.intermediates$ = store.pipe(select(selectAllIntermediates));
+
+        this.columns$ = this.store.select((state) => {
+            return state.settings.defaultColumns;
+        });
     }
 
     public setDelay(delay: number) {
@@ -80,9 +87,23 @@ export class SidebarComponent {
         this.selectedInter.next(parseInt(id, 10));
     }
 
-
     public go(codex: string): void {
         this.close();
         this.navigate.emit(+codex);
+    }
+
+    public toggleColumn(column: string) {
+        this.store.dispatch(toggleColumn({ column }));
+    }
+
+    public onDrop(event: CdkDragDrop<string[]>) {
+        this.store.dispatch(reorderColumn({
+            previousIndex: event.previousIndex,
+            currentIndex: event.currentIndex,
+        }));
+    }
+
+    public trackBy(index: number, column: Column) {
+        return column.id;
     }
 }

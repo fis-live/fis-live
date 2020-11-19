@@ -1,18 +1,16 @@
-import { CdkDragDrop } from '@angular/cdk/drag-drop';
+import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
 import { Injectable } from '@angular/core';
 import { ComponentStore } from '@ngrx/component-store';
 import { Store } from '@ngrx/store';
+import { take } from 'rxjs/operators';
 
 import { Option, OptionSelector } from '../../core/select/option-selector';
 import { Intermediate } from '../../models/intermediate';
-import { AppState, selectAllIntermediates } from '../../state/reducers';
+import { AppState, getSettingsState, selectAllIntermediates } from '../../state/reducers';
 import { isBonus } from '../../state/reducers/helpers';
+import { State as SettingsState } from '../../state/reducers/settings';
 
 import { DatagridState, View } from './model';
-
-function clamp(value: number, max: number): number {
-    return Math.max(0, Math.min(max, value));
-}
 
 const defaultColumns = [
     { id: 'order', name: '#', toggled: false, isDynamic: false },
@@ -80,6 +78,7 @@ export class DatagridStore extends ComponentStore<DatagridState> implements Opti
     constructor(private store: Store<AppState>) {
         super(initialState);
 
+        this.fromStore(store.select(getSettingsState).pipe(take(1)));
         this.setIntermediates(this._source);
     }
 
@@ -96,6 +95,13 @@ export class DatagridStore extends ComponentStore<DatagridState> implements Opti
 
         return columns;
     }
+
+    private readonly fromStore = this.updater((state, settings: SettingsState) => {
+        return {
+            ...state,
+            columns: settings.defaultColumns
+        };
+    });
 
     private readonly setIntermediates = this.updater((state, values: Intermediate[]) => {
         const view = {...state.view};
@@ -200,22 +206,12 @@ export class DatagridStore extends ComponentStore<DatagridState> implements Opti
     });
 
     public readonly reorderColumn = this.updater((state, event: CdkDragDrop<string[]>) => {
-        const array = state.columns.slice();
-        const from = clamp(event.previousIndex, array.length - 1);
-        const to = clamp(event.currentIndex, array.length - 1);
-
-        if (from === to) {
+        if (event.previousIndex === event.currentIndex) {
             return state;
         }
 
-        const target = array[from];
-        const delta = to < from ? -1 : 1;
-
-        for (let i = from; i !== to; i += delta) {
-            array[i] = array[i + delta];
-        }
-
-        array[to] = target;
+        const array = state.columns.slice();
+        moveItemInArray(array, event.previousIndex, event.currentIndex);
 
         return {
             ...state,

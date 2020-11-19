@@ -1,3 +1,4 @@
+import { CdkDragDrop } from '@angular/cdk/drag-drop';
 import { createAction, props } from '@ngrx/store';
 
 import { Racer } from '../../models/racer';
@@ -14,4 +15,14 @@ export const setDelay = createAction(
 
 export const resetSettings = createAction(
     '[Settings] Reset settings'
+);
+
+export const toggleColumn = createAction(
+    '[Settings] Toggle column',
+    props<{column: string}>()
+);
+
+export const reorderColumn = createAction(
+    '[Settings] Reorder column',
+    props<{previousIndex: number, currentIndex: number}>()
 );

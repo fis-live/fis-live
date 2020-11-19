@@ -15,8 +15,8 @@
             </button>
         </li>
         <li role="presentation" class="nav-item">
-            <button (click)="tab = 'more'" [class.active]="tab === 'more'" class="btn btn-link nav-link" type="button">
-                More
+            <button (click)="tab = 'sync'" [class.active]="tab === 'sync'" class="btn btn-link nav-link" type="button">
+                Sync
             </button>
         </li>
         <li role="presentation" class="nav-item">
@@ -50,43 +50,56 @@
         </nav>
     </ng-container>
 
-    <ng-container *ngIf="tab === 'more'">
-        <div style="padding: 10px;">
+    <ng-container *ngIf="tab === 'settings'">
+        <div style="padding: 20px;">
+            <ul class="switch-content list-unstyled" cdkDropList (cdkDropListDropped)="onDrop($event)">
+                <li class="clr-checkbox-wrapper" *ngFor="let col of columns$ | async; trackBy: trackBy" cdkDrag>
+                    <input type="checkbox" [checked]="col.toggled" [id]="col.id" (change)="toggleColumn(col.id)">
+                    <label [for]="col.id">{{ col.name }}</label>
+                    <clr-icon class="column-drag-handle" cdkDragHandle shape="drag-handle"></clr-icon>
+                </li>
+            </ul>
         </div>
     </ng-container>
 
-    <ng-container *ngIf="tab === 'settings'">
-        <div style="padding: 10px;">
-            <label for="delay">Delay</label>
-            <span style="float: right;">ms</span>
-            <input class="clr-input" type="number" id="delay" [ngModel]="delay$ | async" (ngModelChange)="setDelay($event)" placeholder="Enter value here" style="float: right; width: 100px;">
-        </div>
+    <ng-container *ngIf="tab === 'sync'">
+        <div style="padding: 20px;">
+            <div class="clr-input-wrapper">
+                <label for="delay" class="form-label">Delay</label>
+                <span style="float: right;">&nbsp;ms</span>
+                <input class="clr-input" type="number" id="delay" [ngModel]="delay$ | async" (ngModelChange)="setDelay($event)" placeholder="Enter value here" style="float: right; width: 100px;">
+            </div>
 
-        <div style="padding: 10px;">
+            <h5 style="margin-left: -5px; margin-bottom: 5px;">Sync from updates</h5>
 
             <div class="clr-select-wrapper" style="width: 100%">
-                <label for="select-inter">Inter</label>
+                <label for="select-inter" class="form-label">Filter</label>
                 <select class="clr-select" id="select-inter" style="float:right" [ngModel]="selectedInter | async" (ngModelChange)="next($event)">
                     <option *ngFor="let inter of intermediates$ | async" [value]="inter.key">{{ inter.name }}</option>
                 </select>
             </div>
 
-            <div class="list">
-
-                <div *ngFor="let event of events$ | async" class="item">
-                    <div style="flex: 1">
-                        <div style="line-height: 20px; font-weight: bold;">{{ event.racer.display }}</div>
-                        <div style="line-height: 16px; font-size: 10px;">{{ event.diff }}s</div>
-                    </div>
-                    <div>
-                        <button type="button" class="btn btn-sm btn-link" aria-label="Sync" (click)="sync(event.timestamp)">
-                            Sync
-                        </button>
+            <ng-container *ngIf="(events$ | async) as events">
+                <div class="list" *ngIf="events.length > 0; else elseTpl">
+                    <div *ngFor="let event of events" class="item">
+                        <div style="flex: 1">
+                            <div style="line-height: 20px; font-weight: bold;">{{ event.racer.display }}</div>
+                            <div style="line-height: 16px; font-size: 10px;">{{ event.diff }}s</div>
+                        </div>
+                        <div>
+                            <button type="button" class="btn btn-sm" aria-label="Sync" (click)="sync(event.timestamp)">
+                                Sync
+                            </button>
+                        </div>
                     </div>
                 </div>
-            </div>
+
+                <ng-template #elseTpl>
+                    <section style="line-height: 48px; text-align: center">No updates found</section>
+                </ng-template>
+
+            </ng-container>
         </div>
     </ng-container>
-
 
 </div>
