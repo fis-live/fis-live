@@ -380,6 +380,11 @@ export class FisConnectionService {
                                 type: 'register_result',
                                 payload: {status: Status.Default, intermediate: event[3], racer: event[2], time: event[4]}
                             });
+                        } else {
+                            events.push({
+                                type: 'register_result',
+                                payload: {status: Status.NA, intermediate: event[3], racer: event[2], time: 0}
+                            });
                         }
                         break;
                     case 'finish':

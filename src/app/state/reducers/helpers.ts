@@ -1,7 +1,7 @@
 import { isRanked, maxVal, Status, timePenalty } from '../../fis/fis-constants';
 import { Result } from '../../fis/models';
 import { Intermediate } from '../../models/intermediate';
-import { Mark } from '../../models/racer';
+import { Mark, RacerData } from '../../models/racer';
 
 import { State } from './result';
 
@@ -40,7 +40,7 @@ export function registerResultMutably(state: State, result: Result) {
     const standing = state.standings[intermediate];
 
     if (state.intermediates[intermediate].type === 'bonus_time') {
-        entity.bonusSeconds += result.time;
+        updateBonusSeconds(state, entity, result.time || 0, 0);
     }
 
     if (marks.length < intermediate) {
@@ -95,7 +95,7 @@ export function registerResultMutably(state: State, result: Result) {
     }
 
     if (marks[0].tourStanding !== undefined) {
-        mark.tourStanding = mark.diffs[0] < maxVal ? marks[0].tourStanding + mark.diffs[0] : maxVal;
+        mark.tourStanding = mark.diffs[0] < maxVal ? marks[0].tourStanding + mark.diffs[0] - entity.bonusSeconds : maxVal;
         if (mark.tourStanding < standing.tourLeader) {
             standing.tourLeader = mark.tourStanding;
         }
@@ -104,6 +104,41 @@ export function registerResultMutably(state: State, result: Result) {
     marks[intermediate] = mark;
     standing.ids.push(result.racer);
     standing.version += 1;
+}
+
+function updateBonusSeconds(state: State, entity: RacerData, bonusSeconds: number, previous: number) {
+    if (bonusSeconds === previous) {
+        return;
+    }
+
+    const previousBonus = entity.bonusSeconds;
+    const newBonus = entity.bonusSeconds + bonusSeconds - previous;
+    const checkLeader = [];
+    entity.bonusSeconds = newBonus;
+
+    for (let i = 1; i < entity.marks.length; i++) {
+        const time = entity.marks[i].tourStanding;
+        if (time !== undefined && time < maxVal) {
+            entity.marks[i].tourStanding = time + previousBonus - newBonus;
+            state.standings[i].version += 1;
+
+            if (entity.marks[i].tourStanding! < state.standings[i].tourLeader) {
+                state.standings[i].tourLeader = entity.marks[i].tourStanding!;
+            } else if (time === state.standings[i].tourLeader) {
+                checkLeader.push(i);
+            }
+        }
+    }
+
+    for (const i of checkLeader) {
+        let leader = maxVal;
+        for (const id of state.standings[i].ids) {
+            leader = Math.min(leader, state.entities[id].marks[i].tourStanding ?? maxVal);
+        }
+
+        state.standings[i].tourLeader = leader;
+        state.standings[i].version += 1;
+    }
 }
 
 export function updateResultMutably(state: State, result: Result) {
@@ -128,7 +163,7 @@ export function updateResultMutably(state: State, result: Result) {
     }
 
     if (state.intermediates[intermediate].type === 'bonus_time') {
-        entity.bonusSeconds += result.time - prev.time;
+        updateBonusSeconds(state, entity, result.time, prev.time);
     }
 
     const checkDiffs = [];
@@ -169,7 +204,7 @@ export function updateResultMutably(state: State, result: Result) {
     }
 
     if (entity.marks[0].tourStanding !== undefined) {
-        mark.tourStanding = mark.diffs[0] < maxVal ? entity.marks[0].tourStanding + mark.diffs[0] : maxVal;
+        mark.tourStanding = mark.diffs[0] < maxVal ? entity.marks[0].tourStanding + mark.diffs[0] - entity.bonusSeconds : maxVal;
         tourLeader = Math.min(tourLeader, mark.tourStanding);
     }
 
@@ -195,7 +230,7 @@ export function updateResultMutably(state: State, result: Result) {
             tourLeader = Math.min(tourLeader, mk.tourStanding);
         }
 
-        if ((time < t && !_isBonus) || (time > t && _isBonus)) {
+        if ((time < t && !_isBonus) || (time < maxVal && time > t && _isBonus)) {
             rankAdj += 1;
         } else if ((time > t && !_isBonus) || (time < t && _isBonus)) {
             rank += 1;
@@ -213,7 +248,7 @@ export function updateResultMutably(state: State, result: Result) {
 
     mark.rank = isRanked(result.status) ? rank : null;
     entity.marks[intermediate] = mark;
-    standing.leader = leader;
+    standing.leader = _isBonus ? maxVal : leader;
     standing.tourLeader = tourLeader;
     standing.version += 1;
 }
