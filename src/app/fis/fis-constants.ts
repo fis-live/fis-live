@@ -285,7 +285,7 @@ export enum Status {
     RAL = 'RAL',
     Lapped = 'Lapped',
     DNF = 'DNF',
-    DQ = 'DQ',
+    DQ = 'DSQ',
     DNS = 'DNS',
     NA = 'N/A'
 }

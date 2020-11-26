@@ -1,14 +1,12 @@
-import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { select, Store } from '@ngrx/store';
 import { Observable, of } from 'rxjs';
 import { map, switchMap } from 'rxjs/operators';
 
 import { Racer } from '../../models/racer';
 import { AppState, getResultState, selectAllRacers } from '../../state/reducers';
-import { isBonus } from '../../state/reducers/helpers';
-import { guid } from '../../utils/utils';
+import { guid, isBonus } from '../../utils/utils';
 import { DatagridStore } from '../state/datagrid-store';
-import { DatagridState, ResultItem } from '../state/model';
 
 @Component({
     selector: 'app-dg-header',
@@ -22,24 +20,9 @@ export class DatagridHeader {
     public readonly progress$: Observable<{ current: number; of: number; } | null>;
     public readonly view$ = this._config.view$;
     public readonly hasDiff$ = this._config.select(this._config.displayedColumns$, (columns) => columns.indexOf('diff') > -1);
-    public readonly racerNames$: Observable<string[]>;
-    public readonly nations$: Observable<string[]>;
-
-    private static onlyUnique<T>(value: T, index: number, self: T[]) {
-        return self.indexOf(value) === index;
-    }
-
-    public filterByName = (data: ResultItem) => data.racer.value;
-    public filterByNsa = (data: ResultItem) => data.racer.nsa;
 
     constructor(public _config: DatagridStore, private store: Store<AppState>) {
         this.racers$ = store.pipe(select(selectAllRacers));
-        this.racerNames$ = this.racers$.pipe(
-            map((racers) => racers.map((racer) => racer.lastName + ', ' + racer.firstName))
-        );
-        this.nations$ = this.racers$.pipe(
-            map((racers) => racers.map((racer) => racer.nsa).filter(DatagridHeader.onlyUnique))
-        );
 
         this.progress$ = this._config.view$.pipe(
             switchMap((view) => {
@@ -47,10 +30,14 @@ export class DatagridHeader {
                     return store.pipe(
                         select(getResultState),
                         map((state) => {
-                            return {
-                                current: state.standings[view.inter!.key].ids.length,
-                                of: state.ids.length
-                            };
+                            if (state.standings[view.inter!.key] !== undefined) {
+                                return {
+                                    current: state.standings[view.inter!.key].ids.length,
+                                    of: state.ids.length
+                                };
+                            }
+
+                            return null;
                         })
                     );
                 }

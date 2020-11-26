@@ -1,32 +1,12 @@
 import { isRanked, maxVal, Status, timePenalty } from '../../fis/fis-constants';
 import { Result } from '../../fis/models';
-import { Intermediate } from '../../models/intermediate';
 import { Mark, RacerData } from '../../models/racer';
+import { getValidDiff, isBonus } from '../../utils/utils';
 
 import { State } from './result';
 
-export function getValidDiff(mark: Mark, zero: Mark): number {
-    if (isRanked(mark.status) && isRanked(zero.status)) {
-        return mark.time - zero.time;
-    }
-
-    return maxVal;
-}
-
-export function isBonus(intermediate: Intermediate | null | undefined): boolean {
-    return intermediate?.type  === 'bonus_points' || intermediate?.type  === 'bonus_time';
-}
-
-export function parseTimeString(str: string) {
-    const timeArray = str.split(':');
-
-    return (timeArray.length === 3) ?
-        (Number(timeArray[0]) * 3600 + Number(timeArray[1]) * 60 + Number(timeArray[2])) * 1000 :
-        (Number(timeArray[0]) * 60 + Number(timeArray[1])) * 1000;
-}
-
 export function registerResultMutably(state: State, result: Result) {
-    const intermediate = result.intermediate === 99 ? state.intermediates.length - 1 : result.intermediate;
+    const intermediate = state.interById[result.intermediate];
     const _isBonus = isBonus(state.intermediates[intermediate]);
     const entity = state.entities[result.racer];
     const marks = entity.marks;
@@ -35,12 +15,13 @@ export function registerResultMutably(state: State, result: Result) {
         status: result.status,
         rank: null,
         diffs: (new Array(intermediate)).fill(maxVal),
-        version: 0
+        version: 0,
+        tourStanding: maxVal
     };
     const standing = state.standings[intermediate];
 
     if (state.intermediates[intermediate].type === 'bonus_time') {
-        updateBonusSeconds(state, entity, result.time || 0, 0);
+        updateBonusSeconds(state, entity, result.time, 0);
     }
 
     if (marks.length < intermediate) {
@@ -51,7 +32,8 @@ export function registerResultMutably(state: State, result: Result) {
                     status: isRanked(result.status) ? Status.NA : result.status,
                     rank: null,
                     diffs: (new Array(i)).fill(maxVal),
-                    version: 0
+                    version: 0,
+                    tourStanding: maxVal
                 };
 
                 state.standings[i].ids.push(result.racer);
@@ -94,7 +76,7 @@ export function registerResultMutably(state: State, result: Result) {
         standing.latestBibs = [result.racer, ...standing.latestBibs.slice(0, 2)];
     }
 
-    if (marks[0].tourStanding !== undefined) {
+    if (marks[0].tourStanding !== maxVal) {
         mark.tourStanding = mark.diffs[0] < maxVal ? marks[0].tourStanding + mark.diffs[0] - entity.bonusSeconds : maxVal;
         if (mark.tourStanding < standing.tourLeader) {
             standing.tourLeader = mark.tourStanding;
@@ -118,12 +100,12 @@ function updateBonusSeconds(state: State, entity: RacerData, bonusSeconds: numbe
 
     for (let i = 1; i < entity.marks.length; i++) {
         const time = entity.marks[i].tourStanding;
-        if (time !== undefined && time < maxVal) {
+        if (time < maxVal) {
             entity.marks[i].tourStanding = time + previousBonus - newBonus;
             state.standings[i].version += 1;
 
-            if (entity.marks[i].tourStanding! < state.standings[i].tourLeader) {
-                state.standings[i].tourLeader = entity.marks[i].tourStanding!;
+            if (entity.marks[i].tourStanding <= state.standings[i].tourLeader) {
+                state.standings[i].tourLeader = entity.marks[i].tourStanding;
             } else if (time === state.standings[i].tourLeader) {
                 checkLeader.push(i);
             }
@@ -137,12 +119,11 @@ function updateBonusSeconds(state: State, entity: RacerData, bonusSeconds: numbe
         }
 
         state.standings[i].tourLeader = leader;
-        state.standings[i].version += 1;
     }
 }
 
 export function updateResultMutably(state: State, result: Result) {
-    const intermediate = result.intermediate === 99 ? state.intermediates.length - 1 : result.intermediate;
+    const intermediate = state.interById[result.intermediate];
     const _isBonus = isBonus(state.intermediates[intermediate]);
     const standing = state.standings[intermediate];
     const entity = state.entities[result.racer];
@@ -152,7 +133,8 @@ export function updateResultMutably(state: State, result: Result) {
         rank: 0,
         status: result.status,
         diffs: (new Array(intermediate)).fill(maxVal),
-        version: 0
+        version: 0,
+        tourStanding: maxVal
     };
 
     let leader = mark.time + timePenalty[result.status];
@@ -203,7 +185,7 @@ export function updateResultMutably(state: State, result: Result) {
         }
     }
 
-    if (entity.marks[0].tourStanding !== undefined) {
+    if (entity.marks[0].tourStanding < maxVal) {
         mark.tourStanding = mark.diffs[0] < maxVal ? entity.marks[0].tourStanding + mark.diffs[0] - entity.bonusSeconds : maxVal;
         tourLeader = Math.min(tourLeader, mark.tourStanding);
     }

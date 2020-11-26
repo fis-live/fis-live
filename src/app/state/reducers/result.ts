@@ -8,16 +8,17 @@ import { isRanked, maxVal, Status as StatusEnum, timePenalty } from '../../fis/f
 import { Result, Status } from '../../fis/models';
 import { Intermediate } from '../../models/intermediate';
 import { RacerData, Standing } from '../../models/racer';
-import { formatTime, guid } from '../../utils/utils';
+import { formatTime, getValidDiff, guid, isBonus, parseTimeString } from '../../utils/utils';
 import { RaceActions } from '../actions';
 
-import { getValidDiff, isBonus, parseTimeString, registerResultMutably, updateResultMutably } from './helpers';
+import { registerResultMutably, updateResultMutably } from './helpers';
 
 export interface State {
     id: string;
     ids: number[];
     entities: {[id: number]: RacerData};
     intermediates: Intermediate[];
+    interById: {[id: number]: number };
     standings: {[id: number]: Standing};
 }
 
@@ -26,7 +27,8 @@ export const initialState: State = {
     ids: [],
     entities: {},
     intermediates: [],
-    standings: {}
+    standings: {},
+    interById: {}
 };
 
 const resultReducer = createReducer(
@@ -37,10 +39,12 @@ const resultReducer = createReducer(
             ids: [],
             entities: {},
             intermediates: intermediates,
+            interById: {},
             standings: {}
         };
 
         intermediates.forEach(intermediate => {
+            state.interById[intermediate.id] = intermediate.key;
             state.standings[intermediate.key] = {
                 version: 0,
                 ids: [],
@@ -61,7 +65,9 @@ const resultReducer = createReducer(
                     id: racer.bib,
                     status: entry.status || '',
                     racer: racer,
-                    marks: [{time: 0, status: StatusEnum.Default, rank: entry.order || null, diffs: [maxVal], version: 0}],
+                    marks: [
+                        {time: 0, status: StatusEnum.Default, rank: entry.order || null, diffs: [maxVal], version: 0, tourStanding: maxVal}
+                        ],
                     notes: [],
                     bonusSeconds: 0
                 };
@@ -78,7 +84,7 @@ const resultReducer = createReducer(
         }
 
         for (const result of results) {
-            const inter = result.intermediate === 99 ? state.intermediates.length - 1 : result.intermediate;
+            const inter = state.interById[result.intermediate];
             if (state.entities[result.racer].marks.length > inter) {
                 updateResultMutably(state, result);
             } else {
@@ -167,12 +173,12 @@ const resultReducer = createReducer(
             switch (event.type) {
                 case 'register_result': {
                     const result = event.payload as Result;
-                    const inter = result.intermediate === 99 ? state.intermediates.length - 1 : result.intermediate;
+                    const inter = state.interById[result.intermediate];
                     const leader = draft.standings[inter].leader;
 
                     if (draft.entities[result.racer].marks.length > inter) {
                         updateResultMutably(draft, result);
-                    } else if (result.time > 0) {
+                    } else if (result.time > 0 || result.status !== StatusEnum.Default) {
                         registerResultMutably(draft, result);
 
                         const _event = {
@@ -253,7 +259,7 @@ function prepareStartList(state: State): ResultItem[] {
             },
             tourStanding: {
                 display: formatTime(mark.tourStanding, bestTourStanding),
-                value: mark.tourStanding ?? maxVal
+                value: mark.tourStanding
             },
             notes: entity.notes,
             classes: classes,
@@ -267,7 +273,7 @@ function prepareStartList(state: State): ResultItem[] {
 
 function prepareInter(state: State, intermediate: Intermediate, diff: number | null): ResultItem[] {
     const standing = state.standings[intermediate.key];
-    const bestTourStanding = standing.tourLeader ?? maxVal;
+    const bestTourStanding = standing.tourLeader;
 
     const rows = [];
     for (const id of standing.ids) {
@@ -301,7 +307,7 @@ function prepareInter(state: State, intermediate: Intermediate, diff: number | n
             const bonusString = entity.bonusSeconds > 0 ? ' [' + entity.bonusSeconds / 1000 + 's]' : '';
 
             tourStandingProp = {
-                value: mark.tourStanding ?? timePenalty[mark.status],
+                value: mark.tourStanding,
                 display: formatTime(mark.tourStanding, bestTourStanding) + bonusString
             };
         }
@@ -398,7 +404,7 @@ function prepareAnalysis(state: State, view: View): ResultItem[] {
             const mark = row.marks[finishKey];
             const bonusString = row.bonusSeconds > 0 ? ' [' + row.bonusSeconds / 1000 + 's]' : '';
             tourStandingProp = {
-                value: mark.tourStanding ?? timePenalty[mark.status],
+                value: mark.tourStanding,
                 display: formatTime(mark.tourStanding, bestTourStanding) + bonusString
             };
         }

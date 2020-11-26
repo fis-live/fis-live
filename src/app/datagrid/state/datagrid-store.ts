@@ -7,8 +7,8 @@ import { take } from 'rxjs/operators';
 import { Option, OptionSelector } from '../../core/select/option-selector';
 import { Intermediate } from '../../models/intermediate';
 import { AppState, getSettingsState, selectAllIntermediates } from '../../state/reducers';
-import { isBonus } from '../../state/reducers/helpers';
 import { State as SettingsState } from '../../state/reducers/settings';
+import { isBonus } from '../../utils/utils';
 
 import { DatagridState, View } from './model';
 
@@ -127,34 +127,26 @@ export class DatagridStore extends ComponentStore<DatagridState> implements Opti
             });
         }
 
-        if (view.mode === 'normal') {
-            if (values.length > 0 && view.inter !== null) {
-                if (view.inter.key >= values.length) {
-                    view.inter = values[0];
-                    view.diff = null;
-                } else {
-                    view.inter = values[view.inter.key];
-                    view.diff = view.diff !== null ? values[view.diff.key] : null;
-                }
-            } else {
-                view.inter = values.length > 0 ? values[0] : null;
+        if (values.length > 0 && view.inter !== null) {
+            if (view.inter.key >= values.length) {
+                view.inter = values[0];
                 view.diff = null;
+            } else {
+                view.inter = values[view.inter.key];
+                view.diff = view.diff !== null ? values[view.diff.key] : null;
             }
-
-            return {
-                ...state,
-                view,
-                dynamicColumns,
-                columns,
-                isStartList: view.inter == null || view.inter.key === 0
-            };
         } else {
-            return {
-                ...state,
-                dynamicColumns,
-                columns
-            };
+            view.inter = values.length > 0 ? values[0] : null;
+            view.diff = null;
         }
+
+        return {
+            ...state,
+            view,
+            dynamicColumns,
+            columns,
+            isStartList: view.inter == null || view.inter.key === 0
+        };
     });
 
     public readonly setMode = this.updater((state, mode: 'normal' | 'analysis') => ({

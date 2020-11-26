@@ -30,7 +30,7 @@ export interface Mark {
     rank: number | null;
     diffs: number[];
     version: number;
-    tourStanding?: number;
+    tourStanding: number;
 }
 
 export enum Note {

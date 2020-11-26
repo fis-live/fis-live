@@ -235,7 +235,7 @@ export class FisConnectionService {
 
         data.racedef.forEach((def, index) => {
             let name: string;
-            let type: 'start_list' | 'inter' | 'finish' | 'bonus_points' | 'bonus_time';
+            let type: 'start_list' | 'inter' | 'finish' | 'bonus_points' | 'bonus_time' | 'standing';
             let short: string;
             switch (def[0]) {
                 case 'inter':
@@ -271,6 +271,14 @@ export class FisConnectionService {
                         short = def[2] + ' ' + raceInfo.lengthUnit;
                     } else {
                         name = short = 'Finish';
+                    }
+                    break;
+                case 'standing':
+                    type = 'standing';
+                    if (def[2]) {
+                        name = short = '' + def[2];
+                    } else {
+                        name = short = 'Standing';
                     }
                     break;
                 default:
@@ -313,6 +321,17 @@ export class FisConnectionService {
 
         const results = [];
 
+        for (let i = 0; i < data.result.length; i++) {
+            const res = data.result[i];
+            if (res !== null) {
+                for (let j = 0; j < res.length; j++) {
+                    if (res[j]) {
+                        results.push({status: Status.Default, intermediate: data.racedef[j][1], racer: i, time: res[j]});
+                    }
+                }
+            }
+        }
+
         for (let i = 0; i < data.startlist.length; i++) {
             if (data.startlist[i] !== null) {
                 startList[data.startlist[i][0]] = {
@@ -335,17 +354,6 @@ export class FisConnectionService {
                             }
                         );
                         break;
-                }
-            }
-        }
-
-        for (let i = 0; i < data.result.length; i++) {
-            const res = data.result[i];
-            if (res !== null) {
-                for (let j = 0; j < res.length; j++) {
-                    if (res[j]) {
-                        results.push({status: Status.Default, intermediate: data.racedef[j][1], racer: i, time: res[j]});
-                    }
                 }
             }
         }
@@ -400,6 +408,7 @@ export class FisConnectionService {
                     case 'dnf':
                     case 'dns':
                     case 'dq':
+                    case 'dsq':
                     case 'ral':
                     case 'lapped':
                         events.push({
