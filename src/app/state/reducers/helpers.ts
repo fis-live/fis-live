@@ -7,7 +7,7 @@ import { State } from './result';
 
 export function registerResultMutably(state: State, result: Result) {
     const intermediate = state.interById[result.intermediate];
-    const _isBonus = isBonus(state.intermediates[intermediate]);
+    const _isBonus = isBonus(state.intermediates[intermediate]) && state.intermediates[intermediate].type !== 'standing';
     const entity = state.entities[result.racer];
     const marks = entity.marks;
     const mark: Mark = {
@@ -64,10 +64,12 @@ export function registerResultMutably(state: State, result: Result) {
                 standing.leader = time;
             }
 
-            for (let i = 0; i < intermediate; i++) {
-                mark.diffs[i] = getValidDiff(mark, marks[i]);
-                if (mark.diffs[i] < standing.bestDiff[i]) {
-                    standing.bestDiff[i] = mark.diffs[i];
+            if (state.intermediates[intermediate].type !== 'standing') {
+                for (let i = 0; i < intermediate; i++) {
+                    mark.diffs[i] = getValidDiff(mark, marks[i]);
+                    if (mark.diffs[i] < standing.bestDiff[i]) {
+                        standing.bestDiff[i] = mark.diffs[i];
+                    }
                 }
             }
         }
@@ -124,7 +126,7 @@ function updateBonusSeconds(state: State, entity: RacerData, bonusSeconds: numbe
 
 export function updateResultMutably(state: State, result: Result) {
     const intermediate = state.interById[result.intermediate];
-    const _isBonus = isBonus(state.intermediates[intermediate]);
+    const _isBonus = isBonus(state.intermediates[intermediate]) && state.intermediates[intermediate].type !== 'standing';
     const standing = state.standings[intermediate];
     const entity = state.entities[result.racer];
     const prev = entity.marks[intermediate];
@@ -150,7 +152,7 @@ export function updateResultMutably(state: State, result: Result) {
 
     const checkDiffs = [];
 
-    if (!_isBonus) {
+    if (!_isBonus && state.intermediates[intermediate].type !== 'standing') {
         // Calculate diffs and check if we need to find new best diff
         for (let i = 0; i < intermediate; i++) {
             mark.diffs[i] = getValidDiff(mark, entity.marks[i]);

@@ -336,7 +336,7 @@ export class FisConnectionService {
             if (data.startlist[i] !== null) {
                 startList[data.startlist[i][0]] = {
                     racer: data.startlist[i][0],
-                    status: statusMap[data.startlist[i][1]] || data.startlist[i][1] || '',
+                    status: statusMap[data.startlist[i][3]] || data.startlist[i][3] || '',
                     order: i + 1
                 };
                 switch (data.startlist[i][1]) {
@@ -383,6 +383,7 @@ export class FisConnectionService {
                     case 'inter':
                     case 'bonuspoint':
                     case 'bonustime':
+                    case 'standing':
                         if (event[4]) {
                             events.push({
                                 type: 'register_result',

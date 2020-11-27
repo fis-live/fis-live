@@ -31,7 +31,7 @@ export interface Main {
     main: number;
     live: [number, number, string];
     racers: (null | [number, number, string, string, string, string, string, string, number])[];
-    startlist: [number, string, number][];
+    startlist: [number, string, number, string, number][];
     result: (null | number[])[];
     runinfo: [number, string, string];
 }
