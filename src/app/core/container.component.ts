@@ -17,6 +17,7 @@ import { WindowSize } from '../utils/window-size';
 })
 export class ContainerComponent implements OnInit, OnDestroy {
     public codex?: number;
+    public sectorCode: 'nk' | 'cc' = 'cc';
     public raceInfo$: Observable<RaceInfoState>;
     public loading$: Observable<LoadingState>;
     public favoriteRacers$: Observable<Racer[]>;
@@ -28,10 +29,17 @@ export class ContainerComponent implements OnInit, OnDestroy {
     private widthSubscription: Subscription;
 
     ngOnInit() {
-        this.route.params.pipe(map((params: Params) => params['codex']))
-            .subscribe((codex: string) => {
-                if (codex) {
-                    this.codex = +codex;
+        this.route.url
+            .subscribe((url) => {
+                console.log('Router');
+                if (url[0].path === 'nk') {
+                    this.codex = +url[1].path;
+                    this.sectorCode = 'nk';
+
+                    this.reload();
+                } else {
+                    this.codex = +url[0].path;
+                    this.sectorCode = 'cc';
 
                     this.reload();
                 }
@@ -136,7 +144,7 @@ export class ContainerComponent implements OnInit, OnDestroy {
 
     private reload(): void {
         if (this.codex) {
-            this._store.dispatch(loadMain({codex: this.codex}));
+            this._store.dispatch(loadMain({codex: this.codex, sectorCode: this.sectorCode}));
         }
     }
 

@@ -35,10 +35,11 @@ export class FisConnectionService {
     private startRequest = 0;
 
     private codex: number | null = null;
+    private sectorCode: 'cc' | 'nk' = 'cc';
     private version: number = 0;
     private initialized = false;
     private doc: 'main' | 'update' | 'pdf' = 'main';
-    private pdfDoc: 'SL' | 'QUA' = 'SL';
+    private pdfDoc: 'SL' | 'QUA' | 'SLCC' = 'SL';
 
     private baseURL: string = 'http://live.fis-ski.com/';
     private proxy: string = 'https://fislive-cors.herokuapp.com/';
@@ -52,8 +53,9 @@ export class FisConnectionService {
         this.signature = d.getSeconds().toString() + d.getMilliseconds().toString() + '-fis';
     }
 
-    public initialize(codex: number): void {
+    public initialize(codex: number, sectorCode: 'cc' | 'nk'): void {
         this.codex = codex;
+        this.sectorCode = sectorCode;
         this.doc = 'main';
         this.initialized = false;
         this.version = 0;
@@ -74,8 +76,8 @@ export class FisConnectionService {
         }).pipe(map(res => this.parseServerList(res)));
     }
 
-    public poll(codex: number): Observable<ActionWithTimestamp> {
-        this.initialize(codex);
+    public poll(codex: number, sectorCode: 'cc' | 'nk'): Observable<ActionWithTimestamp> {
+        this.initialize(codex, sectorCode);
 
         return defer(() => timer(this.delay)).pipe(
             switchMap(() => this.getHttpRequest()),
@@ -90,13 +92,13 @@ export class FisConnectionService {
         let url: string;
         switch (this.doc) {
             case 'main':
-                url = `${this.baseURL}mobile/cc-${this.codex}/main.xml`;
+                url = `${this.baseURL}mobile/${this.sectorCode}-${this.codex}/main.xml`;
                 break;
             case 'update':
-                url = `${this.baseURL}mobile/cc-${this.codex}/updt${this.version}.xml`;
+                url = `${this.baseURL}mobile/${this.sectorCode}-${this.codex}/updt${this.version}.xml`;
                 break;
             case 'pdf':
-                return this._http.get<PdfData[]>(`${this.proxy}pdf.json?codex=${this.codex}&doc=${this.pdfDoc}`);
+                return this._http.get<PdfData[]>(`${this.proxy}pdf.json?codex=${this.codex}&doc=${this.pdfDoc}&sectorCode=${this.sectorCode}`);
         }
 
         // @ts-ignore
@@ -365,7 +367,7 @@ export class FisConnectionService {
             results
         }));
 
-        this.pdfDoc = data.runinfo[1] === 'Q' ? 'QUA' : 'SL';
+        this.pdfDoc = this.sectorCode === 'nk' ? 'SLCC' : (data.runinfo[1] === 'Q' ? 'QUA' : 'SL');
         this.initialized = true;
 
         return actions;

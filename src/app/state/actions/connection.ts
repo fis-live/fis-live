@@ -14,7 +14,7 @@ export const showAlert = createAction(
 
 export const loadMain = createAction(
     '[Connection] Load main',
-    props<{codex: number}>()
+    props<{codex: number, sectorCode: 'cc' | 'nk'}>()
 );
 
 export const loadCalendar = createAction(

@@ -35,7 +35,7 @@ export class ConnectionEffects {
     loadMain$ = createEffect(() => this.actions$.pipe(
         ofType(ConnectionActions.loadMain),
         switchMap((action) =>
-            this.api.poll(action.codex).pipe(
+            this.api.poll(action.codex, action.sectorCode).pipe(
                 concatMap((value) => {
                     if (!value.shouldDelay) {
                         return of(...value.actions);
@@ -54,7 +54,7 @@ export class ConnectionEffects {
                             severity: 'danger',
                             message: 'Could not find live data. Check the codex and try again.',
                             action: 'Retry',
-                            actions: [ConnectionActions.loadMain({ codex: action.codex })]
+                            actions: [ConnectionActions.loadMain({ codex: action.codex, sectorCode: action.sectorCode })]
                         }
                     })
                 ])

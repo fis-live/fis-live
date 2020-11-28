@@ -105,7 +105,7 @@ const resultReducer = createReducer(
                 leader = Math.min(leader, data.time);
             }
 
-            if (data.tourStanding !== null) {
+            if (data.tourStanding != null) {
                 if (data.tourStanding[0] !== '+') {
                     tourLeader = Math.min(tourLeader, parseTimeString(data.tourStanding));
                     bestTour[0] = tourLeader;
@@ -119,7 +119,7 @@ const resultReducer = createReducer(
                 draft.entities[data.bib].notes.push('W');
             }
 
-            if (data.time !== null) {
+            if (data.time != null) {
                 marks[0].time = data.time;
                 marks[0].diffs = [data.time];
 
@@ -133,7 +133,7 @@ const resultReducer = createReducer(
                 }
             }
 
-            if (data.tourStanding !== null) {
+            if (data.tourStanding != null) {
                 const entity = draft.entities[data.bib];
                 if (data.tourStanding[0] !== '+') {
                     entity.marks[0].tourStanding = parseTimeString(data.tourStanding);
