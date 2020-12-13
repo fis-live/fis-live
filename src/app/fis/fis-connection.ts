@@ -176,8 +176,8 @@ export class FisConnectionService {
         return throwError(error);
     }
 
-    public loadCalendar(): Observable<Race[]> {
-        return this._http.get<Race[]>('https://fislive-cors.herokuapp.com/liveraces.json')
+    public loadCalendar(sectorCode: 'cc' | 'nk' = 'cc'): Observable<Race[]> {
+        return this._http.get<Race[]>('https://fislive-cors.herokuapp.com/liveraces.json?sectorCode=' + sectorCode)
             .pipe(
                 catchError((error) => {
                     console.log(error);
@@ -293,7 +293,9 @@ export class FisConnectionService {
                     break;
             }
 
-            intermediates.push({key: index + 1, id: def[1], distance: def[2], name, short, type});
+            if (def[0] !== 'start') {
+                intermediates.push({key: index + 1, id: def[1], distance: def[2], name, short, type});
+            }
         });
 
         const racers = [];
@@ -327,8 +329,10 @@ export class FisConnectionService {
             const res = data.result[i];
             if (res !== null) {
                 for (let j = 0; j < res.length; j++) {
-                    if (res[j]) {
-                        results.push({status: Status.Default, intermediate: data.racedef[j][1], racer: i, time: res[j]});
+                    if (data.racedef[j][1] === 0) {
+
+                    } else if (res[j]) {
+                        results.push({status: Status.Default, intermediate: data.racedef[j][1], racer: i, time: res[j] - res[j] % 100});
                     }
                 }
             }
@@ -389,7 +393,7 @@ export class FisConnectionService {
                         if (event[4]) {
                             events.push({
                                 type: 'register_result',
-                                payload: {status: Status.Default, intermediate: event[3], racer: event[2], time: event[4]}
+                                payload: {status: Status.Default, intermediate: event[3], racer: event[2], time: event[4] - event[4] % 100}
                             });
                         } else {
                             events.push({
