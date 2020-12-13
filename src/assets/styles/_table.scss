@@ -40,6 +40,28 @@
             font-weight: 700;
         }
 
+        &.blue .bib .badge {
+            background: #2d72fe;
+            font-weight: 700;
+        }
+
+        &.green .bib .badge {
+            background: #00c541;
+            color: $clr-black;
+            font-weight: 700;
+        }
+
+        &.silver .bib .badge {
+            background: silver;
+            color: $clr-black;
+            font-weight: 700;
+        }
+
+        &.black .bib .badge {
+            background: black;
+            font-weight: 700;
+        }
+
         &.yellow .bib .badge {
             background: $clr-yellow;
             color: $clr-black;
