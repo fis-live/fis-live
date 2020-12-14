@@ -36,6 +36,7 @@ export class FisConnectionService {
 
     private codex: number | null = null;
     private sectorCode: 'cc' | 'nk' = 'cc';
+    private discipline: string = '';
     private version: number = 0;
     private initialized = false;
     private doc: 'main' | 'update' | 'pdf' = 'main';
@@ -56,6 +57,7 @@ export class FisConnectionService {
     public initialize(codex: number, sectorCode: 'cc' | 'nk'): void {
         this.codex = codex;
         this.sectorCode = sectorCode;
+        this.discipline = '';
         this.doc = 'main';
         this.initialized = false;
         this.version = 0;
@@ -193,6 +195,16 @@ export class FisConnectionService {
         return data.length > 0 ? [RaceActions.parsePdf({ racers: data })] : [];
     }
 
+    private truncateTime(time: number, inter: string) {
+        if (inter === 'bonuspoint' || inter === 'bonustime') {
+            return time;
+        } else if (this.discipline === 'SP') {
+            return time - time % 10;
+        }
+
+        return time - time % 100;
+    }
+
     private parseMain(data: Main): Action[] {
         const actions: Action[] = [];
         const raceInfo: RaceInfo = {
@@ -209,6 +221,7 @@ export class FisConnectionService {
             team: data.raceinfo[13],
             tds: data.raceinfo[14]
         };
+        this.discipline = raceInfo.discipline;
         if (raceInfo.temperatureUnit.length === 1) {
             raceInfo.temperatureUnit = '°' + raceInfo.temperatureUnit;
         }
@@ -332,7 +345,8 @@ export class FisConnectionService {
                     if (data.racedef[j][1] === 0) {
 
                     } else if (res[j]) {
-                        results.push({status: Status.Default, intermediate: data.racedef[j][1], racer: i, time: res[j] - res[j] % 100});
+                        const time = this.truncateTime(res[j], data.racedef[j][0]);
+                        results.push({status: Status.Default, intermediate: data.racedef[j][1], racer: i, time: time});
                     }
                 }
             }
@@ -391,9 +405,10 @@ export class FisConnectionService {
                     case 'bonustime':
                     case 'standing':
                         if (event[4]) {
+                            const t = this.truncateTime(event[4], event[0]);
                             events.push({
                                 type: 'register_result',
-                                payload: {status: Status.Default, intermediate: event[3], racer: event[2], time: event[4] - event[4] % 100}
+                                payload: {status: Status.Default, intermediate: event[3], racer: event[2], time: t}
                             });
                         } else {
                             events.push({
@@ -403,9 +418,10 @@ export class FisConnectionService {
                         }
                         break;
                     case 'finish':
+                        const time = this.truncateTime(event[4], event[0]);
                         events.push({
                             type: 'register_result',
-                            payload: {status: Status.Finished, intermediate: event[3], racer: event[2], time: event[4]}
+                            payload: {status: Status.Finished, intermediate: event[3], racer: event[2], time: time}
                         });
                         events.push({
                             type: 'set_status',
