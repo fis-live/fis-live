@@ -20,6 +20,7 @@ export interface State {
     intermediates: Intermediate[];
     interById: {[id: number]: number };
     standings: {[id: number]: Standing};
+    precision: number;
 }
 
 export const initialState: State = {
@@ -28,19 +29,21 @@ export const initialState: State = {
     entities: {},
     intermediates: [],
     standings: {},
-    interById: {}
+    interById: {},
+    precision: -1
 };
 
 const resultReducer = createReducer(
     initialState,
-    on(RaceActions.initialize, (_, { intermediates, racers, results, startList }) => {
+    on(RaceActions.initialize, (_, { intermediates, racers, results, startList, precision }) => {
         const state: State = {
             id: guid(),
             ids: [],
             entities: {},
             intermediates: intermediates,
             interById: {},
-            standings: {}
+            standings: {},
+            precision: precision,
         };
 
         intermediates.forEach(intermediate => {
@@ -251,15 +254,17 @@ function prepareStartList(state: State): ResultItem[] {
         rows.push({
             state: 'normal',
             racer: entity.racer,
-            time: { display: entity.status, value: entity.status },
+            time: { display: entity.status, value: entity.status, leader: false },
             rank: mark.rank,
             diff: {
-                display: formatTime(time, standing.bestDiff[0]),
-                value: time
+                display: formatTime(time, standing.bestDiff[0], state.precision),
+                value: time,
+                leader: time === standing.bestDiff[0]
             },
             tourStanding: {
-                display: formatTime(mark.tourStanding, bestTourStanding),
-                value: mark.tourStanding
+                display: formatTime(mark.tourStanding, bestTourStanding, state.precision),
+                value: mark.tourStanding,
+                leader: mark.tourStanding === bestTourStanding
             },
             notes: entity.notes,
             classes: classes,
@@ -274,6 +279,7 @@ function prepareStartList(state: State): ResultItem[] {
 function prepareInter(state: State, intermediate: Intermediate, diff: number | null): ResultItem[] {
     const standing = state.standings[intermediate.key];
     const bestTourStanding = standing.tourLeader;
+    const precision = intermediate.type === 'standing' ? 0 : state.precision;
 
     const rows = [];
     for (const id of standing.ids) {
@@ -288,48 +294,52 @@ function prepareInter(state: State, intermediate: Intermediate, diff: number | n
             if (isRanked(mark.status)) {
                 timeProp = {
                     value: time,
-                    display: intermediate.type === 'bonus_time' ? time / 1000 : time
+                    display: intermediate.type === 'bonus_time' ? time / 1000 : time,
+                    leader: mark.rank === 1
                 };
 
                 tourStandingProp = {
                     display: '',
-                    value: 0
+                    value: 0,
+                    leader: false
                 };
             } else {
                 continue;
             }
         } else {
             timeProp = {
-                display: isRanked(mark.status) ? formatTime(time, standing.leader) : mark.status,
-                value: time + timePenalty[mark.status]
+                display: isRanked(mark.status) ? formatTime(time, standing.leader, precision) : mark.status,
+                value: time + timePenalty[mark.status],
+                leader: mark.rank === 1
             };
 
             const bonusString = entity.bonusSeconds > 0 ? ' [' + entity.bonusSeconds / 1000 + 's]' : '';
 
             tourStandingProp = {
                 value: mark.tourStanding,
-                display: formatTime(mark.tourStanding, bestTourStanding) + bonusString
+                display: formatTime(mark.tourStanding, bestTourStanding, precision) + bonusString,
+                leader: mark.tourStanding === bestTourStanding
             };
         }
 
         let diffProp = {
             display: '',
-            value: maxVal
+            value: maxVal,
+            leader: false
         };
 
         if (diff !== null) {
             const d = mark.diffs[diff];
 
             diffProp = {
-                display: formatTime(d, standing.bestDiff[diff]),
-                value: d
+                display: formatTime(d, standing.bestDiff[diff], precision),
+                value: d,
+                leader: d === standing.bestDiff[diff]
             };
         }
 
         const classes = [entity.racer.nsa.toLowerCase(), _state];
-        if (mark.rank === 1) {
-            classes.push('leader');
-        } else if (mark.rank == null) {
+        if (mark.rank == null) {
             classes.push('disabled');
         }
 
@@ -375,7 +385,7 @@ function prepareAnalysis(state: State, view: View): ResultItem[] {
         zeroes[key] = zero < maxVal ? zero : null;
     }
 
-    const finishKey = state.intermediates.length - 1;
+    const finishKey = state.intermediates.findIndex(inter => inter.type === 'finish');
     const bestTourStanding = view.zero !== -1 ?
         state.entities[view.zero].marks[finishKey]?.tourStanding ?? state.standings[finishKey].tourLeader
         : state.standings[finishKey].tourLeader;
@@ -394,10 +404,11 @@ function prepareAnalysis(state: State, view: View): ResultItem[] {
             classes.push(row.racer.color);
         }
 
-        const marks: ((Prop<number> | Prop<string>) & { state: string })[] = [];
+        const marks: ResultItem['marks'] = [];
         let tourStandingProp = {
             value: maxVal,
-            display: ''
+            display: '',
+            leader: false
         };
 
         if (row.marks[finishKey] != null) {
@@ -405,26 +416,30 @@ function prepareAnalysis(state: State, view: View): ResultItem[] {
             const bonusString = row.bonusSeconds > 0 ? ' [' + row.bonusSeconds / 1000 + 's]' : '';
             tourStandingProp = {
                 value: mark.tourStanding,
-                display: formatTime(mark.tourStanding, bestTourStanding) + bonusString
+                display: formatTime(mark.tourStanding, bestTourStanding, state.precision) + bonusString,
+                leader: mark.tourStanding === bestTourStanding
             };
         }
 
         for (let i = 0; i < row.marks.length; i++) {
             const prevKey = previousSector[i];
             const mark = row.marks[i];
+            const precision = state.intermediates[i].type === 'standing' ? 0 : state.precision;
 
             if (view.display === 'total') {
                 marks[i] = {
-                    display: isRanked(mark.status) ? formatTime(mark.time, zeroes[i]) : mark.status,
+                    display: isRanked(mark.status) ? formatTime(mark.time, zeroes[i], precision) : mark.status,
                     value: mark.time + timePenalty[mark.status],
-                    state: state.standings[i].latestBibs.find((bib) => bib === id) ? 'new' : 'normal'
+                    state: state.standings[i].latestBibs.find((bib) => bib === id) ? 'new' : 'normal',
+                    leader: mark.time === zeroes[i]
                 };
             } else {
                 const time =  mark.diffs[prevKey];
                 marks[i] = {
-                    display: time < maxVal ? formatTime(time, zeroes[i]) : (isRanked(mark.status) ? 'N/A' : mark.status),
+                    display: time < maxVal ? formatTime(time, zeroes[i], precision) : (isRanked(mark.status) ? 'N/A' : mark.status),
                     value: time,
-                    state: state.standings[i].latestBibs.find((bib) => bib === id) ? 'new' : 'normal'
+                    state: state.standings[i].latestBibs.find((bib) => bib === id) ? 'new' : 'normal',
+                    leader: time === zeroes[i]
                 };
             }
         }
@@ -432,10 +447,10 @@ function prepareAnalysis(state: State, view: View): ResultItem[] {
         rows.push({
             state: _state,
             racer: row.racer,
-            time: {display: '', value: 0},
+            time: {display: '', value: 0, leader: false},
             tourStanding: tourStandingProp,
             rank: 1,
-            diff: {display: '', value: 0},
+            diff: {display: '', value: 0, leader: false},
             notes: row.notes,
             classes: classes,
             marks: marks,

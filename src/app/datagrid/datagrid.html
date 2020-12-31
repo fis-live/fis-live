@@ -23,7 +23,7 @@
         <th cdk-header-cell *cdkHeaderCellDef appDgSort="racer.value">Name</th>
         <td cdk-cell *cdkCellDef="let row">
             <div class="small_only flag">
-                <a style="color: inherit" target="_blank" href="https://www.fis-ski.com/DB/general/athlete-biography.html?sectorcode=CC&fiscode={{ row.racer.id }}">
+                <a style="color: inherit" target="_blank" href="https://www.fis-ski.com/DB/general/athlete-biography.html?sectorcode={{ row.racer.sector }}&fiscode={{ row.racer.id }}">
                     {{ row.racer.display }}
                 </a>
                 <clr-icon *ngIf="row.racer.hasYellowCard" class="yellow-card" shape="yc"></clr-icon>
@@ -34,7 +34,7 @@
     <!-- Time Definition -->
     <ng-container cdkColumnDef="time">
         <th cdk-header-cell *cdkHeaderCellDef appDgSort="time.value">{{ config.isStartList ? 'Status' : 'Time' }}</th>
-        <td class="time" cdk-cell *cdkCellDef="let row"><div>{{ row.time.display }}</div></td>
+        <td [class.time]="!config.isStartList" [class.leader]="row.time.leader" cdk-cell *cdkCellDef="let row"><div>{{ row.time.display }}</div></td>
     </ng-container>
 
     <!-- Nsa Definition -->
@@ -46,19 +46,19 @@
     <!-- Diff Definition -->
     <ng-container cdkColumnDef="diff">
         <th cdk-header-cell *cdkHeaderCellDef appDgSort="diff.value">Diff.</th>
-        <td cdk-cell *cdkCellDef="let row"><div>{{ row.diff.display || '&nbsp;' }}</div></td>
+        <td class="time" [class.leader]="row.diff.leader" cdk-cell *cdkCellDef="let row"><div>{{ row.diff.display || '&nbsp;' }}</div></td>
     </ng-container>
 
     <!-- Tour standing Definition -->
     <ng-container cdkColumnDef="tour">
         <th cdk-header-cell *cdkHeaderCellDef appDgSort="tourStanding.value">Tour Std.</th>
-        <td cdk-cell *cdkCellDef="let row"><div>{{ row.tourStanding.display || '&nbsp;' }}</div></td>
+        <td cdk-cell class="time" *cdkCellDef="let row" [class.leader]="row.tourStanding.leader"><div>{{ row.tourStanding.display || '&nbsp;' }}</div></td>
     </ng-container>
 
     <!-- Dynamic definitions -->
     <ng-container [cdkColumnDef]="col.id" *ngFor="let col of config.dynamicColumns">
         <th cdk-header-cell *cdkHeaderCellDef [appDgSort]="col.sortBy">{{ col.name }}</th>
-        <td class="time {{ row.marks[col.key]?.state }}" cdk-cell *cdkCellDef="let row"><div>{{ row.marks[col.key]?.display }}</div> </td>
+        <td class="time {{ row.marks[col.key]?.state }}" [class.leader]="row.marks[col.key]?.leader" cdk-cell *cdkCellDef="let row"><div>{{ row.marks[col.key]?.display }}</div> </td>
     </ng-container>
 
     <thead>

@@ -10,7 +10,7 @@ export function guid() {
     });
 }
 
-export function formatTime(value: number | string | null | undefined, zero: number | null | undefined): string {
+export function formatTime(value: number | string | null | undefined, zero: number | null | undefined, precision: number = -2): string {
     if (typeof value === 'string') {
         return value;
     }
@@ -23,6 +23,8 @@ export function formatTime(value: number | string | null | undefined, zero: numb
         zero = value;
     }
 
+    value = value - value % 10 ** (precision + 3);
+    zero = zero - zero % 10 ** (precision + 3);
     let timeStr = (value === zero) ? '' : (value < zero ? '-' : '+');
     const time = (value === zero) ? value : (value < zero ? zero - value : value - zero);
 
@@ -45,8 +47,9 @@ export function formatTime(value: number | string | null | undefined, zero: numb
         }
     }
 
-    timeStr += seconds + '.' + tenths;
-    timeStr += (hundreds > 0) ? hundreds : '';
+    timeStr += seconds;
+    timeStr += (precision <= -1) ? '.' + tenths : '';
+    timeStr += (precision <= -2) ? hundreds : '';
 
     return timeStr;
 }

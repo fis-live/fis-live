@@ -12,6 +12,7 @@ export interface Racer {
     display: string;
     short: string;
     value: string;
+    sector: 'cc' | 'nk';
 }
 
 export interface Standing {

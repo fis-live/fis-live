@@ -5,7 +5,6 @@
 }
 
 .datagrid {
-    font-size: 0.9em;
     width: 100%;
     background: $app-table-bgcolor;
     border: none;
@@ -30,10 +29,6 @@
         //> td > div {
         //    transition: background-color 2s ease;
         //}
-
-        &.leader .time {
-            font-weight: 700;
-        }
 
         &.red .bib .badge {
             background: $clr-red-dark-midtone;
@@ -170,6 +165,14 @@
 
     .badge {
         margin-top: -2px;
+    }
+
+    .time {
+        text-align: right;
+
+        &.leader {
+            font-weight: 700;
+        }
     }
 }
 

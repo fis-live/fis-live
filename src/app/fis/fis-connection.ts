@@ -331,7 +331,8 @@ export class FisConnectionService {
                     nsa:  nationalities[racer[4]] || racer[4],
                     isFavorite: false,
                     hasYellowCard: racer[6] === 'yc',
-                    color: racer[5]
+                    color: racer[5],
+                    sector: this.sectorCode
                 });
             }
         }
@@ -382,7 +383,8 @@ export class FisConnectionService {
             intermediates,
             racers,
             startList,
-            results
+            results,
+            precision: this.discipline === 'SP' ? -2 : -1
         }));
 
         this.pdfDoc = this.sectorCode === 'nk' ? 'SLCC' : (data.runinfo[1] === 'Q' ? 'QUA' : 'SL');

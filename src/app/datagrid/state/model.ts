@@ -12,6 +12,7 @@ export interface View {
 export interface Prop<T> {
     value: T;
     display: T | string;
+    leader: boolean;
 }
 
 export interface Column {

@@ -17,7 +17,8 @@ export const initialize = createAction(
         startList: {
             [bib: number]: StartListEntry
         },
-        results: Result[]
+        results: Result[],
+        precision: number
     }>()
 );
 
