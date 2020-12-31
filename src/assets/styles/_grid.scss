@@ -39,6 +39,10 @@ html, body {
 
     background-color: $app-table-bgcolor;
     position: relative;
+
+    --scrollbar-track-color: #eee !important;
+    --scrollbar-padding: 0px !important;
+    --scrollbar-size: 7px !important;
 }
 
 .action-bar {

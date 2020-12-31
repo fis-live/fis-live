@@ -8,7 +8,7 @@
     <div class="header-nav" *ngIf="raceInfo !== null">
         <span>
             <span class="event-name">{{ raceInfo.info.eventName }}</span><br>
-            <span class="race-name">{{ raceInfo.info.raceName }}</span>
+            <span class="race-name">{{ raceInfo.info.raceName }}{{ raceInfo.info.place != '' ? ', ' + raceInfo.info.place : '' }}</span>
         </span>
         <span class="message">{{ raceInfo.message | uppercase }}</span>
     </div>
