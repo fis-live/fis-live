@@ -52,6 +52,11 @@
 
     <ng-container *ngIf="tab === 'settings'">
         <div style="padding: 20px;">
+            <div class="clr-toggle-wrapper">
+                <input type="checkbox" id="toggle-ticker" name="toggle-basic" class="clr-toggle" [ngModel]="tickerEnabled$ | async" (ngModelChange)="toggleTicker()">
+                <label for="toggle-ticker">Enable ticker</label>
+            </div>
+
             <h4>
                 Default Columns
             </h4>

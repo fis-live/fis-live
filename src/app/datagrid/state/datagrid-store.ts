@@ -99,7 +99,8 @@ export class DatagridStore extends ComponentStore<DatagridState> implements Opti
     private readonly fromStore = this.updater((state, settings: SettingsState) => {
         return {
             ...state,
-            columns: settings.defaultColumns
+            columns: settings.defaultColumns,
+            tickerEnabled: settings.tickerEnabled
         };
     });
 

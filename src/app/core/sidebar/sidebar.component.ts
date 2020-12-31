@@ -11,7 +11,7 @@ import { Column } from '../../datagrid/state/model';
 import { Intermediate } from '../../models/intermediate';
 import { RacesByPlace } from '../../models/race';
 import { Event, Racer } from '../../models/racer';
-import { reorderColumn, setDelay, toggleColumn, toggleFavorite } from '../../state/actions/settings';
+import { reorderColumn, setDelay, toggleColumn, toggleFavorite, toggleTicker } from '../../state/actions/settings';
 import { AppState, getDelayState, getResultState, selectAllIntermediates, selectRacesByPlace } from '../../state/reducers';
 
 @Component({
@@ -43,10 +43,12 @@ export class SidebarComponent {
     public intermediates$: Observable<Intermediate[]>;
     public selectedInter = new BehaviorSubject<number>(0);
     public columns$: Observable<Column[]>;
+    public tickerEnabled$: Observable<boolean>;
 
     constructor(private store: Store<AppState>) {
         this.upcomingRaces$ = store.select(selectRacesByPlace);
         this.delay$ = store.select(getDelayState);
+        this.tickerEnabled$ = store.select(state => state.settings.tickerEnabled);
         this.events$ = combineLatest([this.selectedInter, store.select(getResultState)]).pipe(
             map(([inter, _state]) => _state.standings[inter]?.events.slice().reverse() ?? [])
         );
@@ -71,6 +73,10 @@ export class SidebarComponent {
 
     public toggleFavorite(racer: Racer) {
         this.store.dispatch(toggleFavorite({racer}));
+    }
+
+    public toggleTicker() {
+        this.store.dispatch(toggleTicker());
     }
 
     public open(): void {

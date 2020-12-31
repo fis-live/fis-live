@@ -9,6 +9,7 @@ export interface State {
     favoriteRacers: Racer[];
     delay: number;
     defaultColumns: Column[];
+    tickerEnabled: boolean;
 }
 
 const defaultColumns = [
@@ -25,7 +26,8 @@ const defaultColumns = [
 const initialState: State = {
     favoriteRacers: [],
     delay: 0,
-    defaultColumns
+    defaultColumns,
+    tickerEnabled: false
 };
 
 const settingsReducer = createReducer(
@@ -74,6 +76,7 @@ const settingsReducer = createReducer(
             defaultColumns: array
         };
     }),
+    on(SettingsActions.toggleTicker, (state) => ({...state, tickerEnabled: !state.tickerEnabled})),
     on(SettingsActions.resetSettings, () => initialState)
 );
 

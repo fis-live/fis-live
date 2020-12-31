@@ -17,6 +17,10 @@ export const resetSettings = createAction(
     '[Settings] Reset settings'
 );
 
+export const toggleTicker = createAction(
+    '[Settings] Toggle ticker'
+);
+
 export const toggleColumn = createAction(
     '[Settings] Toggle column',
     props<{column: string}>()
