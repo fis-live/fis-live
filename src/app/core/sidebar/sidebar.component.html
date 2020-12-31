@@ -37,7 +37,7 @@
                         <ng-container *ngFor="let place of races.places">
                             <li class="place">{{ place.place }}</li>
                             <li *ngFor="let race of place.races" >
-                                <a (click)="close()" [routerLink]="['', race.codex]" routerLinkActive="active" class="nav-link">{{ race.discipline }}
+                                <a (click)="close()" [routerLink]="['', race.sector, race.codex]" routerLinkActive="active" class="nav-link">{{ race.discipline }}
                                     <span class="nav-link-tag">{{ race.category }}&nbsp;{{ race.gender }}</span>
                                     <span [class.label-info]="race.status == 'Results'" [class.label-success]="race.status == 'Live'" class="label">{{ race.status ? race.status : race.time }}</span>
                                 </a>
@@ -52,6 +52,9 @@
 
     <ng-container *ngIf="tab === 'settings'">
         <div style="padding: 20px;">
+            <h4>
+                Default Columns
+            </h4>
             <ul class="switch-content list-unstyled" cdkDropList (cdkDropListDropped)="onDrop($event)">
                 <li class="clr-checkbox-wrapper" *ngFor="let col of columns$ | async; trackBy: trackBy" cdkDrag>
                     <input type="checkbox" [checked]="col.toggled" [id]="col.id" (change)="toggleColumn(col.id)">

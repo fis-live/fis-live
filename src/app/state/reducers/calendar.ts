@@ -9,7 +9,7 @@ const initialState: State = [];
 
 const calendarReducer = createReducer(
     initialState,
-    on(ConnectionActions.setCalendar, (_state, { races }) => races)
+    on(ConnectionActions.setCalendar, (_state, { races }) => _state.concat(races))
 );
 
 export function reducer(state: State | undefined, action: Action) {
@@ -19,12 +19,12 @@ export function reducer(state: State | undefined, action: Action) {
 export const getRacesByPlace = (state: State) => {
     const ret: RacesByPlace[] = [];
     state.forEach((race) => {
-        if (ret.length > 5) {
-            return;
-        }
-
         const i = ret.findIndex((row) => row.date === race.date);
         if (i === -1) {
+            if (ret.length > 8) {
+                return;
+            }
+
             ret.push({
                 liveCount: race.status === 'Live' ? 1 : 0,
                 date: race.date,

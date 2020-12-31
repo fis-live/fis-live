@@ -8,6 +8,7 @@ export interface Race {
     discipline: string;
     gender: string;
     nation: string;
+    sector: 'nk' | 'cc';
 }
 
 export interface RacesByPlace {

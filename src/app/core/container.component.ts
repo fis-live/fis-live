@@ -31,14 +31,13 @@ export class ContainerComponent implements OnInit, OnDestroy {
     ngOnInit() {
         this.route.url
             .subscribe((url) => {
-                console.log('Router');
-                if (url[0].path === 'nk') {
+                if (url[0]?.path === 'nk' || url[0]?.path === 'cc') {
                     this.codex = +url[1].path;
-                    this.sectorCode = 'nk';
+                    this.sectorCode = url[0].path;
 
                     this.reload();
                 } else {
-                    this.codex = +url[0].path;
+                    this.codex = +url[0]?.path;
                     this.sectorCode = 'cc';
 
                     this.reload();

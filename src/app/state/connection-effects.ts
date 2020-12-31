@@ -64,10 +64,10 @@ export class ConnectionEffects {
 
     loadCalendar$ = createEffect(() => this.actions$.pipe(
         ofType(ConnectionActions.loadCalendar),
-        startWith(ConnectionActions.loadCalendar()),
-        switchMap(() =>
-            this.api.loadCalendar().pipe(
-                map((races) => ConnectionActions.setCalendar({races})),
+        startWith(ConnectionActions.loadCalendar({ sectorCode: 'cc' }), ConnectionActions.loadCalendar({ sectorCode: 'nk' })),
+        concatMap(({ sectorCode }) =>
+            this.api.loadCalendar(sectorCode).pipe(
+                map((races) => ConnectionActions.setCalendar({ races })),
                 catchError(() => [
                     LoadingActions.hideLoading(),
                     ConnectionActions.showAlert({
@@ -75,7 +75,7 @@ export class ConnectionEffects {
                             severity: 'danger',
                             message: 'Could not load calendar. Check your internet connection and try again.',
                             action: 'Retry',
-                            actions: [ConnectionActions.loadCalendar()]
+                            actions: [ConnectionActions.loadCalendar({ sectorCode })]
                         }
                     })
                 ])
