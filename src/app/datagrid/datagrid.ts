@@ -3,7 +3,7 @@ import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
 import { Observable } from 'rxjs';
 
 import { DatagridStore } from './state/datagrid-store';
-import { DatagridState, ResultItem } from './state/model';
+import { ColumnDef, DatagridState, ResultItem } from './state/model';
 import { TableDataSource } from './state/table-data-source';
 
 @Component({
@@ -49,5 +49,9 @@ export class Datagrid {
 
     public track(index: number, item: ResultItem): number {
         return item.racer.bib;
+    }
+
+    public trackColumn(index: number, column: ColumnDef) {
+        return column.id;
     }
 }
