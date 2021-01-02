@@ -355,10 +355,31 @@ export class FisConnectionService {
 
         for (let i = 0; i < data.startlist.length; i++) {
             if (data.startlist[i] !== null) {
+                const notes = [];
+                let status: string;
+                switch (data.startlist[i][1]) {
+                    case 'q':
+                        notes.push(data.startlist[i][1].toUpperCase());
+                        status = statusMap[data.startlist[i][3]] || data.startlist[i][3] || '';
+                        break;
+                    case 'lucky':
+                    case 'currentlucky':
+                        notes.push('LL');
+                        status = statusMap[data.startlist[i][3]] || data.startlist[i][3] || '';
+                        break;
+                    case 'ff':
+                        notes.push('PF');
+                        status = Status.Finished;
+                        break;
+                    default:
+                        status = statusMap[data.startlist[i][3]] || data.startlist[i][3] || '';
+                }
+
                 startList[data.startlist[i][0]] = {
                     racer: data.startlist[i][0],
-                    status: statusMap[data.startlist[i][3]] || data.startlist[i][3] || '',
-                    order: i + 1
+                    status: status,
+                    order: i + 1,
+                    notes: notes
                 };
                 switch (data.startlist[i][1]) {
                     case 'ral':
@@ -367,6 +388,7 @@ export class FisConnectionService {
                     case 'dq':
                     case 'dsq':
                     case 'dns':
+                    case 'nps':
                         results.push({
                                 status: statusMap[data.startlist[i][1]],
                                 intermediate: 99,
@@ -430,11 +452,18 @@ export class FisConnectionService {
                             payload: {id: event[2], status: statusMap[event[0]]}
                         });
                         break;
+                    case 'sanction':
+                        events.push({
+                            type: 'sanction',
+                            payload: event[2]
+                        });
+                        break;
                     case 'dnf':
                     case 'dns':
                     case 'dq':
                     case 'dsq':
                     case 'ral':
+                    case 'nps':
                     case 'lapped':
                         events.push({
                             type: 'register_result',
@@ -451,9 +480,30 @@ export class FisConnectionService {
                         });
                         break;
                     case 'q':
+                        events.push({
+                            type: 'add_note',
+                            payload: {bib: event[2], note: 'Q'}
+                        });
+                        break;
                     case 'nq':
+                        events.push({
+                            type: 'remove_note',
+                            payload: {bib: event[2], note: 'Q'}
+                        });
+                        break;
+                    case 'currentlucky':
                     case 'lucky':
+                        events.push({
+                            type: 'add_note',
+                            payload: {bib: event[2], note: 'LL'}
+                        });
+                        break;
                     case 'ff':
+                        events.push({
+                            type: 'add_note',
+                            payload: {bib: event[2], note: 'PF'}
+                        });
+                        break;
                     case 'start':
                     case 'nextstart':
                         events.push({

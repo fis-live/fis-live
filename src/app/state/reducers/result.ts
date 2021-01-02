@@ -5,7 +5,7 @@ import { filter, map } from 'rxjs/operators';
 
 import { Prop, ResultItem, View } from '../../datagrid/state/model';
 import { isRanked, maxVal, Status as StatusEnum, timePenalty } from '../../fis/fis-constants';
-import { Result, Status } from '../../fis/models';
+import { Note, Result, Status } from '../../fis/models';
 import { Intermediate } from '../../models/intermediate';
 import { RacerData, Standing } from '../../models/racer';
 import { formatTime, getValidDiff, guid, isBonus, parseTimeString } from '../../utils/utils';
@@ -71,7 +71,7 @@ const resultReducer = createReducer(
                     marks: [
                         {time: 0, status: StatusEnum.Default, rank: entry.order || null, diffs: [maxVal], version: 0, tourStanding: maxVal}
                         ],
-                    notes: [],
+                    notes: entry.notes,
                     bonusSeconds: 0
                 };
             } else {
@@ -195,14 +195,50 @@ const resultReducer = createReducer(
                             draft.standings[inter].events = [_event, ...draft.standings[inter].events.slice(0, 20)];
                         }
                     }
+                    break;
                 }
-                break;
-                case 'set_status':
+
+                case 'add_note': {
+                    const e = event.payload as Note;
+                    const index = draft.entities[e.bib].notes.findIndex(note => note === e.note);
+                    if (index === -1) {
+                        draft.entities[e.bib].notes.push(e.note);
+                        draft.entities[e.bib].marks[0].version += 1;
+                        for (const inter of state.intermediates) {
+                            draft.standings[inter.key].version += 1;
+                        }
+                    }
+                    break;
+                }
+
+                case 'sanction': {
+                    const bib = event.payload as number;
+                    draft.entities[bib].racer.hasYellowCard = true;
+                    for (const inter of state.intermediates) {
+                        draft.standings[inter.key].version += 1;
+                    }
+                    break;
+                }
+
+                case 'remove_note': {
+                    const e = event.payload as Note;
+                    const index = draft.entities[e.bib].notes.findIndex(note => note === e.note);
+                    if (index !== -1) {
+                        draft.entities[e.bib].notes.splice(index, 1);
+                        for (const inter of state.intermediates) {
+                            draft.standings[inter.key].version += 1;
+                        }
+                    }
+                    break;
+                }
+
+                case 'set_status': {
                     const e = event.payload as Status;
                     draft.entities[e.id].status = e.status;
                     draft.entities[e.id].marks[0].version += 1;
                     draft.standings[0].version += 1;
                     break;
+                }
             }
         }
     }))

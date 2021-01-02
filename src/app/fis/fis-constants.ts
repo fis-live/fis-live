@@ -287,6 +287,7 @@ export enum Status {
     DNF = 'DNF',
     DQ = 'DSQ',
     DNS = 'DNS',
+    NPS = 'NPS',
     NA = 'N/A'
 }
 
@@ -300,6 +301,7 @@ export const timePenalty = {
     [Status.DNF]: maxVal * 3,
     [Status.DQ]: maxVal * 4,
     [Status.DNS]: maxVal * 5,
+    [Status.NPS]: maxVal * 5,
     [Status.NA]: maxVal * 6
 };
 
@@ -314,5 +316,6 @@ export const statusMap: {[status: string]: Status} = {
     'dnf': Status.DNF,
     'dq': Status.DQ,
     'dsq': Status.DQ,
-    'dns': Status.DNS
+    'dns': Status.DNS,
+    'nps': Status.NPS
 };

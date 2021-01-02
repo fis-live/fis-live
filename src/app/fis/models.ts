@@ -16,10 +16,11 @@ export interface StartListEntry {
     racer: number;
     order: number;
     status: string;
+    notes: string[];
 }
 
 export interface Note {
-    racer: number;
+    bib: number;
     note: string;
 }
 
@@ -55,7 +56,7 @@ export interface ServerList {
 
 export interface FisEvent {
     type: string;
-    payload: Result | Status;
+    payload: Result | Status | Note | number;
 }
 
 export interface FisServer {
