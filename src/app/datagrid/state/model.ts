@@ -7,6 +7,7 @@ export interface View {
     diff: Intermediate | null;
     zero: number;
     display: 'total' | 'diff';
+    usePercent: boolean;
 }
 
 export interface Prop<T> {

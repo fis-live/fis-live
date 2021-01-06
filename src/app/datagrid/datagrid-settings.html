@@ -13,6 +13,10 @@
         <input type="checkbox" id="toggle-ticker" name="toggle-basic" class="clr-toggle" [ngModel]="tickerEnabled$ | async" (ngModelChange)="toggleTicker($event)">
         <label for="toggle-ticker">Ticker</label>
     </div>
+    <div class="clr-toggle-wrapper">
+        <input type="checkbox" id="toggle-percent" name="toggle-basic" class="clr-toggle" [ngModel]="usePercent$ | async" (ngModelChange)="toggleUsePercent($event)">
+        <label for="toggle-percent">Percent</label>
+    </div>
     <div class="switch-header">
         Columns
     </div>

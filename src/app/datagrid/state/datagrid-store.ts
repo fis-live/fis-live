@@ -62,7 +62,8 @@ const initialState: DatagridState = {
         inter: null,
         diff: null,
         zero: -1,
-        display: 'total'
+        display: 'total',
+        usePercent: false
     },
     isStartList: true,
     breakpoint: 'large',
@@ -180,6 +181,14 @@ export class DatagridStore extends ComponentStore<DatagridState> implements Opti
         tickerEnabled: checked
     }));
 
+    public readonly setUsePercent = this.updater((state, checked: boolean) => ({
+        ...state,
+        view: {
+            ...state.view,
+            usePercent: checked
+        }
+    }));
+
     public readonly toggleColumn = this.updater((state, columnId: string) => {
         const colIdx = state.columns.findIndex((column) => column.id === columnId);
         const columns = state.columns.slice();
@@ -241,6 +250,8 @@ export class DatagridStore extends ComponentStore<DatagridState> implements Opti
     public readonly view$ = this.select((state) => state.view);
 
     public readonly columns$ = this.select((state) => state.columns);
+
+    public readonly dynamicColumns$ = this.select((state) => state.dynamicColumns);
 
     public readonly displayedColumns$ = this.select(this.columns$, (columns) => {
         return columns.reduce((cols, col) => {

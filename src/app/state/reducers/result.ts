@@ -452,7 +452,7 @@ function prepareAnalysis(state: State, view: View): ResultItem[] {
             const bonusString = row.bonusSeconds > 0 ? ' [' + row.bonusSeconds / 1000 + 's]' : '';
             tourStandingProp = {
                 value: mark.tourStanding,
-                display: formatTime(mark.tourStanding, bestTourStanding, state.precision) + bonusString,
+                display: formatTime(mark.tourStanding, bestTourStanding, state.precision, view.usePercent) + bonusString,
                 leader: mark.tourStanding === bestTourStanding
             };
         }
@@ -464,7 +464,7 @@ function prepareAnalysis(state: State, view: View): ResultItem[] {
 
             if (view.display === 'total') {
                 marks[i] = {
-                    display: isRanked(mark.status) ? formatTime(mark.time, zeroes[i], precision) : mark.status,
+                    display: isRanked(mark.status) ? formatTime(mark.time, zeroes[i], precision, view.usePercent) : mark.status,
                     value: mark.time + timePenalty[mark.status],
                     state: state.standings[i].latestBibs.find((bib) => bib === id) ? 'new' : 'normal',
                     leader: mark.time === zeroes[i]
@@ -472,7 +472,8 @@ function prepareAnalysis(state: State, view: View): ResultItem[] {
             } else {
                 const time =  mark.diffs[prevKey];
                 marks[i] = {
-                    display: time < maxVal ? formatTime(time, zeroes[i], precision) : (isRanked(mark.status) ? 'N/A' : mark.status),
+                    display: time < maxVal ? formatTime(time, zeroes[i], precision, view.usePercent)
+                        : (isRanked(mark.status) ? 'N/A' : mark.status),
                     value: time,
                     state: state.standings[i].latestBibs.find((bib) => bib === id) ? 'new' : 'normal',
                     leader: time === zeroes[i]

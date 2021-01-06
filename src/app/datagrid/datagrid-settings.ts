@@ -15,11 +15,13 @@ import { Column } from './state/model';
 export class DatagridSettings extends AbstractPopover {
     public columns$: Observable<Column[]>;
     public tickerEnabled$: Observable<boolean>;
+    public usePercent$: Observable<boolean>;
 
     constructor(private store: DatagridStore, el: ElementRef, renderer: Renderer2, cdr: ChangeDetectorRef) {
         super(el, renderer, cdr);
 
         this.tickerEnabled$ = this.store.select(state => state.tickerEnabled);
+        this.usePercent$ = this.store.select(state => state.view.usePercent);
         this.columns$ = this.store.select((state) => {
             if (state.view.mode === 'normal') {
                 return state.columns.filter((col) => !col.isDynamic);
@@ -31,6 +33,10 @@ export class DatagridSettings extends AbstractPopover {
 
     public toggleTicker(checked: boolean) {
         this.store.setTicker(checked);
+    }
+
+    public toggleUsePercent(checked: boolean) {
+        this.store.setUsePercent(checked);
     }
 
     public toggleColumn(column: string) {

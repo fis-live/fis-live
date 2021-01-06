@@ -10,7 +10,8 @@ export function guid() {
     });
 }
 
-export function formatTime(value: number | string | null | undefined, zero: number | null | undefined, precision: number = -2): string {
+export function formatTime(value: number | string | null | undefined,
+                           zero: number | null | undefined, precision: number = -2, percent: boolean = false): string {
     if (typeof value === 'string') {
         return value;
     }
@@ -27,6 +28,7 @@ export function formatTime(value: number | string | null | undefined, zero: numb
     zero = zero - zero % 10 ** (precision + 3);
     let timeStr = (value === zero) ? '' : (value < zero ? '-' : '+');
     const time = (value === zero) ? value : (value < zero ? zero - value : value - zero);
+    const percentage = timeStr + Math.round(1000 * time / value) / 10 + '%';
 
     const hours = Math.floor(time / (1000 * 60 * 60));
     const minutes = Math.floor((time - hours * 1000 * 60 * 60) / (1000 * 60));
@@ -50,6 +52,10 @@ export function formatTime(value: number | string | null | undefined, zero: numb
     timeStr += seconds;
     timeStr += (precision <= -1) ? '.' + tenths : '';
     timeStr += (precision <= -2) ? hundreds : '';
+
+    if (percent && value !== zero) {
+        return percentage;
+    }
 
     return timeStr;
 }
