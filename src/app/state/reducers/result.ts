@@ -187,7 +187,7 @@ const resultReducer = createReducer(
                         const _event = {
                             racer: state.entities[result.racer].racer,
                             rank: draft.entities[result.racer].marks[inter].rank,
-                            diff: formatTime(result.time, leader),
+                            diff: formatTime(result.time, leader, state.precision),
                             timestamp: timestamp
                         };
 
