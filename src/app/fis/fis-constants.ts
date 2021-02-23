@@ -224,6 +224,7 @@ export const nationalities: {[short: string]: string} = {
     'TUR': 'Turkey',
     'TUV': 'Tuvalu',
     'TZA': 'Tanzania',
+    'TAN': 'Tanzania',
     'UGA': 'Uganda',
     'UKR': 'Ukraine',
     'URU': 'Uruguay',
