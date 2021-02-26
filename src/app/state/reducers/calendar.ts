@@ -9,7 +9,7 @@ const initialState: State = [];
 
 const calendarReducer = createReducer(
     initialState,
-    on(ConnectionActions.setCalendar, (_state, { races }) => _state.concat(races))
+    on(ConnectionActions.setCalendar, (_, { races }) => races)
 );
 
 export function reducer(state: State | undefined, action: Action) {

@@ -18,8 +18,7 @@ export const loadMain = createAction(
 );
 
 export const loadCalendar = createAction(
-    '[Connection] Load calendar',
-    props<{sectorCode: 'cc' | 'nk'}>()
+    '[Connection] Load calendar'
 );
 
 export const setCalendar = createAction(

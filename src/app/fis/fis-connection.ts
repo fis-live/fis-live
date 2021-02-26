@@ -178,8 +178,8 @@ export class FisConnectionService {
         return throwError(error);
     }
 
-    public loadCalendar(sectorCode: 'cc' | 'nk' = 'cc'): Observable<Race[]> {
-        return this._http.get<Race[]>('https://fislive-cors.herokuapp.com/liveraces.json?sectorCode=' + sectorCode)
+    public loadCalendar(): Observable<Race[]> {
+        return this._http.get<Race[]>('https://fislive-cors.herokuapp.com/liveraces.json')
             .pipe(
                 catchError((error) => {
                     console.log(error);
