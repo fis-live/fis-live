@@ -312,7 +312,7 @@ function prepareStartList(state: State): ResultItem[] {
     return rows;
 }
 
-function prepareInter(state: State, intermediate: Intermediate, diff: number | null): ResultItem[] {
+function prepareInter(state: State, intermediate: Intermediate, diff: number | null, view: View): ResultItem[] {
     const standing = state.standings[intermediate.key];
     const bestTourStanding = standing.tourLeader;
     const precision = intermediate.type === 'standing' ? 0 : state.precision;
@@ -344,7 +344,7 @@ function prepareInter(state: State, intermediate: Intermediate, diff: number | n
             }
         } else {
             timeProp = {
-                display: isRanked(mark.status) ? formatTime(time, standing.leader, precision) : mark.status,
+                display: isRanked(mark.status) ? formatTime(time, standing.leader, precision, view.usePercent) : mark.status,
                 value: time + timePenalty[mark.status],
                 leader: mark.rank === 1
             };
@@ -353,7 +353,7 @@ function prepareInter(state: State, intermediate: Intermediate, diff: number | n
 
             tourStandingProp = {
                 value: mark.tourStanding,
-                display: formatTime(mark.tourStanding, bestTourStanding, precision) + bonusString,
+                display: formatTime(mark.tourStanding, bestTourStanding, precision, view.usePercent) + bonusString,
                 leader: mark.tourStanding === bestTourStanding
             };
         }
@@ -368,7 +368,7 @@ function prepareInter(state: State, intermediate: Intermediate, diff: number | n
             const d = mark.diffs[diff];
 
             diffProp = {
-                display: formatTime(d, standing.bestDiff[diff], precision),
+                display: formatTime(d, standing.bestDiff[diff], precision, view.usePercent),
                 value: d,
                 leader: d === standing.bestDiff[diff]
             };
@@ -452,7 +452,7 @@ function prepareAnalysis(state: State, view: View): ResultItem[] {
             const bonusString = row.bonusSeconds > 0 ? ' [' + row.bonusSeconds / 1000 + 's]' : '';
             tourStandingProp = {
                 value: mark.tourStanding,
-                display: formatTime(mark.tourStanding, bestTourStanding, state.precision, view.usePercent) + bonusString,
+                display: formatTime(mark.tourStanding, bestTourStanding, 0, view.usePercent) + bonusString,
                 leader: mark.tourStanding === bestTourStanding
             };
         }
@@ -523,7 +523,7 @@ export const createViewSelector = (view: View): OperatorFunction<State, ResultIt
                     return prepareStartList(state);
                 }
 
-                return prepareInter(state, view.inter, view.diff?.key ?? null);
+                return prepareInter(state, view.inter, view.diff?.key ?? null, view);
             } else {
                 return prepareAnalysis(state, view);
             }
