@@ -22,7 +22,7 @@ jobs:
           node-version: '14'
 
       - run: npm ci
-      - run: npm run build --if-present -- --baseHref "/fis-live/"
+      - run: npm run build --if-present -- --base-href "/fis-live/"
 
       - name: Deploy to GitHub Pages
         uses: JamesIves/github-pages-deploy-action@4.1.3
