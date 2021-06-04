@@ -10,7 +10,7 @@ const initialState = null as State;
 const alertReducer = createReducer(
     initialState,
     on(ConnectionActions.showAlert, (_, { alert }) => alert),
-    on(ConnectionActions.closeAlert, (_) => initialState)
+    on(ConnectionActions.closeAlert, () => initialState)
 );
 
 export function reducer(state: State | undefined, action: Action) {

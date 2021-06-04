@@ -8,8 +8,8 @@ const initialState: State = false;
 
 const loadingReducer = createReducer(
     initialState,
-    on(LoadingActions.showLoading, (_) => true),
-    on(LoadingActions.hideLoading, RaceActions.initialize, (_) => false)
+    on(LoadingActions.showLoading, () => true),
+    on(LoadingActions.hideLoading, RaceActions.initialize, () => false)
 );
 
 export function reducer(state: State | undefined, action: Action) {
