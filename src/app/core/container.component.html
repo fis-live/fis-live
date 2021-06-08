@@ -1,9 +1,9 @@
-<app-sidebar [(isOpen)]="sidebarOpen" (navigate)="go($event)" [favoriteRacers]="favoriteRacers$ | async"></app-sidebar>
+<app-sidebar [(isOpen)]="sidebarOpen" (navigate)="go($event)" [favoriteRacers]="favoriteRacers$ | ngrxPush"></app-sidebar>
 
-<app-header [raceInfo]="raceInfo$ | async" (openSidebar)="showSidebar()" (refresh)="onRefresh()" (tab)="configureTabs($event)"></app-header>
+<app-header [raceInfo]="raceInfo$ | ngrxPush" (openSidebar)="showSidebar()" (refresh)="onRefresh()" (tab)="configureTabs($event)"></app-header>
 
 <div class="container">
-    <div class="datagrid-spinner" *ngIf="loading$ | async">
+    <div class="datagrid-spinner" *ngIf="loading$ | ngrxPush">
         <div class="spinner">Loading...</div>
     </div>
     <div *ngFor="let columns of rows; let row = index" class="row">

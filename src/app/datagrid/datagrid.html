@@ -1,4 +1,4 @@
-<table class="datagrid {{ config.breakpoint }}" cdk-table [dataSource]="(rows$ | async)!" [trackBy]="track">
+<table class="datagrid {{ config.breakpoint }}" cdk-table [dataSource]="rows$ | ngrxPush" [trackBy]="track">
 
     <!-- Order Definition -->
     <ng-container cdkColumnDef="order">
@@ -62,12 +62,14 @@
         <td class="time {{ row.marks[col.key]?.state }}" [class.leader]="row.marks[col.key]?.leader" cdk-cell *cdkCellDef="let row"><div>{{ row.marks[col.key]?.display }}</div> </td>
     </ng-container>
 
-    <thead>
-        <tr cdk-header-row *cdkHeaderRowDef="(store.displayedColumns$ | async)!; sticky: true"></tr>
-    </thead>
+    <ng-container *ngrxLet="store.displayedColumns$; let columns">
+        <thead>
+            <tr cdk-header-row *cdkHeaderRowDef="columns; sticky: true"></tr>
+        </thead>
 
-    <tbody>
-        <tr [@update]="row.version" [@newRow]="row.state" [ngClass]="row.classes" cdk-row *cdkRowDef="let row; columns: (store.displayedColumns$ | async)!"></tr>
-    </tbody>
+        <tbody>
+            <tr [@update]="row.version" [@newRow]="row.state" [ngClass]="row.classes" cdk-row *cdkRowDef="let row; columns: columns"></tr>
+        </tbody>
+    </ng-container>
 
 </table>

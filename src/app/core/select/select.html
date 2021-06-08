@@ -1,5 +1,5 @@
 <button class="dropdown-toggle btn" (click)="toggle()" type="button">
-    <ng-container *ngIf="render | async as selected; else placeholder">
+    <ng-container *ngIf="render | ngrxPush as selected; else placeholder">
         <ng-container [ngTemplateOutlet]="template" [ngTemplateOutletContext]="{$implicit: selected}"></ng-container>
     </ng-container>
 
@@ -11,7 +11,7 @@
 </button>
 
 <div *ngIf="open" class="dropdown-menu" [@animate]>
-    <button *ngFor="let option of options | async"
+    <button *ngFor="let option of options | ngrxPush"
             (click)="select(option)"
             [ngClass]="{'disabled': option.disabled, 'active': option.selected}"
             class="dropdown-item">

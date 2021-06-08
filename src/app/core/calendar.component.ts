@@ -20,7 +20,7 @@ import { AppState, selectRacesByDate } from '../state/reducers';
             <th><div>Status</div></th>
 
         </tr>
-        <ng-container *ngFor="let racesByDate of upcomingRaces$ | async">
+        <ng-container *ngFor="let racesByDate of upcomingRaces$ | ngrxPush">
             <tr class="date"><td colspan="6"><div> {{ racesByDate.date }}</div></td></tr>
 
             <tr *ngFor="let race of racesByDate.races" (click)="go(race.codex)">

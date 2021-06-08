@@ -1,4 +1,4 @@
-<ng-container *ngIf="view$ | async as view">
+<ng-container *ngrxLet="view$; let view">
     <div class="btn-group btn-sm">
         <ng-container *ngIf="view.mode === 'normal'; else analysis">
             <app-select class="btn-primary" key="inter">
@@ -6,7 +6,7 @@
                 <ng-template let-item>{{ item.name }}</ng-template>
             </app-select>
 
-            <app-select *ngIf="hasDiff$ | async" class="btn-success" key="diff">
+            <app-select *ngIf="hasDiff$ | ngrxPush" class="btn-success" key="diff">
                 Diff...
                 <ng-template let-item>{{ item.short }}</ng-template>
             </app-select>
@@ -32,7 +32,7 @@
                 <select id="select-basic" class="clr-select" style="height: 22px" [ngModel]="view.zero"
                         (ngModelChange)="setZero($event)">
                     <option value="-1">Leader</option>
-                    <option *ngFor="let racer of racers$ | async"
+                    <option *ngFor="let racer of racers$ | ngrxPush"
                             [value]="racer.bib">{{ racer.firstName }} {{ racer.lastName }}</option>
 
             </select>
@@ -43,7 +43,7 @@
         <app-dg-filter></app-dg-filter>
     </div>
 
-    <div style="flex: 0 0 auto;" *ngIf="progress$ | async as progress">
+    <div style="flex: 0 0 auto;" *ngIf="progress$ | ngrxPush as progress">
         {{ progress.current }} / {{ progress.of }}
     </div>
 

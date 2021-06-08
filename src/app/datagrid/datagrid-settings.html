@@ -10,18 +10,18 @@
         </button>
     </div>
     <div class="clr-toggle-wrapper">
-        <input type="checkbox" id="toggle-ticker" name="toggle-basic" class="clr-toggle" [ngModel]="tickerEnabled$ | async" (ngModelChange)="toggleTicker($event)">
+        <input type="checkbox" id="toggle-ticker" name="toggle-basic" class="clr-toggle" [ngModel]="tickerEnabled$ | ngrxPush" (ngModelChange)="toggleTicker($event)">
         <label for="toggle-ticker">Ticker</label>
     </div>
     <div class="clr-toggle-wrapper">
-        <input type="checkbox" id="toggle-percent" name="toggle-basic" class="clr-toggle" [ngModel]="usePercent$ | async" (ngModelChange)="toggleUsePercent($event)">
+        <input type="checkbox" id="toggle-percent" name="toggle-basic" class="clr-toggle" [ngModel]="usePercent$ | ngrxPush" (ngModelChange)="toggleUsePercent($event)">
         <label for="toggle-percent">Percent</label>
     </div>
     <div class="switch-header">
         Columns
     </div>
     <ul class="switch-content list-unstyled" cdkDropList (cdkDropListDropped)="onDrop($event)">
-        <li class="clr-checkbox-wrapper" *ngFor="let col of columns$ | async; trackBy: trackBy" cdkDrag>
+        <li class="clr-checkbox-wrapper" *ngFor="let col of columns$ | ngrxPush; trackBy: trackBy" cdkDrag>
             <input type="checkbox" [checked]="col.toggled" [id]="col.id" (change)="toggleColumn(col.id)">
             <label [for]="col.id">{{ col.name }}</label>
             <clr-icon class="column-drag-handle" cdkDragHandle shape="drag-handle"></clr-icon>

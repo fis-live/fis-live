@@ -1,5 +1,5 @@
 <table class="ticker-table">
-    <tr [@animation]="i" *ngFor="let event of events$ | async; let i = index">
+    <tr [@animation]="i" *ngFor="let event of events$ | ngrxPush; let i = index">
         <td style="width: 24px; text-align: center; background-color: unset">{{ event.rank }}</td>
         <td>
             <div class="flag {{ event.racer.nsa | lowercase }}">

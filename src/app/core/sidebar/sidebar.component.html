@@ -29,7 +29,7 @@
 
     <ng-container *ngIf="tab === 'live'">
         <nav class="sidenav">
-            <section *ngIf="upcomingRaces$ | async as upcoming" class="sidenav-content">
+            <section *ngIf="upcomingRaces$ | ngrxPush as upcoming" class="sidenav-content">
                 <section *ngFor="let races of upcoming" class="nav-group collapsible">
                     <input [checked]="!races.date.startsWith('Today')" [attr.id]="'races' + races.date" type="checkbox">
                     <label [attr.for]="'races' + races.date">{{ races.date }}<span *ngIf="races.liveCount > 0" class="badge badge-success">{{ races.liveCount }}</span></label>
@@ -53,7 +53,7 @@
     <ng-container *ngIf="tab === 'settings'">
         <div style="padding: 20px;">
             <div class="clr-toggle-wrapper">
-                <input type="checkbox" id="toggle-ticker" name="toggle-basic" class="clr-toggle" [ngModel]="tickerEnabled$ | async" (ngModelChange)="toggleTicker()">
+                <input type="checkbox" id="toggle-ticker" name="toggle-basic" class="clr-toggle" [ngModel]="tickerEnabled$ | ngrxPush" (ngModelChange)="toggleTicker()">
                 <label for="toggle-ticker">Enable ticker</label>
             </div>
 
@@ -61,7 +61,7 @@
                 Default Columns
             </h4>
             <ul class="switch-content list-unstyled" cdkDropList (cdkDropListDropped)="onDrop($event)">
-                <li class="clr-checkbox-wrapper" *ngFor="let col of columns$ | async; trackBy: trackBy" cdkDrag>
+                <li class="clr-checkbox-wrapper" *ngFor="let col of columns$ | ngrxPush; trackBy: trackBy" cdkDrag>
                     <input type="checkbox" [checked]="col.toggled" [id]="col.id" (change)="toggleColumn(col.id)">
                     <label [for]="col.id">{{ col.name }}</label>
                     <clr-icon class="column-drag-handle" cdkDragHandle shape="drag-handle"></clr-icon>
@@ -75,20 +75,20 @@
             <div class="clr-input-wrapper">
                 <label for="delay" class="form-label">Delay</label>
                 <span style="float: right;">&nbsp;ms</span>
-                <input class="clr-input" type="number" id="delay" [ngModel]="delay$ | async" (ngModelChange)="setDelay($event)" placeholder="Enter value here" style="float: right; width: 100px;">
+                <input class="clr-input" type="number" id="delay" [ngModel]="delay$ | ngrxPush" (ngModelChange)="setDelay($event)" placeholder="Enter value here" style="float: right; width: 100px;">
             </div>
 
             <h5 style="margin-left: -5px; margin-bottom: 5px;">Sync from updates</h5>
 
             <div class="clr-select-wrapper" style="width: 100%">
                 <label for="select-inter" class="form-label">Filter</label>
-                <select class="clr-select" id="select-inter" style="float:right" [ngModel]="selectedInter | async" (ngModelChange)="next($event)">
-                    <option *ngFor="let inter of intermediates$ | async" [value]="inter.key">{{ inter.name }}</option>
+                <select class="clr-select" id="select-inter" style="float:right" [ngModel]="selectedInter | ngrxPush" (ngModelChange)="next($event)">
+                    <option *ngFor="let inter of intermediates$ | ngrxPush" [value]="inter.key">{{ inter.name }}</option>
                 </select>
             </div>
 
-            <ng-container *ngIf="(events$ | async) as events">
-                <div class="list" *ngIf="events.length > 0; else elseTpl">
+            <ng-container *ngrxLet="events$; let events">
+                <div class="list" *ngIf="events && events.length > 0; else elseTpl">
                     <div *ngFor="let event of events" class="item">
                         <div style="flex: 1">
                             <div style="line-height: 20px; font-weight: bold;">{{ event.racer.display }}</div>

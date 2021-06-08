@@ -6,6 +6,7 @@ import { FormsModule } from '@angular/forms';
 import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { RouterModule } from '@angular/router';
+import { ReactiveComponentModule } from '@ngrx/component';
 import { EffectsModule } from '@ngrx/effects';
 import { StoreModule } from '@ngrx/store';
 import { NgScrollbarModule } from 'ngx-scrollbar';
@@ -71,6 +72,7 @@ import { FocusDirective } from './utils/focus.directive';
             track: 'all',
             visibility: 'hover'
         }),
+        ReactiveComponentModule,
         devModules
     ],
     bootstrap: [ AppComponent ]
