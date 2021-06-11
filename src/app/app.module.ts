@@ -3,7 +3,7 @@ import { CdkTableModule } from '@angular/cdk/table';
 import { HttpClientModule } from '@angular/common/http';
 import { NgModule } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { BrowserModule } from '@angular/platform-browser';
+import { BrowserModule, Title } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { RouterModule } from '@angular/router';
 import { ReactiveComponentModule } from '@ngrx/component';
@@ -74,6 +74,9 @@ import { FocusDirective } from './utils/focus.directive';
         }),
         ReactiveComponentModule,
         devModules
+    ],
+    providers: [
+        Title
     ],
     bootstrap: [ AppComponent ]
 })

@@ -1,13 +1,14 @@
 import { Injectable } from '@angular/core';
+import { Title } from '@angular/platform-browser';
 import { Actions, createEffect, ofType } from '@ngrx/effects';
 import { Store } from '@ngrx/store';
 import { EMPTY, Observable, of, timer } from 'rxjs';
-import { catchError, concatMap, map, mapTo, mergeMapTo, startWith, switchMap, take } from 'rxjs/operators';
+import { catchError, concatMap, map, mapTo, mergeMapTo, startWith, switchMap, take, tap } from 'rxjs/operators';
 
 import { FisConnectionService } from '../fis/fis-connection';
 
 import { ConnectionActions, LoadingActions } from './actions';
-import { AppState, getDelayState } from './reducers';
+import { AppState, getDelayState, getRaceInfoState } from './reducers';
 
 @Injectable()
 export class ConnectionEffects {
@@ -83,6 +84,16 @@ export class ConnectionEffects {
         )
     ));
 
+    title$ = createEffect(() => this.store.select(getRaceInfoState).pipe(
+        tap(race => {
+            if (race.info.raceName !== '') {
+                this.title.setTitle(race.info.raceName + ', ' + race.info.place);
+            } else {
+                this.title.setTitle('Fis Live');
+            }
+        })
+    ), { dispatch: false });
+
     loading$ = createEffect(() => this.actions$.pipe(
         ofType(ConnectionActions.loadMain),
         mapTo(LoadingActions.showLoading())
@@ -90,7 +101,7 @@ export class ConnectionEffects {
 
     private delay$: Observable<number>;
 
-    constructor(private actions$: Actions, private api: FisConnectionService, store: Store<AppState>) {
+    constructor(private actions$: Actions, private api: FisConnectionService, private store: Store<AppState>, private title: Title) {
         this.delay$ = store.select(getDelayState);
     }
 }
