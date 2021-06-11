@@ -31,7 +31,7 @@ export interface Main {
     meteo: [number, string, string, number, number, string];
     main: number;
     live: [number, number, string];
-    racers: (null | [number, number, string, string, string, string, string, string, number])[];
+    racers: (null | [number, number, string | null, string | null, string, string, string, string, number])[];
     startlist: [number, string, number, string, number][];
     result: (null | number[])[];
     runinfo: [number, string, string];

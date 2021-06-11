@@ -17,7 +17,8 @@ const icons = [
     'filter-grid-circle',
     'filter-grid',
     'drag-handle',
-    'search'
+    'search',
+    'star'
 ];
 
 var template = '';

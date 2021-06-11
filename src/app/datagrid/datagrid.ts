@@ -14,7 +14,7 @@ import { TableDataSource } from './state/table-data-source';
             transition('void => new', group([
                 style({transform: 'translateX(30px)', opacity: 0}),
                 query('td > div', [
-                    style({backgroundColor: '#F7D57F', height: '0px'}),
+                    style({backgroundColor: '{{ color }}', height: '0px'}),
                     group([
                         animate('300ms ease', style({ height: '*' })),
                         animate('600ms 5000ms ease', style({ backgroundColor: '*' }))
@@ -28,9 +28,9 @@ import { TableDataSource } from './state/table-data-source';
         ]),
         trigger('update', [
             transition(':increment', [
-                query('td', [
+                query('td > div', [
                     animate('1000ms ease', keyframes([
-                        style({ backgroundColor: '#D8E1FF' }),
+                        style({ backgroundColor: '#9BD8F3' }),
                         style({ backgroundColor: '*'})
                     ]))
                 ])

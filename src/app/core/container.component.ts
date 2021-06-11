@@ -1,12 +1,10 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { ActivatedRoute, Params, Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { Store } from '@ngrx/store';
 import { Observable, Subscription } from 'rxjs';
-import { map, pluck } from 'rxjs/operators';
 
-import { Racer } from '../models/racer';
 import { loadMain } from '../state/actions/connection';
-import { AppState, getLoadingState, getRaceInfoState, getSettingsState } from '../state/reducers/';
+import { AppState, getLoadingState, getRaceInfoState } from '../state/reducers/';
 import { State as LoadingState } from '../state/reducers/loading';
 import { State as RaceInfoState } from '../state/reducers/race-info';
 import { WindowSize } from '../utils/window-size';
@@ -20,7 +18,6 @@ export class ContainerComponent implements OnInit, OnDestroy {
     public sectorCode: 'nk' | 'cc' = 'cc';
     public raceInfo$: Observable<RaceInfoState>;
     public loading$: Observable<LoadingState>;
-    public favoriteRacers$: Observable<Racer[]>;
     public rows: Array<number[]> = [[0]];
     public width: number;
     public breakpoints: string[] = ['large', 'large'];
@@ -49,7 +46,6 @@ export class ContainerComponent implements OnInit, OnDestroy {
         this.raceInfo$ = _store.select(getRaceInfoState);
         this.loading$ = _store.select(getLoadingState);
         this.width = window.innerWidth;
-        this.favoriteRacers$ = _store.select(getSettingsState).pipe(pluck('favoriteRacers'));
         this.widthSubscription = this.windowSize.width$.subscribe((width) => this.setWidth(width));
     }
 

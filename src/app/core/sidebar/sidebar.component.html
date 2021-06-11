@@ -67,6 +67,27 @@
                     <clr-icon class="column-drag-handle" cdkDragHandle shape="drag-handle"></clr-icon>
                 </li>
             </ul>
+
+            <h4>
+                Favorites
+            </h4>
+            <div class="clr-select-wrapper">
+                <select id="select-favorite" class="clr-select" [ngModel]="null" (ngModelChange)="toggleFavorite($event)">
+                    <option [ngValue]="null">Add favorite:</option>
+                    <option *ngFor="let racer of racers$ | ngrxPush"
+                            [ngValue]="racer">{{ racer.display }}</option>
+
+                </select>
+            </div>
+            <ul class="switch-content list-unstyled">
+                <li class="clr-checkbox-wrapper" *ngFor="let racer of favoriteRacers$ | ngrxPush">
+                    <button style="min-width: 0.75rem; padding-left: 0; padding-right: 0; margin: 0 0 0 -1px;"
+                            type="button" class="btn btn-sm btn-link btn-icon-link" [id]="racer.id" (click)="toggleFavorite(racer)">
+                        <clr-icon [class.is-solid]="racer.isFavorite" shape="star"></clr-icon>
+                    </button>
+                    <label style="padding-left: 4px" [for]="racer.id">{{ racer.display }}</label>
+                </li>
+            </ul>
         </div>
     </ng-container>
 

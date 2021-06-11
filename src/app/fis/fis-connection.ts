@@ -1,16 +1,18 @@
 import { HttpClient, HttpErrorResponse, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { Action } from '@ngrx/store';
+import { Action, Store } from '@ngrx/store';
 import { defer, EMPTY, Observable, of, throwError, timer } from 'rxjs';
-import { catchError, map, mergeMap, repeat, retry, switchMap } from 'rxjs/operators';
+import { catchError, map, mergeMap, repeat, retry, switchMap, withLatestFrom } from 'rxjs/operators';
 
 import { Intermediate } from '../models/intermediate';
 import { Meteo } from '../models/meteo';
 import { Race } from '../models/race';
 import { RaceInfo } from '../models/race-info';
+import { Racer } from '../models/racer';
 import { RaceActions } from '../state/actions';
 import { setRaceMessage, updateMeteo, updateRaceInfo } from '../state/actions/info';
 import { initialize, update } from '../state/actions/race';
+import { AppState, selectFavoriteRacers } from '../state/reducers';
 import { unserialize } from '../utils/unserialize';
 import { fixEncoding, toTitleCase } from '../utils/utils';
 
@@ -49,7 +51,7 @@ export class FisConnectionService {
 
     private readonly serverListUrl = 'http://live.fis-ski.com/general/serverList.json';
 
-    constructor(private _http: HttpClient) {
+    constructor(private _http: HttpClient, private _store: Store<AppState>) {
         const d = new Date();
         this.signature = d.getSeconds().toString() + d.getMilliseconds().toString() + '-fis';
     }
@@ -83,7 +85,8 @@ export class FisConnectionService {
 
         return defer(() => timer(this.delay)).pipe(
             switchMap(() => this.getHttpRequest()),
-            mergeMap((result) => this.parse(result)),
+            withLatestFrom(this._store.select(selectFavoriteRacers)),
+            mergeMap(([result, favorites]) => this.parse(result, favorites)),
             catchError(error => this.handleError(error)),
             retry(10),
             repeat()
@@ -110,7 +113,7 @@ export class FisConnectionService {
         });
     }
 
-    private parse(result: string | PdfData[]) {
+    private parse(result: string | PdfData[], favorites: Racer[] = []) {
         let shouldDelay = true;
         let actions: Action[] = [];
         if (typeof result === 'string') {
@@ -126,7 +129,7 @@ export class FisConnectionService {
                 this.updateCount++;
                 this.errorCount = 0;
                 shouldDelay = this.initialized;
-                actions = this.parseMain(<Main> data);
+                actions = this.parseMain(<Main> data, favorites);
             } else {
                 this.delay = data.live[0] * 1000;
                 this.version = data.live[1];
@@ -205,7 +208,7 @@ export class FisConnectionService {
         return time - time % 100;
     }
 
-    private parseMain(data: Main): Action[] {
+    private parseMain(data: Main, favorites: Racer[]): Action[] {
         const actions: Action[] = [];
         const raceInfo: RaceInfo = {
             eventName: fixEncoding(data.raceinfo[0]),
@@ -316,8 +319,8 @@ export class FisConnectionService {
         for (let i = 0; i < data.racers.length; i++) {
             const racer = data.racers[i];
             if (racer !== null) {
-                const firstName = toTitleCase(fixEncoding(racer[3].trim()));
-                const lastName = toTitleCase(fixEncoding(racer[2].trim()));
+                const firstName = toTitleCase(fixEncoding(racer[3]?.trim() ?? ''));
+                const lastName = toTitleCase(fixEncoding(racer[2]?.trim() ?? ''));
                 const initials = firstName.split(/([ -])/).map(str => str[0]).join('').replace(' ', '.');
 
                 racers.push({
@@ -325,11 +328,11 @@ export class FisConnectionService {
                     bib: racer[1],
                     firstName,
                     lastName,
-                    display: firstName + ' ' + lastName,
-                    value: (lastName + ', ' + firstName).toLowerCase(),
-                    short: initials + '. ' + lastName,
+                    display: firstName !== '' ? firstName + ' ' + lastName : lastName,
+                    value: (firstName !== '' ? lastName + ', ' + firstName : lastName).toLowerCase(),
+                    short: initials !== '' ? initials + '. ' + lastName : lastName,
                     nsa:  nationalities[racer[4]] || racer[4],
-                    isFavorite: false,
+                    isFavorite: favorites.find((value) => value.id === racer[0]) !== undefined,
                     hasYellowCard: racer[6] === 'yc',
                     color: racer[5],
                     sector: this.sectorCode

@@ -9,7 +9,7 @@ import { Note, Result, Status } from '../../fis/models';
 import { Intermediate } from '../../models/intermediate';
 import { RacerData, Standing } from '../../models/racer';
 import { formatTime, getValidDiff, guid, isBonus, parseTimeString } from '../../utils/utils';
-import { RaceActions } from '../actions';
+import { RaceActions, SettingsActions } from '../actions';
 
 import { registerResultMutably, updateResultMutably } from './helpers';
 
@@ -239,6 +239,17 @@ const resultReducer = createReducer(
                     draft.standings[0].version += 1;
                     break;
                 }
+            }
+        }
+    })),
+    on(SettingsActions.toggleFavorite, (state, { racer }) => produce(state, draft => {
+        for (const id of state.ids) {
+            if (state.entities[id].racer.id === racer.id) {
+                draft.entities[id].racer.isFavorite = !state.entities[id].racer.isFavorite;
+                for (let i = 0; i < state.entities[id].marks.length; i++) {
+                    draft.standings[i].version += 1;
+                }
+                break;
             }
         }
     }))

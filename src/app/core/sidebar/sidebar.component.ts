@@ -3,7 +3,7 @@ import { CdkDragDrop } from '@angular/cdk/drag-drop';
 import {
     ChangeDetectionStrategy, Component, EventEmitter, Input, Output
 } from '@angular/core';
-import { select, Store } from '@ngrx/store';
+import { Store } from '@ngrx/store';
 import { BehaviorSubject, combineLatest, Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 
@@ -12,7 +12,14 @@ import { Intermediate } from '../../models/intermediate';
 import { RacesByPlace } from '../../models/race';
 import { Event, Racer } from '../../models/racer';
 import { reorderColumn, setDelay, toggleColumn, toggleFavorite, toggleTicker } from '../../state/actions/settings';
-import { AppState, getDelayState, getResultState, selectAllIntermediates, selectRacesByPlace } from '../../state/reducers';
+import {
+    AppState,
+    getDelayState,
+    getResultState,
+    selectAllIntermediates, selectAllRacers,
+    selectFavoriteRacers,
+    selectRacesByPlace
+} from '../../state/reducers';
 
 @Component({
     selector: 'app-sidebar',
@@ -32,7 +39,6 @@ import { AppState, getDelayState, getResultState, selectAllIntermediates, select
 })
 export class SidebarComponent {
     @Input() public isOpen = false;
-    @Input() public favoriteRacers: Racer[] | null = null;
     @Output() public isOpenChange = new EventEmitter<boolean>();
     @Output() public navigate = new EventEmitter<number>();
 
@@ -44,15 +50,19 @@ export class SidebarComponent {
     public selectedInter = new BehaviorSubject<number>(0);
     public columns$: Observable<Column[]>;
     public tickerEnabled$: Observable<boolean>;
+    public favoriteRacers$: Observable<Racer[]>;
+    public racers$: Observable<Racer[]>;
 
     constructor(private store: Store<AppState>) {
         this.upcomingRaces$ = store.select(selectRacesByPlace);
+        this.favoriteRacers$ = store.select(selectFavoriteRacers);
+        this.racers$ = store.select(selectAllRacers);
         this.delay$ = store.select(getDelayState);
         this.tickerEnabled$ = store.select(state => state.settings.tickerEnabled);
         this.events$ = combineLatest([this.selectedInter, store.select(getResultState)]).pipe(
             map(([inter, _state]) => _state.standings[inter]?.events.slice().reverse() ?? [])
         );
-        this.intermediates$ = store.pipe(select(selectAllIntermediates));
+        this.intermediates$ = store.select(selectAllIntermediates);
 
         this.columns$ = this.store.select((state) => {
             return state.settings.defaultColumns;

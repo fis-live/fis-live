@@ -14,16 +14,16 @@
     white-space: nowrap;
 
     tr {
-        &.last_finish > td {
+        &.new > td > div {
             background-color: #FFE5BC;
         }
 
-        &.favorite > td {
+        &.favorite > td > div {
             background-color: #D8E1FF;
         }
 
-        &.new > td > div, > td.new > div {
-            background-color: #FFE5BC;
+        &.favorite .cdk-column-name a {
+            font-weight: 700;
         }
 
         //> td > div {

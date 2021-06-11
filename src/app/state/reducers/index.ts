@@ -52,6 +52,8 @@ export const getDelayState = createSelector(getSettingsState, Settings.getDelay)
 
 export const selectAllRacers = createSelector(getResultState, Result.getAllRacers);
 
+export const selectFavoriteRacers = createSelector(getSettingsState, Settings.getFavoriteRacers);
+
 export const selectView = (view: View): OperatorFunction<AppState, ResultItem[]> => {
     return pipe(
         select(getResultState),

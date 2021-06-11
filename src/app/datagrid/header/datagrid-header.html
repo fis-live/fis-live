@@ -29,11 +29,11 @@
 
     <div *ngIf="view.mode === 'analysis'">
         <div class="clr-select-wrapper">
-                <select id="select-basic" class="clr-select" style="height: 22px" [ngModel]="view.zero"
+                <select id="select-basic-{{ guid }}" class="clr-select" style="height: 22px" [ngModel]="view.zero"
                         (ngModelChange)="setZero($event)">
                     <option value="-1">Leader</option>
                     <option *ngFor="let racer of racers$ | ngrxPush"
-                            [value]="racer.bib">{{ racer.firstName }} {{ racer.lastName }}</option>
+                            [value]="racer.bib">{{ racer.display }}</option>
 
             </select>
         </div>

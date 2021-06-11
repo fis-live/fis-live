@@ -68,7 +68,7 @@
         </thead>
 
         <tbody>
-            <tr [@update]="row.version" [@newRow]="row.state" [ngClass]="row.classes" cdk-row *cdkRowDef="let row; columns: columns"></tr>
+            <tr [@update]="row.version" [@newRow]="{value: row.state, params: {color: row.racer.isFavorite ? '#9BD8F3' : '#F7D57F'}}" [ngClass]="row.classes" cdk-row *cdkRowDef="let row; columns: columns"></tr>
         </tbody>
     </ng-container>
 

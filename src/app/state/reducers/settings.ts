@@ -42,7 +42,7 @@ const settingsReducer = createReducer(
 
         return {
             ...state,
-            favoriteRacers: [...state.favoriteRacers, racer]
+            favoriteRacers: [...state.favoriteRacers, {...racer, isFavorite: true}]
         };
     }),
     on(SettingsActions.setDelay, (state, { delay }) => ({...state, delay})),

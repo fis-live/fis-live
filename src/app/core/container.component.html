@@ -1,4 +1,4 @@
-<app-sidebar [(isOpen)]="sidebarOpen" (navigate)="go($event)" [favoriteRacers]="favoriteRacers$ | ngrxPush"></app-sidebar>
+<app-sidebar [(isOpen)]="sidebarOpen" (navigate)="go($event)"></app-sidebar>
 
 <app-header [raceInfo]="raceInfo$ | ngrxPush" (openSidebar)="showSidebar()" (refresh)="onRefresh()" (tab)="configureTabs($event)"></app-header>
 
