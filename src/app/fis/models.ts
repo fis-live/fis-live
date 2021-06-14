@@ -1,14 +1,18 @@
+import { InterEvent, MessageEvent, MeteoEvent, NoteEvent, NotificationEvent, RunEvent } from './event-types';
 import { Status as StatusEnum } from './fis-constants';
+import { Live, Meteo, RaceDef, RaceInfo, Racer, RunInfo, RunNo, StartList, TabRunsPrec } from './types';
 
 export interface Result {
     status: StatusEnum;
     intermediate: number;
     racer: number;
     time: number;
+    run: number;
 }
 
 export interface Status {
     id: number;
+    run: number;
     status: string;
 }
 
@@ -22,24 +26,30 @@ export interface StartListEntry {
 export interface Note {
     bib: number;
     note: string;
+    run: number;
 }
 
 export interface Main {
-    racedef: [string, number, number][];
-    raceinfo: string[];
-    message: string;
-    meteo: [number, string, string, number, number, string];
+    racedef: RaceDef[];
+    raceinfo: RaceInfo;
+    message: string | null;
+    meteo: Meteo;
     main: number;
-    live: [number, number, string];
-    racers: (null | [number, number, string | null, string | null, string, string, string, string, number])[];
-    startlist: [number, string, number, string, number][];
-    result: (null | number[])[];
-    runinfo: [number, string, string];
+    live: Live;
+    racers: (Racer | null)[];
+    startlist: (StartList | null)[];
+    result: ((number | null)[] | null)[];
+    runinfo: RunInfo;
+    runno: RunNo;
+    chrono: [string, string];
+    tabrunsprec?: (TabRunsPrec | null)[][];
 }
 
 export interface Update {
-    live: [number, number, string];
-    events: any[][];
+    live: Live;
+    events: (InterEvent | NoteEvent | RunEvent | NotificationEvent | MessageEvent | MeteoEvent)[];
+    runno: RunNo;
+    reload?: number;
 }
 
 export interface PdfData {
@@ -51,7 +61,7 @@ export interface PdfData {
 }
 
 export interface ServerList {
-    servers: [string, number, number][];
+    servers: [url: string, weight: number, index: number][];
 }
 
 export interface FisEvent {

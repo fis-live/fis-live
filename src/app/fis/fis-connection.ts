@@ -17,7 +17,7 @@ import { unserialize } from '../utils/unserialize';
 import { fixEncoding, toTitleCase } from '../utils/utils';
 
 import { nationalities, Status, statusMap } from './fis-constants';
-import { FisEvent, FisServer, Main, PdfData, ServerList, StartListEntry, Update } from './models';
+import { FisEvent, FisServer, Main, PdfData, Result, ServerList, StartListEntry, Update } from './models';
 
 export interface ActionWithTimestamp {
     timestamp: number;
@@ -245,79 +245,83 @@ export class FisConnectionService {
         };
 
         actions.push(updateRaceInfo({raceInfo}));
-        actions.push(setRaceMessage({message: data.message}));
+        actions.push(setRaceMessage({message: data.message ?? ''}));
         actions.push(updateMeteo({meteo}));
 
         const intermediates: Intermediate[] = [];
+        const racers: Racer[] = [];
+        const results: Result[] = [];
+        const startList: { [bib: number]: StartListEntry } = {};
+
         intermediates.push({type: 'start_list', key: 0, id: 0, distance: 0, name: 'Start list', short: '0 ' + raceInfo.lengthUnit});
 
-        data.racedef.forEach((def, index) => {
+        for (const def of data.racedef) {
+            const index = data.racedef.indexOf(def);
             let name: string;
             let type: 'start_list' | 'inter' | 'finish' | 'bonus_points' | 'bonus_time' | 'standing';
             let short: string;
-            switch (def[0]) {
+            const [_type, id, distanceOrName] = def;
+
+            switch (_type) {
                 case 'inter':
                     type = 'inter';
-                    if (def[2] && def[2] > 0) {
-                        name = short = def[2] + ' ' + raceInfo.lengthUnit;
+                    if (distanceOrName && distanceOrName > 0) {
+                        name = short = distanceOrName + ' ' + raceInfo.lengthUnit;
                     } else {
-                        name = short = 'Inter ' + (index + 1);
+                        name = short = 'Inter ' + id;
                     }
                     break;
                 case 'bonuspoint':
                     type = 'bonus_points';
-                    if (def[2] && def[2] > 0) {
-                        name = 'Bonus points at ' + def[2] + ' ' + raceInfo.lengthUnit;
-                        short = 'Bonus ' + def[2] + ' ' + raceInfo.lengthUnit;
+                    if (distanceOrName && distanceOrName > 0) {
+                        name = 'Bonus points at ' + distanceOrName + ' ' + raceInfo.lengthUnit;
+                        short = 'Bonus ' + distanceOrName + ' ' + raceInfo.lengthUnit;
                     } else {
                         name = short = 'Bonus points';
                     }
                     break;
                 case 'bonustime':
                     type = 'bonus_time';
-                    if (def[2] && def[2] > 0) {
-                        name = 'Bonus time at ' + def[2] + ' ' + raceInfo.lengthUnit;
-                        short = 'Bonus ' + def[2] + ' ' + raceInfo.lengthUnit;
+                    if (distanceOrName && distanceOrName > 0) {
+                        name = 'Bonus time at ' + distanceOrName + ' ' + raceInfo.lengthUnit;
+                        short = 'Bonus ' + distanceOrName + ' ' + raceInfo.lengthUnit;
                     } else {
                         name = short = 'Bonus time';
                     }
                     break;
                 case 'finish':
                     type = 'finish';
-                    if (def[2] && def[2] > 0) {
-                        name = 'Finish ' + def[2] + ' ' + raceInfo.lengthUnit;
-                        short = def[2] + ' ' + raceInfo.lengthUnit;
+                    if (distanceOrName && distanceOrName > 0) {
+                        name = 'Finish ' + distanceOrName + ' ' + raceInfo.lengthUnit;
+                        short = distanceOrName + ' ' + raceInfo.lengthUnit;
                     } else {
                         name = short = 'Finish';
                     }
                     break;
                 case 'standing':
                     type = 'standing';
-                    if (def[2]) {
-                        name = short = '' + def[2];
+                    if (distanceOrName) {
+                        name = short = '' + distanceOrName;
                     } else {
                         name = short = 'Standing';
                     }
                     break;
                 default:
                     type = 'inter';
-                    if (def[2] && def[2] > 0) {
-                        name = short = def[2] + ' ' + raceInfo.lengthUnit;
+                    if (distanceOrName && distanceOrName > 0) {
+                        name = short = distanceOrName + ' ' + raceInfo.lengthUnit;
                     } else {
-                        name = short = 'Inter ' + (index + 1);
+                        name = short = 'Inter ' + id;
                     }
                     break;
             }
 
-            if (def[0] !== 'start') {
-                intermediates.push({key: index + 1, id: def[1], distance: def[2], name, short, type});
+            if (_type !== 'start') {
+                intermediates.push({key: index + 1, id: id, distance: +distanceOrName!, name, short, type});
             }
-        });
+        }
 
-        const racers = [];
-        const startList: { [bib: number]: StartListEntry } = {};
-        for (let i = 0; i < data.racers.length; i++) {
-            const racer = data.racers[i];
+        for (const racer of data.racers) {
             if (racer !== null) {
                 const firstName = toTitleCase(fixEncoding(racer[3]?.trim() ?? ''));
                 const lastName = toTitleCase(fixEncoding(racer[2]?.trim() ?? ''));
@@ -340,51 +344,47 @@ export class FisConnectionService {
             }
         }
 
-        const results = [];
-
         for (let i = 0; i < data.result.length; i++) {
             const res = data.result[i];
             if (res !== null) {
                 for (let j = 0; j < res.length; j++) {
                     if (data.racedef[j][1] === 0) {
 
-                    } else if (res[j]) {
-                        const time = this.truncateTime(res[j], data.racedef[j][0]);
-                        results.push({status: Status.Default, intermediate: data.racedef[j][1], racer: i, time: time});
+                    } else if (res[j] !== null) {
+                        const time = this.truncateTime(res[j]!, data.racedef[j][0]);
+                        results.push({
+                            status: Status.Default, intermediate: data.racedef[j][1], racer: i, time: time, run: data.runinfo[0]
+                        });
                     }
                 }
             }
         }
 
-        for (let i = 0; i < data.startlist.length; i++) {
-            if (data.startlist[i] !== null) {
+        for (const entry of data.startlist) {
+            if (entry !== null) {
                 const notes = [];
-                let status: string;
-                switch (data.startlist[i][1]) {
+                const [bib, note, order, status, heats] = entry;
+                switch (note) {
                     case 'q':
-                        notes.push(data.startlist[i][1].toUpperCase());
-                        status = statusMap[data.startlist[i][3]] || data.startlist[i][3] || '';
+                        notes.push('Q');
                         break;
                     case 'lucky':
                     case 'currentlucky':
                         notes.push('LL');
-                        status = statusMap[data.startlist[i][3]] || data.startlist[i][3] || '';
                         break;
                     case 'ff':
                         notes.push('PF');
-                        status = Status.Finished;
                         break;
-                    default:
-                        status = statusMap[data.startlist[i][3]] || data.startlist[i][3] || '';
                 }
 
-                startList[data.startlist[i][0]] = {
-                    racer: data.startlist[i][0],
-                    status: status,
-                    order: i + 1,
+                startList[bib] = {
+                    racer: bib,
+                    status: statusMap[status] || status || '',
+                    order: order,
                     notes: notes
                 };
-                switch (data.startlist[i][1]) {
+
+                switch (status) {
                     case 'ral':
                     case 'lapped':
                     case 'dnf':
@@ -393,12 +393,12 @@ export class FisConnectionService {
                     case 'dns':
                     case 'nps':
                         results.push({
-                                status: statusMap[data.startlist[i][1]],
-                                intermediate: 99,
-                                racer: data.startlist[i][0],
-                                time: 0
-                            }
-                        );
+                            status: statusMap[status] || status || '',
+                            intermediate: 99,
+                            racer: bib,
+                            time: 0,
+                            run: data.runinfo[0]
+                        });
                         break;
                 }
             }
@@ -425,7 +425,7 @@ export class FisConnectionService {
         let stopUpdating = false;
 
         if (data.events) {
-            data.events.forEach((event) => {
+            for (const event of data.events) {
                 switch (event[0]) {
                     case 'inter':
                     case 'bonuspoint':
@@ -435,12 +435,12 @@ export class FisConnectionService {
                             const t = this.truncateTime(event[4], event[0]);
                             events.push({
                                 type: 'register_result',
-                                payload: {status: Status.Default, intermediate: event[3], racer: event[2], time: t}
+                                payload: {status: Status.Default, intermediate: event[3], racer: event[2], time: t, run: event[1]}
                             });
                         } else {
                             events.push({
                                 type: 'register_result',
-                                payload: {status: Status.NA, intermediate: event[3], racer: event[2], time: 0}
+                                payload: {status: Status.NA, intermediate: event[3], racer: event[2], time: 0, run: event[1]}
                             });
                         }
                         break;
@@ -448,11 +448,11 @@ export class FisConnectionService {
                         const time = this.truncateTime(event[4], event[0]);
                         events.push({
                             type: 'register_result',
-                            payload: {status: Status.Finished, intermediate: event[3], racer: event[2], time: time}
+                            payload: {status: Status.Finished, intermediate: event[3], racer: event[2], time: time, run: event[1]}
                         });
                         events.push({
                             type: 'set_status',
-                            payload: {id: event[2], status: statusMap[event[0]]}
+                            payload: {id: event[2], status: statusMap[event[0]], run: event[1]}
                         });
                         break;
                     case 'sanction':
@@ -474,44 +474,45 @@ export class FisConnectionService {
                                 status: statusMap[event[0]],
                                 intermediate: 99,
                                 racer: event[2],
-                                time: 0
+                                time: 0,
+                                run: event[1]
                             }
                         });
                         events.push({
                             type: 'set_status',
-                            payload: {id: event[2], status: statusMap[event[0]]}
+                            payload: {id: event[2], status: statusMap[event[0]], run: event[1]}
                         });
                         break;
                     case 'q':
                         events.push({
                             type: 'add_note',
-                            payload: {bib: event[2], note: 'Q'}
+                            payload: {bib: event[2], note: 'Q', run: event[1]}
                         });
                         break;
                     case 'nq':
                         events.push({
                             type: 'remove_note',
-                            payload: {bib: event[2], note: 'Q'}
+                            payload: {bib: event[2], note: 'Q', run: event[1]}
                         });
                         break;
                     case 'currentlucky':
                     case 'lucky':
                         events.push({
                             type: 'add_note',
-                            payload: {bib: event[2], note: 'LL'}
+                            payload: {bib: event[2], note: 'LL', run: event[1]}
                         });
                         break;
                     case 'ff':
                         events.push({
                             type: 'add_note',
-                            payload: {bib: event[2], note: 'PF'}
+                            payload: {bib: event[2], note: 'PF', run: event[1]}
                         });
                         break;
                     case 'start':
                     case 'nextstart':
                         events.push({
                             type: 'set_status',
-                            payload: {id: event[2], status: statusMap[event[0]]}
+                            payload: {id: event[2], status: statusMap[event[0]], run: event[1]}
                         });
                         break;
                     case 'meteo':
@@ -519,13 +520,13 @@ export class FisConnectionService {
                                 air_temperature: event[1],
                                 wind: event[2],
                                 weather: event[3],
-                                snow_condition: event[4],
-                                snow_temperature: event[5],
-                                humidity: event[6]
+                                snow_temperature: event[4],
+                                humidity: event[5],
+                                snow_condition: event[6]
                             }}));
                         break;
                     case 'message':
-                        actions.push(setRaceMessage({message: event[1]}));
+                        actions.push(setRaceMessage({message: event[1] ?? ''}));
                         break;
                     case 'reloadmain':
                     case 'reloadflash':
@@ -535,15 +536,18 @@ export class FisConnectionService {
                         stopUpdating = true;
                         break;
 
-                    case 'palmier':
-                    case 'tds':
-                    case 'falsestart':
+                    case 'tobeat':
+                    case 'unofficial_result':
+                    case 'rundef':
                     case 'activeheat':
+                    case 'activerun':
+                    case 'startlist':
+                    case 'inprogress':
                     default:
-                        console.log('Unknown event:', event);
+                        console.log('Unhandled event:', event);
                         break;
                 }
-            });
+            }
         }
 
         if (events.length > 0) {
