@@ -210,9 +210,7 @@ export function updateResultMutably(state: State, result: Result) {
         }
 
         leader = (t < leader) ? t : leader;
-        if (mk.tourStanding !== undefined) {
-            tourLeader = Math.min(tourLeader, mk.tourStanding);
-        }
+        tourLeader = Math.min(tourLeader, mk.tourStanding);
 
         if ((time < t && !_isBonus) || (time < maxVal && time > t && _isBonus)) {
             rankAdj += 1;
@@ -233,6 +231,6 @@ export function updateResultMutably(state: State, result: Result) {
     mark.rank = isRanked(result.status) ? rank : null;
     entity.marks[intermediate] = mark;
     standing.leader = _isBonus ? maxVal : leader;
-    standing.tourLeader = tourLeader;
+    standing.tourLeader = _isBonus ? maxVal : tourLeader;
     standing.version += 1;
 }
