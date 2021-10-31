@@ -7187,14 +7187,14 @@ html, body {
   color: #303030;
   white-space: nowrap;
 }
-.datagrid tr.last_finish > td {
+.datagrid tr.new > td > div {
   background-color: #FFE5BC;
 }
-.datagrid tr.favorite > td {
+.datagrid tr.favorite > td > div {
   background-color: #D8E1FF;
 }
-.datagrid tr.new > td > div, .datagrid tr > td.new > div {
-  background-color: #FFE5BC;
+.datagrid tr.favorite .cdk-column-name a {
+  font-weight: 700;
 }
 .datagrid tr.red .bib .badge {
   background: #c72100;
