@@ -379,7 +379,7 @@ export class FisConnectionService {
 
                 startList[bib] = {
                     racer: bib,
-                    status: statusMap[status] || status || '',
+                    status: statusMap[status || ''] || status || '',
                     order: order,
                     notes: notes
                 };

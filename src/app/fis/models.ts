@@ -1,6 +1,6 @@
-import { InterEvent, MessageEvent, MeteoEvent, NoteEvent, NotificationEvent, RunEvent } from './event-types';
+import { EventArray } from './event-types';
 import { Status as StatusEnum } from './fis-constants';
-import { Live, Meteo, RaceDef, RaceInfo, Racer, RunInfo, RunNo, StartList, TabRunsPrec } from './types';
+import { Live, MeteoArray, RaceDef, RaceInfoArray, RacerArray, RunInfo, RunNo, StartList, TabRunsPrec } from './types';
 
 export interface Result {
     status: StatusEnum;
@@ -31,12 +31,12 @@ export interface Note {
 
 export interface Main {
     racedef: RaceDef[];
-    raceinfo: RaceInfo;
+    raceinfo: RaceInfoArray;
     message: string | null;
-    meteo: Meteo;
+    meteo: MeteoArray;
     main: number;
     live: Live;
-    racers: (Racer | null)[];
+    racers: (RacerArray | null)[];
     startlist: (StartList | null)[];
     result: ((number | null)[] | null)[];
     runinfo: RunInfo;
@@ -47,7 +47,7 @@ export interface Main {
 
 export interface Update {
     live: Live;
-    events: (InterEvent | NoteEvent | RunEvent | NotificationEvent | MessageEvent | MeteoEvent)[];
+    events: EventArray[];
     runno: RunNo;
     reload?: number;
 }

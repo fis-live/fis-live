@@ -28,13 +28,17 @@ export function formatTime(value: number | string | null | undefined,
     zero = zero - zero % 10 ** (precision + 3);
     let timeStr = (value === zero) ? '' : (value < zero ? '-' : '+');
     const time = (value === zero) ? value : (value < zero ? zero - value : value - zero);
-    const percentage = timeStr + Math.round(1000 * time / value) / 10 + '%';
+
+    if (percent && value !== zero) {
+        return timeStr + Math.round(1000 * time / value) / 10 + '%';
+    }
 
     const hours = Math.floor(time / (1000 * 60 * 60));
-    const minutes = Math.floor((time - hours * 1000 * 60 * 60) / (1000 * 60));
-    const seconds = Math.floor((time - hours * 1000 * 60 * 60 - minutes * 1000 * 60) / 1000);
-    const tenths = Math.floor((time - hours * 1000 * 60 * 60 - minutes * 1000 * 60 - seconds * 1000) / 100);
-    const hundreds = Math.floor((time - hours * 1000 * 60 * 60 - minutes * 1000 * 60 - seconds * 1000 - tenths * 100) / 10);
+    const minutes = Math.floor((time % (1000 * 60 * 60)) / (1000 * 60));
+    const seconds = Math.floor((time % 60000) / 1000);
+    const tenths = Math.floor((time % 1000) / 100);
+    const hundreds = Math.floor((time % 100) / 10);
+    const thousands = time % 10;
 
     if (hours > 0 || minutes > 0) {
         if (hours > 0) {
@@ -52,10 +56,7 @@ export function formatTime(value: number | string | null | undefined,
     timeStr += seconds;
     timeStr += (precision <= -1) ? '.' + tenths : '';
     timeStr += (precision <= -2) ? hundreds : '';
-
-    if (percent && value !== zero) {
-        return percentage;
-    }
+    timeStr += (precision <= -3) ? thousands : '';
 
     return timeStr;
 }

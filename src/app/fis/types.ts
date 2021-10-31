@@ -1,4 +1,4 @@
-export type Meteo = [
+export type MeteoArray = [
     airTemp: number | null,
     wind: string | null,
     weather: string | null,
@@ -17,7 +17,7 @@ export type RunInfo = [
     precision: number | string
 ];
 
-export type RaceInfo = [
+export type RaceInfoArray = [
     eventName: string,
     raceName: string,
     slopeName: string,
@@ -46,9 +46,9 @@ export type TabRunsPrec = [
 
 export type Live = [delay: number, next: number, sector: string, _ignored?: number];
 
-export type StartList = [bib: number, note: string, order: number, status: string, heats: number | null];
+export type StartList = [bib: number, note: string | null, order: number, status: string | null, heats?: number | null];
 
-export type Racer = [
+export type RacerArray = [
     id: number,
     bib: number,
     lastName: string | null,
@@ -57,7 +57,7 @@ export type Racer = [
     bibColor: string,
     yc: 'yc' | '',
     status: string,
-    time: number,
+    time: number | string,
     precision: number | string,
     run: number
 ];
