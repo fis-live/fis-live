@@ -1,7 +1,7 @@
 import { createAction, props } from '@ngrx/store';
 
-import { Meteo } from '../../models/meteo';
-import { RaceInfo } from '../../models/race-info';
+import { RaceInfo } from '../../fis/cross-country/models';
+import { Meteo } from '../../fis/shared';
 
 export const updateRaceInfo = createAction(
     '[Info] Update race info',

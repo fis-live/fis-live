@@ -1,7 +1,13 @@
 import { Action, createReducer, on } from '@ngrx/store';
 
-import { Alert } from '../../models/alert';
 import { ConnectionActions } from '../actions';
+
+export interface Alert {
+    message: string;
+    severity: string;
+    action: string;
+    actions: Action[];
+}
 
 export type State = Alert | null;
 

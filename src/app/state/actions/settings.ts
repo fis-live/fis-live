@@ -1,7 +1,6 @@
-import { CdkDragDrop } from '@angular/cdk/drag-drop';
 import { createAction, props } from '@ngrx/store';
 
-import { Racer } from '../../models/racer';
+import { Racer } from '../../fis/cross-country/models';
 
 export const toggleFavorite = createAction(
     '[Settings] Toggle favorite',

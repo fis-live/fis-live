@@ -3,6 +3,7 @@ import { localStorageSync } from 'ngrx-store-localstorage';
 import { OperatorFunction, pipe } from 'rxjs';
 
 import { ResultItem, View } from '../../datagrid/state/model';
+import { State } from '../../fis/cross-country/models';
 
 import * as Alert from './alert';
 import * as Calendar from './calendar';
@@ -23,7 +24,7 @@ export const reducers: ActionReducerMap<AppState, any> = {
 export interface AppState {
     alert: Alert.State;
     raceInfo: RaceInfo.State;
-    result: Result.State;
+    result: State;
     settings: Settings.State;
     loading: Loading.State;
     calendar: Calendar.State;

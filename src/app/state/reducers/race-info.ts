@@ -1,7 +1,7 @@
 import { Action, createReducer, on } from '@ngrx/store';
 
-import { Meteo } from '../../models/meteo';
-import { RaceInfo } from '../../models/race-info';
+import { RaceInfo } from '../../fis/cross-country/models';
+import { Meteo } from '../../fis/shared';
 import { InfoActions } from '../actions';
 
 export interface State {

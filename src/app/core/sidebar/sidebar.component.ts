@@ -8,9 +8,8 @@ import { BehaviorSubject, combineLatest, Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 
 import { Column } from '../../datagrid/state/model';
-import { Intermediate } from '../../models/intermediate';
-import { RacesByPlace } from '../../models/race';
-import { Event, Racer } from '../../models/racer';
+import { Event, Intermediate, Racer } from '../../fis/cross-country/models';
+import { RacesByPlace } from '../../fis/shared';
 import { reorderColumn, setDelay, toggleColumn, toggleFavorite, toggleTicker } from '../../state/actions/settings';
 import {
     AppState,

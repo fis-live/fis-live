@@ -1,6 +1,6 @@
 import { Action, createReducer, on } from '@ngrx/store';
 
-import { Race, RacesByDate, RacesByPlace } from '../../models/race';
+import { Race, RacesByDate, RacesByPlace } from '../../fis/shared';
 import { ConnectionActions } from '../actions';
 
 export type State = Race[];

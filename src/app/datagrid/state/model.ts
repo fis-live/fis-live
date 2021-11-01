@@ -1,5 +1,4 @@
-import { Intermediate } from '../../models/intermediate';
-import { Racer } from '../../models/racer';
+import { Intermediate, Racer } from '../../fis/cross-country/models';
 
 export interface View {
     mode: 'normal' | 'analysis';

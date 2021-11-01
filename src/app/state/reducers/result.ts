@@ -4,24 +4,12 @@ import { OperatorFunction, pipe } from 'rxjs';
 import { filter, map } from 'rxjs/operators';
 
 import { Prop, ResultItem, View } from '../../datagrid/state/model';
-import { isRanked, maxVal, Status as StatusEnum, timePenalty } from '../../fis/fis-constants';
-import { Note, Result, Status } from '../../fis/models';
-import { Intermediate } from '../../models/intermediate';
-import { RacerData, Standing } from '../../models/racer';
-import { formatTime, getValidDiff, guid, isBonus, parseTimeString } from '../../utils/utils';
+import { initializeState } from '../../fis/cross-country/initialize';
+import { Intermediate, State } from '../../fis/cross-country/models';
+import { getValidDiff, handleNoteEvent, handleResultEvent } from '../../fis/cross-country/state';
+import { isBonus, isRanked, maxVal, timePenalty } from '../../fis/fis-constants';
+import { formatTime, parseTimeString } from '../../utils/utils';
 import { RaceActions, SettingsActions } from '../actions';
-
-import { registerResultMutably, updateResultMutably } from './helpers';
-
-export interface State {
-    id: string;
-    ids: number[];
-    entities: {[id: number]: RacerData};
-    intermediates: Intermediate[];
-    interById: {[id: number]: number };
-    standings: {[id: number]: Standing};
-    precision: number;
-}
 
 export const initialState: State = {
     id: '',
@@ -35,68 +23,7 @@ export const initialState: State = {
 
 const resultReducer = createReducer(
     initialState,
-    on(RaceActions.initialize, (_, { intermediates, racers, results, startList, precision }) => {
-        const state: State = {
-            id: guid(),
-            ids: [],
-            entities: {},
-            intermediates: intermediates,
-            interById: {},
-            standings: {},
-            precision: precision,
-        };
-
-        intermediates.forEach(intermediate => {
-            state.interById[intermediate.id] = intermediate.key;
-            state.standings[intermediate.key] = {
-                version: 0,
-                ids: [],
-                leader: maxVal,
-                latestBibs: [],
-                bestDiff: (new Array(Math.max(intermediate.key, 1))).fill(maxVal),
-                tourLeader: maxVal,
-                events: []
-            };
-        });
-
-        for (const racer of racers) {
-            state.ids.push(racer.bib);
-            const entry = startList[racer.bib];
-            if (entry != null) {
-                state.standings[0].ids.push(racer.bib);
-                state.entities[racer.bib] = {
-                    id: racer.bib,
-                    status: entry.status || '',
-                    racer: racer,
-                    marks: [
-                        {time: 0, status: StatusEnum.Default, rank: entry.order || null, diffs: [maxVal], version: 0, tourStanding: maxVal}
-                        ],
-                    notes: entry.notes,
-                    bonusSeconds: 0
-                };
-            } else {
-                state.entities[racer.bib] = {
-                    id: racer.bib,
-                    status: '',
-                    racer: racer,
-                    marks: [],
-                    notes: [],
-                    bonusSeconds: 0
-                };
-            }
-        }
-
-        for (const result of results) {
-            const inter = state.interById[result.intermediate];
-            if (state.entities[result.racer].marks.length > inter) {
-                updateResultMutably(state, result);
-            } else {
-                registerResultMutably(state, result);
-            }
-        }
-
-        return state;
-    }),
+    on(RaceActions.initialize, (_, { main }) => initializeState(main)),
     on(RaceActions.parsePdf, (state, { racers }) => produce(state, draft => {
         let leader = maxVal;
         let tourLeader = maxVal;
@@ -171,74 +98,49 @@ const resultReducer = createReducer(
         standing.leader = leader;
         standing.bestDiff = [leader];
     })),
-    on(RaceActions.update, (state, { events, timestamp}) => produce(state, draft => {
+    on(RaceActions.update, (state, { events, timestamp }) => produce(state, draft => {
         for (const event of events) {
             switch (event.type) {
-                case 'register_result': {
-                    const result = event.payload as Result;
-                    const inter = state.interById[result.intermediate];
+                case 'inter':
+                case 'bonuspoint':
+                case 'bonustime':
+                case 'standing':
+                case 'finish': {
+                    const inter = state.interById[event.inter];
                     const leader = draft.standings[inter].leader;
+                    const isUpdate = draft.entities[event.bib].marks[inter] !== undefined;
 
-                    if (draft.entities[result.racer].marks.length > inter) {
-                        updateResultMutably(draft, result);
-                    } else if (result.time > 0 || result.status !== StatusEnum.Default) {
-                        registerResultMutably(draft, result);
+                    handleResultEvent(draft, event);
 
+                    if (!isUpdate && !isBonus(state.intermediates[inter]) && event.time > 0) {
                         const _event = {
-                            racer: state.entities[result.racer].racer,
-                            rank: draft.entities[result.racer].marks[inter].rank,
-                            diff: formatTime(result.time, leader, state.precision),
+                            racer: state.entities[event.bib].racer,
+                            rank: draft.entities[event.bib].marks[inter].rank,
+                            diff: formatTime(event.time, leader, state.precision),
                             timestamp: timestamp
                         };
-
-                        if (!isBonus(state.intermediates[inter]) && isRanked(result.status)) {
-                            draft.standings[inter].events = [_event, ...draft.standings[inter].events.slice(0, 20)];
-                        }
+                        draft.standings[inter].events = [_event, ...draft.standings[inter].events.slice(0, 20)];
                     }
                     break;
                 }
 
-                case 'add_note': {
-                    const e = event.payload as Note;
-                    const index = draft.entities[e.bib].notes.findIndex(note => note === e.note);
-                    if (index === -1) {
-                        draft.entities[e.bib].notes.push(e.note);
-                        draft.entities[e.bib].marks[0].version += 1;
-                        for (const inter of state.intermediates) {
-                            draft.standings[inter.key].version += 1;
-                        }
-                    }
+                case 'sanction':
+                case 'dnf':
+                case 'dns':
+                case 'dq':
+                case 'dsq':
+                case 'ral':
+                case 'nps':
+                case 'lapped':
+                case 'q':
+                case 'nq':
+                case 'currentlucky':
+                case 'lucky':
+                case 'ff':
+                case 'start':
+                case 'nextstart':
+                    handleNoteEvent(draft, event);
                     break;
-                }
-
-                case 'sanction': {
-                    const bib = event.payload as number;
-                    draft.entities[bib].racer.hasYellowCard = true;
-                    for (const inter of state.intermediates) {
-                        draft.standings[inter.key].version += 1;
-                    }
-                    break;
-                }
-
-                case 'remove_note': {
-                    const e = event.payload as Note;
-                    const index = draft.entities[e.bib].notes.findIndex(note => note === e.note);
-                    if (index !== -1) {
-                        draft.entities[e.bib].notes.splice(index, 1);
-                        for (const inter of state.intermediates) {
-                            draft.standings[inter.key].version += 1;
-                        }
-                    }
-                    break;
-                }
-
-                case 'set_status': {
-                    const e = event.payload as Status;
-                    draft.entities[e.id].status = e.status;
-                    draft.entities[e.id].marks[0].version += 1;
-                    draft.standings[0].version += 1;
-                    break;
-                }
             }
         }
     })),

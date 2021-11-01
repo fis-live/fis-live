@@ -1,7 +1,7 @@
 import { createAction, props } from '@ngrx/store';
 
-import { Alert } from '../../models/alert';
-import { Race } from '../../models/race';
+import { Race } from '../../fis/shared';
+import { Alert } from '../reducers/alert';
 
 export const loadServers = createAction(
     '[Connection] Load servers'

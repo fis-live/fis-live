@@ -5,10 +5,10 @@ import { Store } from '@ngrx/store';
 import { take } from 'rxjs/operators';
 
 import { Option, OptionSelector } from '../../core/select/option-selector';
-import { Intermediate } from '../../models/intermediate';
+import { Intermediate } from '../../fis/cross-country/models';
+import { isBonus } from '../../fis/fis-constants';
 import { AppState, getSettingsState, selectAllIntermediates } from '../../state/reducers';
 import { State as SettingsState } from '../../state/reducers/settings';
-import { isBonus } from '../../utils/utils';
 
 import { DatagridState, View } from './model';
 

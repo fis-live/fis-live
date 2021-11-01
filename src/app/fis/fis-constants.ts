@@ -1,3 +1,5 @@
+import { Intermediate } from './cross-country/models';
+
 export const nationalities: {[short: string]: string} = {
     'AFG': 'Afghanistan',
     'AGO': 'Angola',
@@ -320,3 +322,7 @@ export const statusMap: {[status: string]: Status} = {
     'dns': Status.DNS,
     'nps': Status.NPS
 };
+
+export function isBonus(intermediate: Intermediate | null | undefined): boolean {
+    return intermediate?.type === 'bonus_points' || intermediate?.type === 'bonus_time' || intermediate?.type === 'standing';
+}

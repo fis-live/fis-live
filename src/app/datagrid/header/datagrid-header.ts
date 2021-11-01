@@ -3,9 +3,10 @@ import { select, Store } from '@ngrx/store';
 import { Observable, of } from 'rxjs';
 import { map, switchMap } from 'rxjs/operators';
 
-import { Racer } from '../../models/racer';
+import { Racer } from '../../fis/cross-country/models';
+import { isBonus } from '../../fis/fis-constants';
 import { AppState, getResultState, selectAllRacers } from '../../state/reducers';
-import { guid, isBonus } from '../../utils/utils';
+import { guid } from '../../utils/utils';
 import { DatagridStore } from '../state/datagrid-store';
 
 @Component({

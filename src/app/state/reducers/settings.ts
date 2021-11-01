@@ -2,7 +2,7 @@ import { moveItemInArray } from '@angular/cdk/drag-drop';
 import { Action, createReducer, on } from '@ngrx/store';
 
 import { Column } from '../../datagrid/state/model';
-import { Racer } from '../../models/racer';
+import { Racer } from '../../fis/cross-country/models';
 import { SettingsActions } from '../actions';
 
 export interface State {

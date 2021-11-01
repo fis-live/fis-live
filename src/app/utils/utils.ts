@@ -1,6 +1,4 @@
-import { isRanked, maxVal } from '../fis/fis-constants';
-import { Intermediate } from '../models/intermediate';
-import { Mark } from '../models/racer';
+import { maxVal } from '../fis/fis-constants';
 
 export function guid() {
     return 'xxxxxx4xyx'.replace(/[xy]/g, c => {
@@ -84,18 +82,6 @@ export function toTitleCase(title: string) {
 
         return current.substr(0, 1).toUpperCase() + current.substr(1).toLowerCase();
     }).join('');
-}
-
-export function getValidDiff(mark: Mark, zero: Mark): number {
-    if (isRanked(mark.status) && isRanked(zero.status)) {
-        return mark.time - zero.time;
-    }
-
-    return maxVal;
-}
-
-export function isBonus(intermediate: Intermediate | null | undefined): boolean {
-    return intermediate?.type === 'bonus_points' || intermediate?.type === 'bonus_time' || intermediate?.type === 'standing';
 }
 
 export function parseTimeString(str: string) {

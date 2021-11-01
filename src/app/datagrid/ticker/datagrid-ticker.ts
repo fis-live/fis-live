@@ -3,7 +3,7 @@ import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { Store } from '@ngrx/store';
 import { Observable } from 'rxjs';
 
-import { Event } from '../../models/racer';
+import { Event } from '../../fis/cross-country/models';
 import { AppState, getResultState } from '../../state/reducers';
 import { DatagridStore } from '../state/datagrid-store';
 

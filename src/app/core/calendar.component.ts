@@ -3,7 +3,7 @@ import { Router } from '@angular/router';
 import { Store } from '@ngrx/store';
 import { Observable } from 'rxjs';
 
-import { RacesByDate } from '../models/race';
+import { RacesByDate } from '../fis/shared';
 import { AppState, selectRacesByDate } from '../state/reducers';
 
 @Component({

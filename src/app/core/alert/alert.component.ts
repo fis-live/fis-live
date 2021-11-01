@@ -8,7 +8,7 @@ import {
 } from '@angular/core';
 import { Action } from '@ngrx/store';
 
-import { Alert } from '../../models/alert';
+import { Alert } from '../../state/reducers/alert';
 
 @Component({
     selector: 'app-alert',

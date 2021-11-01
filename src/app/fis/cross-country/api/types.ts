@@ -1,3 +1,5 @@
+import { EventArray } from './event-types';
+
 export type MeteoArray = [
     airTemp: number | null,
     wind: string | null,
@@ -67,3 +69,26 @@ export type RaceDef = [
     id: number,
     distanceOrName: string | number | null,
 ];
+
+export interface MainArray {
+    racedef: RaceDef[];
+    raceinfo: RaceInfoArray;
+    message: string | null;
+    meteo: MeteoArray;
+    main: number;
+    live: Live;
+    racers: (RacerArray | null)[];
+    startlist: (StartList | null)[];
+    result: ((number | null)[] | null)[];
+    runinfo: RunInfo;
+    runno: RunNo;
+    chrono: [string, string];
+    tabrunsprec?: (TabRunsPrec | null)[][];
+}
+
+export interface UpdateArray {
+    live: Live;
+    events: EventArray[];
+    runno: RunNo;
+    reload?: number;
+}
