@@ -37,8 +37,8 @@ export class ConnectionEffects {
         ofType(ConnectionActions.loadMain),
         switchMap((action) =>
             this.api.poll(action.codex, action.sectorCode).pipe(
-                concatMap((value) => {
-                    if (!value.shouldDelay) {
+                concatMap((value, index) => {
+                    if (index === 0 || value.timestamp === 0) {
                         return of(...value.actions);
                     }
 

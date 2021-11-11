@@ -6,8 +6,8 @@ import { filter, map } from 'rxjs/operators';
 import { Prop, ResultItem, View } from '../../datagrid/state/model';
 import { initializeState } from '../../fis/cross-country/initialize';
 import { Intermediate, State } from '../../fis/cross-country/models';
-import { getValidDiff, handleNoteEvent, handleResultEvent } from '../../fis/cross-country/state';
-import { isBonus, isRanked, maxVal, timePenalty } from '../../fis/fis-constants';
+import { handleNoteEvent, handleResultEvent, registerResult } from '../../fis/cross-country/state';
+import { isBonus, isRanked, maxVal, Status, timePenalty } from '../../fis/fis-constants';
 import { formatTime, parseTimeString } from '../../utils/utils';
 import { RaceActions, SettingsActions } from '../actions';
 
@@ -25,16 +25,10 @@ const resultReducer = createReducer(
     initialState,
     on(RaceActions.initialize, (_, { main }) => initializeState(main)),
     on(RaceActions.parsePdf, (state, { racers }) => produce(state, draft => {
-        let leader = maxVal;
         let tourLeader = maxVal;
-        const bestDiffs: number[] = [];
         const bestTour: number[] = [];
 
         for (const data of racers) {
-            if (data.time !== null) {
-                leader = Math.min(leader, data.time);
-            }
-
             if (data.tourStanding != null) {
                 if (data.tourStanding[0] !== '+') {
                     tourLeader = Math.min(tourLeader, parseTimeString(data.tourStanding));
@@ -44,23 +38,15 @@ const resultReducer = createReducer(
         }
 
         for (const data of racers) {
-            const marks = draft.entities[data.bib].marks;
             if (data.isWave) {
                 draft.entities[data.bib].notes.push('W');
+                for (let i = 0; i < state.intermediates.length; i++) {
+                    draft.standings[i].version += 1;
+                }
             }
 
             if (data.time != null) {
-                marks[0].time = data.time;
-                marks[0].diffs = [data.time];
-
-                const l = state.entities[data.bib].marks.length;
-                for (let i = 1; i < l; i++) {
-                    if (!isBonus(state.intermediates[i])) {
-                        const t = getValidDiff(marks[i], marks[0]);
-                        marks[i].diffs[0] = t;
-                        bestDiffs[i] = Math.min(bestDiffs[i] || maxVal, t);
-                    }
-                }
+                registerResult(draft, draft.entities[data.bib], Status.Default, data.time, 0);
             }
 
             if (data.tourStanding != null) {
@@ -86,17 +72,6 @@ const resultReducer = createReducer(
                 draft.standings[inter.key].tourLeader = bestTour[inter.key] ?? maxVal;
             }
         }
-
-        for (let i = 1; i < state.intermediates.length; i++) {
-            if (bestDiffs[i] !== undefined) {
-                draft.standings[i].bestDiff[0] = bestDiffs[i];
-                draft.standings[i].version += 1;
-            }
-        }
-        const standing = draft.standings[0];
-        standing.version += 1;
-        standing.leader = leader;
-        standing.bestDiff = [leader];
     })),
     on(RaceActions.update, (state, { events, timestamp }) => produce(state, draft => {
         for (const event of events) {
@@ -204,7 +179,7 @@ function prepareStartList(state: State): ResultItem[] {
             state: 'normal',
             racer: entity.racer,
             time: { display: entity.status, value: entity.status, leader: false },
-            rank: mark.rank,
+            rank: entity.order,
             diff: {
                 display: formatTime(time, standing.bestDiff[0], state.precision),
                 value: time,

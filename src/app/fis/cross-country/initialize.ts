@@ -1,5 +1,5 @@
 import { guid } from '../../utils/utils';
-import { maxVal, Status, Status as StatusEnum, statusMap } from '../fis-constants';
+import { maxVal, Status, statusMap } from '../fis-constants';
 
 import { State } from './models';
 import { registerResult } from './state';
@@ -13,7 +13,7 @@ export function initializeState(main: Main): State {
         intermediates: main.intermediates,
         interById: {},
         standings: {},
-        precision: -1,
+        precision: main.raceInfo.discipline === 'SP' ? -2 : -1,
     };
 
     for (const inter of main.intermediates) {
@@ -29,6 +29,7 @@ export function initializeState(main: Main): State {
         };
     }
 
+    let order = 1;
     for (const racer of main.racers) {
         state.ids.push(racer.bib);
         const entry = main.startList[racer.bib];
@@ -39,10 +40,11 @@ export function initializeState(main: Main): State {
                 id: racer.bib,
                 status: statusMap[entry.status || ''] || entry.status || '',
                 racer: racer,
+                order: order++,
                 marks: [{
                     time: 0,
-                    status: StatusEnum.Default,
-                    rank: entry.order || null,
+                    status: Status.Initial,
+                    rank: null,
                     diffs: [maxVal],
                     version: 0,
                     tourStanding: maxVal
@@ -53,8 +55,8 @@ export function initializeState(main: Main): State {
 
             if (results != null) {
                 for (let j = 0; j < results.length; j++) {
-                    if (results[j] !== null && results[j]! > 0) {
-                        registerResult(state, state.entities[racer.bib], Status.Default, results[j]!, j + 1);
+                    if (results[j] != null) {
+                        registerResult(state, state.entities[racer.bib], Status.Default, results[j]!, state.interById[main.resultKeys[j]]);
                     }
                 }
             }
@@ -64,6 +66,7 @@ export function initializeState(main: Main): State {
                 case 'lapped':
                 case 'dnf':
                 case 'dq':
+                case 'dsq':
                 case 'dns':
                 case 'nps':
                     registerResult(state, state.entities[racer.bib], statusMap[entry.status], 0, state.interById[99]);
@@ -76,6 +79,7 @@ export function initializeState(main: Main): State {
                 id: racer.bib,
                 status: '',
                 racer: racer,
+                order: null,
                 marks: [],
                 notes: [],
                 bonusSeconds: 0

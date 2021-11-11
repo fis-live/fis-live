@@ -281,6 +281,7 @@ export const SnowConditions: {[short: string]: string} = {
 export const maxVal = 1000000000;
 
 export enum Status {
+    Initial = '',
     Default = 'Default',
     Started = 'Started',
     NextStart = 'Next to start',
@@ -295,6 +296,7 @@ export enum Status {
 }
 
 export const timePenalty = {
+    [Status.Initial]: 0,
     [Status.Default]: 0,
     [Status.Started]: 0,
     [Status.NextStart]: 0,

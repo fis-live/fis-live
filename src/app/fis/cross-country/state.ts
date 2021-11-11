@@ -42,7 +42,6 @@ function setStatus(state: State, entity: RacerData, status: string) {
 
 export function handleNoteEvent(state: State, event: NoteEvent) {
     const entity = state.entities[event.bib];
-    const marks = entity.marks;
 
     switch (event.type) {
         case 'q':
@@ -91,35 +90,7 @@ export function handleNoteEvent(state: State, event: NoteEvent) {
         case 'nps':
         case 'lapped': {
             setStatus(state, entity, statusMap[event.type]);
-            const inter = state.interById[99];
-            if (marks[inter] !== undefined) {
-                removeResult(state, entity, inter);
-                marks[inter] = {
-                    time: 0,
-                    status: statusMap[event.type],
-                    rank: null,
-                    diffs: (new Array(Math.max(1, inter))).fill(maxVal),
-                    version: 0,
-                    tourStanding: maxVal
-                };
-                state.standings[inter].version += 1;
-            }
-
-            for (let i = 0; i < state.intermediates.length; i++) {
-                if (marks[i] === undefined) {
-                    marks[i] = {
-                        time: 0,
-                        status: statusMap[event.type],
-                        rank: null,
-                        diffs: (new Array(Math.max(1, i))).fill(maxVal),
-                        version: 0,
-                        tourStanding: maxVal
-                    };
-
-                    state.standings[i].ids.push(event.bib);
-                    state.standings[i].version += 1;
-                }
-            }
+            registerResult(state, entity, statusMap[event.type], 0, state.interById[99]);
             break;
         }
     }
@@ -127,8 +98,9 @@ export function handleNoteEvent(state: State, event: NoteEvent) {
 
 export function registerResult(state: State, entity: RacerData, status: Status, time: number, intermediate: number) {
     const marks = entity.marks;
+    const type = state.intermediates[intermediate].type;
     const mark: Mark = {
-        time: time,
+        time: type === 'bonus_time' || type === 'bonus_points' ? time : time - time % (10 ** (state.precision + 3)),
         status: status,
         rank: null,
         diffs: (new Array(Math.min(intermediate, 1))).fill(maxVal),
@@ -138,12 +110,22 @@ export function registerResult(state: State, entity: RacerData, status: Status, 
     const prev = marks[intermediate];
     const standing = state.standings[intermediate];
 
+    if (prev != null) {
+        if (prev.time === mark.time && prev.status === mark.status) {
+            return;
+        }
+
+        removeResult(state, entity, intermediate);
+    } else if (mark.time === 0 && mark.status === Status.Default) {
+        return;
+    }
+
     if (marks.length < intermediate) {
         for (let i = 0; i < intermediate; i++) {
             if (marks[i] === undefined) {
                 marks[i] = {
                     time: 0,
-                    status: isRanked(status) ? Status.NA : status,
+                    status: timePenalty[status] === 0 ? Status.NA : status,
                     rank: null,
                     diffs: (new Array(i)).fill(maxVal),
                     version: 0,
@@ -156,12 +138,9 @@ export function registerResult(state: State, entity: RacerData, status: Status, 
         }
     }
 
-    if (prev != null) {
-        removeResult(state, entity, intermediate);
-    }
-
     if (isRanked(status)) {
-        switch (state.intermediates[intermediate].type) {
+        switch (type) {
+            case 'start_list':
             case 'inter':
             case 'finish':
                 registerInter(state, entity, mark, intermediate);
@@ -207,26 +186,28 @@ function registerInter(state: State, entity: RacerData, mark: Mark, inter: numbe
         standing.leader = time;
     }
 
-    for (let i = 0; i < inter; i++) {
+    let i = 0;
+    do {
         if (!isBonus(state.intermediates[i])) {
             mark.diffs[i] = getValidDiff(mark, marks[i]);
             if (mark.diffs[i] < standing.bestDiff[i]) {
                 standing.bestDiff[i] = mark.diffs[i];
             }
         }
-    }
+        i++;
+    } while (i < inter);
 
-    for (let i = inter + 1; i < marks.length; i++) {
+    for (i = inter + 1; i < marks.length; i++) {
         if (!isBonus(state.intermediates[i])) {
             marks[i].diffs[inter] = getValidDiff(marks[i], mark);
+            state.standings[i].version += 1;
             if (marks[i].diffs[inter] < state.standings[i].bestDiff[inter]) {
                 state.standings[i].bestDiff[inter] = marks[i].diffs[inter];
-                state.standings[i].version += 1;
             }
         }
     }
 
-    if (mark.diffs[0] < maxVal && marks[0].tourStanding < maxVal) {
+    if (inter !== 0 && mark.diffs[0] < maxVal && marks[0].tourStanding < maxVal) {
         mark.tourStanding = marks[0].tourStanding + mark.diffs[0] - entity.bonusSeconds;
         if (mark.tourStanding < standing.tourLeader) {
             standing.tourLeader = mark.tourStanding;

@@ -92,6 +92,7 @@ export class Adapter {
         const meteo = this.createMeteo(main.meteo);
 
         const intermediates: Intermediate[] = [];
+        const resultKeys: number[] = [];
         const racers: Racer[] = [];
         const startList: { [bib: number]: StartListEntry } = {};
 
@@ -103,6 +104,7 @@ export class Adapter {
             let type: 'start_list' | 'inter' | 'finish' | 'bonus_points' | 'bonus_time' | 'standing';
             let short: string;
             const [_type, id, distanceOrName] = def;
+            resultKeys.push(id);
 
             switch (_type) {
                 case 'inter':
@@ -188,7 +190,8 @@ export class Adapter {
             tabrunsprec: main.tabrunsprec,
             message: main.message || '',
             live: main.live,
-            main: main.main
+            main: main.main,
+            resultKeys
         };
     }
 

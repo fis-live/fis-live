@@ -71,6 +71,7 @@ export interface RacerData {
     id: number;
     racer: Racer;
     status: string;
+    order: number | null;
     marks: Mark[];
     notes: string[];
     bonusSeconds: number;

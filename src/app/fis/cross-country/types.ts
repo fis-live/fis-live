@@ -24,6 +24,7 @@ export interface Main {
     runInfo: RunInfo;
     runNo: RunNo;
     tabrunsprec?: (TabRunsPrec | null)[][];
+    resultKeys: number[];
 }
 
 export interface Update {
