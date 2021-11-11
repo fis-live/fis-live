@@ -95,7 +95,6 @@ export class FisConnectionService {
         if (typeof result === 'string') {
             this.signature.success();
             const data = unserialize(result.slice(4, -5)) as MainArray | UpdateArray;
-            console.log(data);
             if (!data.live || isNaN(data.live[1]) || isNaN(data.live[0])) {
                 throw new Error('No live information');
             }
@@ -200,6 +199,6 @@ export class FisConnectionService {
             j++;
         }
 
-        this.baseURL = `http://sys4.novius.net/`;
+        this.baseURL = `http://${urlServer}/`;
     }
 }
