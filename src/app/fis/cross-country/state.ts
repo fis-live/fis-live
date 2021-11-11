@@ -4,7 +4,7 @@ import { Mark, RacerData, State } from './models';
 import { NoteEvent, ResultEvent } from './types';
 
 export function getValidDiff(mark: Mark, zero: Mark): number {
-    if (isRanked(mark.status) && isRanked(zero.status)) {
+    if (timePenalty[mark.status] === 0 && timePenalty[zero.status] === 0) {
         return mark.time - zero.time;
     }
 

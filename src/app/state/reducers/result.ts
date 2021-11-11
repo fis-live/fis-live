@@ -257,7 +257,7 @@ function prepareInter(state: State, intermediate: Intermediate, diff: number | n
             }
         } else {
             timeProp = {
-                display: isRanked(mark.status) ? formatTime(time, standing.leader, precision, view.usePercent) : mark.status,
+                display: formatTime(time + timePenalty[mark.status], standing.leader, precision, view.usePercent) || mark.status,
                 value: time + timePenalty[mark.status],
                 leader: mark.rank === 1
             };
@@ -377,7 +377,7 @@ function prepareAnalysis(state: State, view: View): ResultItem[] {
 
             if (view.display === 'total') {
                 marks[i] = {
-                    display: isRanked(mark.status) ? formatTime(mark.time, zeroes[i], precision, view.usePercent) : mark.status,
+                    display: formatTime(mark.time + timePenalty[mark.status], zeroes[i], precision, view.usePercent) || mark.status,
                     value: mark.time + timePenalty[mark.status],
                     state: state.standings[i].latestBibs.find((bib) => bib === id) ? 'new' : 'normal',
                     leader: mark.time === zeroes[i]

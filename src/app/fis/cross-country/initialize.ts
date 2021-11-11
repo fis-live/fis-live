@@ -51,7 +51,7 @@ export function initializeState(main: Main): State {
                 bonusSeconds: 0
             };
 
-            if (results !== null) {
+            if (results != null) {
                 for (let j = 0; j < results.length; j++) {
                     if (results[j] !== null && results[j]! > 0) {
                         registerResult(state, state.entities[racer.bib], Status.Default, results[j]!, j + 1);
