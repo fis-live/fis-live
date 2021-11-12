@@ -41,6 +41,7 @@ export function initializeState(main: Main): State {
                 status: statusMap[entry.status || ''] || entry.status || '',
                 racer: racer,
                 order: order++,
+                startTime: entry.startTime,
                 marks: [{
                     time: 0,
                     status: Status.Initial,
@@ -80,6 +81,7 @@ export function initializeState(main: Main): State {
                 status: '',
                 racer: racer,
                 order: null,
+                startTime: null,
                 marks: [],
                 notes: [],
                 bonusSeconds: 0

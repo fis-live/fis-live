@@ -178,7 +178,7 @@ function prepareStartList(state: State): ResultItem[] {
         rows.push({
             state: 'normal',
             racer: entity.racer,
-            time: { display: entity.status, value: entity.status, leader: false },
+            time: { display: entity.status || entity.startTime || '', value: entity.status, leader: false },
             rank: entity.order,
             diff: {
                 display: formatTime(time, standing.bestDiff[0], state.precision),
