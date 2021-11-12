@@ -8,6 +8,7 @@ export interface StartListEntry {
     note: string | null;
     order: number;
     status: string | null;
+    startTime: string | null;
     heats: number | null | undefined;
 }
 

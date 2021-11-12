@@ -48,7 +48,14 @@ export type TabRunsPrec = [
 
 export type Live = [delay: number, next: number, sector: string, _ignored?: number];
 
-export type StartList = [bib: number, note: string | null, order: number, status: string | null, heats?: number | null];
+export type StartList = [
+    bib: number,
+    note: string | null,
+    order: number,
+    status: string | null,
+    startTime: string | null,
+    heats?: number | null
+];
 
 export type RacerArray = [
     id: number,

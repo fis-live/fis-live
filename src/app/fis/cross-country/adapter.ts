@@ -173,8 +173,8 @@ export class Adapter {
 
         for (const entry of main.startlist) {
             if (entry !== null) {
-                const [bib, note, order, status, heats] = entry;
-                startList[bib] = { bib, note, order, status, heats };
+                const [bib, note, order, status, startTime, heats] = entry;
+                startList[bib] = { bib, note, order, status, startTime, heats };
             }
         }
 
