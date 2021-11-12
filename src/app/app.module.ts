@@ -27,6 +27,7 @@ import { DatagridHeader } from './datagrid/header/datagrid-header';
 import { DatagridSort } from './datagrid/sort/datagrid-sort';
 import { DatagridTicker } from './datagrid/ticker/datagrid-ticker';
 import { DatagridWrapper } from './datagrid/wrapper/datagrid-wrapper';
+import { FormatNamePipe } from './fis/format-name.pipe';
 import { appRoutes } from './routes';
 import { ConnectionEffects } from './state/connection-effects';
 import { metaReducers, reducers } from './state/reducers';
@@ -48,7 +49,8 @@ import { FocusDirective } from './utils/focus.directive';
         HeaderComponent,
         IconComponent,
         SelectComponent,
-        SidebarComponent
+        SidebarComponent,
+        FormatNamePipe
     ],
     imports: [
         BrowserAnimationsModule,

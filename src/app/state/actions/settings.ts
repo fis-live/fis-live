@@ -29,3 +29,8 @@ export const reorderColumn = createAction(
     '[Settings] Reorder column',
     props<{previousIndex: number, currentIndex: number}>()
 );
+
+export const setNameFormat = createAction(
+    '[Settings] Set default name format',
+    props<{format: string}>()
+);

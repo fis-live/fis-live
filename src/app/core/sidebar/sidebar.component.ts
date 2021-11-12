@@ -10,7 +10,7 @@ import { map } from 'rxjs/operators';
 import { Column } from '../../datagrid/state/model';
 import { Event, Intermediate, Racer } from '../../fis/cross-country/models';
 import { RacesByPlace } from '../../fis/shared';
-import { reorderColumn, setDelay, toggleColumn, toggleFavorite, toggleTicker } from '../../state/actions/settings';
+import { reorderColumn, setDelay, setNameFormat, toggleColumn, toggleFavorite, toggleTicker } from '../../state/actions/settings';
 import {
     AppState,
     getDelayState,
@@ -51,6 +51,7 @@ export class SidebarComponent {
     public tickerEnabled$: Observable<boolean>;
     public favoriteRacers$: Observable<Racer[]>;
     public racers$: Observable<Racer[]>;
+    public nameFormat$: Observable<string>;
 
     constructor(private store: Store<AppState>) {
         this.upcomingRaces$ = store.select(selectRacesByPlace);
@@ -65,6 +66,9 @@ export class SidebarComponent {
 
         this.columns$ = this.store.select((state) => {
             return state.settings.defaultColumns;
+        });
+        this.nameFormat$ = this.store.select((state) => {
+            return state.settings.nameFormat;
         });
     }
 
@@ -109,6 +113,11 @@ export class SidebarComponent {
 
     public toggleColumn(column: string) {
         this.store.dispatch(toggleColumn({ column }));
+    }
+
+
+    public setNameFormat(format: string) {
+        this.store.dispatch(setNameFormat({ format }));
     }
 
     public onDrop(event: CdkDragDrop<string[]>) {

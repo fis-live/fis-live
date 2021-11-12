@@ -57,6 +57,15 @@
                 <label for="toggle-ticker">Enable ticker</label>
             </div>
 
+            <div class="clr-select-wrapper" style="display: block">
+                <label class="form-label" for="name-format">Name format</label>
+                <select style="float: right" id="name-format" name="toggle-basic" class="clr-select" [ngModel]="nameFormat$ | ngrxPush" (ngModelChange)="setNameFormat($event)">
+                    <option value="f l">Ebba Andersson</option>
+                    <option value="L f">ANDERSSON Ebba</option>
+                    <option value="i. l">E. Andersson</option>
+                </select>
+            </div>
+
             <h4>
                 Default Columns
             </h4>

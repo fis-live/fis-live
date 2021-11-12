@@ -16,6 +16,7 @@ export class DatagridSettings extends AbstractPopover {
     public columns$: Observable<Column[]>;
     public tickerEnabled$: Observable<boolean>;
     public usePercent$: Observable<boolean>;
+    public nameFormat$: Observable<string>;
 
     constructor(private store: DatagridStore, el: ElementRef, renderer: Renderer2, cdr: ChangeDetectorRef) {
         super(el, renderer, cdr);
@@ -29,6 +30,9 @@ export class DatagridSettings extends AbstractPopover {
 
             return state.columns;
         });
+        this.nameFormat$ = this.store.select((state) => {
+            return state.nameFormat;
+        });
     }
 
     public toggleTicker(checked: boolean) {
@@ -41,6 +45,10 @@ export class DatagridSettings extends AbstractPopover {
 
     public toggleColumn(column: string) {
         this.store.toggleColumn(column);
+    }
+
+    public setNameFormat(format: string) {
+        this.store.setNameFormat(format);
     }
 
     public onDrop(event: CdkDragDrop<string[]>) {

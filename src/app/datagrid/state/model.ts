@@ -46,6 +46,7 @@ export interface DatagridState {
     view: View;
     isStartList: boolean;
     breakpoint: string;
+    nameFormat: string;
     dynamicColumns: ColumnDef[];
     columns: Column[];
     tickerEnabled: boolean;

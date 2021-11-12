@@ -17,6 +17,14 @@
         <input type="checkbox" id="toggle-percent" name="toggle-basic" class="clr-toggle" [ngModel]="usePercent$ | ngrxPush" (ngModelChange)="toggleUsePercent($event)">
         <label for="toggle-percent">Percent</label>
     </div>
+    <div class="clr-select-wrapper">
+        <label class="form-label" for="name-format">Name format</label>
+        <select style="float: right" id="name-format" name="toggle-basic" class="clr-select" [ngModel]="nameFormat$ | ngrxPush" (ngModelChange)="setNameFormat($event)">
+            <option value="f l">Ebba Andersson</option>
+            <option value="L f">ANDERSSON Ebba</option>
+            <option value="i. l">E. Andersson</option>
+        </select>
+    </div>
     <div class="switch-header">
         Columns
     </div>

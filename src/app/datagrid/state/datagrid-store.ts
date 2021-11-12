@@ -67,6 +67,7 @@ const initialState: DatagridState = {
     },
     isStartList: true,
     breakpoint: 'large',
+    nameFormat: 'f l',
     dynamicColumns: [],
     columns: defaultColumns,
     tickerEnabled: false
@@ -101,7 +102,8 @@ export class DatagridStore extends ComponentStore<DatagridState> implements Opti
         return {
             ...state,
             columns: settings.defaultColumns,
-            tickerEnabled: settings.tickerEnabled
+            tickerEnabled: settings.tickerEnabled,
+            nameFormat: settings.nameFormat
         };
     });
 
@@ -189,6 +191,11 @@ export class DatagridStore extends ComponentStore<DatagridState> implements Opti
         }
     }));
 
+    public readonly setNameFormat = this.updater((state, format: string) => ({
+        ...state,
+        nameFormat: format
+    }));
+
     public readonly toggleColumn = this.updater((state, columnId: string) => {
         const colIdx = state.columns.findIndex((column) => column.id === columnId);
         const columns = state.columns.slice();
@@ -226,18 +233,21 @@ export class DatagridStore extends ComponentStore<DatagridState> implements Opti
 
         if (state.view.mode === 'normal') {
             let columns;
+            let format = state.nameFormat;
             if (breakpoint === 'large') {
                 columns = [...defaultColumns];
             } else if (breakpoint === 'small') {
                 columns = [...defaultColumnsSmall];
             } else {
                 columns = [...defaultColumnsMini];
+                format = 'i. l';
             }
 
             return {
                 ...state,
                 columns,
-                breakpoint
+                breakpoint,
+                nameFormat: format
             };
         } else {
             return {
