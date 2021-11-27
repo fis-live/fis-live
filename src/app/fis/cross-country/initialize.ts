@@ -1,4 +1,4 @@
-import { guid } from '../../utils/utils';
+import { guid, parseTimeString } from '../../utils/utils';
 import { maxVal, Status, statusMap } from '../fis-constants';
 
 import { State } from './models';
@@ -36,23 +36,43 @@ export function initializeState(main: Main): State {
         const results = main.results[racer.bib];
         if (entry != null) {
             state.standings[0].ids.push(racer.bib);
-            state.entities[racer.bib] = {
-                id: racer.bib,
-                status: statusMap[entry.status || ''] || entry.status || '',
-                racer: racer,
-                order: order++,
-                startTime: entry.startTime,
-                marks: [{
-                    time: 0,
-                    status: Status.Initial,
-                    rank: null,
-                    diffs: [maxVal],
-                    version: 0,
-                    tourStanding: maxVal
-                }],
-                notes: [],
-                bonusSeconds: 0
-            };
+            if (main.raceInfo.discipline === 'PUR' && entry.startTime) {
+                state.entities[racer.bib] = {
+                    id: racer.bib,
+                    status: statusMap[entry.status || ''] || entry.status || '',
+                    racer: racer,
+                    order: order++,
+                    startTime: entry.startTime,
+                    marks: [{
+                        time: parseTimeString(entry.startTime!),
+                        status: Status.Initial,
+                        rank: entity.order,
+                        diffs: [parseTimeString(entry.startTime!)],
+                        version: 0,
+                        tourStanding: maxVal
+                    }],
+                    notes: [],
+                    bonusSeconds: 0
+                };
+            } else {
+                state.entities[racer.bib] = {
+                    id: racer.bib,
+                    status: statusMap[entry.status || ''] || entry.status || '',
+                    racer: racer,
+                    order: order++,
+                    startTime: entry.startTime,
+                    marks: [{
+                        time: 0,
+                        status: Status.Initial,
+                        rank: entity.order,
+                        diffs: [maxVal],
+                        version: 0,
+                        tourStanding: maxVal
+                    }],
+                    notes: [],
+                    bonusSeconds: 0
+                };
+            }
 
             if (results != null) {
                 for (let j = 0; j < results.length; j++) {
