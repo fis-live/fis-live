@@ -46,7 +46,7 @@ export function initializeState(main: Main): State {
                     marks: [{
                         time: parseTimeString(entry.startTime!),
                         status: Status.Initial,
-                        rank: entity.order,
+                        rank: order,
                         diffs: [parseTimeString(entry.startTime!)],
                         version: 0,
                         tourStanding: maxVal
@@ -64,7 +64,7 @@ export function initializeState(main: Main): State {
                     marks: [{
                         time: 0,
                         status: Status.Initial,
-                        rank: entity.order,
+                        rank: null,
                         diffs: [maxVal],
                         version: 0,
                         tourStanding: maxVal
