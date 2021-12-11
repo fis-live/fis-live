@@ -69,7 +69,7 @@ export function handleNoteEvent(state: State, event: NoteEvent) {
             break;
         case 'currentlucky':
         case 'lucky':
-            if (entity.notes.indexOf('Q') === -1) {
+            if (entity.notes.indexOf('LL') === -1) {
                 entity.notes.push('LL');
                 for (let i = 0; i < state.intermediates.length; i++) {
                     state.standings[i].version += 1;
@@ -77,7 +77,7 @@ export function handleNoteEvent(state: State, event: NoteEvent) {
             }
             break;
         case 'ff':
-            if (entity.notes.indexOf('Q') === -1) {
+            if (entity.notes.indexOf('PF') === -1) {
                 entity.notes.push('PF');
                 for (let i = 0; i < state.intermediates.length; i++) {
                     state.standings[i].version += 1;
