@@ -102,9 +102,11 @@ function handleNoteEvent(state: State, event: NoteEvent) {
 
     switch (event.type) {
         case 'q':
-            entity.notes.push('Q');
-            for (let i = 0; i < state.intermediates.length; i++) {
-                state.standings[i].version += 1;
+            if (entity.notes.indexOf('Q') === -1) {
+                entity.notes.push('Q');
+                for (let i = 0; i < state.intermediates.length; i++) {
+                    state.standings[i].version += 1;
+                }
             }
             break;
         case 'nq':
@@ -124,15 +126,19 @@ function handleNoteEvent(state: State, event: NoteEvent) {
             break;
         case 'currentlucky':
         case 'lucky':
-            entity.notes.push('LL');
-            for (let i = 0; i < state.intermediates.length; i++) {
-                state.standings[i].version += 1;
+            if (entity.notes.indexOf('LL') === -1) {
+                entity.notes.push('LL');
+                for (let i = 0; i < state.intermediates.length; i++) {
+                    state.standings[i].version += 1;
+                }
             }
             break;
         case 'ff':
-            entity.notes.push('PF');
-            for (let i = 0; i < state.intermediates.length; i++) {
-                state.standings[i].version += 1;
+            if (entity.notes.indexOf('PF') === -1) {
+                entity.notes.push('PF');
+                for (let i = 0; i < state.intermediates.length; i++) {
+                    state.standings[i].version += 1;
+                }
             }
             break;
         case 'start':
