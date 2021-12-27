@@ -2,9 +2,11 @@ import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Store } from '@ngrx/store';
 import { Observable, Subscription } from 'rxjs';
+import { map } from 'rxjs/operators';
 
+import { Run } from '../fis/cross-country/models';
 import { loadMain } from '../state/actions/connection';
-import { AppState, getLoadingState, getRaceInfoState } from '../state/reducers/';
+import { AppState, getLoadingState, getRaceInfoState, getResultState } from '../state/reducers/';
 import { State as LoadingState } from '../state/reducers/loading';
 import { State as RaceInfoState } from '../state/reducers/race-info';
 import { WindowSize } from '../utils/window-size';
@@ -18,6 +20,8 @@ export class ContainerComponent implements OnInit, OnDestroy {
     public sectorCode: 'nk' | 'cc' = 'cc';
     public raceInfo$: Observable<RaceInfoState>;
     public loading$: Observable<LoadingState>;
+    public isSprintGrid$: Observable<boolean>;
+    public runs$: Observable<Run[]>;
     public rows: Array<number[]> = [[0]];
     public width: number;
     public breakpoints: string[] = ['large', 'large'];
@@ -45,6 +49,8 @@ export class ContainerComponent implements OnInit, OnDestroy {
     constructor(private router: Router, private route: ActivatedRoute, private _store: Store<AppState>, private windowSize: WindowSize) {
         this.raceInfo$ = _store.select(getRaceInfoState);
         this.loading$ = _store.select(getLoadingState);
+        this.runs$ = _store.select(getResultState).pipe(map((result) => result.runs));
+        this.isSprintGrid$ = _store.select(getResultState).pipe(map((result) => !!result.isSprintFinals));
         this.width = window.innerWidth;
         this.widthSubscription = this.windowSize.width$.subscribe((width) => this.setWidth(width));
     }

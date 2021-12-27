@@ -5,7 +5,7 @@ import { Meteo } from '../shared';
 import { MeteoEventArray, NoteEventArray, ResultEventArray, RunEventArray } from './api/event-types';
 import { MainArray, MeteoArray, RaceInfoArray, RacerArray, UpdateArray } from './api/types';
 import { Intermediate, RaceInfo, Racer } from './models';
-import { Main, NoteEvent, ResultEvent, RunEvent, StartListEntry, Update } from './types';
+import { Main, NoteEvent, ResultEvent, RunEvent, Update } from './types';
 
 
 export class Adapter {
@@ -94,7 +94,6 @@ export class Adapter {
         const intermediates: Intermediate[] = [];
         const resultKeys: number[] = [];
         const racers: Racer[] = [];
-        const startList: { [bib: number]: StartListEntry } = {};
 
         intermediates.push({type: 'start_list', key: 0, id: 0, distance: 0, name: 'Start list', short: '0 ' + raceInfo.lengthUnit});
 
@@ -171,19 +170,12 @@ export class Adapter {
             }
         }
 
-        for (const entry of main.startlist) {
-            if (entry !== null) {
-                const [bib, note, order, status, startTime, heats] = entry;
-                startList[bib] = { bib, note, order, status, startTime, heats };
-            }
-        }
-
         return {
             raceInfo,
             meteo,
             intermediates,
             racers,
-            startList,
+            startList: main.startlist,
             results: main.result,
             runInfo: main.runinfo,
             runNo: main.runno,
@@ -243,12 +235,18 @@ export class Adapter {
                         reload = true;
                         break;
 
+                    case 'activeheat':
+                    case 'activerun':
+                        events.push({
+                            type: event[0],
+                            run: event[1]
+                        });
+                        break;
+
                     case 'tobeat':
                     case 'official_result':
                     case 'unofficial_result':
                     case 'rundef':
-                    case 'activeheat':
-                    case 'activerun':
                     case 'startlist':
                     case 'inprogress':
                     default:

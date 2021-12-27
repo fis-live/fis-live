@@ -1,16 +1,7 @@
 import { Meteo } from '../shared';
 
-import { Live, RunInfo, RunNo, TabRunsPrec } from './api/types';
+import { Live, MainArray, RunInfo, RunNo, TabRunsPrec } from './api/types';
 import { Intermediate, RaceInfo, Racer } from './models';
-
-export interface StartListEntry {
-    bib: number;
-    note: string | null;
-    order: number;
-    status: string | null;
-    startTime: string | null;
-    heats: number | null | undefined;
-}
 
 export interface Main {
     intermediates: Intermediate[];
@@ -20,7 +11,7 @@ export interface Main {
     main: number;
     live: Live;
     racers: Racer[];
-    startList: { [bib: number]: StartListEntry };
+    startList: MainArray['startlist'];
     results: ((number | null)[] | null)[];
     runInfo: RunInfo;
     runNo: RunNo;

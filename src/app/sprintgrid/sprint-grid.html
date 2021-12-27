@@ -1,0 +1,49 @@
+<table class="datagrid" cdk-table [dataSource]="rows$" [trackBy]="track">
+
+    <!-- Title Definition -->
+    <ng-container cdkColumnDef="title">
+        <th cdk-header-cell colspan="5" *cdkHeaderCellDef>{{ (heat$ | ngrxPush)?.name }}</th>
+    </ng-container>
+
+    <!-- Rank Definition -->
+    <ng-container cdkColumnDef="rank">
+        <th cdk-header-cell *cdkHeaderCellDef>Rk.</th>
+        <td cdk-cell *cdkCellDef="let row"><div>{{ row.rank || '&nbsp;' }}</div></td>
+    </ng-container>
+
+    <!-- Bib Definition -->
+    <ng-container cdkColumnDef="bib">
+        <th cdk-header-cell *cdkHeaderCellDef>Bib</th>
+        <td class="bib" cdk-cell *cdkCellDef="let row"><div><span class="badge">{{ row.racer.bib }}</span></div></td>
+    </ng-container>
+
+    <!-- Name Definition -->
+    <ng-container cdkColumnDef="name">
+        <th cdk-header-cell *cdkHeaderCellDef>Name</th>
+        <td cdk-cell *cdkCellDef="let row">
+            <div class="flag">
+                <a style="color: inherit" target="_blank" href="https://www.fis-ski.com/DB/general/athlete-biography.html?sectorcode={{ row.racer.sector }}&fiscode={{ row.racer.id }}">
+                    {{ row.racer.display }}
+                </a>
+                <span style="float: right" >{{ row.notes }}</span>
+                <clr-icon *ngIf="row.racer.hasYellowCard" class="yellow-card" shape="yc"></clr-icon>
+            </div>
+        </td>
+    </ng-container>
+
+    <!-- Time Definition -->
+    <ng-container cdkColumnDef="time">
+        <th cdk-header-cell *cdkHeaderCellDef>Time</th>
+        <td class="time" [class.leader]="row.time.leader" cdk-cell *cdkCellDef="let row"><div>{{ row.time.display || '&nbsp;' }}</div></td>
+    </ng-container>
+
+    <thead>
+    <tr cdk-header-row *cdkHeaderRowDef="['title']; sticky: true"></tr>
+    <tr cdk-header-row *cdkHeaderRowDef="['rank', 'bib', 'name', 'time']; sticky: true"></tr>
+    </thead>
+
+    <tbody>
+    <tr [@update]="row.version" [ngClass]="row.classes" cdk-row *cdkRowDef="let row; columns: ['rank', 'bib', 'name', 'time']"></tr>
+    </tbody>
+
+</table>

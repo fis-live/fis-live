@@ -1,11 +1,42 @@
-import { guid } from '../../utils/utils';
+import { guid, parseTimeString } from '../../utils/utils';
 import { maxVal, Status, statusMap } from '../fis-constants';
 
-import { State } from './models';
+import { Run, State } from './models';
 import { registerResult } from './state';
 import { Main } from './types';
 
+function createHeats(state: State, heats = [5, 2, 1]) {
+    let run: Run;
+    for (let i = 0; i < heats.length; i++) {
+        state.runs.push(run = {
+            runNo: i + 1,
+            currentLucky: [],
+            heats: []
+        });
+
+        for (let j = 0; j < heats[i]; j++) {
+            let name = '';
+            if (i === 0) {
+                name = '1/4 Final Heat ' + (j + 1);
+            } else if (i === 1) {
+                name = 'Semi Final Heat ' + (j + 1);
+            } else {
+                name = 'Final';
+            }
+            run.heats.push({
+                version: 0,
+                heatNo: j + 1,
+                name,
+                ids: [],
+                leader: maxVal,
+            });
+        }
+    }
+}
+
 export function initializeState(main: Main): State {
+    const isMultipleRuns = main.runInfo[2] !== '';
+    const runNo = main.runNo[0] - 1;
     const state: State = {
         id: guid(),
         ids: [],
@@ -14,7 +45,15 @@ export function initializeState(main: Main): State {
         interById: {},
         standings: {},
         precision: main.raceInfo.discipline === 'SP' ? -2 : -1,
+        runs: [],
+        isSprintFinals: isMultipleRuns,
+        activeRun: runNo,
+        activeHeat: main.runNo[1] !== null ? main.runNo[1] - 1 : null
     };
+
+    if (isMultipleRuns) {
+        createHeats(state);
+    }
 
     for (const inter of main.intermediates) {
         state.interById[inter.id] = inter.key;
@@ -32,37 +71,70 @@ export function initializeState(main: Main): State {
     let order = 1;
     for (const racer of main.racers) {
         state.ids.push(racer.bib);
-        const entry = main.startList[racer.bib];
-        const results = main.results[racer.bib];
+        state.entities[racer.bib] = {
+            id: racer.bib,
+            status: '',
+            racer: racer,
+            order: null,
+            startTime: null,
+            marks: [],
+            notes: [],
+            bonusSeconds: 0
+        };
+    }
+
+    for (const [i, entry] of main.startList.entries()) {
         if (entry != null) {
-            state.standings[0].ids.push(racer.bib);
-            state.entities[racer.bib] = {
-                id: racer.bib,
-                status: statusMap[entry.status || ''] || entry.status || '',
-                racer: racer,
-                order: order++,
-                startTime: entry.startTime,
-                marks: [{
-                    time: 0,
-                    status: Status.Initial,
-                    rank: null,
-                    diffs: [maxVal],
-                    version: 0,
-                    tourStanding: maxVal
-                }],
-                notes: [],
-                bonusSeconds: 0
-            };
+            const [bib, note, _order, status, startTime, heats] = entry;
+            const heatNo = isMultipleRuns ? (i - i % 10) / 10 - 1 : null;
+            const results = main.results[bib];
+            const entity = state.entities[bib];
+
+            entity.status = statusMap[status || ''] || status || '';
+            entity.order = order++;
+            entity.startTime = startTime;
+
+            if (heatNo !== null) {
+                state.runs[runNo].heats[heatNo].ids.push(bib);
+            } else {
+                state.standings[0].ids.push(bib);
+                if (main.raceInfo.discipline === 'PUR' && startTime) {
+                    entity.marks = [{
+                        time: parseTimeString(startTime),
+                        status: Status.Initial,
+                        rank: entity.order,
+                        diffs: [parseTimeString(startTime)],
+                        version: 0,
+                        tourStanding: maxVal
+                    }];
+                } else {
+                    entity.marks = [{
+                        time: 0,
+                        status: Status.Initial,
+                        rank: null,
+                        diffs: [maxVal],
+                        version: 0,
+                        tourStanding: maxVal
+                    }];
+                }
+            }
 
             if (results != null) {
                 for (let j = 0; j < results.length; j++) {
                     if (results[j] != null) {
-                        registerResult(state, state.entities[racer.bib], Status.Default, results[j]!, state.interById[main.resultKeys[j]]);
+                        registerResult(
+                            state,
+                            state.entities[bib],
+                            Status.Default,
+                            results[j]!,
+                            state.interById[main.resultKeys[j]],
+                            [runNo, heatNo]
+                        );
                     }
                 }
             }
 
-            switch (entry.status) {
+            switch (status) {
                 case 'ral':
                 case 'lapped':
                 case 'dnf':
@@ -70,22 +142,24 @@ export function initializeState(main: Main): State {
                 case 'dsq':
                 case 'dns':
                 case 'nps':
-                    registerResult(state, state.entities[racer.bib], statusMap[entry.status], 0, state.interById[99]);
+                    registerResult(state, state.entities[bib], statusMap[status], 0, state.interById[99], [runNo, heatNo]);
                     break;
                 default:
                     break;
             }
-        } else {
-            state.entities[racer.bib] = {
-                id: racer.bib,
-                status: '',
-                racer: racer,
-                order: null,
-                startTime: null,
-                marks: [],
-                notes: [],
-                bonusSeconds: 0
-            };
+        }
+    }
+
+    if (!!main.tabrunsprec) {
+        for (const [i, run] of main.tabrunsprec.entries()) {
+            for (const [j, res] of run.entries()) {
+                if (res !== null) {
+                    const heatNo = (j - j % 10) / 10 - 1;
+                    const [bib, note, time, , , status] = res;
+
+                    registerResult(state, state.entities[bib], statusMap[note] || Status.Default, time, state.interById[99], [i, heatNo]);
+                }
+            }
         }
     }
 

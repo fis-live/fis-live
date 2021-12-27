@@ -2,13 +2,24 @@
 
 <app-header [raceInfo]="raceInfo$ | ngrxPush" (openSidebar)="showSidebar()" (refresh)="onRefresh()" (tab)="configureTabs($event)"></app-header>
 
-<div class="container">
+<div *ngIf="isSprintGrid$ | ngrxPush; else container" class="container-sprint-grid">
     <div class="datagrid-spinner" *ngIf="loading$ | ngrxPush">
         <div class="spinner">Loading...</div>
     </div>
-    <div *ngFor="let columns of rows; let row = index" class="row">
-        <app-dg-wrapper *ngFor="let i of columns" class="column" [breakpoint]="breakpoints[row]"></app-dg-wrapper>
+    <div class="row" *ngFor="let run of runs$ | ngrxPush; index as i">
+        <app-sprint-grid *ngFor="let heat of run.heats; index as j" class="column" [runAndHeat]="[i, j]"></app-sprint-grid>
     </div>
 </div>
+
+<ng-template #container>
+    <div class="container">
+        <div class="datagrid-spinner" *ngIf="loading$ | ngrxPush">
+            <div class="spinner">Loading...</div>
+        </div>
+        <div *ngFor="let columns of rows; let row = index" class="row">
+            <app-dg-wrapper *ngFor="let i of columns" class="column" [breakpoint]="breakpoints[row]"></app-dg-wrapper>
+        </div>
+    </div>
+</ng-template>
 
 <div (click)="sidebarOpen = false" class="backdrop" [class.open]="sidebarOpen"></div>

@@ -1,0 +1,60 @@
+.container-sprint-grid {
+    display: flex;
+    flex-direction: row;
+    min-height: 100%;
+    padding-top: $clr-header-height;
+
+    .row {
+        flex-direction: column;
+        justify-content: center;
+    }
+
+    .column {
+        flex: none;
+    }
+
+    .segment {
+        flex: 1 0 0;
+        overflow: auto;
+        -webkit-overflow-scrolling: touch;
+
+        background-color: $app-table-bgcolor;
+        position: relative;
+
+        --scrollbar-track-color: #eee !important;
+        --scrollbar-padding: 0px !important;
+        --scrollbar-size: 7px !important;
+    }
+
+    .action-bar {
+        flex: 0 0 auto;
+        display: flex;
+        flex-flow: row nowrap;
+        align-items: stretch;
+        height: 1.5rem;
+        padding: 0.25rem $clr-table-cellpadding calc(0.25rem - 1px);
+        background-color: $clr-thead-bgcolor;
+        border-bottom: 1px solid $app-table-bordercolor;
+
+        > div:not(:last-child) {
+            margin-right: 0.25rem;
+        }
+    }
+
+    @media only screen and (max-width : 360px) {
+        .column {
+            margin: 0;
+            max-width: 100%;
+            border: none;
+        }
+
+        .segment {
+            border: none;
+        }
+
+        .action-bar {
+            border: none;
+            border-bottom: 1px solid $app-table-bordercolor;
+        }
+    }
+}

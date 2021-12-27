@@ -6,7 +6,7 @@ import { filter, map } from 'rxjs/operators';
 import { Prop, ResultItem, View } from '../../datagrid/state/model';
 import { initializeState } from '../../fis/cross-country/initialize';
 import { Intermediate, State } from '../../fis/cross-country/models';
-import { handleNoteEvent, handleResultEvent, registerResult } from '../../fis/cross-country/state';
+import { handleUpdate, registerResult } from '../../fis/cross-country/state';
 import { isBonus, isRanked, maxVal, Status, timePenalty } from '../../fis/fis-constants';
 import { formatTime, parseTimeString } from '../../utils/utils';
 import { RaceActions, SettingsActions } from '../actions';
@@ -18,7 +18,10 @@ export const initialState: State = {
     intermediates: [],
     standings: {},
     interById: {},
-    precision: -1
+    precision: -1,
+    runs: [],
+    activeRun: 0,
+    activeHeat: null
 };
 
 const resultReducer = createReducer(
@@ -46,7 +49,7 @@ const resultReducer = createReducer(
             }
 
             if (data.time != null) {
-                registerResult(draft, draft.entities[data.bib], Status.Default, data.time, 0);
+                registerResult(draft, draft.entities[data.bib], Status.Default, data.time, 0, [1, null]);
             }
 
             if (data.tourStanding != null) {
@@ -74,50 +77,7 @@ const resultReducer = createReducer(
         }
     })),
     on(RaceActions.update, (state, { events, timestamp }) => produce(state, draft => {
-        for (const event of events) {
-            switch (event.type) {
-                case 'inter':
-                case 'bonuspoint':
-                case 'bonustime':
-                case 'standing':
-                case 'finish': {
-                    const inter = state.interById[event.inter];
-                    const leader = draft.standings[inter].leader;
-                    const isUpdate = draft.entities[event.bib].marks[inter] !== undefined;
-
-                    handleResultEvent(draft, event);
-
-                    if (!isUpdate && !isBonus(state.intermediates[inter]) && event.time > 0) {
-                        const _event = {
-                            racer: state.entities[event.bib].racer,
-                            rank: draft.entities[event.bib].marks[inter].rank,
-                            diff: formatTime(event.time, leader, state.precision),
-                            timestamp: timestamp
-                        };
-                        draft.standings[inter].events = [_event, ...draft.standings[inter].events.slice(0, 20)];
-                    }
-                    break;
-                }
-
-                case 'sanction':
-                case 'dnf':
-                case 'dns':
-                case 'dq':
-                case 'dsq':
-                case 'ral':
-                case 'nps':
-                case 'lapped':
-                case 'q':
-                case 'nq':
-                case 'currentlucky':
-                case 'lucky':
-                case 'ff':
-                case 'start':
-                case 'nextstart':
-                    handleNoteEvent(draft, event);
-                    break;
-            }
-        }
+        handleUpdate(draft, events, timestamp);
     })),
     on(SettingsActions.toggleFavorite, (state, { racer }) => produce(state, draft => {
         for (const id of state.ids) {

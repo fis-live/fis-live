@@ -1,7 +1,8 @@
+import { formatTime } from '../../utils/utils';
 import { isBonus, isRanked, maxVal, Status, statusMap, timePenalty } from '../fis-constants';
 
 import { Mark, RacerData, State } from './models';
-import { NoteEvent, ResultEvent } from './types';
+import { MessageEvent, MeteoEvent, NoteEvent, ResultEvent, RunEvent } from './types';
 
 export function getValidDiff(mark: Mark, zero: Mark): number {
     if (timePenalty[mark.status] === 0 && timePenalty[zero.status] === 0) {
@@ -11,7 +12,61 @@ export function getValidDiff(mark: Mark, zero: Mark): number {
     return maxVal;
 }
 
-export function handleResultEvent(state: State, event: ResultEvent) {
+export function handleUpdate(state: State, events: (ResultEvent | NoteEvent | RunEvent | MessageEvent | MeteoEvent)[], timestamp: number) {
+    for (const event of events) {
+        switch (event.type) {
+            case 'inter':
+            case 'bonuspoint':
+            case 'bonustime':
+            case 'standing':
+            case 'finish': {
+                const inter = state.interById[event.inter];
+                const leader = state.standings[inter]?.leader ?? maxVal;
+                const isUpdate = state.entities[event.bib].marks[inter] !== undefined;
+
+                handleResultEvent(state, event);
+
+                if (!state.isSprintFinals && !isUpdate && !isBonus(state.intermediates[inter]) && event.time > 0) {
+                    const _event = {
+                        racer: state.entities[event.bib].racer,
+                        rank: state.entities[event.bib].marks[inter].rank,
+                        diff: formatTime(event.time, leader, state.precision),
+                        timestamp: timestamp
+                    };
+                    state.standings[inter].events = [_event, ...state.standings[inter].events.slice(0, 20)];
+                }
+                break;
+            }
+
+            case 'sanction':
+            case 'dnf':
+            case 'dns':
+            case 'dq':
+            case 'dsq':
+            case 'ral':
+            case 'nps':
+            case 'lapped':
+            case 'q':
+            case 'nq':
+            case 'currentlucky':
+            case 'lucky':
+            case 'ff':
+            case 'start':
+            case 'nextstart':
+                handleNoteEvent(state, event);
+                break;
+
+            case 'activerun':
+                state.activeRun = event.run - 1;
+                break;
+            case 'activeheat':
+                state.activeHeat = event.run - 1;
+                break;
+        }
+    }
+}
+
+function handleResultEvent(state: State, event: ResultEvent) {
     const intermediate = state.interById[event.inter];
     const entity = state.entities[event.bib];
     const isUpdate = state.entities[event.bib].marks[intermediate] !== undefined;
@@ -21,26 +76,28 @@ export function handleResultEvent(state: State, event: ResultEvent) {
         case 'bonuspoint':
         case 'bonustime':
         case 'inter':
-            registerResult(state, entity, Status.Default, event.time, intermediate);
+            registerResult(state, entity, Status.Default, event.time, intermediate, [event.run - 1, state.activeHeat]);
             break;
         case 'finish':
             setStatus(state, entity, Status.Finished);
-            registerResult(state, entity, Status.Default, event.time, intermediate);
+            registerResult(state, entity, Status.Default, event.time, intermediate, [event.run - 1, state.activeHeat]);
             break;
     }
 
-    if (!isUpdate && event.time > 0) {
+    if (!state.isSprintFinals && !isUpdate && event.time > 0) {
         state.standings[intermediate].latestBibs = [entity.racer.bib, ...state.standings[intermediate].latestBibs.slice(0, 2)];
     }
 }
 
 function setStatus(state: State, entity: RacerData, status: string) {
     entity.status = status;
-    state.standings[0].version += 1;
-    entity.marks[0].version += 1;
+    if (!state.isSprintFinals) {
+        state.standings[0].version += 1;
+        entity.marks[0].version += 1;
+    }
 }
 
-export function handleNoteEvent(state: State, event: NoteEvent) {
+function handleNoteEvent(state: State, event: NoteEvent) {
     const entity = state.entities[event.bib];
 
     switch (event.type) {
@@ -90,13 +147,20 @@ export function handleNoteEvent(state: State, event: NoteEvent) {
         case 'nps':
         case 'lapped': {
             setStatus(state, entity, statusMap[event.type]);
-            registerResult(state, entity, statusMap[event.type], 0, state.interById[99]);
+            registerResult(state, entity, statusMap[event.type], 0, state.interById[99], [event.run - 1, state.activeHeat]);
             break;
         }
     }
 }
 
-export function registerResult(state: State, entity: RacerData, status: Status, time: number, intermediate: number) {
+export function registerResult(
+    state: State,
+    entity: RacerData,
+    status: Status,
+    time: number,
+    intermediate: number,
+    runInfo: [number, number | null]
+) {
     const marks = entity.marks;
     const type = state.intermediates[intermediate].type;
     const mark: Mark = {
@@ -107,6 +171,19 @@ export function registerResult(state: State, entity: RacerData, status: Status, 
         version: 0,
         tourStanding: maxVal
     };
+
+    if (state.isSprintFinals) {
+        const [run, heat] = runInfo;
+        const _prev = marks[run];
+        if (_prev && (_prev.time === mark.time && _prev.status === mark.status)) {
+            return;
+        }
+
+        registerHeat(state, entity, mark, _prev, run, heat!);
+        marks[run] = mark;
+        return;
+    }
+
     const prev = marks[intermediate];
     const standing = state.standings[intermediate];
 
@@ -160,6 +237,38 @@ export function registerResult(state: State, entity: RacerData, status: Status, 
         standing.ids.push(entity.racer.bib);
     }
     standing.version += 1;
+}
+
+function registerHeat(state: State, entity: RacerData, mark: Mark, prev: Mark | undefined, run: number, heat: number) {
+    const standing = state.runs[run].heats[heat];
+
+    let rank: number = 1;
+    let leader = maxVal;
+    const time = mark.time + timePenalty[mark.status];
+    for (const id of standing.ids) {
+        const _mark = state.entities[id].marks[run];
+
+        if (entity.id !== id && _mark?.rank != null) {
+            const t = _mark.time + timePenalty[_mark.status];
+            leader = Math.min(t, leader);
+            if (time < t) {
+                _mark.rank += 1;
+            } else if (time > t) {
+                rank += 1;
+            }
+
+            if (prev?.rank && _mark.rank > prev.rank) {
+                _mark.rank -= 1;
+            }
+        }
+    }
+
+    mark.rank = isRanked(mark.status) ? rank : null;
+    if (standing.ids.indexOf(entity.id) === -1) {
+        standing.ids.push(entity.id);
+    }
+    standing.version += 1;
+    standing.leader = Math.min(time, leader);
 }
 
 function registerInter(state: State, entity: RacerData, mark: Mark, inter: number) {

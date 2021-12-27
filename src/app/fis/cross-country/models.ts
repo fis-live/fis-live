@@ -58,15 +58,6 @@ export interface Mark {
     tourStanding: number;
 }
 
-export enum Note {
-    Qualified,
-    NotQualified,
-    LuckyLoser,
-    WaveStart,
-    PhotoFinish,
-    YellowCard
-}
-
 export interface RacerData {
     id: number;
     racer: Racer;
@@ -101,4 +92,22 @@ export interface State {
     interById: { [id: number]: number };
     standings: { [id: number]: Standing };
     precision: number;
+    isSprintFinals?: boolean;
+    runs: Run[];
+    activeRun: number;
+    activeHeat: number | null;
+}
+
+export interface Heat {
+    ids: number[];
+    heatNo: number;
+    leader: number;
+    version: number;
+    name: string;
+}
+
+export interface Run {
+    runNo: number;
+    currentLucky: number[];
+    heats: Heat[];
 }
