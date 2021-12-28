@@ -53,6 +53,11 @@
     <ng-container *ngIf="tab === 'settings'">
         <div style="padding: 20px;">
             <div class="clr-toggle-wrapper">
+                <input type="checkbox" id="ind-details" name="toggle-basic" class="clr-toggle" [ngModel]="indDetailsEnabled$ | ngrxPush" (ngModelChange)="toggleIndividualDetails()">
+                <label for="ind-details">Ind. Details</label>
+            </div>
+
+            <div class="clr-toggle-wrapper">
                 <input type="checkbox" id="toggle-ticker" name="toggle-basic" class="clr-toggle" [ngModel]="tickerEnabled$ | ngrxPush" (ngModelChange)="toggleTicker()">
                 <label for="toggle-ticker">Enable ticker</label>
             </div>

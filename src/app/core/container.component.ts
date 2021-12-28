@@ -6,7 +6,7 @@ import { map } from 'rxjs/operators';
 
 import { Run } from '../fis/cross-country/models';
 import { loadMain } from '../state/actions/connection';
-import { AppState, getLoadingState, getRaceInfoState, getResultState } from '../state/reducers/';
+import { AppState, getLoadingState, getRaceInfoState, getResultState, getSettingsState } from '../state/reducers/';
 import { State as LoadingState } from '../state/reducers/loading';
 import { State as RaceInfoState } from '../state/reducers/race-info';
 import { WindowSize } from '../utils/window-size';
@@ -21,6 +21,7 @@ export class ContainerComponent implements OnInit, OnDestroy {
     public raceInfo$: Observable<RaceInfoState>;
     public loading$: Observable<LoadingState>;
     public isSprintGrid$: Observable<boolean>;
+    public indDetailsTab$: Observable<boolean>;
     public runs$: Observable<Run[]>;
     public rows: Array<number[]> = [[0]];
     public width: number;
@@ -51,6 +52,7 @@ export class ContainerComponent implements OnInit, OnDestroy {
         this.loading$ = _store.select(getLoadingState);
         this.runs$ = _store.select(getResultState).pipe(map((result) => result.runs));
         this.isSprintGrid$ = _store.select(getResultState).pipe(map((result) => !!result.isSprintFinals));
+        this.indDetailsTab$ = _store.select(getSettingsState).pipe(map((settings) => settings.indDetailsTab));
         this.width = window.innerWidth;
         this.widthSubscription = this.windowSize.width$.subscribe((width) => this.setWidth(width));
     }

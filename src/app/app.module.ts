@@ -22,6 +22,7 @@ import { SelectComponent } from './core/select/select';
 import { SidebarComponent } from './core/sidebar/sidebar.component';
 import { Datagrid } from './datagrid/datagrid';
 import { DatagridSettings } from './datagrid/datagrid-settings';
+import { Details } from './datagrid/details/details';
 import { DatagridFilter } from './datagrid/filter/datagrid-filter';
 import { DatagridHeader } from './datagrid/header/datagrid-header';
 import { DatagridSort } from './datagrid/sort/datagrid-sort';
@@ -33,6 +34,7 @@ import { SprintGrid } from './sprintgrid/sprint-grid';
 import { ConnectionEffects } from './state/connection-effects';
 import { metaReducers, reducers } from './state/reducers';
 import { FocusDirective } from './utils/focus.directive';
+import { TickPipe } from './utils/tick.pipe';
 
 @NgModule({
     declarations: [
@@ -46,12 +48,14 @@ import { FocusDirective } from './utils/focus.directive';
         DatagridSort,
         DatagridTicker,
         DatagridWrapper,
+        Details,
         FocusDirective,
         HeaderComponent,
         IconComponent,
         SelectComponent,
         SidebarComponent,
         FormatNamePipe,
+        TickPipe,
         SprintGrid
     ],
     imports: [

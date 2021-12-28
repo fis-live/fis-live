@@ -24,7 +24,7 @@ export function handleUpdate(state: State, events: (ResultEvent | NoteEvent | Ru
                 const leader = state.standings[inter]?.leader ?? maxVal;
                 const isUpdate = state.entities[event.bib].marks[inter] !== undefined;
 
-                handleResultEvent(state, event);
+                handleResultEvent(state, event, timestamp);
 
                 if (!state.isSprintFinals && !isUpdate && !isBonus(state.intermediates[inter]) && event.time > 0) {
                     const _event = {
@@ -53,7 +53,7 @@ export function handleUpdate(state: State, events: (ResultEvent | NoteEvent | Ru
             case 'ff':
             case 'start':
             case 'nextstart':
-                handleNoteEvent(state, event);
+                handleNoteEvent(state, event, timestamp);
                 break;
 
             case 'activerun':
@@ -66,7 +66,7 @@ export function handleUpdate(state: State, events: (ResultEvent | NoteEvent | Ru
     }
 }
 
-function handleResultEvent(state: State, event: ResultEvent) {
+function handleResultEvent(state: State, event: ResultEvent, timestamp: number) {
     const intermediate = state.interById[event.inter];
     const entity = state.entities[event.bib];
     const isUpdate = state.entities[event.bib].marks[intermediate] !== undefined;
@@ -76,11 +76,11 @@ function handleResultEvent(state: State, event: ResultEvent) {
         case 'bonuspoint':
         case 'bonustime':
         case 'inter':
-            registerResult(state, entity, Status.Default, event.time, intermediate, [event.run - 1, state.activeHeat]);
+            registerResult(state, entity, Status.Default, event.time, intermediate, [event.run - 1, state.activeHeat], timestamp);
             break;
         case 'finish':
             setStatus(state, entity, Status.Finished);
-            registerResult(state, entity, Status.Default, event.time, intermediate, [event.run - 1, state.activeHeat]);
+            registerResult(state, entity, Status.Default, event.time, intermediate, [event.run - 1, state.activeHeat], timestamp);
             break;
     }
 
@@ -97,7 +97,7 @@ function setStatus(state: State, entity: RacerData, status: string) {
     }
 }
 
-function handleNoteEvent(state: State, event: NoteEvent) {
+function handleNoteEvent(state: State, event: NoteEvent, timestamp?: number) {
     const entity = state.entities[event.bib];
 
     switch (event.type) {
@@ -142,6 +142,11 @@ function handleNoteEvent(state: State, event: NoteEvent) {
             }
             break;
         case 'start':
+            if (timestamp && !state.isSprintFinals) {
+                entity.marks[0].timestamp = timestamp;
+            }
+            setStatus(state, entity, statusMap[event.type]);
+            break;
         case 'nextstart':
             setStatus(state, entity, statusMap[event.type]);
             break;
@@ -165,7 +170,8 @@ export function registerResult(
     status: Status,
     time: number,
     intermediate: number,
-    runInfo: [number, number | null]
+    runInfo: [number, number | null],
+    timestamp?: number
 ) {
     const marks = entity.marks;
     const type = state.intermediates[intermediate].type;
@@ -175,7 +181,8 @@ export function registerResult(
         rank: null,
         diffs: (new Array(Math.min(intermediate, 1))).fill(maxVal),
         version: 0,
-        tourStanding: maxVal
+        tourStanding: maxVal,
+        timestamp
     };
 
     if (state.isSprintFinals) {

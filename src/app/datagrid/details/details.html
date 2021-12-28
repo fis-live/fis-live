@@ -1,0 +1,71 @@
+<div class="action-bar">
+    <div style="flex: 1 0 0;" class="btn-group btn-sm">
+        <app-select key="racer">
+            Racer
+            <ng-template let-item><div [ngClass]="['flag', item.nsa.toLowerCase()]">{{ item.display }}</div></ng-template>
+        </app-select>
+    </div>
+
+    <div style="flex: 0 0 auto; display: inline-flex" class="column-switch-wrapper">
+        <button type="button" class="btn btn-sm btn-link column-toggle--action" aria-label="Close" (click)="close()">
+            <clr-icon shape="times" [size]="20"></clr-icon>
+        </button>
+    </div>
+</div>
+
+<div class="segment">
+    <ul class="nav" style="padding-left: 0" role="tablist">
+        <li role="presentation" class="nav-item">
+            <button (click)="setTab('progress')" [class.active]="tab === 'progress'" class="btn btn-link nav-link" type="button">
+                Progress
+            </button>
+        </li>
+        <li role="presentation" class="nav-item">
+            <button (click)="setTab('sectors')" [class.active]="tab === 'sectors'" class="btn btn-link nav-link" type="button">
+                Sectors
+            </button>
+        </li>
+    </ul>
+
+    <table class="datagrid" cdk-table [dataSource]="rows$ | ngrxPush" [trackBy]="track">
+
+        <!-- Intermediate Definition -->
+        <ng-container cdkColumnDef="intermediate">
+            <th cdk-header-cell *cdkHeaderCellDef>Intermediate</th>
+            <td style="background-color: #fafafa;" cdk-cell *cdkCellDef="let row"><div>{{ row.inter }}</div></td>
+        </ng-container>
+
+        <!-- Time Definition -->
+        <ng-container cdkColumnDef="time">
+            <th cdk-header-cell *cdkHeaderCellDef>Time</th>
+            <td style="background-color: #ffffff;" class="time" cdk-cell *cdkCellDef="let row"><div>{{ row.time | appTick }}</div></td>
+        </ng-container>
+
+        <!-- Behind Definition -->
+        <ng-container cdkColumnDef="behind">
+            <th cdk-header-cell *cdkHeaderCellDef>Behind</th>
+            <td style="background-color: #ffffff;" class="time" cdk-cell *cdkCellDef="let row">{{ row.behind }}</td>
+        </ng-container>
+
+        <!-- Behind Winner Definition -->
+        <ng-container cdkColumnDef="behind-winner">
+            <th cdk-header-cell *cdkHeaderCellDef>Beh. Winner</th>
+            <td style="background-color: #ffffff;" class="time" cdk-cell *cdkCellDef="let row"><div>{{ row.behindWinner }}</div></td>
+        </ng-container>
+
+        <!-- Rank standing Definition -->
+        <ng-container cdkColumnDef="rank">
+            <th cdk-header-cell *cdkHeaderCellDef>Rank</th>
+            <td style="background-color: #ffffff;" cdk-cell *cdkCellDef="let row"><div>{{ row.rank }}</div></td>
+        </ng-container>
+
+        <thead>
+        <tr cdk-header-row *cdkHeaderRowDef="['intermediate', 'time', 'behind', 'behind-winner', 'rank']"></tr>
+        </thead>
+
+        <tbody>
+        <tr cdk-row *cdkRowDef="let row; columns: ['intermediate', 'time', 'behind', 'behind-winner', 'rank']"></tr>
+        </tbody>
+
+    </table>
+</div>

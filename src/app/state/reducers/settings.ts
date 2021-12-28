@@ -11,6 +11,7 @@ export interface State {
     defaultColumns: Column[];
     tickerEnabled: boolean;
     nameFormat: string;
+    indDetailsTab: boolean;
 }
 
 const defaultColumns = [
@@ -29,7 +30,8 @@ const initialState: State = {
     delay: 0,
     defaultColumns,
     tickerEnabled: false,
-    nameFormat: 'f l'
+    nameFormat: 'f l',
+    indDetailsTab: false
 };
 
 const settingsReducer = createReducer(
@@ -85,6 +87,7 @@ const settingsReducer = createReducer(
         };
     }),
     on(SettingsActions.toggleTicker, (state) => ({...state, tickerEnabled: !state.tickerEnabled})),
+    on(SettingsActions.toggleIndividualDetailsTab, (state) => ({...state, indDetailsTab: !state.indDetailsTab})),
     on(SettingsActions.resetSettings, () => initialState)
 );
 

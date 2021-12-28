@@ -10,7 +10,15 @@ import { map } from 'rxjs/operators';
 import { Column } from '../../datagrid/state/model';
 import { Event, Intermediate, Racer } from '../../fis/cross-country/models';
 import { RacesByPlace } from '../../fis/shared';
-import { reorderColumn, setDelay, setNameFormat, toggleColumn, toggleFavorite, toggleTicker } from '../../state/actions/settings';
+import {
+    reorderColumn,
+    setDelay,
+    setNameFormat,
+    toggleColumn,
+    toggleFavorite,
+    toggleIndividualDetailsTab,
+    toggleTicker
+} from '../../state/actions/settings';
 import {
     AppState,
     getDelayState,
@@ -52,6 +60,7 @@ export class SidebarComponent {
     public favoriteRacers$: Observable<Racer[]>;
     public racers$: Observable<Racer[]>;
     public nameFormat$: Observable<string>;
+    public indDetailsEnabled$: Observable<boolean>;
 
     constructor(private store: Store<AppState>) {
         this.upcomingRaces$ = store.select(selectRacesByPlace);
@@ -59,6 +68,7 @@ export class SidebarComponent {
         this.racers$ = store.select(selectAllRacers);
         this.delay$ = store.select(getDelayState);
         this.tickerEnabled$ = store.select(state => state.settings.tickerEnabled);
+        this.indDetailsEnabled$ = store.select(state => state.settings.indDetailsTab);
         this.events$ = combineLatest([this.selectedInter, store.select(getResultState)]).pipe(
             map(([inter, _state]) => _state.standings[inter]?.events.slice().reverse() ?? [])
         );
@@ -90,6 +100,10 @@ export class SidebarComponent {
 
     public toggleTicker() {
         this.store.dispatch(toggleTicker());
+    }
+
+    public toggleIndividualDetails() {
+        this.store.dispatch(toggleIndividualDetailsTab());
     }
 
     public open(): void {

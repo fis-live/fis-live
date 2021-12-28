@@ -56,6 +56,7 @@ export interface Mark {
     diffs: number[];
     version: number;
     tourStanding: number;
+    timestamp?: number;
 }
 
 export interface RacerData {

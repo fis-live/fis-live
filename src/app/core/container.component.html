@@ -13,11 +13,17 @@
 
 <ng-template #container>
     <div class="container">
-        <div class="datagrid-spinner" *ngIf="loading$ | ngrxPush">
-            <div class="spinner">Loading...</div>
+        <div style="display: flex; flex: 1 0 0; flex-direction: column;">
+            <div class="datagrid-spinner" *ngIf="loading$ | ngrxPush">
+                <div class="spinner">Loading...</div>
+            </div>
+            <div *ngFor="let columns of rows; let row = index" class="row">
+                <app-dg-wrapper *ngFor="let i of columns" class="column" [breakpoint]="breakpoints[row]"></app-dg-wrapper>
+            </div>
         </div>
-        <div *ngFor="let columns of rows; let row = index" class="row">
-            <app-dg-wrapper *ngFor="let i of columns" class="column" [breakpoint]="breakpoints[row]"></app-dg-wrapper>
+
+        <div *ngIf="indDetailsTab$ | ngrxPush" class="details-container">
+            <app-details></app-details>
         </div>
     </div>
 </ng-template>

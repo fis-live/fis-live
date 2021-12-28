@@ -20,6 +20,10 @@ export const toggleTicker = createAction(
     '[Settings] Toggle ticker'
 );
 
+export const toggleIndividualDetailsTab = createAction(
+    '[Settings] Toggle Ind. Details tab'
+);
+
 export const toggleColumn = createAction(
     '[Settings] Toggle column',
     props<{column: string}>()
