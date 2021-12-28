@@ -86,8 +86,14 @@ export function toTitleCase(title: string) {
 
 export function parseTimeString(str: string) {
     const timeArray = str.split(':');
+    switch (timeArray.length) {
+        case 3:
+            return (+timeArray[0] * 3600 + +timeArray[1] * 60 + +timeArray[2]) * 1000;
+        case 2:
+            return (+timeArray[0] * 60 + +timeArray[1]) * 1000;
+        case 1:
+            return +timeArray[0] * 1000;
+    }
 
-    return (timeArray.length === 3) ?
-        (Number(timeArray[0]) * 3600 + Number(timeArray[1]) * 60 + Number(timeArray[2])) * 1000 :
-        (Number(timeArray[0]) * 60 + Number(timeArray[1])) * 1000;
+    return maxVal;
 }
