@@ -22,10 +22,10 @@ export function formatTime(value: number | string | null | undefined,
         zero = value;
     }
 
-    value = value - value % 10 ** (precision + 3);
-    zero = zero - zero % 10 ** (precision + 3);
-    let timeStr = (value === zero) ? '' : (value < zero ? '-' : '+');
-    const time = (value === zero) ? value : (value < zero ? zero - value : value - zero);
+    value = Math.floor(value / (10 ** (precision + 3))) * 10 ** (precision + 3);
+    zero = Math.floor(zero / (10 ** (precision + 3))) * 10 ** (precision + 3);
+    let timeStr = (value === zero) ? ((value < 0) ? '-' : '') : (value < zero ? '-' : '+');
+    const time = Math.abs((value === zero) ? value : value - zero);
 
     if (percent && value !== zero) {
         return timeStr + Math.round(1000 * time / value) / 10 + '%';
