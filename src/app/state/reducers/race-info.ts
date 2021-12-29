@@ -2,7 +2,7 @@ import { Action, createReducer, on } from '@ngrx/store';
 
 import { RaceInfo } from '../../fis/cross-country/models';
 import { Meteo } from '../../fis/shared';
-import { InfoActions } from '../actions';
+import { InfoActions, RaceActions } from '../actions';
 
 export interface State {
     info: RaceInfo;
@@ -48,7 +48,21 @@ const infoReducer = createReducer(
         info: {...state.info, ...raceInfo},
         meteo: state.meteo,
         message: state.message
-    }))
+    })),
+    on(RaceActions.update, (state, { events }) => {
+        for (const event of events) {
+            switch (event.type) {
+                case 'meteo':
+                    state = { ...state, meteo: { ...state.meteo, ...event.meteo }};
+                    break;
+                case 'message':
+                    state = { ...state, message: event.message };
+                    break;
+            }
+        }
+
+        return state;
+    })
 );
 
 export function reducer(state: State | undefined, action: Action) {
