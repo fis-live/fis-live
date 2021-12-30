@@ -79,10 +79,9 @@ export interface Event {
 
 export interface PdfData {
     bib: number;
-    time: number | null;
+    pursuitTime?: number;
     isWave: boolean | null;
-    shirt: string | null;
-    tourStanding: string | null;
+    tourStanding?: number;
 }
 
 export interface State {

@@ -8,7 +8,7 @@ import { initializeState } from '../../fis/cross-country/initialize';
 import { Intermediate, State } from '../../fis/cross-country/models';
 import { handleUpdate, registerResult } from '../../fis/cross-country/state';
 import { isBonus, isRanked, maxVal, Status, timePenalty } from '../../fis/fis-constants';
-import { formatTime, parseTimeString } from '../../utils/utils';
+import { formatTime } from '../../utils/utils';
 import { RaceActions, SettingsActions } from '../actions';
 
 export const initialState: State = {
@@ -28,17 +28,7 @@ const resultReducer = createReducer(
     initialState,
     on(RaceActions.initialize, (_, { main }) => initializeState(main)),
     on(RaceActions.parsePdf, (state, { racers }) => produce(state, draft => {
-        let tourLeader = maxVal;
         const bestTour: number[] = [];
-
-        for (const data of racers) {
-            if (data.tourStanding != null) {
-                if (data.tourStanding[0] !== '+') {
-                    tourLeader = Math.min(tourLeader, parseTimeString(data.tourStanding));
-                    bestTour[0] = tourLeader;
-                }
-            }
-        }
 
         for (const data of racers) {
             if (data.isWave) {
@@ -48,17 +38,14 @@ const resultReducer = createReducer(
                 }
             }
 
-            if (data.time != null) {
-                registerResult(draft, draft.entities[data.bib], Status.Default, data.time, 0, [1, null]);
+            if (data.pursuitTime !== undefined) {
+                registerResult(draft, draft.entities[data.bib], Status.Default, data.pursuitTime, 0, [1, null]);
             }
 
-            if (data.tourStanding != null) {
+            if (data.tourStanding !== undefined) {
                 const entity = draft.entities[data.bib];
-                if (data.tourStanding[0] !== '+') {
-                    entity.marks[0].tourStanding = parseTimeString(data.tourStanding);
-                } else {
-                    entity.marks[0].tourStanding = tourLeader + parseTimeString(data.tourStanding);
-                }
+                entity.marks[0].tourStanding = data.tourStanding;
+                bestTour[0] = Math.min(bestTour[0] || maxVal, data.tourStanding);
 
                 for (let i = 1; i < entity.marks.length; i++) {
                     entity.marks[i].tourStanding =
@@ -69,7 +56,7 @@ const resultReducer = createReducer(
             }
         }
 
-        if (tourLeader < maxVal) {
+        if (bestTour[0] < maxVal) {
             for (const inter of state.intermediates) {
                 draft.standings[inter.key].version += 1;
                 draft.standings[inter.key].tourLeader = bestTour[inter.key] ?? maxVal;
