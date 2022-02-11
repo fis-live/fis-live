@@ -71,7 +71,7 @@ export function toTitleCase(title: string) {
     const small = /^(von|van|der|of|de|del|di|do|af|den|du)$/i;
     const large = /^(I|II|III|IV)$/i;
 
-    return title.split(/([ -])/).map(function (current) {
+    return title.split(/([ -.])/).map(function (current) {
         if (current.search(small) > -1) {
             return current.toLowerCase();
         }
