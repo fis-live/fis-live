@@ -10,8 +10,8 @@ import { Main, NoteEvent, ResultEvent, RunEvent, Update } from './types';
 
 export class Adapter {
     private static createRacer(racer: RacerArray, isFavorite: boolean): Racer {
-        const firstName = toTitleCase(fixEncoding(racer[3]?.trim() ?? ''));
-        const lastName = toTitleCase(fixEncoding(racer[2]?.trim() ?? ''));
+        const firstName = toTitleCase(fixEncoding(racer[3]?.toString()?.trim() ?? ''));
+        const lastName = toTitleCase(fixEncoding(racer[2]?.toString()?.trim() ?? ''));
         const initials = firstName.split(/([ -])/).map(str => str[0]).join('').replace(' ', '.');
 
         return {
