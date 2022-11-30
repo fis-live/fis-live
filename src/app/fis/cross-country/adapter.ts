@@ -9,7 +9,7 @@ import { Main, NoteEvent, ResultEvent, RunEvent, Update } from './types';
 
 
 export class Adapter {
-    private static createRacer(racer: RacerArray, isFavorite: boolean): Racer {
+    private static createRacer(racer: RacerArray, isFavorite: boolean, sector: 'cc' | 'nk'): Racer {
         const firstName = toTitleCase(fixEncoding(racer[3]?.toString()?.trim() ?? ''));
         const lastName = toTitleCase(fixEncoding(racer[2]?.toString()?.trim() ?? ''));
         const initials = firstName.split(/([ -])/).map(str => str[0]).join('').replace(' ', '.');
@@ -26,7 +26,7 @@ export class Adapter {
             isFavorite: isFavorite,
             hasYellowCard: racer[6] === 'yc',
             color: racer[5],
-            sector: 'cc'
+            sector: sector
         };
     }
 
@@ -87,7 +87,7 @@ export class Adapter {
     }
 
 
-    static parseMain(main: MainArray, favorites: Racer[]): Main {
+    static parseMain(main: MainArray, favorites: Racer[], sector: 'cc' | 'nk'): Main {
         const raceInfo = this.createRaceInfo(main.raceinfo);
         const meteo = this.createMeteo(main.meteo);
 
@@ -166,7 +166,7 @@ export class Adapter {
 
         for (const racer of main.racers) {
             if (racer !== null) {
-                racers.push(this.createRacer(racer, !!favorites.find((it) => it.id === racer[0])));
+                racers.push(this.createRacer(racer, !!favorites.find((it) => it.id === racer[0]), sector));
             }
         }
 

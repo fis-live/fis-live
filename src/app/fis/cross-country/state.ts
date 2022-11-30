@@ -206,7 +206,7 @@ export function registerResult(
         }
 
         removeResult(state, entity, intermediate);
-    } else if (mark.time === 0 && mark.status === Status.Default) {
+    } else if (mark.time === 0 && intermediate !== 0) {
         return;
     }
 
@@ -311,7 +311,12 @@ function registerInter(state: State, entity: RacerData, mark: Mark, inter: numbe
     let i = 0;
     do {
         if (!isBonus(state.intermediates[i])) {
-            mark.diffs[i] = getValidDiff(mark, marks[i]);
+            if (inter === 0) {
+                mark.diffs[0] = mark.time;
+            } else {
+                mark.diffs[i] = getValidDiff(mark, marks[i]);
+            }
+
             if (mark.diffs[i] < standing.bestDiff[i]) {
                 standing.bestDiff[i] = mark.diffs[i];
             }

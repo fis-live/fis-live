@@ -102,7 +102,7 @@ export class FisConnectionService {
 
             if (this.doc === 'main') {
                 this.doc = 'pdf';
-                const main = Adapter.parseMain(data as MainArray, favorites);
+                const main = Adapter.parseMain(data as MainArray, favorites, this.sectorCode);
 
                 this.pdfDoc = this.sectorCode === 'nk' ? 'SLCC' : (main.runInfo[1] === 'Q' ? 'QUA' : 'SL');
                 actions.push(updateRaceInfo({ raceInfo: main.raceInfo }));

@@ -97,17 +97,17 @@ export function initializeState(main: Main): State {
             if (heatNo !== null) {
                 state.runs[runNo].heats[heatNo].ids.push(bib);
             } else {
-                state.standings[0].ids.push(bib);
                 if (main.raceInfo.discipline === 'PUR' && startTime) {
-                    entity.marks = [{
-                        time: parseTimeString(startTime),
-                        status: Status.Initial,
-                        rank: entity.order,
-                        diffs: [parseTimeString(startTime)],
-                        version: 0,
-                        tourStanding: maxVal
-                    }];
+                    registerResult(
+                        state,
+                        state.entities[bib],
+                        Status.Default,
+                        parseTimeString(startTime),
+                        0,
+                        [runNo, heatNo]
+                    );
                 } else {
+                    state.standings[0].ids.push(bib);
                     entity.marks = [{
                         time: 0,
                         status: Status.Initial,
