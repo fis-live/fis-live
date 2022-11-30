@@ -55,6 +55,11 @@
               "src/assets/vendor.css",
               "src/assets/main.scss"
             ],
+            "stylePreprocessorOptions": {
+              "includePaths": [
+                "./node_modules"
+              ]
+            },
             "scripts": []
           },
           "configurations": {
@@ -130,6 +135,6 @@
           }
         }
       }
-    }},
-  "defaultProject": "fis-live"
+    }
+  }
 }
