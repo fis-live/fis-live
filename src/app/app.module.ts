@@ -6,7 +6,7 @@ import { FormsModule } from '@angular/forms';
 import { BrowserModule, Title } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { RouterModule } from '@angular/router';
-import { ReactiveComponentModule } from '@ngrx/component';
+import { LetModule, PushModule } from '@ngrx/component';
 import { EffectsModule } from '@ngrx/effects';
 import { StoreModule } from '@ngrx/store';
 import { NgScrollbarModule } from 'ngx-scrollbar';
@@ -80,7 +80,8 @@ import { TickPipe } from './utils/tick.pipe';
             track: 'all',
             visibility: 'hover'
         }),
-        ReactiveComponentModule,
+        PushModule,
+        LetModule,
         devModules
     ],
     providers: [
