@@ -33,7 +33,7 @@ export class FisConnectionService {
     private pdfDoc: 'SL' | 'QUA' | 'SLCC' = 'SL';
 
     private baseURL: string = 'http://live.fis-ski.com/';
-    private proxy: string = 'https://fislive-cors.herokuapp.com/';
+    private proxy: string = 'https://fis-live-cors.onrender.com/';
 
     private servers: FisServer[] = [];
 
@@ -165,7 +165,7 @@ export class FisConnectionService {
     }
 
     public loadCalendar(): Observable<Race[]> {
-        return this._http.get<Race[]>('https://fislive-cors.herokuapp.com/liveraces.json')
+        return this._http.get<Race[]>('https://fis-live-cors.onrender.com/liveraces.json')
             .pipe(
                 catchError((error) => {
                     console.log(error);
