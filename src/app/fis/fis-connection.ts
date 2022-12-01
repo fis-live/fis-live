@@ -32,12 +32,10 @@ export class FisConnectionService {
     private doc: 'main' | 'update' | 'pdf' = 'main';
     private pdfDoc: 'SL' | 'QUA' | 'SLCC' = 'SL';
 
-    private baseURL: string = 'http://live.fis-ski.com/';
-    private proxy: string = 'https://fis-live-cors.onrender.com/';
+    private baseURL: string = 'https://fis-live-cors.up.railway.app/http://live.fis-ski.com/';
 
     private servers: FisServer[] = [];
 
-    private readonly serverListUrl = 'http://live.fis-ski.com/general/serverList.json';
     private readonly signature = new FisSignature();
 
     constructor(private _http: HttpClient, private _store: Store<AppState>) {}
@@ -52,7 +50,7 @@ export class FisConnectionService {
     }
 
     public getServerList(): Observable<FisServer[]> {
-        return this._http.get<ServerList>(this.proxy + this.serverListUrl, {
+        return this._http.get<ServerList>(this.baseURL + 'general/serverList.json', {
             params: new HttpParams().set('i', this.signature.get())
         }).pipe(map(res => this.parseServerList(res)));
     }
@@ -80,10 +78,10 @@ export class FisConnectionService {
                 url = `${this.baseURL}mobile/${this.sectorCode}-${this.codex}/updt${this.version}.xml`;
                 break;
             case 'pdf':
-                return this._http.get<PdfData[]>(`${this.proxy}pdf.json?codex=${this.codex}&doc=${this.pdfDoc}&sectorCode=${this.sectorCode}`);
+                return this._http.get<PdfData[]>(`https://fis-live-cors.up.railway.app/pdf.json?codex=${this.codex}&doc=${this.pdfDoc}&sectorCode=${this.sectorCode}`);
         }
 
-        return this._http.get(this.proxy + url, {
+        return this._http.get(url, {
             responseType: 'text',
             params: new HttpParams().set('i', this.signature.get())
         });
@@ -165,7 +163,7 @@ export class FisConnectionService {
     }
 
     public loadCalendar(): Observable<Race[]> {
-        return this._http.get<Race[]>('https://fis-live-cors.onrender.com/liveraces.json')
+        return this._http.get<Race[]>('https://fis-live-cors.up.railway.app/liveraces.json')
             .pipe(
                 catchError((error) => {
                     console.log(error);
