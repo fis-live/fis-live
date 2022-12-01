@@ -197,6 +197,6 @@ export class FisConnectionService {
             j++;
         }
 
-        this.baseURL = `http://${urlServer}/`;
+        this.baseURL = `https://${urlServer}/`;
     }
 }
