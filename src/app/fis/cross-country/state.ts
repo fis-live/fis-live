@@ -206,7 +206,7 @@ export function registerResult(
         }
 
         removeResult(state, entity, intermediate);
-    } else if (mark.time === 0 && intermediate !== 0) {
+    } else if (mark.time === 0 && (status === Status.Default && intermediate !== 0)) {
         return;
     }
 
