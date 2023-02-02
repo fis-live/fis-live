@@ -32,16 +32,16 @@ export class Adapter {
 
     private static createRaceInfo(info: RaceInfoArray): RaceInfo {
         return {
-            eventName: fixEncoding(info[0]),
-            raceName: fixEncoding(info[1]),
-            slopeName: fixEncoding(info[2]),
-            discipline: info[3].toUpperCase(),
-            gender: info[4].toUpperCase(),
-            category: info[5].toUpperCase(),
-            place: fixEncoding(info[6]),
-            temperatureUnit: info[7],
-            lengthUnit: info[8],
-            speedUnit: info[9],
+            eventName: fixEncoding((typeof info[0] === 'string' ? info[0] : '')),
+            raceName: fixEncoding((typeof info[1] === 'string' ? info[1] : '')),
+            slopeName: fixEncoding((typeof info[2] === 'string' ? info[2] : '')),
+            discipline: (typeof info[3] === 'string' ? info[3] : '').toUpperCase(),
+            gender: (typeof info[4] === 'string' ? info[4] : '').toUpperCase(),
+            category: (typeof info[5] === 'string' ? info[5] : '').toUpperCase(),
+            place: fixEncoding((typeof info[6] === 'string' ? info[6] : '')),
+            temperatureUnit: (typeof info[7] === 'string' ? info[7] : 'C'),
+            lengthUnit: (typeof info[8] === 'string' ? info[8] : 'km'),
+            speedUnit: (typeof info[9] === 'string' ? info[9] : 'kmh'),
             team: info[13],
             tds: info[14]
         };
