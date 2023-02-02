@@ -219,7 +219,7 @@ export const nationalities: {[short: string]: string} = {
     'TKM': 'Turkmenistan',
     'TLS': 'Timor-Leste',
     'TOG': 'Togo',
-    'TPE': 'Chinese Taipei',
+    'TPE': 'Taiwan',
     'TRI': 'Trinidad and Tobago',
     'TTO': 'Trinidad and Tobago',
     'TUN': 'Tunisia',
