@@ -206,6 +206,10 @@ export function registerResult(
         }
 
         removeResult(state, entity, intermediate);
+        // Don't register zero-times other than at start
+        if (mark.time === 0 && intermediate !== 0) {
+            mark.status = Status.NA;
+        }
     } else if (mark.time === 0 && (status === Status.Default && intermediate !== 0)) {
         return;
     }
@@ -228,7 +232,7 @@ export function registerResult(
         }
     }
 
-    if (isRanked(status)) {
+    if (isRanked(mark.status)) {
         switch (type) {
             case 'start_list':
             case 'inter':

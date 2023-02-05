@@ -95,6 +95,11 @@ export function initializeState(main: Main): State {
             entity.startTime = startTime;
 
             if (heatNo !== null) {
+                if (state.runs[runNo].heats[heatNo] === undefined) {
+                    state.runs[runNo].heats[heatNo] = {
+                        heatNo, ids: [], leader: 0, name: '', version: 0
+                    };
+                }
                 state.runs[runNo].heats[heatNo].ids.push(bib);
             } else {
                 if (main.raceInfo.discipline === 'PUR' && startTime) {
