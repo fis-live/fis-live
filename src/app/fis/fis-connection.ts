@@ -4,7 +4,7 @@ import { Action, Store } from '@ngrx/store';
 import { defer, EMPTY, Observable, of, throwError, timer } from 'rxjs';
 import { catchError, map, mergeMap, repeat, retry, switchMap, withLatestFrom } from 'rxjs/operators';
 
-import { RaceActions } from '../state/actions';
+import { InfoActions, RaceActions } from '../state/actions';
 import { setRaceMessage, updateMeteo, updateRaceInfo } from '../state/actions/info';
 import { initialize, update } from '../state/actions/race';
 import { AppState, selectFavoriteRacers } from '../state/reducers';
@@ -12,7 +12,7 @@ import { unserialize } from '../utils/unserialize';
 
 import { Adapter } from './cross-country/adapter';
 import { MainArray, UpdateArray } from './cross-country/api/types';
-import { PdfData, Racer } from './cross-country/models';
+import { PdfData, RaceInfo, Racer } from './cross-country/models';
 import { FisSignature } from './fis-signature';
 import { FisServer, Race, ServerList } from './shared';
 
@@ -29,7 +29,7 @@ export class FisConnectionService {
     private codex: number | null = null;
     private sectorCode: 'cc' | 'nk' = 'cc';
     private version: number = 0;
-    private doc: 'main' | 'update' | 'pdf' = 'main';
+    private doc: 'main' | 'update' | 'pdf' | 'race-info' = 'main';
     private pdfDoc: 'SL' | 'QUA' | 'SLCC' = 'SL';
 
     private baseURL: string = 'https://fis-live-cors.up.railway.app/http://live.fis-ski.com/';
@@ -79,6 +79,8 @@ export class FisConnectionService {
                 break;
             case 'pdf':
                 return this._http.get<PdfData[]>(`https://fis-live-cors.up.railway.app/pdf.json?codex=${this.codex}&doc=${this.pdfDoc}&sectorCode=${this.sectorCode}`);
+            case 'race-info':
+                return this._http.get<RaceInfo>(`https://fis-live-cors.up.railway.app/race-info.json?codex=${this.codex}&sectorCode=${this.sectorCode}`);
         }
 
         return this._http.get(url, {
@@ -87,7 +89,7 @@ export class FisConnectionService {
         });
     }
 
-    private parse(result: string | PdfData[], favorites: Racer[] = []) {
+    private parse(result: string | PdfData[] | RaceInfo, favorites: Racer[] = []) {
         let timestamp = Date.now();
         let actions: Action[] = [];
         if (typeof result === 'string') {
@@ -99,7 +101,7 @@ export class FisConnectionService {
             this.version = data.live[1];
 
             if (this.doc === 'main') {
-                this.doc = 'pdf';
+                this.doc = 'race-info';
                 const main = Adapter.parseMain(data as MainArray, favorites, this.sectorCode);
 
                 this.pdfDoc = this.sectorCode === 'nk' ? 'SLCC' : (main.runInfo[1] === 'Q' ? 'QUA' : 'SL');
@@ -122,10 +124,14 @@ export class FisConnectionService {
                     this.doc = 'main';
                 }
             }
-        } else {
+        } else if (this.doc === 'pdf') {
             this.doc = 'update';
             timestamp = 0;
-            actions = result.length > 0 ? [RaceActions.parsePdf({ racers: result })] : [];
+            actions = (result as PdfData[]).length > 0 ? [RaceActions.parsePdf({ racers: result as PdfData[] })] : [];
+        } else {
+            this.doc = 'pdf';
+            timestamp = 0;
+            actions = [InfoActions.updateRaceInfo({ raceInfo: result as RaceInfo})];
         }
 
         return actions.length > 0 ? of({
