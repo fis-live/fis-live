@@ -23,9 +23,10 @@
         <th cdk-header-cell *cdkHeaderCellDef appDgSort="racer.value">Name</th>
         <td cdk-cell *cdkCellDef="let row">
             <div class="small_only flag">
-                <a style="color: inherit" target="_blank" href="https://www.fis-ski.com/DB/general/athlete-biography.html?sectorcode={{ row.racer.sector }}&fiscode={{ row.racer.id }}">
-                    {{ row.racer | formatName : config.nameFormat }}
-                </a>
+                <a style="color: inherit"
+                   target="_blank"
+                   [innerHTML]="row.racer | formatName : config.nameFormat"
+                   href="https://www.fis-ski.com/DB/general/athlete-biography.html?sectorcode={{ row.racer.sector }}&fiscode={{ row.racer.id }}"></a>
                 <span style="float: right" >{{ row.notes }}</span>
                 <clr-icon *ngIf="row.racer.hasYellowCard" class="yellow-card" shape="yc"></clr-icon>
             </div>

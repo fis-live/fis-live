@@ -13,10 +13,10 @@ export class FormatNamePipe implements PipeTransform {
         for (const ch of format) {
             switch (ch) {
                 case 'l':
-                    buffer += racer.lastName;
+                    buffer += '<b>' + racer.lastName + '</b>';
                     break;
                 case 'L':
-                    buffer += racer.lastName.toUpperCase();
+                    buffer += '<b>' + racer.lastName.toUpperCase() + '</b>';
                     break;
                 case 'f':
                     buffer += racer.firstName;
