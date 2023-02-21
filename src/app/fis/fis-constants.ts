@@ -118,6 +118,7 @@ export const nationalities: {[short: string]: string} = {
     'KNA': 'St Kitts and Nevis',
     'KOR': 'South Korea',
     'KOS': 'Kosovo',
+    'KSA': 'Saudi Arabia',
     'KUW': 'Kuwait',
     'LAO': 'Laos',
     'LAT': 'Latvia',
