@@ -107,10 +107,10 @@
           "builder": "@angular-devkit/build-angular:dev-server",
           "configurations": {
             "production": {
-              "browserTarget": "fis-live:build:production"
+              "buildTarget": "fis-live:build:production"
             },
             "development": {
-              "browserTarget": "fis-live:build:development"
+              "buildTarget": "fis-live:build:development"
             }
           },
           "defaultConfiguration": "development"
@@ -118,7 +118,7 @@
         "extract-i18n": {
           "builder": "@angular-devkit/build-angular:extract-i18n",
           "options": {
-            "browserTarget": "fis-live:build"
+            "buildTarget": "fis-live:build"
           }
         }
       }

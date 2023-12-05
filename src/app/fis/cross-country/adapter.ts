@@ -108,7 +108,7 @@ export class Adapter {
             switch (_type) {
                 case 'inter':
                     type = 'inter';
-                    if (distanceOrName && distanceOrName > 0) {
+                    if (distanceOrName && +distanceOrName > 0) {
                         name = short = distanceOrName + ' ' + raceInfo.lengthUnit;
                     } else {
                         name = short = 'Inter ' + id;
@@ -116,7 +116,7 @@ export class Adapter {
                     break;
                 case 'bonuspoint':
                     type = 'bonus_points';
-                    if (distanceOrName && distanceOrName > 0) {
+                    if (distanceOrName && +distanceOrName > 0) {
                         name = 'Bonus points at ' + distanceOrName + ' ' + raceInfo.lengthUnit;
                         short = 'Bonus ' + distanceOrName + ' ' + raceInfo.lengthUnit;
                     } else {
@@ -125,7 +125,7 @@ export class Adapter {
                     break;
                 case 'bonustime':
                     type = 'bonus_time';
-                    if (distanceOrName && distanceOrName > 0) {
+                    if (distanceOrName && +distanceOrName > 0) {
                         name = 'Bonus time at ' + distanceOrName + ' ' + raceInfo.lengthUnit;
                         short = 'Bonus ' + distanceOrName + ' ' + raceInfo.lengthUnit;
                     } else {
@@ -134,7 +134,7 @@ export class Adapter {
                     break;
                 case 'finish':
                     type = 'finish';
-                    if (distanceOrName && distanceOrName > 0) {
+                    if (distanceOrName && +distanceOrName > 0) {
                         name = 'Finish ' + distanceOrName + ' ' + raceInfo.lengthUnit;
                         short = distanceOrName + ' ' + raceInfo.lengthUnit;
                     } else {
@@ -151,7 +151,7 @@ export class Adapter {
                     break;
                 default:
                     type = 'inter';
-                    if (distanceOrName && distanceOrName > 0) {
+                    if (distanceOrName && +distanceOrName > 0) {
                         name = short = distanceOrName + ' ' + raceInfo.lengthUnit;
                     } else {
                         name = short = 'Inter ' + id;

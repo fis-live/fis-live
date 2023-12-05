@@ -1,5 +1,5 @@
 import { Action, createReducer, createSelector, on } from '@ngrx/store';
-import produce from 'immer';
+import { produce } from 'immer';
 import { OperatorFunction, pipe } from 'rxjs';
 import { filter, map } from 'rxjs/operators';
 

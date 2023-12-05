@@ -6,10 +6,10 @@ import { FormsModule } from '@angular/forms';
 import { BrowserModule, Title } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { RouterModule } from '@angular/router';
-import { LetModule, PushModule } from '@ngrx/component';
+import { LetDirective, PushPipe } from '@ngrx/component';
 import { EffectsModule } from '@ngrx/effects';
 import { StoreModule } from '@ngrx/store';
-import { NgScrollbarModule } from 'ngx-scrollbar';
+import { NgScrollbarModule, NG_SCROLLBAR_OPTIONS } from 'ngx-scrollbar';
 
 import { devModules } from '../environments/environment';
 
@@ -76,16 +76,20 @@ import { TickPipe } from './utils/tick.pipe';
             metaReducers: metaReducers
         }),
         EffectsModule.forRoot([ConnectionEffects]),
-        NgScrollbarModule.withConfig({
-            track: 'all',
-            visibility: 'hover'
-        }),
-        PushModule,
-        LetModule,
-        devModules
+        NgScrollbarModule,
+        devModules,
+        PushPipe,
+        LetDirective
     ],
     providers: [
-        Title
+        Title,
+        {
+            provide: NG_SCROLLBAR_OPTIONS,
+            useValue: {
+                track: 'all',
+                visibility: 'hover'
+            }
+        }
     ],
     bootstrap: [ AppComponent ]
 })
