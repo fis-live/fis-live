@@ -1,0 +1,51 @@
+<app-sidebar></app-sidebar>
+
+<app-header></app-header>
+
+<div class="container">
+    <div class="row">
+        <div class="column">
+            <ng-scrollbar class="segment">
+                <table class="datagrid" cdk-table [dataSource]="(rows$ | ngrxPush)!">
+
+                    <!-- Order Definition -->
+                    <ng-container cdkColumnDef="order">
+                        <th cdk-header-cell *cdkHeaderCellDef>#</th>
+                        <td cdk-cell *cdkCellDef="let row; let i = index;"><div>{{ i + 1 }}</div></td>
+                    </ng-container>
+
+                    <!-- Name Definition -->
+                    <ng-container cdkColumnDef="name" sticky>
+                        <th cdk-header-cell *cdkHeaderCellDef appDgSort="racer.value">Name</th>
+                        <td cdk-cell *cdkCellDef="let row">
+                            <div class="small_only flag">
+                                <a style="color: inherit" target="_blank" href="https://www.fis-ski.com/DB/general/athlete-biography.html?sectorcode={{ row.racer.sector }}&fiscode={{ row.racer.id }}">
+                                    {{ row.racer.display }}
+                                </a>
+                                <span style="float: right" >{{ row.notes }}</span>
+                                <clr-icon *ngIf="row.racer.hasYellowCard" class="yellow-card" shape="yc"></clr-icon>
+                            </div>
+                        </td>
+                    </ng-container>
+
+                    <!-- Dynamic definitions -->
+                    <ng-container [cdkColumnDef]="col.id" *ngFor="let col of dynamicColumns;">
+                        <th cdk-header-cell *cdkHeaderCellDef [appDgSort]="col.sortBy">{{ col.name }}</th>
+                        <td class="time {{ row.marks[col.key]?.state }}" [class.leader]="row.marks[col.key]?.leader" cdk-cell *cdkCellDef="let row"><div>{{ row.marks[col.key]?.display }}</div> </td>
+                    </ng-container>
+
+                        <thead>
+                        <tr cdk-header-row *cdkHeaderRowDef="['order', 'name', '0', '1']; sticky: true"></tr>
+                        </thead>
+
+                        <tbody>
+                        <tr cdk-row *cdkRowDef="let row; columns: ['order', 'name', '0', '1']"></tr>
+                        </tbody>
+
+                </table>
+
+            </ng-scrollbar>
+        </div>
+    </div>
+</div>
+
