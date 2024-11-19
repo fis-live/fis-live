@@ -1,4 +1,3 @@
-import { NgIf } from '@angular/common';
 import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
 import { PushPipe } from '@ngrx/component';
 import { select } from '@ngrx/store';
@@ -26,7 +25,6 @@ import { DatagridTicker } from '../ticker/datagrid-ticker';
         Datagrid,
         PushPipe,
         DatagridTicker,
-        NgIf
     ],
     standalone: true
 })

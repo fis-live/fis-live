@@ -5,10 +5,9 @@ import { PushPipe } from '@ngrx/component';
 import { Store } from '@ngrx/store';
 import { Observable, Subscription } from 'rxjs';
 import { map } from 'rxjs/operators';
-import { AppModule } from '../app.module';
+
 import { Details } from '../datagrid/details/details';
 import { DatagridWrapper } from '../datagrid/wrapper/datagrid-wrapper';
-
 import { Run } from '../fis/cross-country/models';
 import { SprintGrid } from '../sprintgrid/sprint-grid';
 import { loadMain } from '../state/actions/connection';
@@ -16,6 +15,7 @@ import { AppState, getLoadingState, getRaceInfoState, getResultState, getSetting
 import { State as LoadingState } from '../state/reducers/loading';
 import { State as RaceInfoState } from '../state/reducers/race-info';
 import { WindowSize } from '../utils/window-size';
+
 import { HeaderComponent } from './header/header.component';
 import { SidebarComponent } from './sidebar/sidebar.component';
 

@@ -1,14 +1,19 @@
 import { Component } from '@angular/core';
+import { RouterOutlet } from '@angular/router';
+import { PushPipe } from '@ngrx/component';
 import { Action, Store } from '@ngrx/store';
 import { Observable } from 'rxjs';
 
+import { AlertComponent } from './core/alert/alert.component';
 import { closeAlert } from './state/actions/connection';
 import { AppState, getAlertState } from './state/reducers/';
 import { State as AlertState } from './state/reducers/alert';
 
 @Component({
     selector: 'app-root',
-    templateUrl: './app.component.html'
+    templateUrl: './app.component.html',
+    standalone: true,
+    imports: [RouterOutlet, AlertComponent, PushPipe]
 })
 export class AppComponent {
     public alert$: Observable<AlertState>;
