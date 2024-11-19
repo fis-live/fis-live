@@ -5,7 +5,7 @@ import { provideAnimations } from '@angular/platform-browser/animations';
 import { provideRouter, withHashLocation } from '@angular/router';
 import { provideEffects } from '@ngrx/effects';
 import { provideStore } from '@ngrx/store';
-import { NG_SCROLLBAR_OPTIONS } from 'ngx-scrollbar';
+import { provideScrollbarOptions } from 'ngx-scrollbar';
 
 import { AppComponent } from './app/app.component';
 import { appRoutes } from './app/routes';
@@ -21,13 +21,9 @@ bootstrapApplication(AppComponent, {
     providers: [
         importProvidersFrom(devModules),
         Title,
-        {
-            provide: NG_SCROLLBAR_OPTIONS,
-            useValue: {
-                track: 'all',
-                visibility: 'hover'
-            }
-        },
+        provideScrollbarOptions({
+            visibility: 'hover'
+        }),
         provideStore(reducers, {
             runtimeChecks: {
                 strictStateImmutability: true,
