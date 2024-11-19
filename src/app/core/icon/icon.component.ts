@@ -4,7 +4,8 @@ import { ChangeDetectionStrategy, Component, HostBinding, Input } from '@angular
 @Component({
     selector: 'clr-icon',
     templateUrl: './icon.component.html',
-    changeDetection: ChangeDetectionStrategy.OnPush
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: true
 })
 export class IconComponent {
     @Input()

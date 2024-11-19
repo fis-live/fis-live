@@ -1,5 +1,7 @@
 import { animate, group, style, transition, trigger } from '@angular/animations';
+import { LowerCasePipe, NgClass, NgForOf } from '@angular/common';
 import { ChangeDetectionStrategy, Component } from '@angular/core';
+import { PushPipe } from '@ngrx/component';
 import { Store } from '@ngrx/store';
 import { Observable } from 'rxjs';
 
@@ -14,11 +16,11 @@ import { DatagridStore } from '../state/datagrid-store';
         trigger('animation', [
             transition(':enter', group([
                 style({transform: 'translateY(-24px)'}),
-                style({ backgroundColor: '#F7D57F' }),
+                style({backgroundColor: '#F7D57F'}),
                 animate('400ms ease', style({
                     transform: 'translateY(0)'
                 })),
-                animate('400ms 1500ms ease', style({ backgroundColor: '*' }))
+                animate('400ms 1500ms ease', style({backgroundColor: '*'}))
             ])),
             transition(':increment, :leave', group([
                 style({transform: 'translateY(-24px)'}),
@@ -28,7 +30,14 @@ import { DatagridStore } from '../state/datagrid-store';
             ]))
         ])
     ],
-    changeDetection: ChangeDetectionStrategy.OnPush
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    imports: [
+        NgForOf,
+        PushPipe,
+        LowerCasePipe,
+        NgClass
+    ],
+    standalone: true
 })
 export class DatagridTicker {
     public readonly events$: Observable<Event[]>;

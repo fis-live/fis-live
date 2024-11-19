@@ -1,11 +1,18 @@
+import { UpperCasePipe } from '@angular/common';
 import { ChangeDetectionStrategy, Component, EventEmitter, Input, Output } from '@angular/core';
 
 import { State as RaceInfoState } from '../../state/reducers/race-info';
+import { IconComponent } from '../icon/icon.component';
 
 @Component({
     selector: 'app-header',
     templateUrl: './header.component.html',
-    changeDetection: ChangeDetectionStrategy.OnPush
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    imports: [
+        IconComponent,
+        UpperCasePipe
+    ],
+    standalone: true
 })
 export class HeaderComponent {
     @Input()

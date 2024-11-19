@@ -1,4 +1,5 @@
 import { animate, style, transition, trigger } from '@angular/animations';
+import { AsyncPipe, NgClass, NgForOf, NgTemplateOutlet } from '@angular/common';
 import {
     ChangeDetectionStrategy,
     ChangeDetectorRef,
@@ -12,10 +13,12 @@ import {
     Renderer2,
     TemplateRef
 } from '@angular/core';
+import { PushPipe } from '@ngrx/component';
 import { Observable } from 'rxjs';
-import { pluck } from 'rxjs/operators';
+import { map } from 'rxjs/operators';
 
 import { AbstractPopover } from '../../utils/abstract-popover';
+import { IconComponent } from '../icon/icon.component';
 
 import { KeysOfType, Option, OptionSelector } from './option-selector';
 
@@ -24,10 +27,17 @@ export const APP_OPTIONS = new InjectionToken<OptionSelector<any, any>>('app.opt
 @Component({
     selector: 'app-select',
     templateUrl: './select.html',
-    host : {
+    host: {
         '[class.dropdown]': 'true'
     },
     changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: true,
+    imports: [
+        IconComponent,
+        PushPipe,
+        NgClass,
+        NgTemplateOutlet
+    ],
     animations: [
         trigger('animate', [
             transition(':enter', [
@@ -52,8 +62,8 @@ export class SelectComponent<T, V> extends AbstractPopover implements OnInit {
     }
 
     ngOnInit() {
-        this.options = this.provider.getOptions().pipe(pluck(this.key));
-        this.render = this.provider.getRenderSelectionChanged().pipe(pluck(this.key));
+        this.options = this.provider.getOptions().pipe(map(opt => opt[this.key]));
+        this.render = this.provider.getRenderSelectionChanged().pipe(map(opt => opt[this.key]));
     }
 
     public select(item: Option<V>) {

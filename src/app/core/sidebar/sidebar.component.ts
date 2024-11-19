@@ -1,8 +1,12 @@
 import { animate, style, transition, trigger } from '@angular/animations';
-import { CdkDragDrop } from '@angular/cdk/drag-drop';
+import { CdkDragDrop, CdkDragHandle, CdkDropList } from '@angular/cdk/drag-drop';
+import { NgForOf, NgIf } from '@angular/common';
 import {
     ChangeDetectionStrategy, Component, EventEmitter, Input, Output
 } from '@angular/core';
+import { FormsModule } from '@angular/forms';
+import { RouterLink, RouterLinkActive } from '@angular/router';
+import { LetDirective, PushPipe } from '@ngrx/component';
 import { Store } from '@ngrx/store';
 import { BehaviorSubject, combineLatest, Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
@@ -27,6 +31,7 @@ import {
     selectFavoriteRacers,
     selectRacesByPlace
 } from '../../state/reducers';
+import { IconComponent } from '../icon/icon.component';
 
 @Component({
     selector: 'app-sidebar',
@@ -43,6 +48,19 @@ import {
             ])
         ])
     ],
+    imports: [
+        IconComponent,
+        NgForOf,
+        NgIf,
+        PushPipe,
+        RouterLink,
+        RouterLinkActive,
+        CdkDropList,
+        CdkDragHandle,
+        FormsModule,
+        LetDirective
+    ],
+    standalone: true
 })
 export class SidebarComponent {
     @Input() public isOpen = false;

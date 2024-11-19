@@ -1,4 +1,5 @@
 import { animate, style, transition, trigger } from '@angular/animations';
+import { NgClass } from '@angular/common';
 import {
     ChangeDetectionStrategy,
     Component,
@@ -9,11 +10,17 @@ import {
 import { Action } from '@ngrx/store';
 
 import { Alert } from '../../state/reducers/alert';
+import { IconComponent } from '../icon/icon.component';
 
 @Component({
     selector: 'app-alert',
     templateUrl: './alert.component.html',
     changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: true,
+    imports: [
+        NgClass,
+        IconComponent
+    ],
     animations: [
         trigger('translate', [
             transition(':enter', [

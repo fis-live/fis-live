@@ -1,5 +1,9 @@
 import { animate, style, transition, trigger } from '@angular/animations';
+import { NgForOf, NgIf } from '@angular/common';
 import { ChangeDetectionStrategy, Component } from '@angular/core';
+import { FormsModule } from '@angular/forms';
+import { IconComponent } from '../../core/icon/icon.component';
+import { FocusDirective } from '../../utils/focus.directive';
 
 import { Filter } from './filter';
 
@@ -14,7 +18,15 @@ import { Filter } from './filter';
                 animate('200ms ease', style({width: '*'}))
             ])
         ])
-    ]
+    ],
+    imports: [
+        FocusDirective,
+        NgIf,
+        IconComponent,
+        NgForOf,
+        FormsModule
+    ],
+    standalone: true
 })
 export class DatagridFilter<T> {
     public open: boolean = false;

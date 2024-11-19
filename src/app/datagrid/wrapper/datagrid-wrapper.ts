@@ -1,19 +1,34 @@
+import { NgIf } from '@angular/common';
 import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
+import { PushPipe } from '@ngrx/component';
 import { select } from '@ngrx/store';
+import { NgScrollbar } from 'ngx-scrollbar';
 import { Observable } from 'rxjs';
 
 import { APP_OPTIONS } from '../../core/select/select';
+import { Datagrid } from '../datagrid';
 import { Filter } from '../filter/filter';
+import { DatagridHeader } from '../header/datagrid-header';
 import { Sort } from '../sort/sort';
 import { DatagridStore } from '../state/datagrid-store';
 import { DatagridState } from '../state/model';
 import { TableDataSource } from '../state/table-data-source';
+import { DatagridTicker } from '../ticker/datagrid-ticker';
 
 @Component({
     selector: 'app-dg-wrapper',
     templateUrl: './datagrid-wrapper.html',
-    providers: [DatagridStore, TableDataSource, Filter, Sort, { provide: APP_OPTIONS, useExisting: DatagridStore }],
-    changeDetection: ChangeDetectionStrategy.OnPush
+    providers: [DatagridStore, TableDataSource, Filter, Sort, {provide: APP_OPTIONS, useExisting: DatagridStore}],
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    imports: [
+        NgScrollbar,
+        DatagridHeader,
+        Datagrid,
+        PushPipe,
+        DatagridTicker,
+        NgIf
+    ],
+    standalone: true
 })
 export class DatagridWrapper {
     public config$: Observable<DatagridState>;

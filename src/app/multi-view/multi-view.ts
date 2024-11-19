@@ -1,7 +1,14 @@
+import { CdkTableModule } from '@angular/cdk/table';
+import { NgIf } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
+import { PushPipe } from '@ngrx/component';
+import { NgScrollbar } from 'ngx-scrollbar';
 import { Observable } from 'rxjs';
 import { map, tap } from 'rxjs/operators';
+import { HeaderComponent } from '../core/header/header.component';
+import { IconComponent } from '../core/icon/icon.component';
+import { SidebarComponent } from '../core/sidebar/sidebar.component';
 
 import { Sort } from '../datagrid/sort/sort';
 import { Prop } from '../datagrid/state/model';
@@ -14,7 +21,17 @@ import { Comparator } from './compare-races';
 @Component({
     selector: 'app-multi-view',
     templateUrl: './multi-view.html',
-    providers: [Sort]
+    providers: [Sort],
+    imports: [
+        HeaderComponent,
+        SidebarComponent,
+        NgScrollbar,
+        CdkTableModule,
+        PushPipe,
+        IconComponent,
+        NgIf
+    ],
+    standalone: true
 })
 export class MultiView implements OnInit {
     public rows$: Observable<{

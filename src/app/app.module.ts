@@ -38,25 +38,7 @@ import { TickPipe } from './utils/tick.pipe';
 
 @NgModule({
     declarations: [
-        AlertComponent,
-        AppComponent,
-        ContainerComponent,
-        Datagrid,
-        DatagridFilter,
-        DatagridHeader,
-        DatagridSettings,
-        DatagridSort,
-        DatagridTicker,
-        DatagridWrapper,
-        Details,
-        FocusDirective,
-        HeaderComponent,
-        IconComponent,
-        SelectComponent,
-        SidebarComponent,
-        FormatNamePipe,
-        TickPipe,
-        SprintGrid
+        AppComponent
     ],
     imports: [
         BrowserAnimationsModule,
@@ -65,7 +47,7 @@ import { TickPipe } from './utils/tick.pipe';
         DragDropModule,
         FormsModule,
         HttpClientModule,
-        RouterModule.forRoot(appRoutes, { useHash: true }),
+        RouterModule.forRoot(appRoutes, {useHash: true}),
         StoreModule.forRoot(reducers, {
             runtimeChecks: {
                 strictStateImmutability: true,
@@ -79,7 +61,25 @@ import { TickPipe } from './utils/tick.pipe';
         NgScrollbarModule,
         devModules,
         PushPipe,
-        LetDirective
+        LetDirective,
+        AlertComponent,
+        FocusDirective,
+        IconComponent,
+        TickPipe,
+        HeaderComponent,
+        SelectComponent,
+        SidebarComponent,
+        SprintGrid,
+        ContainerComponent,
+        Details,
+        DatagridWrapper,
+        DatagridTicker,
+        DatagridSort,
+        DatagridSettings,
+        DatagridHeader,
+        DatagridFilter,
+        Datagrid,
+        FormatNamePipe
     ],
     providers: [
         Title,
@@ -91,7 +91,7 @@ import { TickPipe } from './utils/tick.pipe';
             }
         }
     ],
-    bootstrap: [ AppComponent ]
+    bootstrap: [AppComponent]
 })
 export class AppModule {
 

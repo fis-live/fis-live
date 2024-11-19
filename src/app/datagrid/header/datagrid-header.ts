@@ -1,18 +1,35 @@
+import { NgForOf, NgIf } from '@angular/common';
 import { ChangeDetectionStrategy, Component } from '@angular/core';
+import { FormsModule } from '@angular/forms';
+import { LetDirective, PushPipe } from '@ngrx/component';
 import { select, Store } from '@ngrx/store';
 import { Observable, of } from 'rxjs';
 import { map, switchMap } from 'rxjs/operators';
+import { SelectComponent } from '../../core/select/select';
 
 import { Racer } from '../../fis/cross-country/models';
 import { isBonus } from '../../fis/fis-constants';
 import { AppState, getResultState, selectAllRacers } from '../../state/reducers';
 import { guid } from '../../utils/utils';
+import { DatagridSettings } from '../datagrid-settings';
+import { DatagridFilter } from '../filter/datagrid-filter';
 import { DatagridStore } from '../state/datagrid-store';
 
 @Component({
     selector: 'app-dg-header',
     templateUrl: './datagrid-header.html',
-    changeDetection: ChangeDetectionStrategy.OnPush
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    imports: [
+        LetDirective,
+        NgIf,
+        SelectComponent,
+        FormsModule,
+        NgForOf,
+        PushPipe,
+        DatagridFilter,
+        DatagridSettings
+    ],
+    standalone: true
 })
 export class DatagridHeader {
     public readonly guid = guid();

@@ -1,148 +1,151 @@
-<div @animate *ngIf="isOpen" class="sidebar">
+@if (isOpen) {
+    <div @animate class="sidebar">
 
-    <div style="padding: 5px;">
-            <input class="clr-input" style="font-size: 11px;" (keyup.enter)="go(codex.value)" #codex placeholder="Enter codex..." type="text">&nbsp;
-            <button (click)="go(codex.value)" class="btn btn-sm btn-primary">Go</button>
-        <button type="button" class="close" aria-label="Close" (click)="close()">
-            <clr-icon shape="times" [size]="32"></clr-icon>
-        </button>
-    </div>
-
-    <ul class="nav" role="tablist">
-        <li role="presentation" class="nav-item">
-            <button (click)="tab = 'live'" [class.active]="tab === 'live'" class="btn btn-link nav-link" type="button">
-                Live
+        <div style="padding: 5px;">
+                <input class="clr-input" style="font-size: 11px;" (keyup.enter)="go(codex.value)" #codex placeholder="Enter codex..." type="text">&nbsp;
+                <button (click)="go(codex.value)" class="btn btn-sm btn-primary">Go</button>
+            <button type="button" class="close" aria-label="Close" (click)="close()">
+                <clr-icon shape="times" [size]="32"></clr-icon>
             </button>
-        </li>
-        <li role="presentation" class="nav-item">
-            <button (click)="tab = 'sync'" [class.active]="tab === 'sync'" class="btn btn-link nav-link" type="button">
-                Sync
-            </button>
-        </li>
-        <li role="presentation" class="nav-item">
-            <button (click)="tab = 'settings'" [class.active]="tab === 'settings'" class="btn btn-link nav-link" type="button">
-                Settings
-            </button>
-        </li>
-    </ul>
-
-
-    <ng-container *ngIf="tab === 'live'">
-        <nav class="sidenav">
-            <section *ngIf="upcomingRaces$ | ngrxPush as upcoming" class="sidenav-content">
-                <section *ngFor="let races of upcoming" class="nav-group collapsible">
-                    <input [checked]="!races.date.startsWith('Today')" [attr.id]="'races' + races.date" type="checkbox">
-                    <label [attr.for]="'races' + races.date">{{ races.date }}<span *ngIf="races.liveCount > 0" class="badge badge-success">{{ races.liveCount }}</span></label>
-                    <ul class="nav-list">
-                        <ng-container *ngFor="let place of races.places">
-                            <li class="place">{{ place.place }}</li>
-                            <li *ngFor="let race of place.races" >
-                                <a (click)="close()" [routerLink]="['', race.sector, race.codex]" routerLinkActive="active" class="nav-link">{{ race.discipline }}
-                                    <span class="nav-link-tag">{{ race.category }}&nbsp;{{ race.gender }}</span>
-                                    <span [class.label-info]="race.status == 'Results'" [class.label-success]="race.status == 'Live'" class="label">{{ race.status ? race.status : race.time }}</span>
-                                </a>
-                            </li>
-                        </ng-container>
-                    </ul>
-                </section>
-                <section style="line-height: 48px; text-align: center" *ngIf="upcoming?.length === 0">No events live</section>
-            </section>
-        </nav>
-    </ng-container>
-
-    <ng-container *ngIf="tab === 'settings'">
-        <div style="padding: 20px;">
-            <div class="clr-toggle-wrapper">
-                <input type="checkbox" id="ind-details" name="toggle-basic" class="clr-toggle" [ngModel]="indDetailsEnabled$ | ngrxPush" (ngModelChange)="toggleIndividualDetails()">
-                <label for="ind-details">Ind. Details</label>
-            </div>
-
-            <div class="clr-toggle-wrapper">
-                <input type="checkbox" id="toggle-ticker" name="toggle-basic" class="clr-toggle" [ngModel]="tickerEnabled$ | ngrxPush" (ngModelChange)="toggleTicker()">
-                <label for="toggle-ticker">Enable ticker</label>
-            </div>
-
-            <div class="clr-select-wrapper" style="display: block">
-                <label class="form-label" for="name-format">Name format</label>
-                <select style="float: right" id="name-format" name="toggle-basic" class="clr-select" [ngModel]="nameFormat$ | ngrxPush" (ngModelChange)="setNameFormat($event)">
-                    <option value="f l">Ebba Andersson</option>
-                    <option value="L f">ANDERSSON Ebba</option>
-                    <option value="i. l">E. Andersson</option>
-                </select>
-            </div>
-
-            <h4>
-                Default Columns
-            </h4>
-            <ul class="switch-content list-unstyled" cdkDropList (cdkDropListDropped)="onDrop($event)">
-                <li class="clr-checkbox-wrapper" *ngFor="let col of columns$ | ngrxPush; trackBy: trackBy" cdkDrag>
-                    <input type="checkbox" [checked]="col.toggled" [id]="col.id" (change)="toggleColumn(col.id)">
-                    <label [for]="col.id">{{ col.name }}</label>
-                    <clr-icon class="column-drag-handle" cdkDragHandle shape="drag-handle"></clr-icon>
-                </li>
-            </ul>
-
-            <h4>
-                Favorites
-            </h4>
-            <div class="clr-select-wrapper">
-                <select id="select-favorite" class="clr-select" [ngModel]="null" (ngModelChange)="toggleFavorite($event)">
-                    <option [ngValue]="null">Add favorite:</option>
-                    <option *ngFor="let racer of racers$ | ngrxPush"
-                            [ngValue]="racer">{{ racer.display }}</option>
-
-                </select>
-            </div>
-            <ul class="switch-content list-unstyled">
-                <li class="clr-checkbox-wrapper" *ngFor="let racer of favoriteRacers$ | ngrxPush">
-                    <button style="min-width: 0.75rem; padding-left: 0; padding-right: 0; margin: 0 0 0 -1px;"
-                            type="button" class="btn btn-sm btn-link btn-icon-link" [id]="racer.id" (click)="toggleFavorite(racer)">
-                        <clr-icon [class.is-solid]="racer.isFavorite" shape="star"></clr-icon>
-                    </button>
-                    <label style="padding-left: 4px" [for]="racer.id">{{ racer.display }}</label>
-                </li>
-            </ul>
         </div>
-    </ng-container>
 
-    <ng-container *ngIf="tab === 'sync'">
-        <div style="padding: 20px;">
-            <div class="clr-input-wrapper">
-                <label for="delay" class="form-label">Delay</label>
-                <span style="float: right;">&nbsp;ms</span>
-                <input class="clr-input" type="number" id="delay" [ngModel]="delay$ | ngrxPush" (ngModelChange)="setDelay($event)" placeholder="Enter value here" style="float: right; width: 100px;">
-            </div>
+        <ul class="nav" role="tablist">
+            <li role="presentation" class="nav-item">
+                <button (click)="tab = 'live'" [class.active]="tab === 'live'" class="btn btn-link nav-link" type="button">
+                    Live
+                </button>
+            </li>
+            <li role="presentation" class="nav-item">
+                <button (click)="tab = 'sync'" [class.active]="tab === 'sync'" class="btn btn-link nav-link" type="button">
+                    Sync
+                </button>
+            </li>
+            <li role="presentation" class="nav-item">
+                <button (click)="tab = 'settings'" [class.active]="tab === 'settings'" class="btn btn-link nav-link" type="button">
+                    Settings
+                </button>
+            </li>
+        </ul>
 
-            <h5 style="margin-left: -5px; margin-bottom: 5px;">Sync from updates</h5>
 
-            <div class="clr-select-wrapper" style="width: 100%">
-                <label for="select-inter" class="form-label">Filter</label>
-                <select class="clr-select" id="select-inter" style="float:right" [ngModel]="selectedInter | ngrxPush" (ngModelChange)="next($event)">
-                    <option *ngFor="let inter of intermediates$ | ngrxPush" [value]="inter.key">{{ inter.name }}</option>
-                </select>
-            </div>
+        @switch (tab) {
+            @case ('live') {
+                <nav class="sidenav">
+                    <section *ngIf="upcomingRaces$ | ngrxPush as upcoming" class="sidenav-content">
+                        <section *ngFor="let races of upcoming" class="nav-group collapsible">
+                            <input [checked]="!races.date.startsWith('Today')" [attr.id]="'races' + races.date" type="checkbox">
+                            <label [attr.for]="'races' + races.date">{{ races.date }}<span *ngIf="races.liveCount > 0" class="badge badge-success">{{ races.liveCount }}</span></label>
+                            <ul class="nav-list">
+                                <ng-container *ngFor="let place of races.places">
+                                    <li class="place">{{ place.place }}</li>
+                                    <li *ngFor="let race of place.races" >
+                                        <a (click)="close()" [routerLink]="['', race.sector, race.codex]" routerLinkActive="active" class="nav-link">{{ race.discipline }}
+                                            <span class="nav-link-tag">{{ race.category }}&nbsp;{{ race.gender }}</span>
+                                            <span [class.label-info]="race.status == 'Results'" [class.label-success]="race.status == 'Live'" class="label">{{ race.status ? race.status : race.time }}</span>
+                                        </a>
+                                    </li>
+                                </ng-container>
+                            </ul>
+                        </section>
+                        <section style="line-height: 48px; text-align: center" *ngIf="upcoming?.length === 0">No events live</section>
+                    </section>
+                </nav>
+            }
 
-            <ng-container *ngrxLet="events$; let events">
-                <div class="list" *ngIf="events && events.length > 0; else elseTpl">
-                    <div *ngFor="let event of events" class="item">
-                        <div style="flex: 1">
-                            <div style="line-height: 20px; font-weight: bold;">{{ event.racer.display }}</div>
-                            <div style="line-height: 16px; font-size: 10px;">{{ event.diff }}s</div>
-                        </div>
-                        <div>
-                            <button type="button" class="btn btn-sm" aria-label="Sync" (click)="sync(event.timestamp)">
-                                Sync
-                            </button>
-                        </div>
+            @case ('settings') {
+                <div style="padding: 20px;">
+                    <div class="clr-toggle-wrapper">
+                        <input type="checkbox" id="ind-details" name="toggle-basic" class="clr-toggle" [ngModel]="indDetailsEnabled$ | ngrxPush" (ngModelChange)="toggleIndividualDetails()">
+                        <label for="ind-details">Ind. Details</label>
                     </div>
+
+                    <div class="clr-toggle-wrapper">
+                        <input type="checkbox" id="toggle-ticker" name="toggle-basic" class="clr-toggle" [ngModel]="tickerEnabled$ | ngrxPush" (ngModelChange)="toggleTicker()">
+                        <label for="toggle-ticker">Enable ticker</label>
+                    </div>
+
+                    <div class="clr-select-wrapper" style="display: block">
+                        <label class="form-label" for="name-format">Name format</label>
+                        <select style="float: right" id="name-format" name="toggle-basic" class="clr-select" [ngModel]="nameFormat$ | ngrxPush" (ngModelChange)="setNameFormat($event)">
+                            <option value="f l">Ebba Andersson</option>
+                            <option value="L f">ANDERSSON Ebba</option>
+                            <option value="i. l">E. Andersson</option>
+                        </select>
+                    </div>
+
+                    <h4>
+                        Default Columns
+                    </h4>
+                    <ul class="switch-content list-unstyled" cdkDropList (cdkDropListDropped)="onDrop($event)">
+                        <li class="clr-checkbox-wrapper" *ngFor="let col of columns$ | ngrxPush; trackBy: trackBy" cdkDrag>
+                            <input type="checkbox" [checked]="col.toggled" [id]="col.id" (change)="toggleColumn(col.id)">
+                            <label [for]="col.id">{{ col.name }}</label>
+                            <clr-icon class="column-drag-handle" cdkDragHandle shape="drag-handle"></clr-icon>
+                        </li>
+                    </ul>
+
+                    <h4>
+                        Favorites
+                    </h4>
+                    <div class="clr-select-wrapper">
+                        <select id="select-favorite" class="clr-select" [ngModel]="null" (ngModelChange)="toggleFavorite($event)">
+                            <option [ngValue]="null">Add favorite:</option>
+                            <option *ngFor="let racer of racers$ | ngrxPush"
+                                    [ngValue]="racer">{{ racer.display }}</option>
+
+                        </select>
+                    </div>
+                    <ul class="switch-content list-unstyled">
+                        <li class="clr-checkbox-wrapper" *ngFor="let racer of favoriteRacers$ | ngrxPush">
+                            <button style="min-width: 0.75rem; padding-left: 0; padding-right: 0; margin: 0 0 0 -1px;"
+                                    type="button" class="btn btn-sm btn-link btn-icon-link" [id]="racer.id" (click)="toggleFavorite(racer)">
+                                <clr-icon [class.is-solid]="racer.isFavorite" shape="star"></clr-icon>
+                            </button>
+                            <label style="padding-left: 4px" [for]="racer.id">{{ racer.display }}</label>
+                        </li>
+                    </ul>
                 </div>
+            }
 
-                <ng-template #elseTpl>
-                    <section style="line-height: 48px; text-align: center">No updates found</section>
-                </ng-template>
+            @case ('sync') {
+                <div style="padding: 20px;">
+                    <div class="clr-input-wrapper">
+                        <label for="delay" class="form-label">Delay</label>
+                        <span style="float: right;">&nbsp;ms</span>
+                        <input class="clr-input" type="number" id="delay" [ngModel]="delay$ | ngrxPush" (ngModelChange)="setDelay($event)" placeholder="Enter value here" style="float: right; width: 100px;">
+                    </div>
 
-            </ng-container>
-        </div>
-    </ng-container>
+                    <h5 style="margin-left: -5px; margin-bottom: 5px;">Sync from updates</h5>
 
-</div>
+                    <div class="clr-select-wrapper" style="width: 100%">
+                        <label for="select-inter" class="form-label">Filter</label>
+                        <select class="clr-select" id="select-inter" style="float:right" [ngModel]="selectedInter | ngrxPush" (ngModelChange)="next($event)">
+                            <option *ngFor="let inter of intermediates$ | ngrxPush" [value]="inter.key">{{ inter.name }}</option>
+                        </select>
+                    </div>
+
+                    <ng-container *ngrxLet="events$; let events">
+                        <div class="list" *ngIf="events && events.length > 0; else elseTpl">
+                            <div *ngFor="let event of events" class="item">
+                                <div style="flex: 1">
+                                    <div style="line-height: 20px; font-weight: bold;">{{ event.racer.display }}</div>
+                                    <div style="line-height: 16px; font-size: 10px;">{{ event.diff }}s</div>
+                                </div>
+                                <div>
+                                    <button type="button" class="btn btn-sm" aria-label="Sync" (click)="sync(event.timestamp)">
+                                        Sync
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <ng-template #elseTpl>
+                            <section style="line-height: 48px; text-align: center">No updates found</section>
+                        </ng-template>
+
+                    </ng-container>
+                </div>
+            }
+        }
+    </div>
+}

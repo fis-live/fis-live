@@ -1,6 +1,10 @@
-import { CdkDragDrop } from '@angular/cdk/drag-drop';
+import { CdkDragDrop, CdkDragHandle, CdkDropList } from '@angular/cdk/drag-drop';
+import { NgForOf, NgIf } from '@angular/common';
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, Renderer2 } from '@angular/core';
+import { FormsModule } from '@angular/forms';
+import { PushPipe } from '@ngrx/component';
 import { Observable } from 'rxjs';
+import { IconComponent } from '../core/icon/icon.component';
 
 import { AbstractPopover } from '../utils/abstract-popover';
 
@@ -10,7 +14,17 @@ import { Column } from './state/model';
 @Component({
     selector: 'app-dg-settings',
     templateUrl: './datagrid-settings.html',
-    changeDetection: ChangeDetectionStrategy.OnPush
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    imports: [
+        IconComponent,
+        PushPipe,
+        NgForOf,
+        CdkDropList,
+        CdkDragHandle,
+        NgIf,
+        FormsModule
+    ],
+    standalone: true
 })
 export class DatagridSettings extends AbstractPopover {
     public columns$: Observable<Column[]>;

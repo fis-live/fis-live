@@ -1,11 +1,15 @@
+import { CdkTableModule } from '@angular/cdk/table';
+import { NgClass } from '@angular/common';
 import { ChangeDetectionStrategy, Component } from '@angular/core';
+import { PushPipe } from '@ngrx/component';
 import { ComponentStore } from '@ngrx/component-store';
 import { Store } from '@ngrx/store';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
+import { IconComponent } from '../../core/icon/icon.component';
 
 import { Option, OptionSelector } from '../../core/select/option-selector';
-import { APP_OPTIONS } from '../../core/select/select';
+import { APP_OPTIONS, SelectComponent } from '../../core/select/select';
 import { Mark, Racer } from '../../fis/cross-country/models';
 import { isBonus, maxVal } from '../../fis/fis-constants';
 import { toggleIndividualDetailsTab } from '../../state/actions/settings';
@@ -22,7 +26,15 @@ interface State {
     selector: 'app-details',
     templateUrl: 'details.html',
     providers: [{provide: APP_OPTIONS, useExisting: Details}],
-    changeDetection: ChangeDetectionStrategy.OnPush
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    imports: [
+        SelectComponent,
+        IconComponent,
+        NgClass,
+        CdkTableModule,
+        PushPipe
+    ],
+    standalone: true
 })
 export class Details extends ComponentStore<State> implements OptionSelector<State, Racer> {
     public readonly rows$: Observable<any[]>;

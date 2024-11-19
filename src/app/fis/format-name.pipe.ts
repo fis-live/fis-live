@@ -4,7 +4,8 @@ import { Racer } from './cross-country/models';
 
 @Pipe({
     name: 'formatName',
-    pure: true
+    pure: true,
+    standalone: true
 })
 export class FormatNamePipe implements PipeTransform {
 

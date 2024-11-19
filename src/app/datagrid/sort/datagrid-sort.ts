@@ -3,7 +3,8 @@ import { Directive, HostBinding, HostListener, Input } from '@angular/core';
 import { Sort } from './sort';
 
 @Directive({
-    selector : '[appDgSort]'
+    selector : '[appDgSort]',
+    standalone: true
 })
 export class DatagridSort {
     @Input('appDgSort')

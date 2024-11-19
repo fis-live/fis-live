@@ -21,7 +21,7 @@ const icons = [
     'star'
 ];
 
-var template = '';
+var template = '@switch (shape) {';
 
 var yellowCardIcon = '<svg version="1.0" id="Calque_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"\n' +
     '     width="183.275px" height="125.473px" viewBox="0 0 183.275 125.473" enable-background="new 0 0 183.275 125.473"\n' +
@@ -36,9 +36,9 @@ var yellowCardIcon = '<svg version="1.0" id="Calque_1" xmlns="http://www.w3.org/
     '</svg>';
 
 icons.forEach(function(icon) {
-    template += '\n<ng-container *ngIf="shape === \'' + icon + '\'">\n\t\t\t' + AllShapes[icon].trim() + '\n</ng-container>\n';
+    template += '\n\t@case (\'' + icon + '\') {\n\t\t\t' + AllShapes[icon].trim() + '\n\t}\n';
 });
 
-template +=  '\n<ng-container *ngIf="shape === \'yc\'">\n\t\t\t' + yellowCardIcon + '\n</ng-container>\n';
+template +=  '\n\t@case (\'yc\') {\n\t\t\t' + yellowCardIcon + '\n\t}\n}';
 
 fs.writeFile('src/app/core/icon/icon.component.html', template, (err) => {console.log(err)});

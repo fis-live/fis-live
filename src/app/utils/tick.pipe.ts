@@ -9,7 +9,8 @@ import { formatTime } from './utils';
 
 @Pipe({
     name: 'appTick',
-    pure: false
+    pure: false,
+    standalone: true
 })
 export class TickPipe implements PipeTransform, OnDestroy {
     private renderedValue: string = '';

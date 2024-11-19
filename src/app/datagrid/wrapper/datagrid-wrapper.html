@@ -4,4 +4,6 @@
     <app-datagrid [config]="config$ | ngrxPush"></app-datagrid>
 </ng-scrollbar>
 
-<app-dg-ticker *ngIf="tickerEnabled$ | ngrxPush" class="ticker"></app-dg-ticker>
+@if (tickerEnabled$ | ngrxPush) {
+    <app-dg-ticker class="ticker"></app-dg-ticker>
+}

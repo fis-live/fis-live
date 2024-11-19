@@ -1,19 +1,38 @@
+import { NgForOf, NgIf } from '@angular/common';
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
+import { PushPipe } from '@ngrx/component';
 import { Store } from '@ngrx/store';
 import { Observable, Subscription } from 'rxjs';
 import { map } from 'rxjs/operators';
+import { AppModule } from '../app.module';
+import { Details } from '../datagrid/details/details';
+import { DatagridWrapper } from '../datagrid/wrapper/datagrid-wrapper';
 
 import { Run } from '../fis/cross-country/models';
+import { SprintGrid } from '../sprintgrid/sprint-grid';
 import { loadMain } from '../state/actions/connection';
 import { AppState, getLoadingState, getRaceInfoState, getResultState, getSettingsState } from '../state/reducers/';
 import { State as LoadingState } from '../state/reducers/loading';
 import { State as RaceInfoState } from '../state/reducers/race-info';
 import { WindowSize } from '../utils/window-size';
+import { HeaderComponent } from './header/header.component';
+import { SidebarComponent } from './sidebar/sidebar.component';
 
 @Component({
     selector: 'app-container',
     templateUrl: './container.component.html',
+    imports: [
+        SidebarComponent,
+        HeaderComponent,
+        NgIf,
+        PushPipe,
+        SprintGrid,
+        NgForOf,
+        Details,
+        DatagridWrapper
+    ],
+    standalone: true
 })
 export class ContainerComponent implements OnInit, OnDestroy {
     public codex?: number;

@@ -1,8 +1,12 @@
 import { animate, keyframes, query, style, transition, trigger } from '@angular/animations';
+import { CdkTableModule } from '@angular/cdk/table';
+import { NgClass, NgIf } from '@angular/common';
 import { Component, Input } from '@angular/core';
+import { PushPipe } from '@ngrx/component';
 import { Store } from '@ngrx/store';
 import { EMPTY, Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
+import { IconComponent } from '../core/icon/icon.component';
 
 import { Sort } from '../datagrid/sort/sort';
 import { Prop, ResultItem } from '../datagrid/state/model';
@@ -19,14 +23,22 @@ import { formatTime } from '../utils/utils';
             transition(':increment', [
                 query('td > div', [
                     animate('1000ms ease', keyframes([
-                        style({ backgroundColor: '#9BD8F3' }),
-                        style({ backgroundColor: '*'})
+                        style({backgroundColor: '#9BD8F3'}),
+                        style({backgroundColor: '*'})
                     ]))
                 ])
             ])
         ])
     ],
-    providers: [ Sort ]
+    providers: [Sort],
+    imports: [
+        CdkTableModule,
+        IconComponent,
+        PushPipe,
+        NgIf,
+        NgClass
+    ],
+    standalone: true
 })
 export class SprintGrid {
     public rows$: Observable<ResultItem[]> = EMPTY;
