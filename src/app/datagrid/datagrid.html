@@ -1,4 +1,4 @@
-<table class="datagrid {{ config.breakpoint }}" cdk-table [dataSource]="rows$ | ngrxPush" [trackBy]="track">
+<table class="datagrid {{ config.breakpoint }}" cdk-table [dataSource]="(rows$ | ngrxPush)!" [trackBy]="track">
 
     <!-- Order Definition -->
     <ng-container cdkColumnDef="order">

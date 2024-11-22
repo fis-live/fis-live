@@ -6,14 +6,15 @@ import { ComponentStore } from '@ngrx/component-store';
 import { Store } from '@ngrx/store';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
-import { IconComponent } from '../../core/icon/icon.component';
 
+import { IconComponent } from '../../core/icon/icon.component';
 import { Option, OptionSelector } from '../../core/select/option-selector';
 import { APP_OPTIONS, SelectComponent } from '../../core/select/select';
 import { Mark, Racer } from '../../fis/cross-country/models';
 import { isBonus, maxVal } from '../../fis/fis-constants';
 import { toggleIndividualDetailsTab } from '../../state/actions/settings';
 import { AppState, getResultState, selectAllRacers } from '../../state/reducers';
+import { TickPipe } from '../../utils/tick.pipe';
 import { formatTime } from '../../utils/utils';
 
 
@@ -32,7 +33,8 @@ interface State {
         IconComponent,
         NgClass,
         CdkTableModule,
-        PushPipe
+        PushPipe,
+        TickPipe
     ],
     standalone: true
 })

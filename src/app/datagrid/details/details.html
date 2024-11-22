@@ -27,7 +27,7 @@
         </li>
     </ul>
 
-    <table class="datagrid" cdk-table [dataSource]="rows$ | ngrxPush" [trackBy]="track">
+    <table class="datagrid" cdk-table [dataSource]="(rows$ | ngrxPush)!" [trackBy]="track">
 
         <!-- Intermediate Definition -->
         <ng-container cdkColumnDef="intermediate">

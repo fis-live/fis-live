@@ -1,13 +1,14 @@
 import { animate, group, keyframes, query, style, transition, trigger } from '@angular/animations';
 import { CdkTableModule } from '@angular/cdk/table';
-import { NgForOf, NgIf } from '@angular/common';
+import { NgClass, NgForOf, NgIf } from '@angular/common';
 import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
 import { LetDirective, PushPipe } from '@ngrx/component';
 import { Observable } from 'rxjs';
+
 import { IconComponent } from '../core/icon/icon.component';
 import { FormatNamePipe } from '../fis/format-name.pipe';
-import { DatagridSort } from './sort/datagrid-sort';
 
+import { DatagridSort } from './sort/datagrid-sort';
 import { DatagridStore } from './state/datagrid-store';
 import { ColumnDef, DatagridState, ResultItem } from './state/model';
 import { TableDataSource } from './state/table-data-source';
@@ -52,7 +53,8 @@ import { TableDataSource } from './state/table-data-source';
         DatagridSort,
         FormatNamePipe,
         IconComponent,
-        NgIf
+        NgIf,
+        NgClass
     ],
     standalone: true
 })

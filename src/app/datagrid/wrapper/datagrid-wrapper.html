@@ -1,7 +1,7 @@
 <app-dg-header class="action-bar"></app-dg-header>
 
-<ng-scrollbar class="segment" [disabled]="scrollbarDisabled">
-    <app-datagrid [config]="config$ | ngrxPush"></app-datagrid>
+<ng-scrollbar class="segment">
+    <app-datagrid [config]="(config$ | ngrxPush)!"></app-datagrid>
 </ng-scrollbar>
 
 @if (tickerEnabled$ | ngrxPush) {
