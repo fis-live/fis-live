@@ -97,6 +97,11 @@ export class Adapter {
 
         intermediates.push({type: 'start_list', key: 0, id: 0, distance: 0, name: 'Start list', short: '0 ' + raceInfo.lengthUnit});
 
+        if (main.racedef.length === 0) {
+            intermediates.push({type: 'finish', key: 1, id: 99, distance: 0, name: 'Finish', short: 'Finish'});
+            resultKeys.push(99);
+        }
+
         for (const def of main.racedef) {
             const index = main.racedef.indexOf(def);
             let name: string;

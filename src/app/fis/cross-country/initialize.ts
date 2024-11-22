@@ -44,7 +44,7 @@ export function initializeState(main: Main): State {
         intermediates: main.intermediates,
         interById: {},
         standings: {},
-        precision: main.raceInfo.discipline === 'SP' ? -2 : -1,
+        precision: (main.runInfo[1] === 'Q' || isMultipleRuns) ? -2 : -1,
         runs: [],
         isSprintFinals: isMultipleRuns,
         activeRun: runNo,
