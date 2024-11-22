@@ -14,8 +14,8 @@ import { Filter } from './filter';
     animations: [
         trigger('animate', [
             transition(':enter', [
-                style({width: 0}),
-                animate('200ms ease', style({width: '*'}))
+                style({ width: 0 }),
+                animate('200ms ease', style({ width: '*' }))
             ])
         ])
     ],
@@ -25,8 +25,7 @@ import { Filter } from './filter';
         IconComponent,
         NgForOf,
         FormsModule
-    ],
-    standalone: true
+    ]
 })
 export class DatagridFilter<T> {
     public open: boolean = false;

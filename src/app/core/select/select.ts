@@ -31,7 +31,6 @@ export const APP_OPTIONS = new InjectionToken<OptionSelector<any, any>>('app.opt
         '[class.dropdown]': 'true'
     },
     changeDetection: ChangeDetectionStrategy.OnPush,
-    standalone: true,
     imports: [
         IconComponent,
         PushPipe,
@@ -41,11 +40,11 @@ export const APP_OPTIONS = new InjectionToken<OptionSelector<any, any>>('app.opt
     animations: [
         trigger('animate', [
             transition(':enter', [
-                style({opacity: 0, transform: 'scaleY(0)'}),
-                animate('200ms ease', style({opacity: 1, transform: 'scaleY(1)'}))
+                style({ opacity: 0, transform: 'scaleY(0)' }),
+                animate('200ms ease', style({ opacity: 1, transform: 'scaleY(1)' }))
             ]),
             transition(':leave', [
-                animate('200ms ease', style({opacity: 0, transform: 'scaleY(0)'}))
+                animate('200ms ease', style({ opacity: 0, transform: 'scaleY(0)' }))
             ])
         ])
     ]

@@ -17,7 +17,7 @@ import { DatagridTicker } from '../ticker/datagrid-ticker';
 @Component({
     selector: 'app-dg-wrapper',
     templateUrl: './datagrid-wrapper.html',
-    providers: [DatagridStore, TableDataSource, Filter, Sort, {provide: APP_OPTIONS, useExisting: DatagridStore}],
+    providers: [DatagridStore, TableDataSource, Filter, Sort, { provide: APP_OPTIONS, useExisting: DatagridStore }],
     changeDetection: ChangeDetectionStrategy.OnPush,
     imports: [
         NgScrollbar,
@@ -25,8 +25,7 @@ import { DatagridTicker } from '../ticker/datagrid-ticker';
         Datagrid,
         PushPipe,
         DatagridTicker,
-    ],
-    standalone: true
+    ]
 })
 export class DatagridWrapper {
     public config$: Observable<DatagridState>;

@@ -40,11 +40,11 @@ import { IconComponent } from '../icon/icon.component';
     animations: [
         trigger('animate', [
             transition(':enter', [
-                style({transform: 'translateX(-100%)'}),
-                animate('200ms ease-out', style({transform: 'translateX(0)'}))
+                style({ transform: 'translateX(-100%)' }),
+                animate('200ms ease-out', style({ transform: 'translateX(0)' }))
             ]),
             transition(':leave', [
-                animate('200ms ease-out', style({transform: 'translateX(-100%)'}))
+                animate('200ms ease-out', style({ transform: 'translateX(-100%)' }))
             ])
         ])
     ],
@@ -59,8 +59,7 @@ import { IconComponent } from '../icon/icon.component';
         CdkDragHandle,
         FormsModule,
         LetDirective
-    ],
-    standalone: true
+    ]
 })
 export class SidebarComponent {
     @Input() public isOpen = false;

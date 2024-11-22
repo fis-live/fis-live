@@ -23,8 +23,8 @@ import { formatTime } from '../utils/utils';
             transition(':increment', [
                 query('td > div', [
                     animate('1000ms ease', keyframes([
-                        style({backgroundColor: '#9BD8F3'}),
-                        style({backgroundColor: '*'})
+                        style({ backgroundColor: '#9BD8F3' }),
+                        style({ backgroundColor: '*' })
                     ]))
                 ])
             ])
@@ -37,8 +37,7 @@ import { formatTime } from '../utils/utils';
         PushPipe,
         NgIf,
         NgClass
-    ],
-    standalone: true
+    ]
 })
 export class SprintGrid {
     public rows$: Observable<ResultItem[]> = EMPTY;

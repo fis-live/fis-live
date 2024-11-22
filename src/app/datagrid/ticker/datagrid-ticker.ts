@@ -15,15 +15,15 @@ import { DatagridStore } from '../state/datagrid-store';
     animations: [
         trigger('animation', [
             transition(':enter', group([
-                style({transform: 'translateY(-24px)'}),
-                style({backgroundColor: '#F7D57F'}),
+                style({ transform: 'translateY(-24px)' }),
+                style({ backgroundColor: '#F7D57F' }),
                 animate('400ms ease', style({
                     transform: 'translateY(0)'
                 })),
-                animate('400ms 1500ms ease', style({backgroundColor: '*'}))
+                animate('400ms 1500ms ease', style({ backgroundColor: '*' }))
             ])),
             transition(':increment, :leave', group([
-                style({transform: 'translateY(-24px)'}),
+                style({ transform: 'translateY(-24px)' }),
                 animate('400ms ease', style({
                     transform: 'translateY(0)'
                 }))
@@ -36,8 +36,7 @@ import { DatagridStore } from '../state/datagrid-store';
         PushPipe,
         LowerCasePipe,
         NgClass
-    ],
-    standalone: true
+    ]
 })
 export class DatagridTicker {
     public readonly events$: Observable<Event[]>;

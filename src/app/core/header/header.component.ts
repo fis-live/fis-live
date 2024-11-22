@@ -11,8 +11,7 @@ import { IconComponent } from '../icon/icon.component';
     imports: [
         IconComponent,
         UpperCasePipe
-    ],
-    standalone: true
+    ]
 })
 export class HeaderComponent {
     @Input()

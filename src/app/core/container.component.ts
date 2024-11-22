@@ -31,8 +31,7 @@ import { SidebarComponent } from './sidebar/sidebar.component';
         NgForOf,
         Details,
         DatagridWrapper
-    ],
-    standalone: true
+    ]
 })
 export class ContainerComponent implements OnInit, OnDestroy {
     public codex?: number;

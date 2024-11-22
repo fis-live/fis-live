@@ -12,7 +12,6 @@ import { State as AlertState } from './state/reducers/alert';
 @Component({
     selector: 'app-root',
     templateUrl: './app.component.html',
-    standalone: true,
     imports: [RouterOutlet, AlertComponent, PushPipe]
 })
 export class AppComponent {

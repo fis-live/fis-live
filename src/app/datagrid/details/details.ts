@@ -26,7 +26,7 @@ interface State {
 @Component({
     selector: 'app-details',
     templateUrl: 'details.html',
-    providers: [{provide: APP_OPTIONS, useExisting: Details}],
+    providers: [{ provide: APP_OPTIONS, useExisting: Details }],
     changeDetection: ChangeDetectionStrategy.OnPush,
     imports: [
         SelectComponent,
@@ -35,8 +35,7 @@ interface State {
         CdkTableModule,
         PushPipe,
         TickPipe
-    ],
-    standalone: true
+    ]
 })
 export class Details extends ComponentStore<State> implements OptionSelector<State, Racer> {
     public readonly rows$: Observable<any[]>;

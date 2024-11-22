@@ -16,7 +16,6 @@ import { IconComponent } from '../icon/icon.component';
     selector: 'app-alert',
     templateUrl: './alert.component.html',
     changeDetection: ChangeDetectionStrategy.OnPush,
-    standalone: true,
     imports: [
         NgClass,
         IconComponent
@@ -24,11 +23,11 @@ import { IconComponent } from '../icon/icon.component';
     animations: [
         trigger('translate', [
             transition(':enter', [
-                style({transform: 'translateY(100%)'}),
-                animate('600ms ease', style({transform: 'translateY(0)'}))
+                style({ transform: 'translateY(100%)' }),
+                animate('600ms ease', style({ transform: 'translateY(0)' }))
             ]),
             transition(':leave', [
-                animate('600ms ease', style({transform: 'translateY(100%)'}))
+                animate('600ms ease', style({ transform: 'translateY(100%)' }))
             ])
         ])
     ]

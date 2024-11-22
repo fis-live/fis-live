@@ -23,8 +23,7 @@ import { Column } from './state/model';
         CdkDragHandle,
         NgIf,
         FormsModule
-    ],
-    standalone: true
+    ]
 })
 export class DatagridSettings extends AbstractPopover {
     public columns$: Observable<Column[]>;

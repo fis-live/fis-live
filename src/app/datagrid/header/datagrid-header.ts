@@ -28,8 +28,7 @@ import { DatagridStore } from '../state/datagrid-store';
         PushPipe,
         DatagridFilter,
         DatagridSettings
-    ],
-    standalone: true
+    ]
 })
 export class DatagridHeader {
     public readonly guid = guid();
