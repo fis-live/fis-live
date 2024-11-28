@@ -1,18 +1,17 @@
 /* tslint:disable:component-selector */
-import { ChangeDetectionStrategy, Component, HostBinding, Input } from '@angular/core';
+import { ChangeDetectionStrategy, Component, input } from '@angular/core';
 
 @Component({
     selector: 'clr-icon',
     templateUrl: './icon.component.html',
-    changeDetection: ChangeDetectionStrategy.OnPush,
-    standalone: true
+    host: {
+        '[style.width.px]': 'size()',
+        '[style.height.px]': 'size()',
+    },
+    changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class IconComponent {
-    @Input()
-    public shape: string = '';
+    public readonly shape = input('');
 
-    @HostBinding('style.width.px')
-    @HostBinding('style.height.px')
-    @Input()
-    public size?: number;
+    public readonly size = input<number>();
 }

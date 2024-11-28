@@ -21,7 +21,7 @@ const icons = [
     'star'
 ];
 
-var template = '@switch (shape) {';
+var template = '@switch (shape()) {';
 
 var yellowCardIcon = '<svg version="1.0" id="Calque_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"\n' +
     '     width="183.275px" height="125.473px" viewBox="0 0 183.275 125.473" enable-background="new 0 0 183.275 125.473"\n' +

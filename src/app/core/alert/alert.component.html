@@ -1,9 +1,9 @@
-@if (alert !== null) {
-    <div [@translate] [ngClass]="'alert alert-app-level alert-' + alert.severity" >
+@if (alert(); as alert) {
+    <div @translate [class]="'alert alert-app-level alert-' + alert.severity" >
         <div class="alert-items">
             <div class="alert-item">
                 <div class="alert-icon-wrapper">
-                    <clr-icon class="alert-icon" [shape]="iconInfoFromType(alert.severity)"></clr-icon>
+                    <clr-icon class="alert-icon" [shape]="iconShape()"></clr-icon>
                 </div>
 
                 <div class="alert-text">
@@ -11,12 +11,12 @@
                 </div>
 
                 <div class="alert-actions">
-                    <button class="btn alert-action" (click)="emitAction(alert)">{{ alert.action }}</button>
+                    <button class="btn alert-action" (click)="action.emit(alert.actions)">{{ alert.action }}</button>
                 </div>
             </div>
         </div>
 
-        <button type="button" class="close" aria-label="Close" (click)="closeAlert()">
+        <button type="button" class="close" aria-label="Close" (click)="close.emit()">
             <clr-icon aria-hidden="true" shape="times"></clr-icon>
         </button>
     </div>

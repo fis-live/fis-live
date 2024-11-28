@@ -1,15 +1,8 @@
 import { animate, style, transition, trigger } from '@angular/animations';
-import { NgClass } from '@angular/common';
-import {
-    ChangeDetectionStrategy,
-    Component,
-    EventEmitter,
-    Input,
-    Output
-} from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, input, output } from '@angular/core';
 import { Action } from '@ngrx/store';
 
-import { Alert } from '../../state/reducers/alert';
+import { State } from '../../state/reducers/alert';
 import { IconComponent } from '../icon/icon.component';
 
 @Component({
@@ -17,7 +10,6 @@ import { IconComponent } from '../icon/icon.component';
     templateUrl: './alert.component.html',
     changeDetection: ChangeDetectionStrategy.OnPush,
     imports: [
-        NgClass,
         IconComponent
     ],
     animations: [
@@ -33,25 +25,14 @@ import { IconComponent } from '../icon/icon.component';
     ]
 })
 export class AlertComponent {
-    @Input()
-    public alert: Alert | null = null;
+    public readonly alert = input<State>();
 
-    @Output()
-    public close: EventEmitter<void> = new EventEmitter();
+    public readonly close = output();
 
-    @Output()
-    public action: EventEmitter<Action[]> = new EventEmitter();
+    public readonly action = output<Action[]>();
 
-    public closeAlert(): void {
-        this.close.emit();
-    }
-
-    public emitAction(alert: Alert): void {
-        this.action.emit(alert.actions);
-    }
-
-    public iconInfoFromType(type: string): string {
-        switch (type) {
+    protected readonly iconShape = computed(() => {
+        switch (this.alert()?.severity) {
             case 'warning':
             case 'alert-warning':
                 return 'exclamation-triangle';
@@ -64,5 +45,5 @@ export class AlertComponent {
             default:
                 return 'info-circle';
         }
-    }
+    });
 }
