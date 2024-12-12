@@ -1,11 +1,11 @@
-import { CdkDragDrop, CdkDragHandle, CdkDropList } from '@angular/cdk/drag-drop';
+import { CdkDrag, CdkDragDrop, CdkDragHandle, CdkDropList } from '@angular/cdk/drag-drop';
 import { NgForOf, NgIf } from '@angular/common';
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, Renderer2 } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { PushPipe } from '@ngrx/component';
 import { Observable } from 'rxjs';
-import { IconComponent } from '../core/icon/icon.component';
 
+import { IconComponent } from '../core/icon/icon.component';
 import { AbstractPopover } from '../utils/abstract-popover';
 
 import { DatagridStore } from './state/datagrid-store';
@@ -22,7 +22,8 @@ import { Column } from './state/model';
         CdkDropList,
         CdkDragHandle,
         NgIf,
-        FormsModule
+        FormsModule,
+        CdkDrag
     ]
 })
 export class DatagridSettings extends AbstractPopover {

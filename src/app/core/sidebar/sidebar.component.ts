@@ -1,9 +1,6 @@
 import { animate, style, transition, trigger } from '@angular/animations';
-import { CdkDragDrop, CdkDragHandle, CdkDropList } from '@angular/cdk/drag-drop';
-import { NgForOf, NgIf } from '@angular/common';
-import {
-    ChangeDetectionStrategy, Component, EventEmitter, Input, Output
-} from '@angular/core';
+import { CdkDrag, CdkDragDrop, CdkDragHandle, CdkDropList } from '@angular/cdk/drag-drop';
+import { ChangeDetectionStrategy, Component, model, output, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { RouterLink, RouterLinkActive } from '@angular/router';
 import { LetDirective, PushPipe } from '@ngrx/component';
@@ -50,23 +47,20 @@ import { IconComponent } from '../icon/icon.component';
     ],
     imports: [
         IconComponent,
-        NgForOf,
-        NgIf,
         PushPipe,
         RouterLink,
         RouterLinkActive,
         CdkDropList,
         CdkDragHandle,
         FormsModule,
-        LetDirective
+        LetDirective,
+        CdkDrag
     ]
 })
 export class SidebarComponent {
-    @Input() public isOpen = false;
-    @Output() public isOpenChange = new EventEmitter<boolean>();
-    @Output() public navigate = new EventEmitter<number>();
+    public readonly isOpen = model(false);
+    public readonly navigate = output<number>();
 
-    public tab = 'live';
     public upcomingRaces$: Observable<RacesByPlace[]>;
     public delay$: Observable<number>;
     public events$: Observable<Event[]>;
@@ -78,6 +72,8 @@ export class SidebarComponent {
     public racers$: Observable<Racer[]>;
     public nameFormat$: Observable<string>;
     public indDetailsEnabled$: Observable<boolean>;
+
+    protected readonly tab = signal<'live' | 'sync' | 'settings'>('live');
 
     constructor(private store: Store<AppState>) {
         this.upcomingRaces$ = store.select(selectRacesByPlace);
@@ -124,13 +120,11 @@ export class SidebarComponent {
     }
 
     public open(): void {
-        this.isOpen = true;
-        this.isOpenChange.emit(true);
+        this.isOpen.set(true);
     }
 
     public close(): void {
-        this.isOpen = false;
-        this.isOpenChange.emit(false);
+        this.isOpen.set(false);
     }
 
     public next(id: string) {
@@ -156,9 +150,5 @@ export class SidebarComponent {
             previousIndex: event.previousIndex,
             currentIndex: event.currentIndex,
         }));
-    }
-
-    public trackBy(index: number, column: Column) {
-        return column.id;
     }
 }

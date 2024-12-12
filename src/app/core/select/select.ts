@@ -1,5 +1,5 @@
 import { animate, style, transition, trigger } from '@angular/animations';
-import { AsyncPipe, NgClass, NgForOf, NgTemplateOutlet } from '@angular/common';
+import { NgTemplateOutlet } from '@angular/common';
 import {
     ChangeDetectionStrategy,
     ChangeDetectorRef,
@@ -34,7 +34,6 @@ export const APP_OPTIONS = new InjectionToken<OptionSelector<any, any>>('app.opt
     imports: [
         IconComponent,
         PushPipe,
-        NgClass,
         NgTemplateOutlet
     ],
     animations: [

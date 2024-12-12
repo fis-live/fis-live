@@ -11,9 +11,7 @@
 @if (open) {
     <div class="dropdown-menu" [@animate]>
         @for (option of options | ngrxPush; track option) {
-            <button
-                    (click)="select(option)"
-                    [ngClass]="{'disabled': option.disabled, 'active': option.selected}"
+            <button (click)="select(option)" [class.disabled]="option.disabled" [class.active]="option.selected"
                     class="dropdown-item">
                 <ng-container [ngTemplateOutlet]="template" [ngTemplateOutletContext]="{$implicit: option.value}"></ng-container>
             </button>
