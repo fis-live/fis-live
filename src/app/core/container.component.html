@@ -13,7 +13,7 @@
 
 <ng-template #container>
     <div class="container">
-        <div style="display: flex; flex: 1 0 0; flex-direction: column;">
+        <div style="display: flex; flex: 1 0 0; flex-direction: column; overflow: auto">
             <div class="datagrid-spinner" *ngIf="loading$ | ngrxPush">
                 <div class="spinner">Loading...</div>
             </div>
