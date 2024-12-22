@@ -1,31 +1,47 @@
 <app-sidebar [(isOpen)]="sidebarOpen" (navigate)="go($event)"></app-sidebar>
 
-<app-header [raceInfo]="(raceInfo$ | ngrxPush)!" (openSidebar)="showSidebar()" (refresh)="onRefresh()" (tab)="configureTabs($event)"></app-header>
+<app-header [(mode)]="mode" [raceInfo]="(raceInfo$ | ngrxPush)!" (openSidebar)="showSidebar()" (refresh)="onRefresh()" (tab)="configureTabs($event)"></app-header>
 
-<div *ngIf="isSprintGrid$ | ngrxPush; else container" class="container-sprint-grid">
-    <div class="datagrid-spinner" *ngIf="loading$ | ngrxPush">
-        <div class="spinner">Loading...</div>
-    </div>
-    <div class="row" *ngFor="let run of runs$ | ngrxPush; index as i">
-        <app-sprint-grid *ngFor="let heat of run.heats; index as j" class="column" [runAndHeat]="[i, j]"></app-sprint-grid>
-    </div>
-</div>
-
-<ng-template #container>
-    <div class="container">
-        <div style="display: flex; flex: 1 0 0; flex-direction: column; overflow: auto">
-            <div class="datagrid-spinner" *ngIf="loading$ | ngrxPush">
+@if (isSprintGrid$ | ngrxPush) {
+    <div class="container-sprint-grid">
+        @if (loading$ | ngrxPush) {
+            <div class="datagrid-spinner">
                 <div class="spinner">Loading...</div>
             </div>
-            <div *ngFor="let columns of rows; let row = index" class="row">
-                <app-dg-wrapper *ngFor="let i of columns" class="column" [breakpoint]="breakpoints[row]"></app-dg-wrapper>
+        }
+
+        @for (run of runs$ | ngrxPush; track run; let i = $index) {
+            <div class="row">
+                @for (heat of run.heats; track heat; let j = $index) {
+                    <app-sprint-grid class="column" [runAndHeat]="[i, j]"></app-sprint-grid>
+                }
             </div>
-        </div>
-
-        <div *ngIf="indDetailsTab$ | ngrxPush" class="details-container">
-            <app-details></app-details>
-        </div>
+        }
     </div>
-</ng-template>
+} @else {
+    <div class="container">
+        <div style="display: flex; flex: 1 0 0; flex-direction: column; overflow: auto">
+            @if (loading$ | ngrxPush) {
+                <div class="datagrid-spinner">
+                    <div class="spinner">Loading...</div>
+                </div>
+            }
 
-<div (click)="sidebarOpen = false" class="backdrop" [class.open]="sidebarOpen"></div>
+            @for (columns of rows; track columns; let row = $index) {
+                <div class="row">
+                    @for (i of columns; track i) {
+                        <app-dg-wrapper class="column" [breakpoint]="breakpoints[row]"></app-dg-wrapper>
+                    }
+                </div>
+            }
+        </div>
+
+        @if (indDetailsTab$ | ngrxPush) {
+            <div class="details-container">
+                <app-details></app-details>
+            </div>
+        }
+    </div>
+}
+
+<div (click)="sidebarOpen.set(false)" class="backdrop" [class.open]="sidebarOpen()"></div>

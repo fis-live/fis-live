@@ -54,6 +54,11 @@ header {
         > .nav-link {
             padding: 0;
             color: $clr-black;
+
+            &.active {
+                opacity: 1;
+                background: #e6f7ff;
+            }
         }
 
         a {

@@ -1,5 +1,4 @@
-import { NgForOf, NgIf } from '@angular/common';
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit, signal } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { PushPipe } from '@ngrx/component';
 import { Store } from '@ngrx/store';
@@ -25,10 +24,8 @@ import { SidebarComponent } from './sidebar/sidebar.component';
     imports: [
         SidebarComponent,
         HeaderComponent,
-        NgIf,
         PushPipe,
         SprintGrid,
-        NgForOf,
         Details,
         DatagridWrapper
     ]
@@ -44,7 +41,9 @@ export class ContainerComponent implements OnInit, OnDestroy {
     public rows: Array<number[]> = [[0]];
     public width: number;
     public breakpoints: string[] = ['large', 'large'];
-    public sidebarOpen = false;
+
+    protected readonly mode = signal(false);
+    protected readonly sidebarOpen = signal(false);
 
     private widthSubscription: Subscription;
 
@@ -116,15 +115,19 @@ export class ContainerComponent implements OnInit, OnDestroy {
             count += this.rows[i].length;
         }
 
-        if (count <= 2) {
+        if (this.mode()) {
             this.rows[0].pop();
-        } else if (count === 3) {
-            this.rows[1].pop();
-            this.rows.pop();
-        } else if (count % 2 === 0) {
-            this.rows[1].pop();
         } else {
-            this.rows[0].pop();
+            if (count <= 2) {
+                this.rows[0].pop();
+            } else if (count === 3) {
+                this.rows[1].pop();
+                this.rows.pop();
+            } else if (count % 2 === 0) {
+                this.rows[1].pop();
+            } else {
+                this.rows[0].pop();
+            }
         }
     }
 
@@ -134,14 +137,18 @@ export class ContainerComponent implements OnInit, OnDestroy {
             count += this.rows[i].length;
         }
 
-        if (count <= 1) {
-            this.rows[0].push(this.rows[0].length);
-        } else if (count === 2) {
-            this.rows.push([0]);
-        } else if (count % 2 === 0) {
+        if (this.mode()) {
             this.rows[0].push(this.rows[0].length);
         } else {
-            this.rows[1].push(this.rows[1].length);
+            if (count <= 1) {
+                this.rows[0].push(this.rows[0].length);
+            } else if (count === 2) {
+                this.rows.push([0]);
+            } else if (count % 2 === 0) {
+                this.rows[0].push(this.rows[0].length);
+            } else {
+                this.rows[1].push(this.rows[1].length);
+            }
         }
     }
 
@@ -150,7 +157,7 @@ export class ContainerComponent implements OnInit, OnDestroy {
     }
 
     public showSidebar(): void {
-        this.sidebarOpen = true;
+        this.sidebarOpen.set(true);
     }
 
     public configureTabs(action: string): void {

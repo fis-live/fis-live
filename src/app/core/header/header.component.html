@@ -19,6 +19,9 @@
         <a (click)="refresh.emit()" class="nav-link nav-icon">
             <clr-icon shape="refresh"></clr-icon>
         </a>
+        <a (click)="mode.set(!mode())" class="nav-link nav-icon no-mobile" [class.active]="mode()">
+            <clr-icon shape="view-columns"></clr-icon>
+        </a>
         <a (click)="tab.emit('remove')" class="nav-link nav-icon no-mobile">
             <clr-icon shape="minus"></clr-icon>
         </a>
