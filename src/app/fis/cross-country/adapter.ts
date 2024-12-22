@@ -22,7 +22,7 @@ export class Adapter {
             display: firstName !== '' ? firstName + ' ' + lastName : lastName,
             value: (firstName !== '' ? lastName + ', ' + firstName : lastName).toLowerCase(),
             short: initials !== '' ? initials + '. ' + lastName : lastName,
-            nsa: nationalities[racer[4]] || racer[4],
+            nsa: nationalities[racer[4]] || racer[4] || nationalities[racer[0]],
             isFavorite: isFavorite,
             hasYellowCard: racer[6] === 'yc',
             color: racer[5],
