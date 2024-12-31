@@ -50,6 +50,17 @@
             font-weight: 700;
         }
 
+        &.purple .bib .badge {
+            background: $clr-action-purple;
+            font-weight: 700;
+        }
+
+        &.gold .bib .badge {
+            background: gold;
+            color: $clr-black;
+            font-weight: 700;
+        }
+
         &.silver .bib .badge {
             background: silver;
             color: $clr-black;
