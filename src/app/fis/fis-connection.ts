@@ -26,7 +26,7 @@ export interface ActionWithTimestamp {
 })
 export class FisConnectionService {
     private delay = 0;
-    private codex: number | null = null;
+    private codex: string | null = null;
     private sectorCode: 'cc' | 'nk' = 'cc';
     private version: number = 0;
     private doc: 'main' | 'update' | 'pdf' | 'race-info' = 'main';
@@ -40,7 +40,7 @@ export class FisConnectionService {
 
     constructor(private _http: HttpClient, private _store: Store<AppState>) {}
 
-    public initialize(codex: number, sectorCode: 'cc' | 'nk'): void {
+    public initialize(codex: string, sectorCode: 'cc' | 'nk'): void {
         this.codex = codex;
         this.sectorCode = sectorCode;
         this.doc = 'main';
@@ -55,7 +55,7 @@ export class FisConnectionService {
         }).pipe(map(res => this.parseServerList(res)));
     }
 
-    public poll(codex: number, sectorCode: 'cc' | 'nk'): Observable<ActionWithTimestamp> {
+    public poll(codex: string, sectorCode: 'cc' | 'nk'): Observable<ActionWithTimestamp> {
         this.initialize(codex, sectorCode);
 
         return defer(() => timer(this.delay)).pipe(

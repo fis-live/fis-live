@@ -31,7 +31,7 @@ import { SidebarComponent } from './sidebar/sidebar.component';
     ]
 })
 export class ContainerComponent implements OnInit, OnDestroy {
-    public codex?: number;
+    public codex?: string;
     public sectorCode: 'nk' | 'cc' = 'cc';
     public raceInfo$: Observable<RaceInfoState>;
     public loading$: Observable<LoadingState>;
