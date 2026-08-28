@@ -51,12 +51,12 @@ export class ContainerComponent implements OnInit, OnDestroy {
         this.route.url
             .subscribe((url) => {
                 if (url[0]?.path === 'nk' || url[0]?.path === 'cc') {
-                    this.codex = +url[1].path;
+                    this.codex = url[1].path;
                     this.sectorCode = url[0].path;
 
                     this.reload();
                 } else {
-                    this.codex = +url[0]?.path;
+                    this.codex = url[0]?.path;
                     this.sectorCode = 'cc';
 
                     this.reload();
