@@ -203,6 +203,6 @@ export class FisConnectionService {
             j++;
         }
 
-        this.baseURL = `https://${urlServer}/`;
+        this.baseURL = `https://fis-live-cors.up.railway.app/https://${urlServer}/`;
     }
 }
